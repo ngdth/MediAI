@@ -1,0 +1,19 @@
+{
+  "name": "mern-application",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "/",
+  "author": "",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": {
+    "url": "https://github.com",
+    "email": "abc@gmail.com"
+  },
+  "scripts": {},
+  "dependencies": {
+    "mern-application": "file:"
+  }
+}
