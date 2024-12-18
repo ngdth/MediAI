@@ -5,6 +5,7 @@ import app from './utils/app' // (server)
 import mongo from './utils/mongo' // (database)
 import { PORT } from './constants/index'
 import authRoutes from './routes/auth'
+import userRoutes from './routes/user' // Import user routes
 
 const bootstrap = async () => {
   await mongo.connect()
@@ -17,11 +18,11 @@ const bootstrap = async () => {
     res.status(204).end()
   })
 
-  app.use('/auth', authRoutes)
-  // add rest of routes here...
+  app.use('/user', userRoutes) // Use user routes
+  app.use('/auth', authRoutes) // Use auth routes
 
-  app.listen(PORT, () => {
-    console.log(`✅ Server is listening on port: ${PORT}`)
+  app.listen(PORT || 8080, () => {
+    console.log(`✅ Server is listening on port: ${PORT || 8080}`)
   })
 }
 

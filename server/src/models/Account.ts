@@ -1,7 +1,7 @@
 import { type Document, model, Schema } from 'mongoose'
 import { type Account } from '../@types'
 
-interface I extends Document, Account {}
+interface I extends Document, Account {email: string, phone?:number, avatar?:string}
 
 const instance = new Schema<I>(
   {
@@ -16,6 +16,10 @@ const instance = new Schema<I>(
       lowercase: true,
       unique: true,
     },
+    email: {
+      type: String,
+      required: true,
+    },
     password: {
       type: String,
       required: true,
@@ -25,6 +29,14 @@ const instance = new Schema<I>(
       required: true,
       enum: ['user', 'admin'],
       default: 'user',
+    },
+    phone: {
+      type: Number,
+      required: false,
+    },
+    avatar: {
+      type: String,
+      required: false,
     },
   },
   {
@@ -37,3 +49,4 @@ const instance = new Schema<I>(
 const modelName = 'Account'
 
 export default model<I>(modelName, instance)
+
