@@ -1,43 +1,51 @@
-import React, { Fragment } from 'react'
-import { useAuth } from 'contexts/AuthContext'
+import React from 'react'
+// import { useAuth } from 'contexts/AuthContext'
 import AuthModal from 'components/AuthModal'
 import Header from 'components/Header'
-import logo from 'assets/react.svg'
+import HomePage from 'pages/HomePage'
+import Footer from 'components/Footer'
+// import logo from 'assets/react.svg'
 import 'styles/ReactWelcome.css'
 
 const App = () => {
   return (
-    <div className='App'>
-      <Header />
-      <ReactWelcome />
-      <LoggedInStatus />
-      <AuthModal />
-    </div>
+    // <div className='App'>
+      <div className='flex flex-col min-h-screen'>
+        <Header />
+        {/* <ReactWelcome /> */}
+        {/* <LoggedInStatus /> */}
+        <AuthModal />
+        <div className="flex-grow">
+          <HomePage />
+        </div>
+        <Footer />
+      </div>
+    // </div>
   )
 }
 
-const ReactWelcome = () => {
-  return (
-    <Fragment>
-      <img src={logo} className='ReactWelcome-logo' alt='logo' />
-      <p>
-        Edit <code>src/App.tsx</code> and save to reload.
-      </p>
-      <a className='ReactWelcome-link' href='https://reactjs.org' target='_blank' rel='noopener noreferrer'>
-        Learn React
-      </a>
-    </Fragment>
-  )
-}
+// const ReactWelcome = () => {
+//   return (
+//     <Fragment>
+//       <img src={logo} className='ReactWelcome-logo' alt='logo' />
+//       <p>
+//         Edit <code>src/App.tsx</code> and save to reload.
+//       </p>
+//       <a className='ReactWelcome-link' href='https://reactjs.org' target='_blank' rel='noopener noreferrer'>
+//         Learn React
+//       </a>
+//     </Fragment>
+//   )
+// }
 
-const LoggedInStatus = () => {
-  const { isLoggedIn, account } = useAuth()
+// const LoggedInStatus = () => {
+//   const { isLoggedIn, account } = useAuth()
 
-  if (isLoggedIn && !!account) {
-    return <p>Hey, {account.username}! I'm happy to let you know: you are authenticated!</p>
-  }
+//   if (isLoggedIn && !!account) {
+//     return <p>Hey, {account.username}! I'm happy to let you know: you are authenticated!</p>
+//   }
 
-  return <p>Don't forget to start your backend server, and then authenticate yourself.</p>
-}
+//   return <p>Don't forget to start your backend server, and then authenticate yourself.</p>
+// }
 
 export default App

@@ -2,7 +2,8 @@ import React, { Fragment, type MouseEventHandler, useState } from 'react'
 import { useModalStore } from 'store/useModalStore'
 import { useAuth } from 'contexts/AuthContext'
 import OnlineIndicator from 'components/OnlineIndicator'
-import { AppBar, IconButton, Avatar, Popover, List, ListSubheader, ListItemButton } from '@mui/material'
+import { AppBar, IconButton, Avatar, Popover, List, ListSubheader, ListItemButton, Button } from '@mui/material'
+import { Link } from 'react-router-dom'
 
 interface Props {}
 
@@ -35,7 +36,17 @@ const Header: React.FC<Props> = () => {
 
   return (
     <AppBar className='header' position='static'>
-      <h1>Web App</h1>
+      <div className='flex justify-between items-center w-full px-4'>
+        <h1 className='text-lg font-bold'>Web App</h1>
+        <div className='flex gap-4'>
+          <Link to="/" className="text-white hover:text-gray-300">
+            <Button>Home</Button>
+          </Link>
+          <Link to="/about" className="text-white hover:text-gray-300">
+            <Button>About Us</Button>
+          </Link>
+        </div>
+      </div>
 
       <IconButton onClick={openPopover}>
         <OnlineIndicator online={isLoggedIn}>
