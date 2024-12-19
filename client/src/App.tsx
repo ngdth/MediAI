@@ -2,24 +2,34 @@ import React from 'react'
 // import { useAuth } from 'contexts/AuthContext'
 import AuthModal from 'components/AuthModal'
 import Header from 'components/Header'
-import HomePage from 'pages/HomePage'
 import Footer from 'components/Footer'
 // import logo from 'assets/react.svg'
 import 'styles/ReactWelcome.css'
+import { Route, Routes } from 'react-router-dom'
+import HomePage from 'pages/home/HomePage'
+import AboutUs from 'pages/home/AboutUs'
+import PrivacyPolicy from 'pages/home/PrivacyPolicy'
+import CookiePolicy from 'pages/home/CookiePolicy'
 
 const App = () => {
   return (
+
     // <div className='App'>
-      <div className='flex flex-col min-h-screen'>
-        <Header />
-        {/* <ReactWelcome /> */}
-        {/* <LoggedInStatus /> */}
-        <AuthModal />
-        <div className="flex-grow">
-          <HomePage />
-        </div>
-        <Footer />
+    <div className='flex flex-col min-h-screen'>
+      <Header />
+      {/* <ReactWelcome /> */}
+      {/* <LoggedInStatus /> */}
+      <AuthModal />
+      <div className='flex-grow'>
+        <Routes>
+          <Route path='/' element={<HomePage />} />
+          <Route path='/about' element={<AboutUs />} />
+          <Route path='/privacy' element={<PrivacyPolicy />} />
+          <Route path='/cookie' element={<CookiePolicy />} />
+        </Routes>
       </div>
+      <Footer />
+    </div>
     // </div>
   )
 }

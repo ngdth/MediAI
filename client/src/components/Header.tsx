@@ -2,10 +2,10 @@ import React, { Fragment, type MouseEventHandler, useState } from 'react'
 import { useModalStore } from 'store/useModalStore'
 import { useAuth } from 'contexts/AuthContext'
 import OnlineIndicator from 'components/OnlineIndicator'
-import { AppBar, IconButton, Avatar, Popover, List, ListSubheader, ListItemButton, Button } from '@mui/material'
+import { AppBar, IconButton, Avatar, Popover, List, ListSubheader, ListItemButton } from '@mui/material'
 import { Link } from 'react-router-dom'
 
-interface Props {}
+interface Props { }
 
 const Header: React.FC<Props> = () => {
   const { isLoggedIn, account, logout } = useAuth()
@@ -36,15 +36,26 @@ const Header: React.FC<Props> = () => {
 
   return (
     <AppBar className='header' position='static'>
-      <div className='flex justify-between items-center w-full px-4'>
-        <h1 className='text-lg font-bold'>Web App</h1>
-        <div className='flex gap-4'>
-          <Link to="/" className="text-white hover:text-gray-300">
-            <Button>Home</Button>
-          </Link>
-          <Link to="/about" className="text-white hover:text-gray-300">
-            <Button>About Us</Button>
-          </Link>
+      <div className='flex justify-between items-center w-full px-4 py-4'>
+        <div className="flex items-center gap-4 pl-8">
+          <img
+            src="https://via.placeholder.com/40" // Thay bằng logo của bạn
+            alt="Company Logo"
+            className="w-10 h-10"
+          />
+          <span className='text-teal-600 text-xl font-bold'>MediAI</span>
+        </div>
+        <div className='flex gap-10'>
+          <Link to="/" className="font-semibold hover:text-teal-600">Home</Link>
+          <Link to="/about" className="font-semibold hover:text-teal-600">About Us</Link>
+          <Link to="/contact" className="font-semibold hover:text-teal-600">Contact Us</Link>
+        </div>
+        <div>
+          <input
+            type="text"
+            placeholder="Find Trial"
+            className="border rounded px-3 py-1"
+          />
         </div>
       </div>
 
