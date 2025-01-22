@@ -1,7 +1,9 @@
 import express from 'express'
 import cors from 'cors'
 import { ORIGIN } from '../constants/index'
+import dotenv from 'dotenv';
 
+dotenv.config();
 // initialize app
 const app = express()
 

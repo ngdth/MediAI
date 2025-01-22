@@ -2,10 +2,10 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 import app from './utils/app' // (server)
-import mongo from './utils/mongo' // (database)
+import mongo from './config/mongo' // (database)
 import { PORT } from './constants/index'
-import authRoutes from './routes/auth'
-import userRoutes from './routes/user' // Import user routes
+import authRoutes from './routes/authRoutes'
+import userRoutes from './routes/authRoutes' // Import user routes
 
 const bootstrap = async () => {
   await mongo.connect()
