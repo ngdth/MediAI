@@ -1,0 +1,156 @@
+import { Request, Response, RequestHandler } from "express";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import User from "../../models/User";
+import { sendVerificationEmail } from "../../config/email";
+import { generateVerificationCode } from "../../utils/generateToken";
+
+const TEMP_CODE_STORAGE: Map<string, string> = new Map();
+
+export const registerUser: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+    const { email, username, password } = req.body;
+
+    try {
+        const normalizedEmail = email.trim().toLowerCase();
+
+        // Kiểm tra email và username đã tồn tại
+        const existingUser = await User.findOne({ email: normalizedEmail });
+        if (existingUser) {
+            res.status(400).json({ message: "Email already exists" });
+            return;
+        }
+
+        const existingUsername = await User.findOne({ username: username.trim() });
+        if (existingUsername) {
+            res.status(400).json({ message: "Username already exists" });
+            return;
+        }
+
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+
+        const verificationCode = generateVerificationCode();
+        TEMP_CODE_STORAGE.set(normalizedEmail, verificationCode);
+
+
+        try {
+            await sendVerificationEmail(normalizedEmail, verificationCode);
+        } catch (emailError) {
+            console.error("Error sending verification email:", emailError);
+            res.status(500).json({ message: "Failed to send verification email" });
+            return;
+        }
+
+
+        const newUser = new User({
+            email: normalizedEmail,
+            username: username.trim(),
+            password: hashedPassword,
+            role: "user",
+            verified: false,
+        });
+
+        await newUser.save();
+
+        res.status(201).json({
+            message: "User registered successfully. Verification code sent to your email.",
+            user: {
+                email: newUser.email,
+                username: newUser.username,
+                role: newUser.role,
+            },
+        });
+    } catch (error) {
+        console.error("Error registering user:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+// Login user
+export const loginUser: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+    const { email, password } = req.body;
+
+    try {
+        const normalizedEmail = email.trim().toLowerCase();
+
+        const user = await User.findOne({ email: normalizedEmail });
+        if (!user) {
+            res.status(404).json({ message: "User not found" });
+            return;
+        }
+
+        if (!user.verified) {
+            res.status(403).json({ message: "Email not verified. Please verify your email before logging in." });
+            return;
+        }
+
+        if (!user.password) {
+            res.status(500).json({ message: "Password is missing for this user." });
+            return;
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            res.status(401).json({ message: "Invalid credentials" });
+            return;
+        }
+
+        const token = jwt.sign(
+            { id: user._id, role: user.role },
+            process.env.JWT_SECRET as string,
+            { expiresIn: "1h" }
+        );
+
+        res.status(200).json({
+            message: "Login successful",
+            token,
+            user: {
+                email: user.email,
+                username: user.username,
+                role: user.role,
+            },
+        });
+    } catch (error) {
+        console.error("Error during login:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+
+// Verify code
+export const verifyCode: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+    const { email, code } = req.body;
+
+    try {
+        const normalizedEmail = email.trim().toLowerCase();
+
+        const storedCode = TEMP_CODE_STORAGE.get(normalizedEmail);
+        if (!storedCode || storedCode !== code) {
+            res.status(400).json({ message: "Invalid or expired verification code" });
+            return;
+        }
+
+        TEMP_CODE_STORAGE.delete(normalizedEmail);
+
+        const user = await User.findOne({ email: normalizedEmail });
+        if (!user) {
+            res.status(404).json({ message: "User not found" });
+            return;
+        }
+
+        user.verified = true;
+        await user.save();
+
+        const token = jwt.sign(
+            { id: user._id, role: user.role },
+            process.env.JWT_SECRET!,
+            { expiresIn: "1h" }
+        );
+        console.log("JWT_SECRET:", process.env.JWT_SECRET);
+        res.status(200).json({ message: "Verification successful", token });
+    } catch (error) {
+        console.error("Error during verification:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};

@@ -1,6 +1,6 @@
 import { type RequestHandler } from 'express'
 import jwt from '../../utils/jwt'
-import Account from '../../models/Account'
+import Account from '../../models/User'
 
 const loginWithToken: RequestHandler = async (req, res, next) => {
   try {

@@ -1,7 +1,9 @@
 import express from 'express'
 import cors from 'cors'
 import { ORIGIN } from '../constants/index'
+import dotenv from 'dotenv';
 
+dotenv.config();
 // initialize app
 const app = express()
 
@@ -9,5 +11,6 @@ const app = express()
 app.use(cors({ origin: ORIGIN }))
 app.use(express.json()) // body parser
 app.use(express.urlencoded({ extended: false })) // url parser
+
 
 export default app
