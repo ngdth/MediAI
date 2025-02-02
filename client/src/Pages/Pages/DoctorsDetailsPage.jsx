@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 import PageHeading from '../../Components/PageHeading';
 import DoctorDetailsSection from '../../Components/DoctorDetailsSection';
 import {
@@ -11,107 +13,76 @@ import {
 import TeamSection from '../../Components/TeamSection';
 import Section from '../../Components/Section';
 
-const headingData = {
-  title: 'Doctor Details',
-};
+const DoctorsDetailsPage = () => {
+  const [doctorDetails, setDoctorDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { doctorId } = useParams(); // Lấy id bác sĩ từ URL
 
-const doctorDetails = {
-  name: 'Dr. Lataro Bara',
-  subtitle: 'Manager',
-  description: [
-    'We irtual desktop offers a fast and reliable best from anywhere. A truly powerful tool where your data and applications are secured in a private location in the prestigious Telehouse data centre in London.',
-    "The majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable...",
-    "The majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable...",
-  ],
-  image: '/assets/img/doctor_details_1.jpeg',
-  info: [
+  // Kiểm tra nếu id không tồn tại trong URL
+  if (!doctorId) {
+    return <p>Error: Doctor ID is missing!</p>;
+  }
+
+  useEffect(() => {
+    const fetchDoctorDetails = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8080/user/doctors/${doctorId}`);
+        setDoctorDetails(response.data); // Lưu thông tin bác sĩ vào state
+      } catch (error) {
+        console.error("Error fetching doctor details:", error.response?.data || error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDoctorDetails();
+  }, [doctorId]);
+
+  if (loading) {
+    return <p>Loading...</p>; // Hiển thị loading nếu đang tải dữ liệu
+  }
+
+  // Nếu không có dữ liệu bác sĩ, hiển thị thông báo lỗi
+  if (!doctorDetails) {
+    return <p>Doctor not found</p>;
+  }
+
+  const headingData = {
+    title: doctorDetails.name || "Doctor Details",
+  };
+
+  const teamData = {
+    subtitle: 'OUR TEAM MEMBER',
+    title: ' Meet Our Specialist This <br />Doctor Meeting',
+    sliderData: doctorDetails.team || [], // Nếu có đội ngũ bác sĩ khác thì hiển thị
+  };
+
+  const doctorInfo = [
     {
       icon: <FaLocationDot />,
       title: 'Location',
-      subtitle: 'Dhaka, Dhaka 31',
+      subtitle: doctorDetails.location || 'N/A',
       secIcon: <FaEnvelope />,
       secTitle: 'E-mail:',
-      secSubtitle: 'ranst@g-mail.com',
+      secSubtitle: doctorDetails.email || 'N/A',
     },
     {
       icon: <FaCertificate />,
       title: 'Qualification',
-      subtitle: 'M.S.S',
+      subtitle: doctorDetails.qualification || 'N/A',
       secIcon: <FaGlobe />,
       secTitle: 'Website',
-      secSubtitle: 'demo.com',
+      secSubtitle: doctorDetails.website || 'N/A',
     },
     {
       icon: <FaSuitcase />,
       title: 'Experience',
-      subtitle: '2 - 4 Years',
+      subtitle: doctorDetails.experience || 'N/A',
     },
-  ],
-  progressBars: [
-    { label: 'Medical', percentage: 44 },
-    { label: 'Solution', percentage: 78 },
-    { label: 'Dental', percentage: 65 },
-    { label: 'Medical Lab', percentage: 85 },
-  ],
-};
+  ];
 
-const teamData = {
-  subtitle: 'OUR TEAM MEMBER',
-  title: ' Meet Our Specialist This <br />Doctor Meeting',
-  sliderData: [
-    {
-      name: 'Dr. Norma Pedric',
-      profession: 'Neurologist',
-      imageUrl: '/assets/img/team_1.jpg',
-      link: '/doctors/doctor-details',
-      facebook: '/',
-      pinterest: '/',
-      twitter: '/',
-      instagram: '/',
-    },
-    {
-      name: 'Dr. James Lewis',
-      profession: 'Neurologist',
-      imageUrl: '/assets/img/team_3.jpg',
-      link: '/doctors/doctor-details',
-      facebook: '/',
-      pinterest: '/',
-      twitter: '/',
-      instagram: '/',
-    },
-    {
-      name: 'Dr. Sophia Anderson',
-      profession: 'Neurologist',
-      imageUrl: '/assets/img/team_4.jpg',
-      link: '/doctors/doctor-details',
-      facebook: '/',
-      pinterest: '/',
-      twitter: '/',
-      instagram: '/',
-    },
-    {
-      name: 'Dr. Michael Thompson',
-      profession: 'Neurologist',
-      imageUrl: '/assets/img/team_6.jpg',
-      link: '/doctors/doctor-details',
-      facebook: '/',
-      pinterest: '/',
-      twitter: '/',
-      instagram: '/',
-    },
-    {
-      name: 'Dr. David Wilson',
-      profession: 'Neurologist',
-      imageUrl: '/assets/img/team_6.jpg',
-      link: '/doctors/doctor-details',
-      facebook: '/',
-      pinterest: '/',
-      twitter: '/',
-      instagram: '/',
-    },
-  ],
-};
-const DoctorsDetailsPage = () => {
+  const progressBars = doctorDetails.skills || []; // Nếu có kỹ năng/progress bars thì hiển thị
+
   return (
     <>
       <Section
@@ -122,7 +93,7 @@ const DoctorsDetailsPage = () => {
       </Section>
 
       <Section topSpaceLg="80" topSpaceMd="120">
-        <DoctorDetailsSection data={doctorDetails} />
+        <DoctorDetailsSection data={{ ...doctorDetails, info: doctorInfo, progressBars }} />
       </Section>
 
       {/* Start Team Section */}

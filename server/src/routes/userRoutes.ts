@@ -2,7 +2,7 @@ import express from "express";
 import { registerUser, loginUser, verifyCode } from "../controllers/auth/authController";
 import { getUserProfile, getAllUsers, getUserById } from "../controllers/auth/authUser";
 import { authenticateToken, authorizeRole } from "../middlewares/authMiddleware";
-import { addDoctorToFavorites, getDoctorById, removeDoctorFromFavorites, searchDoctorByUsername } from "../controllers/doctor/doctorController";
+import { addDoctorToFavorites, getAllDoctors, getDoctorById, removeDoctorFromFavorites, searchDoctorByUsername } from "../controllers/doctor/doctorController";
 
 const router = express.Router();
 
@@ -19,7 +19,9 @@ router.get("/all", authenticateToken,authorizeRole([ "admin"]), getAllUsers);
 
 router.get("/users/:id", authenticateToken, authorizeRole([ "admin"]), getUserById);
 
-router.get("/doctors/:id", authenticateToken, authorizeRole(["user", "admin"]), getDoctorById);
+router.get("/doctors", getAllDoctors);
+
+router.get("/doctors/:doctorId", getDoctorById);
 
 router.post("/search", searchDoctorByUsername);
 
