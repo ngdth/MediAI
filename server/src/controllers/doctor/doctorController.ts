@@ -4,9 +4,26 @@ import User from "../../models/User";
 import Blog from "../../models/blog";
 import mongoose from "mongoose";
 
+export const getAllDoctors = async (req: Request, res: Response): Promise<void> => {
+    try {
+        // Lấy danh sách tất cả user có role là "doctor"
+        const doctors = await User.find({ role: "doctor" }).select("-password").populate("specializationId");
+
+        if (!doctors.length) {
+            res.status(404).json({ error: "No doctors found." });
+            return;
+        }
+
+        res.status(200).json(doctors);
+    } catch (error) {
+        console.error("Error fetching doctors:", error);
+        res.status(500).json({ error: "Failed to fetch doctors." });
+    }
+};
+
 export const getDoctorById = async (req: Request, res: Response): Promise<void> => {
     try {
-        const doctorId = req.params.id;
+        const doctorId = req.params.doctorId;
         const doctor = await Doctor.findById(doctorId).select("-password").populate("specializationId");
         if (!doctor || doctor.role !== "doctor") {
             res.status(404).json({ error: "Doctor not found." });
