@@ -61,6 +61,14 @@ const Header = ({ isTopBar, variant }) => {
         ],
       },
       { label: 'Contact', href: '/contact' },
+      {
+        label: 'Account',
+        href: '/',
+        subItems: [
+          { label: 'Login', href: '/login' },
+          { label: 'Sign Up', href: '/signup' },
+        ],
+      },
     ],
     btnUrl: '/contact',
     btnText: 'Contact Now',
