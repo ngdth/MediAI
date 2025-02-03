@@ -1,9 +1,12 @@
 import { Route, Routes, useLocation } from 'react-router-dom';
 import Layout from './Components/Layout/Layout';
+import LayoutWithoutHeader from './components/Layout/LayoutWithoutHeader';
 import MainHome from './Pages/HomePage/MainHome';
 import HomeV2 from './Pages/HomePage/HomeV2';
 import HomeV3 from './Pages/HomePage/HomeV3';
 import AboutPage from './Pages/AboutPage/AboutPage';
+import LoginPage from './pages/AuthenPage/LoginPage';
+import SignUpPage from './pages/AuthenPage/SignUpPage';
 import ServicePage from './Pages/Service/ServicePage';
 import ServiceDetails from './Pages/Service/ServiceDetails';
 import BlogsPage from './Pages/BlogsPage/BlogsPage';
@@ -57,6 +60,10 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="*" element={<ErrorPage />} />
           <Route path="/search" element={<DoctorsResultPage />} />
+        </Route>
+        <Route path="/" element={<LayoutWithoutHeader />}>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
         </Route>
       </Routes>
       <ScrollUpButton />
