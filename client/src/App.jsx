@@ -19,6 +19,7 @@ import ErrorPage from './Pages/Pages/ErrorPage';
 import ContactPage from './Pages/ContactPage/ContactPage';
 import Appointments from './Pages/Pages/Appointments';
 import ScrollUpButton from './Components/ScrollUpButton';
+import DoctorsResultPage from './Pages/Pages/DoctorsResultPage';
 import 'aos/dist/aos.css';
 import Aos from 'aos';
 import { useEffect } from 'react';
@@ -58,6 +59,7 @@ function App() {
           <Route path="/error" element={<ErrorPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="*" element={<ErrorPage />} />
+          <Route path="/search" element={<DoctorsResultPage />} />
         </Route>
         <Route path="/" element={<LayoutWithoutHeader />}>
           <Route path="/login" element={<LoginPage />} />

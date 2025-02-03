@@ -9,6 +9,7 @@ import {
 import { FaAnglesRight, FaLocationDot } from 'react-icons/fa6';
 import { HiMiniMagnifyingGlass } from 'react-icons/hi2';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Header = ({ isTopBar, variant }) => {
   const [isShowMobileMenu, setIsShowMobileMenu] = useState(false);
@@ -101,6 +102,18 @@ const Header = ({ isTopBar, variant }) => {
       window.removeEventListener('scroll', handleScroll); // Cleanup the event listener
     };
   }, [prevScrollPos]);
+
+  const [searchTerm, setSearchTerm] = useState(""); // Lưu từ khóa nhập vào
+  const navigate = useNavigate(); // Dùng để điều hướng
+
+  const handleSearch = (e) => {
+    e.preventDefault(); // Ngăn trang reload
+
+    if (searchTerm.trim()) {
+      navigate(`/search?keyword=${encodeURIComponent(searchTerm)}`); // Chuyển hướng đến trang DoctorsResultPage
+    }
+  };
+
   return (
     <>
       <header
@@ -242,12 +255,15 @@ const Header = ({ isTopBar, variant }) => {
                     className={`cs_header_search_form ${
                       isSearchActive ? 'active' : ''
                     }`}
+                    onSubmit={handleSearch}
                   >
                     <div className="cs_header_search_form_in">
                       <input
                         type="text"
                         placeholder="Search"
                         className="cs_header_search_field"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                       />
                       <button className="cs_header_submit_btn">
                         <i>
