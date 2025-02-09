@@ -58,6 +58,8 @@ const Header = ({ isTopBar, variant }) => {
           { label: 'Doctor Details', href: '/doctors/doctor-details' },
           { label: 'Timetable', href: '/timetable' },
           { label: 'Portfolio', href: '/portfolio' },
+          { label: 'Appointments History', href: '/appointmentshistory'},
+          { label: 'Doctor Appointments', href: '/doctorappointments'},
           { label: 'Error 404', href: '/error' },
         ],
       },

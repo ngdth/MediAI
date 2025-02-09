@@ -18,6 +18,10 @@ import PortfolioPage from './Pages/Pages/PortfolioPage';
 import ErrorPage from './Pages/Pages/ErrorPage';
 import ContactPage from './Pages/ContactPage/ContactPage';
 import Appointments from './Pages/Pages/Appointments';
+import AppointmentsHistory from './Pages/Pages/AppointmentsHistory';
+import UpdateAppointment from './Pages/Pages/UpdateAppointment';
+import DoctorAppointments from './Pages/Pages/DoctorAppointments';
+import AppointmentDetail from './Pages/Pages/AppointmentDetail';
 import ScrollUpButton from './Components/ScrollUpButton';
 import DoctorsResultPage from './Pages/Pages/DoctorsResultPage';
 import 'aos/dist/aos.css';
@@ -52,6 +56,10 @@ function App() {
           <Route path="/blog" element={<BlogsPage />} />
           <Route path="/blog/:blogId" element={<BlogsDetails />} />
           <Route path="/appointments" element={<Appointments />} />
+          <Route path="/appointmentshistory" element={<AppointmentsHistory />} />
+          <Route path="/updateappointment/:appointmentId" element={<UpdateAppointment />} />
+          <Route path="/doctorappointments" element={<DoctorAppointments />} />
+          <Route path="/appointment/:id" element={<AppointmentDetail />} />
           <Route path="/doctors" element={<DoctorsPage />} />
           <Route path="/doctors/:doctorId" element={<DoctorsDetailsPage />} />
           <Route path="/timetable" element={<TimeTablePage />} />

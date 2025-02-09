@@ -46,3 +46,57 @@
 .about-page-area .about-team hr{
   display: none;
 }
+.custom-datepicker {
+  border-radius: 12px;
+  padding: 12px;
+  background: #ffffff;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #ddd;
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker {
+  font-family: "Arial", sans-serif;
+  border-radius: 10px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  border: none;
+}
+
+.react-datepicker__header {
+  background-color: #007bff;
+  color: white;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.react-datepicker__day--selected {
+  background-color: #007bff !important;
+  color: white !important;
+  border-radius: 50%;
+}
+
+.react-datepicker__day--keyboard-selected {
+  background-color: #0056b3 !important;
+  color: white !important;
+}
+
+.react-datepicker__day:hover {
+  background-color: #e9ecef !important;
+  border-radius: 50%;
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.react-datepicker__triangle {
+  display: none;
+}
