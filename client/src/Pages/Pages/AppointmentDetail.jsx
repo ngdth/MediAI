@@ -39,7 +39,7 @@ const AppointmentDetail = () => {
 
     fetchAppointmentDetail();
   }, [id]);
-
+// tessting
   if (!appointment) {
     return <div>Loading...</div>;
   }
