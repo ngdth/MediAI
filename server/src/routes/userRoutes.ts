@@ -2,7 +2,7 @@ import express from "express";
 import { registerUser, loginUser, verifyCode, forgotPassword, resetPassword } from "../controllers/auth/authController";
 import { getUserProfile, getAllUsers, getUserById } from "../controllers/auth/authUser";
 import { authenticateToken, authorizeDoctor, authorizeRole } from "../middlewares/authMiddleware";
-import { createAppointment } from "../controllers/auth/authAppointment";
+
 
 const router = express.Router();
 
