@@ -1,7 +1,7 @@
 import express from "express";
-import { registerUser, loginUser, verifyCode } from "../controllers/auth/authController";
+import { registerUser, loginUser, verifyCode, forgotPassword, resetPassword } from "../controllers/auth/authController";
 import { getUserProfile, getAllUsers, getUserById } from "../controllers/auth/authUser";
-import { authenticateToken, authorizeRole } from "../middlewares/authMiddleware";
+import { authenticateToken, authorizeDoctor, authorizeRole } from "../middlewares/authMiddleware";
 import { addDoctorToFavorites, getAllDoctors, getDoctorById, removeDoctorFromFavorites, searchDoctorByUsername } from "../controllers/doctor/doctorController";
 
 const router = express.Router();
@@ -18,6 +18,10 @@ router.get("/profile", authenticateToken,authorizeRole(["user", "admin"]), getUs
 router.get("/all", authenticateToken,authorizeRole([ "admin"]), getAllUsers);
 
 router.get("/users/:id", authenticateToken, authorizeRole([ "admin"]), getUserById);
+
+router.post("/forgotpassword", forgotPassword);
+
+router.post("/resetpassword", resetPassword);
 
 router.get("/doctors", getAllDoctors);
 
