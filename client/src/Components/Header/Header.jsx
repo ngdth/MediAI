@@ -67,7 +67,7 @@ const Header = ({ isTopBar, variant }) => {
         href: '/',
         subItems: [
           { label: 'Login', href: '/login' },
-          { label: 'Sign Up', href: '/signup' },
+          { label: 'Register', href: '/register' },
         ],
       },
     ],

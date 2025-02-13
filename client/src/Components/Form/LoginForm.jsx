@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { FaGoogle } from "react-icons/fa6";
+import { Form, Button, Alert, Container, Row, Col } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
+import "../../sass/common/_general.scss";
 // import { GoogleLogin } from '@react-oauth/google';
 
 const LoginForm = ({ onLogin }) => {
@@ -8,7 +10,7 @@ const LoginForm = ({ onLogin }) => {
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
     const [error, setError] = useState("");
-    const url = 'http://localhost:8080/user/login';
+    const url = "http://localhost:8080/user/login";
 
     //   const [isChecked, setIsChecked] = useState(false);
 
@@ -21,7 +23,6 @@ const LoginForm = ({ onLogin }) => {
         setError("");
 
         try {
-            
             const response = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -81,7 +82,7 @@ const LoginForm = ({ onLogin }) => {
                 />
             </div>
 
-            <div className="mb-4">
+            <div className="mb-2">
                 <label htmlFor="password">Password</label>
                 <input
                     id="password"
@@ -92,29 +93,30 @@ const LoginForm = ({ onLogin }) => {
                 />
             </div>
 
-            <div className="d-flex justify-content-end mb-4">
+            {error && <Alert variant="danger">{error}</Alert>}
+
+            <div className="d-flex justify-content-end">
                 {/* <label>
-          <input
-            type="checkbox"
-            checked={isChecked}
-            onChange={handleCheckboxChange}
-          />
-          Remember me
-        </label> */}
-                <a href="*">Forgot password?</a>
+                    <input type="checkbox" checked={isChecked} onChange={handleCheckboxChange} />
+                    Remember me
+                </label> */}
+                {/* <a href="*">Forgot password?</a> */}
+                <Link className="text-decoration-underline small" to="*">
+                    Forgot password?
+                </Link>
             </div>
 
-            <div className="text-center mt-4 pt-2">
-                <button
+            <div className="text-center">
+                <Button
                     type="submit"
                     className="cs_btn cs_style_1 cs_color_1"
                     style={{ border: "none", outline: "none" }}
                 >
                     Login
-                </button>
-                <p className="small fw-bold mt-2 pt-1 mb-2">
+                </Button>
+                <p className="small mt-2 pt-1 mb-2">
                     Don't have an account?{" "}
-                    <Link to="/register" className="link-danger">
+                    <Link to="/register" className="link-primary text-decoration-underline">
                         Register
                     </Link>
                 </p>
