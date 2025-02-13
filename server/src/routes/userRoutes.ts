@@ -1,5 +1,5 @@
 import express from "express";
-import { registerUser, loginUser, verifyCode, forgotPassword, resetPassword } from "../controllers/auth/authController";
+import { registerUser, loginUser, verifyAccount, sendOTP, resetPassword } from "../controllers/auth/authController";
 import { getUserProfile, getAllUsers, getUserById } from "../controllers/auth/authUser";
 import { authenticateToken, authorizeDoctor, authorizeRole } from "../middlewares/authMiddleware";
 import { addDoctorToFavorites, getAllDoctors, getDoctorById, removeDoctorFromFavorites, searchDoctorByUsername } from "../controllers/doctor/doctorController";
@@ -11,7 +11,7 @@ router.post("/register", registerUser);
 
 router.post("/login", loginUser);
 
-router.post("/verify", verifyCode);
+router.post("/verify", verifyAccount);
 
 router.get("/profile", authenticateToken,authorizeRole(["user", "admin"]), getUserProfile);
 
@@ -19,7 +19,7 @@ router.get("/all", authenticateToken,authorizeRole([ "admin"]), getAllUsers);
 
 router.get("/users/:id", authenticateToken, authorizeRole([ "admin"]), getUserById);
 
-router.post("/forgotpassword", forgotPassword);
+router.post("/sendotp", sendOTP);
 
 router.post("/resetpassword", resetPassword);
 

@@ -118,9 +118,14 @@ export const loginUser: RequestHandler = async (req: Request, res: Response): Pr
 };
 
 
-// Verify code
-export const verifyCode: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+// Verify account
+export const verifyAccount: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const { email, code } = req.body;
+
+    if (!email || !code) {
+        res.status(400).json({ message: "Email and code are required" });
+        return;
+    }
 
     try {
         const normalizedEmail = email.trim().toLowerCase();
@@ -154,8 +159,9 @@ export const verifyCode: RequestHandler = async (req: Request, res: Response): P
         res.status(500).json({ message: "Server error" });
     }
 };
-// Forgot password
-export const forgotPassword: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+
+
+export const sendOTP: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const { email } = req.body;
     const user = await User.findOne({ email });
 

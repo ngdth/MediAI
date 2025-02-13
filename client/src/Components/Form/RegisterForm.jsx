@@ -37,7 +37,7 @@ const RegisterForm = ({ onRegistering }) => {
             if (response.ok) {
                 localStorage.setItem("unverifiedEmail", formData.email);
                 onRegistering(result.email);
-                navigate("/home");
+                navigate("/verify");
             } else {
                 setError(result.message || "Registration failed");
             }

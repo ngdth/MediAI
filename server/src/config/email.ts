@@ -15,7 +15,7 @@ export const sendVerificationEmail = async (email: string, code: string) => {
     });
 
     const mailOptions = {
-        from: `"Your App Name" <${process.env.EMAIL_USER}>`,
+        from: `"AMMA" <${process.env.EMAIL_USER}>`,
         to: email,
         subject: "Verification Code",
         text: `Your verification code is: ${code}`,
