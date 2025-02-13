@@ -6,6 +6,7 @@ export interface IUser extends Document {
   password: string;
   role: "admin" | "user" | "doctor" | "nurse";
   verified: boolean;
+  favorites: mongoose.Types.ObjectId[];
 }
 
 const UserSchema: Schema = new Schema(
@@ -15,8 +16,21 @@ const UserSchema: Schema = new Schema(
     password: { type: String, required: true },
     role: { type: String, enum: ["admin", "user", "doctor"], default: "user" },
     verified: { type: Boolean, default: false },
+    favorites: [{ type: mongoose.Types.ObjectId, ref: "DoctorProfile" }],
+    experience: { type: Number, default: 0 },
+    specialization: { type: mongoose.Types.ObjectId, ref: "Specialization" },
   },
-  { timestamps: true }
+  { timestamps: true, discriminatorKey: "roleType" }
 );
 
-export default mongoose.model<IUser>("User", UserSchema);
+const User = mongoose.model<IUser>("User", UserSchema);
+
+const DoctorSchema: Schema = new Schema(
+  {
+    specialization: { type: String, required: true },
+    experienceYears: { type: Number, default: 0 },
+  },
+);
+
+export const Doctor = User.discriminator("Doctor", DoctorSchema);
+export default User;
