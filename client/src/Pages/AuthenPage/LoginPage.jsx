@@ -7,20 +7,20 @@ function LoginPage() {
 
     const handleLogin = (data) => {
         setData(data);
-        console.log("Login attempt:", data);
+        console.log("Login attempt: ");
     };
 
     return (
         <Container fluid className="p-3 my-5">
             <Row className="align-items-center">
-                <Col md={6} className="text-center">
+                <Col md={8} className="text-center">
                     <Image
                         src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
                         fluid
-                        alt="Login Illustration"
+                        alt="Login Image"
                     />
                 </Col>
-                <Col md={6}>
+                <Col md={3}>
                     <LoginForm onLogin={handleLogin} />
                 </Col>
             </Row>

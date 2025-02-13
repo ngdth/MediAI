@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Doctor from "../../models/User";
 import User from "../../models/User";
-import Blog from "../../models/blog";
+// import Blog from "../../models/blog";
 import mongoose from "mongoose";
 
 export const getAllDoctors = async (req: Request, res: Response): Promise<void> => {
@@ -146,8 +146,8 @@ export const getDoctorBlogs = async (req: Request, res: Response): Promise<void>
     const { id } = req.params;
 
     try {
-        const blogs = await Blog.find({ doctorId: id });
-        res.status(200).json(blogs);
+        // const blogs = await Blog.find({ doctorId: id });
+        // res.status(200).json(blogs);
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch doctor blogs." });
     }

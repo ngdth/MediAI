@@ -6,7 +6,8 @@ import HomeV2 from './Pages/HomePage/HomeV2';
 import HomeV3 from './Pages/HomePage/HomeV3';
 import AboutPage from './Pages/AboutPage/AboutPage';
 import LoginPage from './pages/AuthenPage/LoginPage';
-import SignUpPage from './pages/AuthenPage/SignUpPage';
+import RegisterPage from './pages/AuthenPage/RegisterPage';
+import VerifyPage from './pages/AuthenPage/VerifyPage';
 import ServicePage from './Pages/Service/ServicePage';
 import ServiceDetails from './Pages/Service/ServiceDetails';
 import BlogsPage from './Pages/BlogsPage/BlogsPage';
@@ -71,7 +72,8 @@ function App() {
         </Route>
         <Route path="/" element={<LayoutWithoutHeader />}>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/verify" element={<VerifyPage />} />
         </Route>
       </Routes>
       <ScrollUpButton />
