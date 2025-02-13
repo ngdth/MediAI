@@ -13,7 +13,7 @@ export const registerUser: RequestHandler = async (req: Request, res: Response):
     try {
         const normalizedEmail = email.trim().toLowerCase();
 
-        // Kiểm tra email và username đã tồn tại
+        // Check email and username already exists
         const existingUser = await User.findOne({ email: normalizedEmail });
         if (existingUser) {
             res.status(400).json({ message: "Email already exists" });
@@ -153,4 +153,38 @@ export const verifyCode: RequestHandler = async (req: Request, res: Response): P
         console.error("Error during verification:", error);
         res.status(500).json({ message: "Server error" });
     }
+};
+// Forgot password
+export const forgotPassword: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        res.status(404).json({ message: 'Email not found' });
+        return;
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    TEMP_CODE_STORAGE.set(email, otp.toString());
+
+    await sendVerificationEmail(email, `Your OTP is ${otp}`);
+
+    res.status(200).json({ message: 'OTP sent to email' });
+};
+
+export const resetPassword : RequestHandler = async (req: Request, res: Response): Promise<void> => {
+    const { email, otp, newPassword } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user || TEMP_CODE_STORAGE.get(email) !== otp) {
+        res.status(400).json({ message: 'Invalid OTP or email' });
+        return;
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+    TEMP_CODE_STORAGE.delete(email);
+    await user.save();
+
+    res.status(200).json({ message: 'Password reset successful' });
 };
