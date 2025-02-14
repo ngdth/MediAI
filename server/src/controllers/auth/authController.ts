@@ -181,24 +181,70 @@ export const sendOTP: RequestHandler = async (req: Request, res: Response): Prom
     res.status(200).json({ message: 'OTP sent to email' });
 };
 
-export const resetPassword : RequestHandler = async (req: Request, res: Response): Promise<void> => {
-    const { email, otp, newPassword } = req.body;
-    const user = await User.findOne({ email });
+// export const resetPassword : RequestHandler = async (req: Request, res: Response): Promise<void> => {
+//     const { email, otp, newPassword } = req.body;
 
-    if (!user || TEMP_CODE_STORAGE.get(email) !== otp) {
-        res.status(400).json({ message: 'Invalid OTP or email' });
-        return;
+//     if (!email || !otp || !newPassword) {
+//         res.status(400).json({ message: "Missing required fields" });
+//         return;
+//     }
+//     // const user = await User.findOne({ email });
+//     try {
+//         const user = await User.findOne({ email });
+//         if (!user) throw new Error("User not found");
+//     } catch (error) {
+//         res.status(500).json({ message: "MongoDB error", error });
+//         return;
+//     }
+
+//     if (TEMP_CODE_STORAGE.get(email) !== otp) {
+//         res.status(400).json({ message: 'Invalid OTP' });
+//         return;
+//     }
+
+//     const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+//     user.password = hashedPassword;
+//     TEMP_CODE_STORAGE.delete(email);
+//     await user.save();
+
+//     res.status(200).json({ message: 'Password reset successful' });
+// };
+
+export const resetPassword: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { email, code, newPassword } = req.body;
+
+        if (!email || !code || !newPassword) {
+            res.status(400).json({ message: "Missing required fields" });
+            return;
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            res.status(400).json({ message: "User not found" });
+            return;
+        }
+
+        if (TEMP_CODE_STORAGE.get(email) !== code) {
+            res.status(400).json({ message: "Invalid code" });
+            return;
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+
+        TEMP_CODE_STORAGE.delete(email);
+        await user.save();
+
+        res.status(200).json({ message: "Password reset successful" });
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error", error });
     }
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    user.password = hashedPassword;
-    TEMP_CODE_STORAGE.delete(email);
-    await user.save();
-
-    res.status(200).json({ message: 'Password reset successful' });
 };
 
-export const deleteUnverifiedUser = async (req: Request, res: Response): Promise<void> => {
+//delete Unverified Account
+export const deleteUnverifiedAcc = async (req: Request, res: Response): Promise<void> => {
     const { email } = req.body;
 
     if (!email) {

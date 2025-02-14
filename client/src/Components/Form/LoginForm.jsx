@@ -115,7 +115,7 @@ const LoginForm = ({ onLogin }) => {
                     Remember me
                 </label> */}
                 {/* <a href="*">Forgot password?</a> */}
-                <Link className="text-decoration-underline small" to="*">
+                <Link className="text-decoration-underline small" to="/forgotPass">
                     Forgot password?
                 </Link>
             </div>
