@@ -9,6 +9,7 @@ import {
   FaGlobe,
   FaLocationDot,
   FaSuitcase,
+  FaHeart,
 } from 'react-icons/fa6';
 import TeamSection from '../../Components/TeamSection';
 import Section from '../../Components/Section';
@@ -17,11 +18,7 @@ const DoctorsDetailsPage = () => {
   const [doctorDetails, setDoctorDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const { doctorId } = useParams(); // Lấy id bác sĩ từ URL
-
-  // Kiểm tra nếu id không tồn tại trong URL
-  if (!doctorId) {
-    return <p>Error: Doctor ID is missing!</p>;
-  }
+  const [favoriteStatus, setFavoriteStatus] = useState(false); // Thêm khai báo trạng thái này
 
   useEffect(() => {
     const fetchDoctorDetails = async () => {
@@ -37,6 +34,16 @@ const DoctorsDetailsPage = () => {
 
     fetchDoctorDetails();
   }, [doctorId]);
+
+  const handleAddFavorite = async () => {
+    try {
+      const response = await axios.post(`http://localhost:8080/favorites/add/${doctorId}`);
+      console.log("Favorite Doctor Added:", response.data);
+      setFavoriteStatus(true); // Cập nhật trạng thái yêu thích
+    } catch (error) {
+      console.error("Error adding favorite doctor:", error.response?.data || error);
+    }
+  };
 
   if (loading) {
     return <p>Loading...</p>; // Hiển thị loading nếu đang tải dữ liệu
@@ -54,34 +61,34 @@ const DoctorsDetailsPage = () => {
   const teamData = {
     subtitle: 'OUR TEAM MEMBER',
     title: ' Meet Our Specialist This <br />Doctor Meeting',
-    sliderData: doctorDetails.team || [], // Nếu có đội ngũ bác sĩ khác thì hiển thị
+    sliderData: doctorDetails.team || [],
   };
 
   const doctorInfo = [
     {
       icon: <FaLocationDot />,
       title: 'Location',
-      subtitle: doctorDetails.location || 'N/A',
+      subtitle: doctorDetails.location,
       secIcon: <FaEnvelope />,
       secTitle: 'E-mail:',
-      secSubtitle: doctorDetails.email || 'N/A',
+      secSubtitle: doctorDetails.email,
     },
     {
       icon: <FaCertificate />,
       title: 'Qualification',
-      subtitle: doctorDetails.qualification || 'N/A',
+      subtitle: doctorDetails.qualification,
       secIcon: <FaGlobe />,
       secTitle: 'Website',
-      secSubtitle: doctorDetails.website || 'N/A',
+      secSubtitle: doctorDetails.website,
     },
     {
       icon: <FaSuitcase />,
       title: 'Experience',
-      subtitle: doctorDetails.experience || 'N/A',
+      subtitle: doctorDetails.experience,
     },
   ];
 
-  const progressBars = doctorDetails.skills || []; // Nếu có kỹ năng/progress bars thì hiển thị
+  const progressBars = doctorDetails.skills;
 
   return (
     <>
@@ -94,14 +101,38 @@ const DoctorsDetailsPage = () => {
 
       <Section topSpaceLg="80" topSpaceMd="120">
         <DoctorDetailsSection data={{ ...doctorDetails, info: doctorInfo, progressBars }} />
+        {/* Nút thêm vào danh sách yêu thích */}
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <button
+            onClick={handleAddFavorite}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: favoriteStatus ? 'green' : '#007bff',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+            }}
+            disabled={favoriteStatus} // Khóa nút nếu đã thêm vào yêu thích
+          >
+            {favoriteStatus ? (
+              <>
+                <FaHeart style={{ marginRight: '5px' }} />
+                Added to Favorites
+              </>
+            ) : (
+              <>
+                <FaHeart style={{ marginRight: '5px' }} />
+                Add to Favorites
+              </>
+            )}
+          </button>
+        </div>
       </Section>
 
-      {/* Start Team Section */}
       <Section topSpaceLg="80" topSpaceMd="110">
         <TeamSection variant={'cs_pagination cs_style_2'} data={teamData} />
       </Section>
-
-      {/* End Team Section */}
     </>
   );
 };
