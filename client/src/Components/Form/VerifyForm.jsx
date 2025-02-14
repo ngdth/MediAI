@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
-import {useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const VerifyForm = () => {
     const navigate = useNavigate();
@@ -28,15 +28,15 @@ const VerifyForm = () => {
             const response = await fetch("http://localhost:8080/user/verify", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({  email: unverifiedEmail, code: otp }),
+                body: JSON.stringify({ email: unverifiedEmail, code: otp }),
             });
 
             const data = await response.json();
             if (response.ok) {
                 setMessage("Email verified successfully!");
                 localStorage.removeItem("unverifiedEmail");
-                navigate("/");
-            } else {    
+                navigate("/login");
+            } else {
                 setMessage(`${data.message || "Invalid OTP"}`);
             }
         } catch (error) {
@@ -64,7 +64,7 @@ const VerifyForm = () => {
             } else {
                 setMessage(`${data.message}`);
             }
-        }catch {
+        } catch {
             setMessage("Failed to resend OTP. Try again later.");
         }
     };
@@ -72,11 +72,12 @@ const VerifyForm = () => {
     return (
         <>
             <p className="text-muted">
-                You've entered <strong>{unverifiedEmail || "your email"}</strong> as the email for your account. Please check your email for OTP.
+                You've entered <strong>{unverifiedEmail || "your email"}</strong> as the email for your account. Please
+                check your email for OTP.
             </p>
             {message && <Alert variant="info">{message}</Alert>}
             <Form>
-            <Form.Group className="mb-3 d-flex align-items-center">
+                <Form.Group className="mb-3 d-flex align-items-center">
                     <Form.Control
                         type="text"
                         value={otp}
@@ -84,12 +85,7 @@ const VerifyForm = () => {
                         placeholder="Enter OTP"
                         className="text-center flex-grow-1"
                     />
-                    <Button
-                        variant="link"
-                        className="ms-2"
-                        onClick={handleResendOTP}
-                        disabled={resendTimer > 0}
-                    >
+                    <Button variant="link" className="ms-2" onClick={handleResendOTP} disabled={resendTimer > 0}>
                         {resendTimer > 0 ? `Resend in ${resendTimer}s` : "Re-send OTP"}
                     </Button>
                 </Form.Group>
