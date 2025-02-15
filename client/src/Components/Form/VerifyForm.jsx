@@ -75,7 +75,7 @@ const VerifyForm = () => {
                 You've entered <strong>{unverifiedEmail || "your email"}</strong> as the email for your account. Please
                 check your email for OTP.
             </p>
-            {message && <Alert variant="info">{message}</Alert>}
+            {message && <Alert variant="danger">{message}</Alert>}
             <Form>
                 <Form.Group className="mb-3 d-flex align-items-center">
                     <Form.Control
