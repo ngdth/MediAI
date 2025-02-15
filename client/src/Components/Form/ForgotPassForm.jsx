@@ -4,44 +4,60 @@ import { Link, useNavigate } from "react-router-dom";
 
 const ForgotPassForm = () => {
     const [email, setEmail] = useState("");
-    const [message, setMessage] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (email) {
-            setMessage("A password reset link has been sent to your email.");
-            setTimeout(() => navigate("/login"), 3000);
-        } else {
-            setMessage("Please enter a valid email address.");
+        setError(""); // Xóa lỗi cũ trước khi gửi
+        setLoading(true);
+
+        try {
+            const response = await fetch("http://localhost:8080/user/sendotp", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email }),
+            });
+            const result = await response.json();
+            if (response.ok) {
+                localStorage.setItem("resetEmail", email);
+                navigate("/resetPass");
+            } else {
+                setError(result.message || "Sending reset OTP failed");
+            }
+        } catch (err) {
+            setError("An error occurred. Please try again.");
         }
+        setLoading(false);
     };
 
     return (
         <Container>
             <Row className="justify-content-center">
                 <Col md={12}>
-                    <div className="p-4 rounded shadow bg-white">
-                        <h2 className="text-center mb-3">Forgot Password</h2>
-                        {message && <Alert variant="info">{message}</Alert>}
-                        <Form onSubmit={handleSubmit}>
-                            <Form.Group controlId="formBasicEmail">
-                                <Form.Label>Email Address</Form.Label>
-                                <Form.Control
-                                    type="email"
-                                    placeholder="Enter email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                />
-                            </Form.Group>
-                            <Button variant="primary" type="submit" className="w-100 mt-3">
-                                Request Reset Link
-                            </Button>
-                        </Form>
-                        <div className="text-center mt-3">
-                            <Link to="/login">Back to Login</Link>
-                        </div>
+                    <h2 className="text-center mb-3">Forgot Password</h2>
+                    {error && <Alert variant="danger">{error}</Alert>}
+                    <Form onSubmit={handleSubmit}>
+                        <Form.Group controlId="formBasicEmail" className="pb-3">
+                            <Form.Label>
+                                Please enter the email address you'd like your password reset
+                            </Form.Label>
+                            <Form.Control
+                                type="email"
+                                placeholder="Enter email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                className="mt-4 mb-3"
+                            />
+                        </Form.Group>
+                        <Button variant="primary" className="w-100 mb-2" type="submit" disabled={loading}>
+                            {loading ? "Sending OTP..." : "Send OTP"}
+                        </Button>
+                    </Form>
+                    <div className="text-center mt-3 text-muted">
+                        <Link to="/login">Back to Login</Link>
                     </div>
                 </Col>
             </Row>

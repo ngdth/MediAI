@@ -15,6 +15,7 @@ const RegisterForm = ({ onRegistering }) => {
     };
 
     const handleSubmit = async (e) => {
+        
         e.preventDefault();
         setError("");
         if (formData.password !== formData.confirmedPassword) {

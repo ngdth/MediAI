@@ -8,6 +8,7 @@ import AboutPage from './Pages/AboutPage/AboutPage';
 import LoginPage from './pages/AuthenPage/LoginPage';
 import RegisterPage from './pages/AuthenPage/RegisterPage';
 import ForgotPass from './pages/AuthenPage/ForgotPassPage';
+import ResetPass from './pages/AuthenPage/ResetPassPage';
 import VerifyPage from './pages/AuthenPage/VerifyPage';
 import ServicePage from './Pages/Service/ServicePage';
 import ServiceDetails from './Pages/Service/ServiceDetails';
@@ -76,6 +77,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/verify" element={<VerifyPage />} />
           <Route path="/forgotPass" element={<ForgotPass />} />
+          <Route path="/resetPass" element={<ResetPass />} />
         </Route>
       </Routes>
       <ScrollUpButton />

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Container, Row, Col, Image, Card } from "react-bootstrap";
-import ForgotPassForm from "../../components/Form/ForgotPassForm";
+import ResettPassForm from "../../components/Form/ResetPassForm";
 
-function ForgotPassPage() {
+function ResetPassPage() {
 
     return (
         <Container fluid className="my-5">
@@ -10,7 +10,7 @@ function ForgotPassPage() {
                 <Col md={4}>
                     <Card className="shadow-lg" style={{ backgroundColor: "#F6F8FA", borderRadius: "10px" }}>
                         <Card.Body>
-                            <ForgotPassForm />
+                            <ResettPassForm />
                         </Card.Body>
                     </Card>
                 </Col>
@@ -26,4 +26,4 @@ function ForgotPassPage() {
     );
 }
 
-export default ForgotPassPage;
+export default ResetPassPage;
