@@ -17,8 +17,6 @@ const UserSchema: Schema = new Schema(
     role: { type: String, enum: ["admin", "user", "doctor"], default: "user" },
     verified: { type: Boolean, default: false },
     favorites: [{ type: mongoose.Types.ObjectId, ref: "DoctorProfile" }],
-    experience: { type: Number, default: 0 },
-    specialization: { type: mongoose.Types.ObjectId, ref: "Specialization" },
   },
   { timestamps: true, discriminatorKey: "roleType" }
 );
@@ -28,7 +26,7 @@ const User = mongoose.model<IUser>("User", UserSchema);
 const DoctorSchema: Schema = new Schema(
   {
     specialization: { type: String, required: true },
-    experienceYears: { type: Number, default: 0 },
+    experience: { type: Number, default: 0 },
   },
 );
 

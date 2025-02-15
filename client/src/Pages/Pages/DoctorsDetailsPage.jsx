@@ -37,7 +37,7 @@ const DoctorsDetailsPage = () => {
 
   const handleAddFavorite = async () => {
     try {
-      const response = await axios.post(`http://localhost:8080/favorites/add/${doctorId}`);
+      const response = await axios.post(`http://localhost:8080/user/favorites/add/${doctorId}`);
       console.log("Favorite Doctor Added:", response.data);
       setFavoriteStatus(true); // Cập nhật trạng thái yêu thích
     } catch (error) {
