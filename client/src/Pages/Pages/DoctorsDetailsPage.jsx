@@ -40,19 +40,33 @@ const DoctorsDetailsPage = () => {
     fetchDoctorDetails();
   }, [doctorId, token]);
 
-  const handleAddFavorite = async () => {
+  const handleFavoriteToggle = async () => {
     try {
       const response = await axios.post(
         `http://localhost:8080/user/favorites/add/${doctorId}`,
-        {}, // Không có body, nhưng phải có header
-        {
-          headers: { Authorization: `Bearer ${token}` }, // Thêm token vào header
-        }
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log("Favorite Doctor Added:", response.data);
-      setFavoriteStatus(true); // Cập nhật trạng thái yêu thích
+
+      console.log("Doctor added to favorites:", response.data);
     } catch (error) {
-      console.error("Error adding favorite doctor:", error.response?.data || error);
+      console.error(error.response?.data || error);
+      const errorMessage = error.response?.data?.message || "";
+
+      if (errorMessage.includes("Doctor already in favorites")) {
+        // Nếu lỗi là "Doctor already in favorites" => Gọi API DELETE
+        try {
+          await axios.delete(`http://localhost:8080/user/favorites/delete/${doctorId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          console.log("Doctor removed from favorites.");
+        } catch (deleteError) {
+          console.error("Error removing doctor from favorites:", deleteError.response?.data || deleteError);
+        }
+      } else {
+        console.error("Error adding doctor to favorites:", error.response?.data || error);
+      }
     }
   };
 
@@ -114,7 +128,7 @@ const DoctorsDetailsPage = () => {
         {/* Nút thêm vào danh sách yêu thích */}
         <div style={{ textAlign: 'center', marginTop: '20px' }}>
           <button
-            onClick={handleAddFavorite}
+            onClick={handleFavoriteToggle}
             style={{
               padding: '10px 20px',
               backgroundColor: favoriteStatus ? 'green' : '#007bff',
