@@ -10,7 +10,6 @@ const LoginForm = ({ onLogin }) => {
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
     const [error, setError] = useState("");
-    const url = "http://localhost:8080/user/login";
 
     //   const [isChecked, setIsChecked] = useState(false);
 
@@ -23,7 +22,7 @@ const LoginForm = ({ onLogin }) => {
         setError("");
 
         try {
-            const response = await fetch(url, {
+            const response = await fetch("http://localhost:8080/user/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
@@ -31,6 +30,21 @@ const LoginForm = ({ onLogin }) => {
 
             const data = await response.json();
             if (!response.ok) throw new Error(data.message || "Login failed");
+
+            if (data.user && data.user.verified === false) {
+                localStorage.setItem("unverifiedEmail", email);
+
+                // Gửi mã OTP đến email
+                const otpResponse = await fetch("http://localhost:8080/user/sendotp", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email }),
+                });
+                const otpData = await otpResponse.json();
+                console.log("OTP API response:", otpData);
+                navigate("/verify");
+                return;
+            }
 
             localStorage.setItem("token", data.token);
 

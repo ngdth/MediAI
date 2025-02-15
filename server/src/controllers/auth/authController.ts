@@ -3,15 +3,17 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../../models/User";
 import { sendVerificationEmail } from "../../config/email";
+import { normalizeEmail } from "../../utils/normalizeEmail";
 import { generateVerificationCode } from "../../utils/generateToken";
 
 const TEMP_CODE_STORAGE: Map<string, string> = new Map();
+
 
 export const registerUser: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const { email, username, password } = req.body;
 
     try {
-        const normalizedEmail = email.trim().toLowerCase();
+        const normalizedEmail = normalizeEmail(email);
 
         // Check email and username already exists
         const existingUser = await User.findOne({ email: normalizedEmail });
@@ -72,7 +74,7 @@ export const loginUser: RequestHandler = async (req: Request, res: Response): Pr
     const { email, password } = req.body;
 
     try {
-        const normalizedEmail = email.trim().toLowerCase();
+        const normalizedEmail = normalizeEmail(email);
 
         const user = await User.findOne({ email: normalizedEmail });
         if (!user) {
@@ -80,10 +82,10 @@ export const loginUser: RequestHandler = async (req: Request, res: Response): Pr
             return;
         }
 
-        if (!user.verified) {
-            res.status(403).json({ message: "Email not verified. Please verify your email before logging in." });
-            return;
-        }
+        // if (!user.verified) {
+        //     res.status(403).json({ message: "Email not verified. Please verify your email before logging in." });
+        //     return;
+        // }
 
         if (!user.password) {
             res.status(500).json({ message: "Password is missing for this user." });
@@ -109,6 +111,7 @@ export const loginUser: RequestHandler = async (req: Request, res: Response): Pr
                 email: user.email,
                 username: user.username,
                 role: user.role,
+                verified: user.verified,
             },
         });
     } catch (error) {
@@ -128,7 +131,7 @@ export const verifyAccount: RequestHandler = async (req: Request, res: Response)
     }
 
     try {
-        const normalizedEmail = email.trim().toLowerCase();
+        const normalizedEmail = normalizeEmail(email);
 
         const storedCode = TEMP_CODE_STORAGE.get(normalizedEmail);
         if (!storedCode || storedCode !== code) {
@@ -193,4 +196,35 @@ export const resetPassword : RequestHandler = async (req: Request, res: Response
     await user.save();
 
     res.status(200).json({ message: 'Password reset successful' });
+};
+
+export const deleteUnverifiedUser = async (req: Request, res: Response): Promise<void> => {
+    const { email } = req.body;
+
+    if (!email) {
+        res.status(400).json({ message: "Email are required" });
+        return;
+    }
+
+    try {
+        const normalizedEmail = normalizeEmail(email);
+        const user = await User.findOne({ email: normalizedEmail });
+
+        if (!user) {
+            res.status(404).json({ message: "User not found" });
+            return;
+        }
+
+        if (user.verified) {
+            res.status(400).json({ message: "Cannot delete verified user" });
+            return;
+        }
+
+        await User.deleteOne({ email });
+
+        res.status(200).json({ message: "Unverified user deleted" });
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        res.status(500).json({ message: "Error deleting user", error });
+    }
 };
