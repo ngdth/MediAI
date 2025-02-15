@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import Doctor from "../../models/User";
 import User from "../../models/User";
-// import Blog from "../../models/blog";
 import mongoose from "mongoose";
 
 export const getAllDoctors = async (req: Request, res: Response): Promise<void> => {

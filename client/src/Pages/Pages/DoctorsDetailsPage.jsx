@@ -20,10 +20,15 @@ const DoctorsDetailsPage = () => {
   const { doctorId } = useParams(); // Lấy id bác sĩ từ URL
   const [favoriteStatus, setFavoriteStatus] = useState(false); // Thêm khai báo trạng thái này
 
+  // Lấy token từ localStorage
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
     const fetchDoctorDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/user/doctors/${doctorId}`);
+        const response = await axios.get(`http://localhost:8080/user/doctors/${doctorId}`, {
+          headers: { Authorization: `Bearer ${token}` }, // Thêm token vào header
+        });
         setDoctorDetails(response.data); // Lưu thông tin bác sĩ vào state
       } catch (error) {
         console.error("Error fetching doctor details:", error.response?.data || error);
@@ -33,11 +38,17 @@ const DoctorsDetailsPage = () => {
     };
 
     fetchDoctorDetails();
-  }, [doctorId]);
+  }, [doctorId, token]);
 
   const handleAddFavorite = async () => {
     try {
-      const response = await axios.post(`http://localhost:8080/favorites/add/${doctorId}`);
+      const response = await axios.post(
+        `http://localhost:8080/user/favorites/add/${doctorId}`,
+        {}, // Không có body, nhưng phải có header
+        {
+          headers: { Authorization: `Bearer ${token}` }, // Thêm token vào header
+        }
+      );
       console.log("Favorite Doctor Added:", response.data);
       setFavoriteStatus(true); // Cập nhật trạng thái yêu thích
     } catch (error) {
@@ -46,10 +57,9 @@ const DoctorsDetailsPage = () => {
   };
 
   if (loading) {
-    return <p>Loading...</p>; // Hiển thị loading nếu đang tải dữ liệu
+    return <p>Loading...</p>;
   }
 
-  // Nếu không có dữ liệu bác sĩ, hiển thị thông báo lỗi
   if (!doctorDetails) {
     return <p>Doctor not found</p>;
   }
