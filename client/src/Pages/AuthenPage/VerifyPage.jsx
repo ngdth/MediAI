@@ -33,7 +33,7 @@ function VerifyPage() {
                                 alt="Email Verification"
                                 className="w-25 mx-auto mb-3"
                             />
-                            <h2 className="mb-3">Verify your account</h2>
+                            <h2 className="mb-4" style={{ fontSize: "38px" }}>Verify your account</h2>
                             <VerifyForm />
                             <span
                                 onClick={handleChangeEmail}
@@ -42,7 +42,7 @@ function VerifyPage() {
                                 onMouseEnter={(e) => (e.target.style.textDecoration = "underline")}
                                 onMouseLeave={(e) => (e.target.style.textDecoration = "none")}
                             >
-                                Sử dụng email khác
+                                Use another email
                             </span>
                         </Card.Body>
                     </Card>
