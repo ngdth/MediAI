@@ -125,39 +125,17 @@ const DoctorsDetailsPage = () => {
     <>
       <Section
         className={'cs_page_heading cs_bg_filed cs_center'}
-        backgroundImage="/assets/header_bg.jpg"
+        backgroundImage="/assets/img/page_heading_bg.jpg"
       >
         <PageHeading data={headingData} />
       </Section>
 
       <Section topSpaceLg="80" topSpaceMd="120">
-        <DoctorDetailsSection data={{ ...doctorDetails, info: doctorInfo, progressBars }} />
-        {/* Nút thêm vào danh sách yêu thích */}
-        <div style={{ textAlign: 'center', marginTop: '20px' }}>
-          <button
-            onClick={handleFavoriteToggle}
-            style={{
-              padding: '10px 20px',
-              backgroundColor: favoriteStatus ? 'green' : '#007bff',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: 'pointer',
-            }}
-          >
-            {favoriteStatus ? (
-              <>
-                <FaHeart style={{ marginRight: '5px' }} />
-                Added to Favorites
-              </>
-            ) : (
-              <>
-                <FaHeart style={{ marginRight: '5px' }} />
-                Add to Favorites
-              </>
-            )}
-          </button>
-        </div>
+        <DoctorDetailsSection
+          data={{ ...doctorDetails, info: doctorInfo, progressBars }}
+          onFavoriteToggle={handleFavoriteToggle}
+          favoriteStatus={favoriteStatus}
+        />
       </Section>
 
       <Section topSpaceLg="80" topSpaceMd="110">
