@@ -13,6 +13,8 @@ import {
 } from 'react-icons/fa6';
 import TeamSection from '../../Components/TeamSection';
 import Section from '../../Components/Section';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const DoctorsDetailsPage = () => {
   const [doctorDetails, setDoctorDetails] = useState(null);
@@ -49,22 +51,27 @@ const DoctorsDetailsPage = () => {
       );
 
       console.log("Doctor added to favorites:", response.data);
+      toast.success("Doctor added to favorites!");
+      setFavoriteStatus(true);
     } catch (error) {
       console.error(error.response?.data || error);
       const errorMessage = error.response?.data?.message || "";
 
       if (errorMessage.includes("Doctor already in favorites")) {
-        // Nếu lỗi là "Doctor already in favorites" => Gọi API DELETE
         try {
           await axios.delete(`http://localhost:8080/user/favorites/delete/${doctorId}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
 
           console.log("Doctor removed from favorites.");
+          toast.info("Doctor removed from favorites!");
+          setFavoriteStatus(false);
         } catch (deleteError) {
+          toast.error("Error removing doctor from favorites!");
           console.error("Error removing doctor from favorites:", deleteError.response?.data || deleteError);
         }
       } else {
+        toast.error("Please login!");
         console.error("Error adding doctor to favorites:", error.response?.data || error);
       }
     }
@@ -118,7 +125,7 @@ const DoctorsDetailsPage = () => {
     <>
       <Section
         className={'cs_page_heading cs_bg_filed cs_center'}
-        backgroundImage="/assets/img/page_heading_bg.jpg"
+        backgroundImage="/assets/header_bg.jpg"
       >
         <PageHeading data={headingData} />
       </Section>
@@ -137,7 +144,6 @@ const DoctorsDetailsPage = () => {
               borderRadius: '5px',
               cursor: 'pointer',
             }}
-            disabled={favoriteStatus} // Khóa nút nếu đã thêm vào yêu thích
           >
             {favoriteStatus ? (
               <>
@@ -157,6 +163,8 @@ const DoctorsDetailsPage = () => {
       <Section topSpaceLg="80" topSpaceMd="110">
         <TeamSection variant={'cs_pagination cs_style_2'} data={teamData} />
       </Section>
+
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
     </>
   );
 };
