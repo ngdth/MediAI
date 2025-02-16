@@ -4,12 +4,12 @@ import VerifyForm from "../../components/Form/VerifyForm";
 import { useNavigate } from "react-router-dom";
 
 function VerifyPage() {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
     const handleChangeEmail = async () => {
         const unverifiedEmail = localStorage.getItem("unverifiedEmail");
 
         try {
-            await fetch("http://localhost:8080/user/deleteUnverify", {
+            await fetch("http://localhost:8080/user/deleteUnverified", {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email: unverifiedEmail }),
@@ -23,17 +23,17 @@ function VerifyPage() {
     };
 
     return (
-        <Container fluid className="d-flex align-items-center justify-content-center min-vh-100 bg-primary">
+        <Container className="d-flex align-items-center justify-content-center min-vh-100">
             <Row className=" justify-content-center">
                 <Col md={8}>
-                    <Card className="shadow-lg text-center p-4">
+                    <Card className="shadow-lg text-center p-5" style={{ backgroundColor: "#F6F8FA", borderRadius: "10px"}}>
                         <Card.Body>
                             <img
                                 src="../assets/img/letter.png"
                                 alt="Email Verification"
                                 className="w-25 mx-auto mb-3"
                             />
-                            <h2 className="mb-3">Verify your account</h2>
+                            <h2 className="mb-4" style={{ fontSize: "38px" }}>Verify your account</h2>
                             <VerifyForm />
                             <span
                                 onClick={handleChangeEmail}
@@ -42,7 +42,7 @@ function VerifyPage() {
                                 onMouseEnter={(e) => (e.target.style.textDecoration = "underline")}
                                 onMouseLeave={(e) => (e.target.style.textDecoration = "none")}
                             >
-                                Sử dụng email khác
+                                Use another email
                             </span>
                         </Card.Body>
                     </Card>
