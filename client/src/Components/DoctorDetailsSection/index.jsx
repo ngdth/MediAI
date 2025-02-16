@@ -1,7 +1,7 @@
 const DoctorDetailsSection = ({ data }) => {
   // Kiểm tra nếu data không có hoặc có giá trị rỗng
-  const image = data?.image;
-  const name = data?.username || 'N/A';
+  const image = data?.image || `/assets/doctor/doctor2.jpg`;
+  const name = data?.username;
   const subtitle = data?.subtitle || 'No subtitle available';
   const description = data?.description || [];
   const info = data?.info || [];

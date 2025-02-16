@@ -33,7 +33,7 @@ const DoctorsResultPage = () => {
     }, [keyword]);
 
     const headingData = {
-        title: title,
+        title: doctors.length === 0 ? 'No doctors found for "' + keyword + '"' : title,
     };
 
     const appointmentSectionData = {

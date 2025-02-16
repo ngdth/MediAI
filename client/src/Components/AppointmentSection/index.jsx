@@ -23,7 +23,7 @@ const AppointmentSection = ({ data }) => {
             <div className="cs_team cs_style_1 cs_blue_bg" key={index}>
               <div className="cs_team_shape cs_accent_bg" />
               <Link to={doctor.profileLink} className="cs_team_thumbnail">
-                <img src={doctor.imageUrl} alt={`${doctor.name} Thumbnail`} />
+                <img src={doctor.imageUrl || `/assets/doctor/doctor1.jpg`} alt={`${doctor.name} Thumbnail`} />
               </Link>
               <div className="cs_team_bio">
                 <h3 className="cs_team_title cs_extra_bold mb-0">

@@ -7,7 +7,7 @@ const ScrollUpButton = () => {
   // Effect to handle scroll event
   useEffect(() => {
     const handleScroll = () => {
-      console.log("Scroll position:", window.scrollY); // Debugging line
+      // console.log("Scroll position:", window.scrollY); // Debugging line
       if (window.scrollY > 350) {
         setShowScrollButton(true);
       } else {
