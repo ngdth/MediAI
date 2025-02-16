@@ -27,6 +27,7 @@ import DoctorAppointments from './Pages/Pages/DoctorAppointments';
 import AppointmentDetail from './Pages/Pages/AppointmentDetail';
 import ScrollUpButton from './Components/ScrollUpButton';
 import DoctorsResultPage from './Pages/Pages/DoctorsResultPage';
+import FavoritesPage from './Pages/User/FavoritesPage';
 import 'aos/dist/aos.css';
 import Aos from 'aos';
 import { useEffect } from 'react';
@@ -71,6 +72,7 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="*" element={<ErrorPage />} />
           <Route path="/search" element={<DoctorsResultPage />} />
+          <Route path="/favorites" element={<FavoritesPage />} />
         </Route>
         <Route path="/" element={<LayoutWithoutHeader />}>
           <Route path="/login" element={<LoginPage />} />
