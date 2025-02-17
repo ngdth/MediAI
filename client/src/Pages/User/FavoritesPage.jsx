@@ -25,50 +25,48 @@ const FavoritesPage = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            console.log("API Response:", response.data); // Log dữ liệu API
-
-            // Kiểm tra nếu response.data.favorites là mảng thì set vào state
+            console.log(response.data);
             if (response.data && Array.isArray(response.data.favorites)) {
-                setFavorites(response.data.favorites);
+                // Gọi API lấy thông tin chi tiết của từng bác sĩ
+                const doctorDetails = await Promise.all(
+                    response.data.favorites.map(async (doctorId) => {
+                        try {
+                            const doctorResponse = await axios.get(`http://localhost:8080/user/doctors/${doctorId}`);
+                            return doctorResponse.data; // Trả về dữ liệu bác sĩ
+                        } catch (error) {
+                            console.error(`Error fetching doctor ${doctorId}:`, error);
+                            return null;
+                        }
+                    })
+                );
+
+                setFavorites(doctorDetails.filter((doctor) => doctor !== null)); // Lọc bỏ null
             } else {
-                setFavorites([]); // Nếu không phải mảng, đặt thành mảng rỗng
+                setFavorites([]);
             }
         } catch (error) {
             console.error("Error fetching favorite doctors:", error.response?.data || error);
-            setFavorites([]); // Đảm bảo không bị lỗi map()
+            setFavorites([]);
         }
     };
-
 
     const handleViewDetail = (doctorId) => {
         navigate(`/doctors/${doctorId}`);
     };
 
-    const handleRemove = (doctorId) => {
-        Swal.fire({
-            title: "Are you sure you want to remove?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Yes",
-            cancelButtonText: "No",
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                try {
-                    await axios.delete(`http://localhost:8080/user/favorites/delete/${doctorId}`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    });
-
-                    setFavorites(favorites.filter((doctor) => doctor._id !== doctorId));
-                    Swal.fire("Removed!", "Doctor has been removed from favorites.", "success");
-                } catch (error) {
-                    console.error("Error removing favorite doctor:", error.response?.data || error);
-                    Swal.fire("Error", "Failed to remove doctor.", "error");
-                }
-            }
-        });
-    };
+    const handleRemove = async (doctorId) => {
+        try {
+            await axios.delete(`http://localhost:8080/user/favorites/delete/${doctorId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+    
+            setFavorites(favorites.filter((doctor) => doctor._id !== doctorId));
+            alert("Doctor has been removed from favorites.");
+        } catch (error) {
+            console.error("Error removing favorite doctor:", error.response?.data || error);
+            alert("Failed to remove doctor.");
+        }
+    };    
 
     if (favorites.length === 0) {
         return (
@@ -101,24 +99,24 @@ const FavoritesPage = () => {
                         <SectionHeading SectionSubtitle="FAVORITES" SectionTitle="Your Favorite Doctors" variant="text-center" />
                         <div className="cs_height_40 cs_height_lg_35" />
                         <div className="favorites-table">
-                            <table className="table">
+                            <table className="table table-bordered text-center">
                                 <thead>
                                     <tr>
-                                        <th>Doctor Name</th>
+                                        <th>Doctor</th>
                                         <th>Specialization</th>
-                                        <th>Actions</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {favorites.map((doctorId) => (
-                                        <tr key={doctorId}>
-                                            <td>{doctorId}</td>
-                                            <td>{doctorId}</td>
+                                    {favorites.map((doctor) => (
+                                        <tr key={doctor._id}>
+                                            <td>{doctor.username}</td>
+                                            <td>{doctor.specialization}</td>
                                             <td>
-                                                <button className="btn btn-primary btn-sm me-2" onClick={() => handleViewDetail(doctorId)}>
+                                                <button className="btn btn-primary btn-sm me-2" onClick={() => handleViewDetail(doctor._id)}>
                                                     View Detail
                                                 </button>
-                                                <button className="btn btn-danger btn-sm" onClick={() => handleRemove(doctorId)}>
+                                                <button className="btn btn-danger btn-sm" onClick={() => handleRemove(doctor._id)}>
                                                     Remove
                                                 </button>
                                             </td>
