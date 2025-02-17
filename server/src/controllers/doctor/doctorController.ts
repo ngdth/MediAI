@@ -61,6 +61,32 @@ export const searchDoctorByUsername = async (req: Request, res: Response): Promi
     }
 };
 
+export const getFavoriteDoctors = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const userId = req.user?.id;
+
+        if (!userId) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        const user = await User.findById(userId).populate({
+            path: "favorites",
+            select: "-password", // Loại bỏ mật khẩu khi trả về dữ liệu
+        });
+
+        if (!user) {
+            res.status(404).json({ error: "User not found." });
+            return;
+        }
+
+        res.status(200).json({ favorites: user.favorites });
+    } catch (error) {
+        console.error("Error fetching favorite doctors:", error);
+        res.status(500).json({ error: "Failed to fetch favorite doctors." });
+    }
+};
+
 export const addDoctorToFavorites = async (req: Request, res: Response): Promise<void> => {
     try {
         const userId = req.user?.id;

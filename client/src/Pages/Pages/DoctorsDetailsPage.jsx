@@ -13,6 +13,8 @@ import {
 } from 'react-icons/fa6';
 import TeamSection from '../../Components/TeamSection';
 import Section from '../../Components/Section';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const DoctorsDetailsPage = () => {
   const [doctorDetails, setDoctorDetails] = useState(null);
@@ -40,19 +42,38 @@ const DoctorsDetailsPage = () => {
     fetchDoctorDetails();
   }, [doctorId, token]);
 
-  const handleAddFavorite = async () => {
+  const handleFavoriteToggle = async () => {
     try {
       const response = await axios.post(
         `http://localhost:8080/user/favorites/add/${doctorId}`,
-        {}, // Không có body, nhưng phải có header
-        {
-          headers: { Authorization: `Bearer ${token}` }, // Thêm token vào header
-        }
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log("Favorite Doctor Added:", response.data);
-      setFavoriteStatus(true); // Cập nhật trạng thái yêu thích
+
+      console.log("Doctor added to favorites:", response.data);
+      toast.success("Doctor added to favorites!");
+      setFavoriteStatus(true);
     } catch (error) {
-      console.error("Error adding favorite doctor:", error.response?.data || error);
+      console.error(error.response?.data || error);
+      const errorMessage = error.response?.data?.message || "";
+
+      if (errorMessage.includes("Doctor already in favorites")) {
+        try {
+          await axios.delete(`http://localhost:8080/user/favorites/delete/${doctorId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          console.log("Doctor removed from favorites.");
+          toast.info("Doctor removed from favorites!");
+          setFavoriteStatus(false);
+        } catch (deleteError) {
+          toast.error("Error removing doctor from favorites!");
+          console.error("Error removing doctor from favorites:", deleteError.response?.data || deleteError);
+        }
+      } else {
+        toast.error("Please login!");
+        console.error("Error adding doctor to favorites:", error.response?.data || error);
+      }
     }
   };
 
@@ -110,39 +131,18 @@ const DoctorsDetailsPage = () => {
       </Section>
 
       <Section topSpaceLg="80" topSpaceMd="120">
-        <DoctorDetailsSection data={{ ...doctorDetails, info: doctorInfo, progressBars }} />
-        {/* Nút thêm vào danh sách yêu thích */}
-        <div style={{ textAlign: 'center', marginTop: '20px' }}>
-          <button
-            onClick={handleAddFavorite}
-            style={{
-              padding: '10px 20px',
-              backgroundColor: favoriteStatus ? 'green' : '#007bff',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: 'pointer',
-            }}
-            disabled={favoriteStatus} // Khóa nút nếu đã thêm vào yêu thích
-          >
-            {favoriteStatus ? (
-              <>
-                <FaHeart style={{ marginRight: '5px' }} />
-                Added to Favorites
-              </>
-            ) : (
-              <>
-                <FaHeart style={{ marginRight: '5px' }} />
-                Add to Favorites
-              </>
-            )}
-          </button>
-        </div>
+        <DoctorDetailsSection
+          data={{ ...doctorDetails, info: doctorInfo, progressBars }}
+          onFavoriteToggle={handleFavoriteToggle}
+          favoriteStatus={favoriteStatus}
+        />
       </Section>
 
       <Section topSpaceLg="80" topSpaceMd="110">
         <TeamSection variant={'cs_pagination cs_style_2'} data={teamData} />
       </Section>
+
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
     </>
   );
 };

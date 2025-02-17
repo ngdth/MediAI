@@ -2,7 +2,7 @@ import express from "express";
 import { registerUser, loginUser, verifyAccount, sendOTP, resetPassword, deleteUnverifiedAcc } from "../controllers/auth/authController";
 import { getUserProfile, getAllUsers, getUserById } from "../controllers/auth/authUser";
 import { authenticateToken, authorizeDoctor, authorizeRole } from "../middlewares/authMiddleware";
-import { addDoctorToFavorites, getAllDoctors, getDoctorById, removeDoctorFromFavorites, searchDoctorByUsername } from "../controllers/doctor/doctorController";
+import { addDoctorToFavorites, getAllDoctors, getDoctorById, getFavoriteDoctors, removeDoctorFromFavorites, searchDoctorByUsername } from "../controllers/doctor/doctorController";
 
 const router = express.Router();
 
@@ -30,6 +30,8 @@ router.get("/doctors", getAllDoctors);
 router.get("/doctors/:doctorId", getDoctorById);
 
 router.post("/search", searchDoctorByUsername);
+
+router.get("/favorites", authenticateToken, authorizeRole(["user", "admin"]), getFavoriteDoctors);
 
 router.post("/favorites/add/:doctorId", authenticateToken, authorizeRole(["user", "admin"]), addDoctorToFavorites);
 

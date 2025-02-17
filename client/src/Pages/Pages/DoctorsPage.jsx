@@ -37,7 +37,7 @@ const DoctorsPage = () => {
     doctorsData: doctors.map((doctor) => ({
       name: doctor.username,
       specialty: doctor.specialization,
-      imageUrl: doctor.image,
+      imageUrl: doctor.imageUrl,
       profileLink: `/doctors/${doctor._id}`,
       iconUrl: 'https://www.facebook.com/',
       iconUrl2: 'https://www.pinterest.com/',

@@ -5,11 +5,11 @@ import MainHome from './Pages/HomePage/MainHome';
 import HomeV2 from './Pages/HomePage/HomeV2';
 import HomeV3 from './Pages/HomePage/HomeV3';
 import AboutPage from './Pages/AboutPage/AboutPage';
-import LoginPage from './pages/AuthenPage/LoginPage';
-import RegisterPage from './pages/AuthenPage/RegisterPage';
-import ForgotPass from './pages/AuthenPage/ForgotPassPage';
-import ResetPass from './pages/AuthenPage/ResetPassPage';
-import VerifyPage from './pages/AuthenPage/VerifyPage';
+import LoginPage from './Pages/AuthenPage/LoginPage';
+import RegisterPage from './Pages/AuthenPage/RegisterPage';
+import ForgotPass from './Pages/AuthenPage/ForgotPassPage';
+import ResetPass from './Pages/AuthenPage/ResetPassPage';
+import VerifyPage from './Pages/AuthenPage/VerifyPage';
 import ServicePage from './Pages/Service/ServicePage';
 import ServiceDetails from './Pages/Service/ServiceDetails';
 import BlogsPage from './Pages/BlogsPage/BlogsPage';
@@ -27,6 +27,7 @@ import DoctorAppointments from './Pages/Pages/DoctorAppointments';
 import AppointmentDetail from './Pages/Pages/AppointmentDetail';
 import ScrollUpButton from './Components/ScrollUpButton';
 import DoctorsResultPage from './Pages/Pages/DoctorsResultPage';
+import FavoritesPage from './Pages/User/FavoritesPage';
 import 'aos/dist/aos.css';
 import Aos from 'aos';
 import { useEffect } from 'react';
@@ -71,6 +72,7 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="*" element={<ErrorPage />} />
           <Route path="/search" element={<DoctorsResultPage />} />
+          <Route path="/favorites" element={<FavoritesPage />} />
         </Route>
         <Route path="/" element={<LayoutWithoutHeader />}>
           <Route path="/login" element={<LoginPage />} />

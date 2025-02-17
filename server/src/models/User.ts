@@ -14,9 +14,10 @@ const UserSchema: Schema = new Schema(
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    imageUrl: { type: String, default: "" },
     role: { type: String, enum: ["admin", "user", "doctor"], default: "user" },
     verified: { type: Boolean, default: false },
-    favorites: [{ type: mongoose.Types.ObjectId, ref: "DoctorProfile" }],
+    favorites: [{ type: mongoose.Types.ObjectId }],
   },
   { timestamps: true, discriminatorKey: "roleType" }
 );
