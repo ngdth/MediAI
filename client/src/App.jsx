@@ -28,6 +28,7 @@ import AppointmentDetail from './Pages/Pages/AppointmentDetail';
 import ScrollUpButton from './Components/ScrollUpButton';
 import DoctorsResultPage from './Pages/Pages/DoctorsResultPage';
 import FavoritesPage from './Pages/User/FavoritesPage';
+import DoctorManagement from './Pages/Admin/DoctorManagement';
 import 'aos/dist/aos.css';
 import Aos from 'aos';
 import { useEffect } from 'react';
@@ -80,6 +81,7 @@ function App() {
           <Route path="/verify" element={<VerifyPage />} />
           <Route path="/forgotPass" element={<ForgotPass />} />
           <Route path="/resetPass" element={<ResetPass />} />
+          <Route path="/admin/doctors" element={<DoctorManagement />} />
         </Route>
       </Routes>
       <ScrollUpButton />
