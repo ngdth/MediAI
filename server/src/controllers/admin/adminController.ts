@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
-import User, { Doctor, IDoctor, IUser } from "../../models/User";
+import User, { Doctor, IDoctor, INurse, Nurse } from "../../models/User";
 import mongoose from "mongoose";
 
 export const createDoctorAccount = async (req: Request, res: Response): Promise<void> => {
@@ -106,5 +106,124 @@ export const deleteDoctorAccount = async (req: Request, res: Response): Promise<
     } catch (error) {
         console.error("Error deleting doctor account:", error);
         res.status(500).json({ error: "Failed to delete doctor account." });
+    }
+};
+
+export const getAllNurses = async (req: Request, res: Response): Promise<void> => {
+    try {
+        // Lấy danh sách tất cả user có role là "nurse"
+        const nurses = await User.find({ role: "nurse" }).select("-password");
+
+        if (!nurses.length) {
+            res.status(404).json({ error: "No nurses found." });
+            return;
+        }
+
+        res.status(200).json(nurses);
+    } catch (error) {
+        console.error("Error fetching nurses:", error);
+        res.status(500).json({ error: "Failed to fetch nurses." });
+    }
+};
+
+export const createNurseAccount = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { username, email, password, department, shift } = req.body;
+
+        // Kiểm tra các trường bắt buộc
+        if (!username || !email || !password) {
+            res.status(400).json({ error: "Missing required fields." });
+            return;
+        }
+
+        // Kiểm tra email đã tồn tại chưa
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            res.status(400).json({ error: "Email already in use." });
+            return;
+        }
+
+        // Mã hóa mật khẩu
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Tạo tài khoản nurse
+        const newNurse = new Nurse({
+            username,
+            email,
+            password: hashedPassword,
+            role: "nurse",
+        });
+
+        await newNurse.save();
+
+        res.status(201).json({ message: "Nurse account created successfully.", nurse: newNurse });
+    } catch (error) {
+        console.error("Error creating nurse account:", error);
+        res.status(500).json({ error: "Failed to create nurse account." });
+    }
+};
+
+export const updateNurseAccount = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const nurseId = req.params.nurseId;
+        const { username, email, password } = req.body;
+
+        // Tìm nurse cần cập nhật
+        const nurse = await Nurse.findById(nurseId) as INurse;
+        if (!nurse) {
+            res.status(404).json({ error: "Nurse not found." });
+            return;
+        }
+
+        // Cập nhật thông tin nếu có
+        if (username) nurse.username = username;
+        if (email) nurse.email = email;
+
+        // Kiểm tra email có bị trùng không
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            res.status(400).json({ error: "Email already in use." });
+            return;
+        }
+
+        // Nếu có password mới, mã hóa lại trước khi lưu
+        if (password) {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            nurse.password = hashedPassword;
+        }
+
+        // Lưu thông tin cập nhật
+        await nurse.save();
+
+        res.status(200).json({ message: "Nurse account updated successfully.", nurse });
+    } catch (error) {
+        console.error("Error updating nurse account:", error);
+        res.status(500).json({ error: "Failed to update nurse account." });
+    }
+};
+
+export const deleteNurseAccount = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const nurseId = req.params.nurseId;
+
+        // Kiểm tra ID có hợp lệ không
+        if (!mongoose.Types.ObjectId.isValid(nurseId)) {
+            res.status(400).json({ error: "Invalid nurse ID." });
+            return;
+        }
+
+        // Tìm nurse trong database
+        const nurse = await User.findById(nurseId);
+        if (!nurse || nurse.role !== "nurse") {
+            res.status(404).json({ error: "Nurse not found." });
+            return;
+        }
+
+        // Xóa nurse
+        await User.findByIdAndDelete(nurseId);
+        res.status(200).json({ message: "Nurse account deleted successfully." });
+    } catch (error) {
+        console.error("Error deleting nurse account:", error);
+        res.status(500).json({ error: "Failed to delete nurse account." });
     }
 };
