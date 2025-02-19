@@ -98,7 +98,7 @@ const DoctorsDetailsPage = () => {
   const doctorInfo = [
     {
       icon: <FaLocationDot />,
-      title: 'Location',
+      title: 'Address',
       subtitle: doctorDetails.location,
       secIcon: <FaEnvelope />,
       secTitle: 'E-mail:',
@@ -106,8 +106,8 @@ const DoctorsDetailsPage = () => {
     },
     {
       icon: <FaCertificate />,
-      title: 'Qualification',
-      subtitle: doctorDetails.qualification,
+      title: 'Specialization',
+      subtitle: doctorDetails.specialization,
       secIcon: <FaGlobe />,
       secTitle: 'Website',
       secSubtitle: doctorDetails.website,
