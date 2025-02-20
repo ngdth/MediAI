@@ -1,8 +1,8 @@
 import express from "express";
-import { registerUser, loginUser, verifyCode } from "../controllers/auth/authController";
+import { registerUser, loginUser, verifyAccount, sendOTP, resetPassword, deleteUnverifiedAcc } from "../controllers/auth/authController";
 import { getUserProfile, getAllUsers, getUserById } from "../controllers/auth/authUser";
-import { authenticateToken, authorizeRole } from "../middlewares/authMiddleware";
-import { addDoctorToFavorites, getAllDoctors, getDoctorById, removeDoctorFromFavorites, searchDoctorByUsername } from "../controllers/doctor/doctorController";
+import { authenticateToken, authorizeDoctor, authorizeRole } from "../middlewares/authMiddleware";
+import { addDoctorToFavorites, getAllDoctors, getDoctorById, getFavoriteDoctors, removeDoctorFromFavorites, searchDoctorByUsername } from "../controllers/doctor/doctorController";
 
 const router = express.Router();
 
@@ -11,7 +11,7 @@ router.post("/register", registerUser);
 
 router.post("/login", loginUser);
 
-router.post("/verify", verifyCode);
+router.post("/verify", verifyAccount);
 
 router.get("/profile", authenticateToken,authorizeRole(["user", "admin"]), getUserProfile);
 
@@ -19,11 +19,19 @@ router.get("/all", authenticateToken,authorizeRole([ "admin"]), getAllUsers);
 
 router.get("/users/:id", authenticateToken, authorizeRole([ "admin"]), getUserById);
 
+router.post("/sendotp", sendOTP);
+
+router.delete("/deleteUnverified", deleteUnverifiedAcc);
+
+router.post("/resetpassword", resetPassword);
+
 router.get("/doctors", getAllDoctors);
 
 router.get("/doctors/:doctorId", getDoctorById);
 
 router.post("/search", searchDoctorByUsername);
+
+router.get("/favorites", authenticateToken, authorizeRole(["user", "admin"]), getFavoriteDoctors);
 
 router.post("/favorites/add/:doctorId", authenticateToken, authorizeRole(["user", "admin"]), addDoctorToFavorites);
 

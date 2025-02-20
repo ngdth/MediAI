@@ -9,24 +9,28 @@ import {
   FaGlobe,
   FaLocationDot,
   FaSuitcase,
+  FaHeart,
 } from 'react-icons/fa6';
 import TeamSection from '../../Components/TeamSection';
 import Section from '../../Components/Section';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const DoctorsDetailsPage = () => {
   const [doctorDetails, setDoctorDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const { doctorId } = useParams(); // Lấy id bác sĩ từ URL
+  const [favoriteStatus, setFavoriteStatus] = useState(false); // Thêm khai báo trạng thái này
 
-  // Kiểm tra nếu id không tồn tại trong URL
-  if (!doctorId) {
-    return <p>Error: Doctor ID is missing!</p>;
-  }
+  // Lấy token từ localStorage
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchDoctorDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/user/doctors/${doctorId}`);
+        const response = await axios.get(`http://localhost:8080/user/doctors/${doctorId}`, {
+          headers: { Authorization: `Bearer ${token}` }, // Thêm token vào header
+        });
         setDoctorDetails(response.data); // Lưu thông tin bác sĩ vào state
       } catch (error) {
         console.error("Error fetching doctor details:", error.response?.data || error);
@@ -36,13 +40,47 @@ const DoctorsDetailsPage = () => {
     };
 
     fetchDoctorDetails();
-  }, [doctorId]);
+  }, [doctorId, token]);
+
+  const handleFavoriteToggle = async () => {
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/user/favorites/add/${doctorId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      console.log("Doctor added to favorites:", response.data);
+      toast.success("Doctor added to favorites!");
+      setFavoriteStatus(true);
+    } catch (error) {
+      console.error(error.response?.data || error);
+      const errorMessage = error.response?.data?.message || "";
+
+      if (errorMessage.includes("Doctor already in favorites")) {
+        try {
+          await axios.delete(`http://localhost:8080/user/favorites/delete/${doctorId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          console.log("Doctor removed from favorites.");
+          toast.info("Doctor removed from favorites!");
+          setFavoriteStatus(false);
+        } catch (deleteError) {
+          toast.error("Error removing doctor from favorites!");
+          console.error("Error removing doctor from favorites:", deleteError.response?.data || deleteError);
+        }
+      } else {
+        toast.error("Please login!");
+        console.error("Error adding doctor to favorites:", error.response?.data || error);
+      }
+    }
+  };
 
   if (loading) {
-    return <p>Loading...</p>; // Hiển thị loading nếu đang tải dữ liệu
+    return <p>Loading...</p>;
   }
 
-  // Nếu không có dữ liệu bác sĩ, hiển thị thông báo lỗi
   if (!doctorDetails) {
     return <p>Doctor not found</p>;
   }
@@ -54,34 +92,34 @@ const DoctorsDetailsPage = () => {
   const teamData = {
     subtitle: 'OUR TEAM MEMBER',
     title: ' Meet Our Specialist This <br />Doctor Meeting',
-    sliderData: doctorDetails.team || [], // Nếu có đội ngũ bác sĩ khác thì hiển thị
+    sliderData: doctorDetails.team || [],
   };
 
   const doctorInfo = [
     {
       icon: <FaLocationDot />,
-      title: 'Location',
-      subtitle: doctorDetails.location || 'N/A',
+      title: 'Address',
+      subtitle: doctorDetails.location,
       secIcon: <FaEnvelope />,
       secTitle: 'E-mail:',
-      secSubtitle: doctorDetails.email || 'N/A',
+      secSubtitle: doctorDetails.email,
     },
     {
       icon: <FaCertificate />,
-      title: 'Qualification',
-      subtitle: doctorDetails.qualification || 'N/A',
+      title: 'Specialization',
+      subtitle: doctorDetails.specialization,
       secIcon: <FaGlobe />,
       secTitle: 'Website',
-      secSubtitle: doctorDetails.website || 'N/A',
+      secSubtitle: doctorDetails.website,
     },
     {
       icon: <FaSuitcase />,
       title: 'Experience',
-      subtitle: doctorDetails.experience || 'N/A',
+      subtitle: doctorDetails.experience,
     },
   ];
 
-  const progressBars = doctorDetails.skills || []; // Nếu có kỹ năng/progress bars thì hiển thị
+  const progressBars = doctorDetails.skills;
 
   return (
     <>
@@ -93,15 +131,18 @@ const DoctorsDetailsPage = () => {
       </Section>
 
       <Section topSpaceLg="80" topSpaceMd="120">
-        <DoctorDetailsSection data={{ ...doctorDetails, info: doctorInfo, progressBars }} />
+        <DoctorDetailsSection
+          data={{ ...doctorDetails, info: doctorInfo, progressBars }}
+          onFavoriteToggle={handleFavoriteToggle}
+          favoriteStatus={favoriteStatus}
+        />
       </Section>
 
-      {/* Start Team Section */}
       <Section topSpaceLg="80" topSpaceMd="110">
         <TeamSection variant={'cs_pagination cs_style_2'} data={teamData} />
       </Section>
 
-      {/* End Team Section */}
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
     </>
   );
 };

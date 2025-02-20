@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 
 interface JwtPayload {
     id: string;
-    role: "admin" | "user";
+    role: "admin" | "user" | "doctor";
 }
 
 // Middleware authenticate token
@@ -33,3 +33,10 @@ export const authorizeRole = (roles: string[]) => {
         next();
     };
 };
+export const authorizeDoctor = (req: Request, res: Response, next: NextFunction) => {
+    if (req.user?.role !== 'doctor') {
+        return res.status(403).json({ message: "Access Denied" });
+    }
+    next();
+};
+

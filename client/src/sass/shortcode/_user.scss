@@ -1,0 +1,16 @@
+.favorites-table {
+    display: flex;
+    justify-content: center;
+}
+
+.favorites-table table {
+    width: 80%;
+    max-width: 900px;
+    margin: auto;
+    text-align: center;
+}
+
+.favorites-table th, .favorites-table td {
+    padding: 10px;
+    text-align: center;
+}

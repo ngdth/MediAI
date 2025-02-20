@@ -1,7 +1,9 @@
-const DoctorDetailsSection = ({ data }) => {
+import { FaHeart } from "react-icons/fa6";
+
+const DoctorDetailsSection = ({ data, onFavoriteToggle, favoriteStatus }) => {
   // Kiểm tra nếu data không có hoặc có giá trị rỗng
-  const image = data?.image;
-  const name = data?.username || 'N/A';
+  const image = data?.imageUrl;
+  const name = data?.username;
   const subtitle = data?.subtitle || 'No subtitle available';
   const description = data?.description || [];
   const info = data?.info || [];
@@ -21,7 +23,26 @@ const DoctorDetailsSection = ({ data }) => {
           <div className="col-lg-7">
             <div className="cs_doctor_details">
               <div className="cs_doctor_info_header">
-                <h3 className="cs_doctor_title">{name}</h3>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <h3 className="cs_doctor_title">{name}</h3>
+                  <button
+                    onClick={onFavoriteToggle}
+                    style={{
+                      padding: "8px 16px",
+                      backgroundColor: favoriteStatus ? "green" : "#007bff",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "5px",
+                    }}
+                  >
+                    <FaHeart />
+                    {favoriteStatus ? "Added to Favorites" : "Add to Favorites"}
+                  </button>
+                </div>
                 <p className="cs_doctor_subtitle mb-0">{subtitle}</p>
               </div>
               {description.map((desc, index) => (

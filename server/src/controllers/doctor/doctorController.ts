@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import Doctor from "../../models/User";
 import User from "../../models/User";
-import Blog from "../../models/blog";
 import mongoose from "mongoose";
 
 export const getAllDoctors = async (req: Request, res: Response): Promise<void> => {
@@ -59,6 +58,32 @@ export const searchDoctorByUsername = async (req: Request, res: Response): Promi
     } catch (error) {
         console.error("Error searching doctor by username:", error);
         res.status(500).json({ error: "Failed to search for doctor by username." });
+    }
+};
+
+export const getFavoriteDoctors = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const userId = req.user?.id;
+
+        if (!userId) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        const user = await User.findById(userId).populate({
+            path: "favorites",
+            select: "-password", // Loại bỏ mật khẩu khi trả về dữ liệu
+        });
+
+        if (!user) {
+            res.status(404).json({ error: "User not found." });
+            return;
+        }
+
+        res.status(200).json({ favorites: user.favorites });
+    } catch (error) {
+        console.error("Error fetching favorite doctors:", error);
+        res.status(500).json({ error: "Failed to fetch favorite doctors." });
     }
 };
 
@@ -146,8 +171,8 @@ export const getDoctorBlogs = async (req: Request, res: Response): Promise<void>
     const { id } = req.params;
 
     try {
-        const blogs = await Blog.find({ doctorId: id });
-        res.status(200).json(blogs);
+        // const blogs = await Blog.find({ doctorId: id });
+        // res.status(200).json(blogs);
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch doctor blogs." });
     }
