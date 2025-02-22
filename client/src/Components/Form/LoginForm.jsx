@@ -47,6 +47,7 @@ const LoginForm = ({ onLogin }) => {
             }
 
             localStorage.setItem("token", data.token);
+            localStorage.setItem("username", data.user.username);
 
             onLogin(data.user);
             navigate("/");
