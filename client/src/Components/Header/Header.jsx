@@ -17,6 +17,44 @@ const Header = ({ isTopBar, variant }) => {
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [prevScrollPos, setPrevScrollPos] = useState(0);
   const [isSticky, setIsSticky] = useState();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [username, setUsername] = useState(localStorage.getItem("username"));
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollPos = window.scrollY;
+      if (currentScrollPos > prevScrollPos) {
+        setIsSticky('cs_gescout_sticky'); // Scrolling down
+      } else if (currentScrollPos !== 0) {
+        setIsSticky('cs_gescout_sticky cs_gescout_show'); // Scrolling up
+      } else {
+        setIsSticky();
+      }
+      setPrevScrollPos(currentScrollPos); // Update previous scroll position
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    const handleLogin = () => {
+      setUsername(localStorage.getItem("username"));
+    };
+
+    window.addEventListener("loginSuccess", handleLogin);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll); // Cleanup the event listener
+      window.removeEventListener("loginSuccess", handleLogin);
+    };
+  }, [prevScrollPos]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Xóa token
+    localStorage.removeItem("username"); // Xóa username
+    setUsername(null); // Cập nhật state username về null
+    navigate("/"); // Chuyển hướng về trang đăng nhập
+  };
+
   const menu = {
     email: 'demo@example.com',
     location: '15/K, Dhaka London City, LOT',
@@ -58,24 +96,27 @@ const Header = ({ isTopBar, variant }) => {
           { label: 'Doctor Details', href: '/doctors/doctor-details' },
           { label: 'Timetable', href: '/timetable' },
           { label: 'Portfolio', href: '/portfolio' },
-          { label: 'Appointments History', href: '/appointmentshistory'},
-          { label: 'Doctor Appointments', href: '/doctorappointments'},
+          { label: 'Appointments History', href: '/appointmentshistory' },
+          { label: 'Doctor Appointments', href: '/doctorappointments' },
           { label: 'Error 404', href: '/error' },
         ],
       },
       { label: 'Contact', href: '/contact' },
-      {
-        label: 'Account',
-        href: '/',
-        subItems: [
-          { label: 'Login', href: '/login' },
-          { label: 'Register', href: '/register' },
-        ],
-      },
     ],
     btnUrl: '/contact',
     btnText: 'Contact Now',
   };
+
+  const accountMenu = username
+    ? [
+      { label: "Profile", href: "/profile" },
+      { label: "Favorite", href: "/favorites" },
+      { label: "Logout", action: handleLogout },
+    ]
+    : [
+      { label: "Login", href: "/login" },
+      { label: "Register", href: "/register" },
+    ];
 
   const handleOpenMobileSubmenu = index => {
     if (openMobileSubmenuIndex.includes(index)) {
@@ -84,29 +125,6 @@ const Header = ({ isTopBar, variant }) => {
       setOpenMobileSubmenuIndex(prev => [...prev, index]);
     }
   };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollPos = window.scrollY;
-      if (currentScrollPos > prevScrollPos) {
-        setIsSticky('cs_gescout_sticky'); // Scrolling down
-      } else if (currentScrollPos !== 0) {
-        setIsSticky('cs_gescout_sticky cs_gescout_show'); // Scrolling up
-      } else {
-        setIsSticky();
-      }
-      setPrevScrollPos(currentScrollPos); // Update previous scroll position
-    };
-
-    window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll); // Cleanup the event listener
-    };
-  }, [prevScrollPos]);
-
-  const [searchTerm, setSearchTerm] = useState(""); // Lưu từ khóa nhập vào
-  const navigate = useNavigate(); // Dùng để điều hướng
 
   const handleSearch = (e) => {
     e.preventDefault(); // Ngăn trang reload
@@ -119,9 +137,8 @@ const Header = ({ isTopBar, variant }) => {
   return (
     <>
       <header
-        className={`cs_site_header cs_style_1 ${
-          variant ? variant : ''
-        } cs_primary_color cs_sticky_header ${isSticky ? isSticky : ''}`}
+        className={`cs_site_header cs_style_1 ${variant ? variant : ''}
+          cs_primary_color cs_sticky_header ${isSticky ? isSticky : ''}`}
       >
         {isTopBar && (
           <div className="cs_top_header cs_blue_bg cs_white_color">
@@ -179,8 +196,8 @@ const Header = ({ isTopBar, variant }) => {
                   <img src={menu.logoUrl} alt="Logo" />
                 </Link>
               </div>
-              <div className="cs_main_header_right ">
-                <div className="cs_nav cs_primary_color ">
+              <div className="cs_main_header_right">
+                <div className="cs_nav cs_primary_color">
                   <ul
                     className={`cs_nav_list ${isShowMobileMenu && 'cs_active'}`}
                   >
@@ -221,11 +238,10 @@ const Header = ({ isTopBar, variant }) => {
                         )}
                         {item.subItems?.length && (
                           <span
-                            className={`cs_menu_dropdown_toggle ${
-                              openMobileSubmenuIndex.includes(index)
-                                ? 'active'
-                                : ''
-                            }`}
+                            className={`cs_menu_dropdown_toggle ${openMobileSubmenuIndex.includes(index)
+                              ? 'active'
+                              : ''
+                              }`}
                             onClick={() => handleOpenMobileSubmenu(index)}
                           >
                             <span></span>
@@ -233,11 +249,26 @@ const Header = ({ isTopBar, variant }) => {
                         )}
                       </li>
                     ))}
+                    {/* ✅ Hiển thị username nếu đã đăng nhập */}
+                    <li className="menu-item-has-children">
+                      <Link to="/">{username || "Account"}</Link>
+                      <ul>
+                        {accountMenu.map((subItem, subIndex) => (
+                          <li key={subIndex}>
+                            {subItem.href ? (
+                              <Link to={subItem.href}>{subItem.label}</Link>
+                            ) : (
+                              <Link to="#" onClick={(e) => { e.preventDefault(); subItem.action(); }}>
+                                {subItem.label}
+                              </Link>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </li>
                   </ul>
                   <span
-                    className={`cs_menu_toggle ${
-                      isShowMobileMenu && 'cs_toggle_active'
-                    }`}
+                    className={`cs_menu_toggle ${isShowMobileMenu && 'cs_toggle_active'}`}
                     onClick={() => setIsShowMobileMenu(!isShowMobileMenu)}
                   >
                     <span></span>
@@ -254,9 +285,7 @@ const Header = ({ isTopBar, variant }) => {
                   </div>
                   <form
                     action="#"
-                    className={`cs_header_search_form ${
-                      isSearchActive ? 'active' : ''
-                    }`}
+                    className={`cs_header_search_form ${isSearchActive ? 'active' : ''}`}
                     onSubmit={handleSearch}
                   >
                     <div className="cs_header_search_form_in">
