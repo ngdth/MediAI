@@ -10,7 +10,7 @@ const headingData = {
 const leftSideData = {
   imageSrc: '/assets/img/post_details_1.jpeg',
   imageAlt: 'Post Image',
-  text: 'Medilo',
+  text: 'AMMA',
   secText: 'June,10,2024',
   thirdSecTitle: 'Make an Appointment',
 

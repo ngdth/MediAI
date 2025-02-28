@@ -23,6 +23,7 @@ export const createSchedule = async (req: Request, res: Response, next: NextFunc
         next(error);
     }
 };
+
 // API: View doctor schedule
 export const viewSchedule = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
