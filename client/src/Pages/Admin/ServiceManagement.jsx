@@ -1,17 +1,27 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Toast, ToastContainer } from "react-bootstrap";
 
 const ServiceManagement = () => {
-    const [doctors, setDoctors] = useState([]);
+    const [services, setServices] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [formData, setFormData] = useState({
-        username: "",
-        email: "",
-        password: "",
-        specialization: "",
-        experience: 0,
-    });
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState("");
+    const [toastVariant, setToastVariant] = useState("bg-success");
+    const [confirmDelete, setConfirmDelete] = useState(false);
+    const [deleteServiceId, setDeleteServiceId] = useState(null);
+    
+    const initialFormData = {
+        name: "",
+        description: "",
+        department: "",
+        category: "",
+        price: 0,
+        duration: "",
+        status: "active"
+    };
+
+    const [formData, setFormData] = useState(initialFormData);
     const [editingService, setEditingService] = useState(null);
     const token = localStorage.getItem("token");
 
@@ -21,69 +31,79 @@ const ServiceManagement = () => {
 
     const fetchServices = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/user/services", {
+            const response = await axios.get("http://localhost:8080/service/getAll", {
                 headers: { Authorization: `Bearer ${token}` },  
             });
-            setDoctors(response.data);
+            setServices(response.data);
         } catch (error) {
-            console.error("Error fetching doctors:", error);
+            console.error("Error fetching services:", error.response?.data?.error || error.message);
+            setServices([]);
+            showToastMessage(error.response?.data?.error || "Error fetching services", "bg-danger");
         }
     };
 
+    const showToastMessage = (message, variant) => {
+        setToastMessage(message);
+        setToastVariant(variant);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 60000);
+    };
+
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: name === "price" ? Number(value) : value,
+        });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            if (editingDoctor) {
-                await axios.put(`http://localhost:8080/admin/doctors/update/${editingDoctor._id}`, formData, {
+            if (editingService) {
+                await axios.put(`http://localhost:8080/service/update/${editingService._id}`, formData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
+                showToastMessage("Service updated successfully", "bg-success");
             } else {
-                await axios.post("http://localhost:8080/admin/doctors/create", formData, {
+                await axios.post("http://localhost:8080/service/create", formData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
+                showToastMessage("Service added successfully", "bg-success");
             }
-            fetchDoctors();
+            fetchServices();
             handleCloseModal();
         } catch (error) {
-            console.error("Error saving doctor:", error);
+            console.error("Error saving service:", error.response?.data?.error || error.message);
+            showToastMessage(error.response?.data?.error || "Error saving service", "bg-danger");
         }
     };
 
-    const handleEdit = (doctor) => {
-        setFormData({
-            username: doctor.username,
-            email: doctor.email,
-            password: "",
-            specialization: doctor.specialization,
-            experience: doctor.experience,
-        });
-        setEditingDoctor(doctor);
+    const handleEdit = (service) => {
+        setEditingService(service);
+        setFormData(service); // Cập nhật form với dữ liệu của dịch vụ được chọn
         setShowModal(true);
     };
 
-    const handleDelete = async (doctorId) => {
+    const handleDeleteConfirm = async () => {
+        if (!deleteServiceId) return;
         try {
-            await axios.delete(`http://localhost:8080/admin/doctors/delete/${doctorId}`, {
+            await axios.delete(`http://localhost:8080/service/delete/${deleteServiceId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            fetchDoctors();
+            showToastMessage("Service deleted successfully", "bg-success");
+            fetchServices();
         } catch (error) {
-            console.error("Error deleting doctor:", error);
+            console.error("Error deleting service:", error.response?.data?.error || error.message);
+            showToastMessage(error.response?.data?.error || "Error deleting service", "bg-danger");
         }
-    };
-
-    const handleShowModal = () => {
-        setFormData({ username: "", email: "", password: "", specialization: "", experience: 0 });
-        setEditingDoctor(null);
-        setShowModal(true);
+        setConfirmDelete(false);
     };
 
     const handleCloseModal = () => {
         setShowModal(false);
+        setEditingService(null);
+        setFormData(initialFormData);
     };
 
     return (
@@ -91,11 +111,23 @@ const ServiceManagement = () => {
             <h2 className="text-center mb-4">Service Management</h2>
 
             <div className="d-flex justify-content-end mb-3">
-                <button className="btn btn-primary" onClick={handleShowModal}>
+                <button className="btn btn-primary" onClick={() => {
+                    setEditingService(null);
+                    setFormData(initialFormData);
+                    setShowModal(true);
+                }}>
                     Add Service
                 </button>
             </div>
 
+            {/* Toast thông báo */}
+            <ToastContainer position="top-end" className="p-3">
+                <Toast show={showToast} className={toastVariant} autohide onClose={() => setShowToast(false)}>
+                    <Toast.Body className="text-white">{toastMessage}</Toast.Body>
+                </Toast>
+            </ToastContainer>
+
+            {/* Danh sách dịch vụ */}
             <div className="table-responsive">
                 <table className="table table-bordered text-center">
                     <thead>
@@ -106,23 +138,26 @@ const ServiceManagement = () => {
                             <th>Category</th>
                             <th>Price</th>
                             <th>Duration</th>
-                            <th>Doctor In Charge</th>
-                            <th>Status</th>
-                            <th>Date Create</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {doctors.map((doctor) => (
-                            <tr key={doctor._id}>
-                                <td>{doctor.username}</td>
-                                <td>{doctor.email}</td>
-                                <td>{doctor.specialization}</td>
-                                <td>{doctor.experience} years</td>
+                        {services.map((service) => (
+                            <tr key={service._id}>
+                                <td>{service.name}</td>
+                                <td>{service.description}</td>
+                                <td>{service.department}</td>
+                                <td>{service.category}</td>
+                                <td>{service.price} VND</td>
+                                <td>{service.duration} Phút</td>
+                                <td>{service.status}</td>
                                 <td>
-                                    <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(doctor)}>Edit</button>
-                                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(doctor._id)}>Delete</button>
+                                    <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(service)}>Edit</button>
+                                    <button className="btn btn-danger btn-sm" onClick={() => {
+                                        setDeleteServiceId(service._id);
+                                        setConfirmDelete(true);
+                                    }}>Delete</button>
                                 </td>
                             </tr>
                         ))}
@@ -130,23 +165,32 @@ const ServiceManagement = () => {
                 </table>
             </div>
 
-            {/* Modal thêm/sửa bác sĩ */}
+            {/* Modal xác nhận xóa */}
+            <Modal show={confirmDelete} onHide={() => setConfirmDelete(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Delete</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to delete this service?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setConfirmDelete(false)}>Cancel</Button>
+                    <Button variant="danger" onClick={handleDeleteConfirm}>Delete</Button>
+                </Modal.Footer>
+            </Modal>
+
+            {/* Modal thêm/sửa dịch vụ */}
             <Modal show={showModal} onHide={handleCloseModal} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>{editingDoctor ? "Edit Doctor" : "Add Doctor"}</Modal.Title>
+                    <Modal.Title>{editingService ? "Edit Service" : "Add Service"}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <form onSubmit={handleSubmit}>
-                        <input type="text" name="username" placeholder="Username" value={formData.username} onChange={handleChange} required className="form-control mb-2" />
-                        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required className="form-control mb-2" />
-                        <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required={!editingDoctor} className="form-control mb-2" />
-                        <input type="text" name="specialization" placeholder="Specialization" value={formData.specialization} onChange={handleChange} required className="form-control mb-2" />
-                        <input type="number" name="experience" placeholder="Experience" value={formData.experience} onChange={handleChange} required className="form-control mb-2" />
-
-                        <div className="text-end">
-                            <Button variant="secondary" onClick={handleCloseModal} className="me-2">Cancel</Button>
-                            <Button type="submit" variant="primary">{editingDoctor ? "Update" : "Add"}</Button>
-                        </div>
+                        <input type="text" name="name" placeholder="Service Name" value={formData.name} onChange={handleChange} required className="form-control mb-2" />
+                        <input type="text" name="description" placeholder="Description" value={formData.description} onChange={handleChange} required className="form-control mb-2" />
+                        <input type="text" name="department" placeholder="Department" value={formData.department} onChange={handleChange} required className="form-control mb-2" />
+                        <input type="text" name="category" placeholder="Category" value={formData.category} onChange={handleChange} required className="form-control mb-2" />
+                        <input type="number" name="price" placeholder="Price" value={formData.price} onChange={handleChange} required min="1" className="form-control mb-2" />
+                        <input type="text" name="duration" placeholder="Duration" value={formData.duration} onChange={handleChange} required className="form-control mb-2" />
+                        <Button type="submit" variant="primary">{editingService ? "Update" : "Add"}</Button>
                     </form>
                 </Modal.Body>
             </Modal>
