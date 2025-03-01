@@ -8,6 +8,7 @@ import "../../sass/common/_general.scss";
 const LoginForm = ({ onLogin }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [user, setUser] = useState(null);
     const navigate = useNavigate();
     const [error, setError] = useState("");
 
@@ -31,6 +32,8 @@ const LoginForm = ({ onLogin }) => {
             const data = await response.json();
             if (!response.ok) throw new Error(data.message || "Login failed");
 
+            setUser(data.user); // Cập nhật state trước
+
             if (data.user && data.user.verified === false) {
                 localStorage.setItem("unverifiedEmail", email);
 
@@ -50,7 +53,22 @@ const LoginForm = ({ onLogin }) => {
             localStorage.setItem("username", data.user.username);
 
             onLogin(data.user);
-            navigate("/");
+
+            useEffect(() => {
+                if (user) {
+                    if (user.role === "admin") {
+                        navigate("/admin/dashboard"); 
+                    } else {
+                        navigate("/");
+                    }
+                }
+            }, [user, navigate]); // useEffect chỉ chạy khi `user` thay đổi
+
+            // if (data.user.role === "admin"){
+            //     navigate("/");
+            // }
+            // navigate("/");
+            
         } catch (err) {
             setError(err.message);
         }

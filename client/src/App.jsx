@@ -63,8 +63,8 @@ function App() {
           <Route path="/appointments" element={<Appointments />} />
           <Route path="/appointmentshistory" element={<AppointmentsHistory />} />
           <Route path="/updateappointment/:appointmentId" element={<UpdateAppointment />} />
-          <Route path="/doctorappointments" element={<DoctorAppointments />} />
           <Route path="/appointment/:id" element={<AppointmentDetail />} />
+          <Route path="/doctorappointments" element={<DoctorAppointments />} />
           <Route path="/doctors" element={<DoctorsPage />} />
           <Route path="/doctors/:doctorId" element={<DoctorsDetailsPage />} />
           <Route path="/timetable" element={<TimeTablePage />} />
@@ -82,6 +82,7 @@ function App() {
           <Route path="/forgotPass" element={<ForgotPass />} />
           <Route path="/resetPass" element={<ResetPass />} />
           <Route path="/admin/doctors" element={<DoctorManagement />} />
+          <Route path="/admin/servicePackage" element={<DoctorManagement />} />
         </Route>
       </Routes>
       <ScrollUpButton />
