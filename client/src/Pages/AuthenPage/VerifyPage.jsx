@@ -1,6 +1,6 @@
 import React from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
-import VerifyForm from "../../components/Form/VerifyForm";
+import VerifyForm from "../../components/Form/Authenform/VerifyForm";
 import { useNavigate } from "react-router-dom";
 
 function VerifyPage() {

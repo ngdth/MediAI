@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Container, Row, Col, Image, Card } from "react-bootstrap";
-import LoginForm from "../../components/Form/LoginForm";
+import LoginForm from "../../components/Form/Authenform/LoginForm";
 
 function LoginPage() {
     const [data, setData] = useState(null);
