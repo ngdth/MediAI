@@ -96,7 +96,7 @@ const BlogsPage = () => {
     <>
       <Section
         className={'cs_page_heading cs_bg_filed cs_center'}
-        backgroundImage="/assets/img/page_heading_bg.jpg"
+        backgroundImage="/assets/img/blog.jpg"
       >
         <PageHeading data={headingData} />
       </Section>
