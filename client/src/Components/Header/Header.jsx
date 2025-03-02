@@ -60,6 +60,7 @@ const Header = ({ isTopBar, variant }) => {
     location: "15/K, Dhaka London City, LOT",
     logoUrl: "/assets/img/logo.png",
     logoLink: "/",
+
     navItems: [
       {
         label: "Home",
@@ -193,9 +194,10 @@ const Header = ({ isTopBar, variant }) => {
         <div className="cs_main_header">
           <div className="container">
             <div className="cs_main_header_in">
-              <div className="cs_main_header_left">
-                <Link className="cs_site_branding" to={menu.logoLink}>
-                  <img src={menu.logoUrl} alt="Logo" />
+              <div className="cs_main_header_left ps-5 pt-2">
+                <Link className="cs_site_branding h1 bold" to={menu.logoLink}>
+                  {/* <img src={menu.logoUrl} alt="Logo" /> */}
+                  AMMA
                 </Link>
               </div>
               <div className="cs_main_header_right">
@@ -252,7 +254,7 @@ const Header = ({ isTopBar, variant }) => {
                         )}
                       </li>
                     ))}
-                    {/* ✅ Hiển thị username nếu đã đăng nhập */}
+                    {/* Hiển thị username nếu đã đăng nhập */}
                     <li className="menu-item-has-children">
                       <Link to="/">{username || "Account"}</Link>
                       <ul>

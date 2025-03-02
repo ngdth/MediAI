@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 const data = {
   backgroundImage: 'assets/img/footer_bg.jpg',
   logo: '/assets/img/logo.png',
+
   contact: [
     {
       icon: 'fa-regular fa-clock',
@@ -68,7 +69,7 @@ const data = {
       title: 'The Medical Of This Working Health',
     },
   ],
-  copyrightText: 'Copyright © 2024 Medilo, All Rights Reserved.',
+  copyrightText: 'Copyright © 2024 AMMA, All Rights Reserved.',
   footerMenu: [
     { href: 'about.html', text: 'About Us' },
     { href: '#', text: 'Events' },
@@ -125,7 +126,7 @@ const Footer = () => {
         title: 'The Medical Of This Working Health',
       },
     ],
-    copyrightText: 'Copyright © 2024 Medilo, All Rights Reserved.',
+    copyrightText: 'Copyright © 2024 AMMA, All Rights Reserved.',
     footerMenu: [
       { href: '/about', text: 'About Us' },
       { href: '/', text: 'Events' },

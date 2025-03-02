@@ -1,21 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaGoogle } from "react-icons/fa6";
 import { Form, Button, Alert, Container, Row, Col } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import "../../sass/common/_general.scss";
+import "../../../sass/common/_general.scss"; 
 // import { GoogleLogin } from '@react-oauth/google';
 
 const LoginForm = ({ onLogin }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [user, setUser] = useState(null);
     const navigate = useNavigate();
     const [error, setError] = useState("");
 
     //   const [isChecked, setIsChecked] = useState(false);
-
     //   const handleCheckboxChange = (e) => {
     //     setIsChecked(e.target.checked);
     //   };
+
+    useEffect(() => {
+        if (user) {
+            if (user.role === "admin") {
+                navigate("/admin/doctors");
+            } else {
+                navigate("/");
+            }
+        }
+    }, [user, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -30,6 +40,8 @@ const LoginForm = ({ onLogin }) => {
 
             const data = await response.json();
             if (!response.ok) throw new Error(data.message || "Login failed");
+
+            setUser(data.user); // Cập nhật state trước
 
             if (data.user && data.user.verified === false) {
                 localStorage.setItem("unverifiedEmail", email);
@@ -50,7 +62,6 @@ const LoginForm = ({ onLogin }) => {
             localStorage.setItem("username", data.user.username);
 
             onLogin(data.user);
-            navigate("/");
         } catch (err) {
             setError(err.message);
         }

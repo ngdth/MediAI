@@ -6,6 +6,7 @@ import PageHeading from "../../Components/PageHeading";
 import SectionHeading from "../../Components/SectionHeading";
 import Section from "../../Components/Section";
 
+//Nurse will accept and manage patient's reservation.
 const DoctorAppointments = () => {
   const headingData = { title: "Patient Appointments" };
   const navigate = useNavigate();

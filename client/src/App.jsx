@@ -1,3 +1,4 @@
+
 import { Route, Routes, useLocation } from "react-router-dom";
 import Layout from "./Components/Layout/Layout";
 import LayoutWithoutHeader from "./components/Layout/LayoutWithoutHeader";
@@ -40,6 +41,7 @@ import DoctorManagement from "./Pages/Admin/DoctorManagement";
 import "aos/dist/aos.css";
 import Aos from "aos";
 import { useEffect } from "react";
+
 
 function App() {
   Aos.init({
@@ -105,7 +107,17 @@ function App() {
           <Route path="/verify" element={<VerifyPage />} />
           <Route path="/forgotPass" element={<ForgotPass />} />
           <Route path="/resetPass" element={<ResetPass />} />
+        </Route>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="/admin/users" element={<UserManagement />} />
           <Route path="/admin/doctors" element={<DoctorManagement />} />
+          <Route path="/admin/nurses" element={<NurseManagement />} />
+          <Route path="/admin/services" element={<ServiceManagement />} />
+        </Route>
+        <Route path="/doctor" element={<DoctorLayout />}>
+          <Route path="/doctor/doctors" element={<DoctorManagement />} />
+          <Route path="/doctor/nurses" element={<NurseManagement />} />
+          <Route path="/doctor/services" element={<ServiceManagement />} />
         </Route>
       </Routes>
       <ScrollUpButton />
