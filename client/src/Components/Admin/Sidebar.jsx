@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FaBars, FaTachometerAlt, FaTimes, FaUser, FaUserMd, FaUserNurse } from "react-icons/fa";
+import { FaBars, FaClipboard, FaHospital, FaTachometerAlt, FaTimes, FaUser, FaUserMd, FaUserNurse } from "react-icons/fa";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   return (
@@ -33,6 +33,18 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             <Link to="/admin/nurses" className="menu-item">
               <FaUserNurse className="menu-icon" />
               <span>Nurse Management</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/admin/pharmacy" className="menu-item">
+              <FaHospital className="menu-icon" />
+              <span>Pharmacy Management</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/admin/services" className="menu-item">
+              <FaClipboard className="menu-icon" />
+              <span>Service Management</span>
             </Link>
           </li>
         </ul>

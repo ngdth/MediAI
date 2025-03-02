@@ -33,6 +33,7 @@ import FavoritesPage from './Pages/User/FavoritesPage';
 import UserManagement from './Pages/Admin/UserManagement';
 import DoctorManagement from './Pages/Admin/DoctorManagement';
 import NurseManagement from './Pages/Admin/NurseManagement';
+import PharmacyManagement from './Pages/Admin/PharmacyManagement';
 import ServiceManagement from './Pages/Admin/ServiceManagement';
 import 'aos/dist/aos.css';
 import Aos from 'aos';
@@ -91,6 +92,7 @@ function App() {
           <Route path="/admin/users" element={<UserManagement />} />
           <Route path="/admin/doctors" element={<DoctorManagement />} />
           <Route path="/admin/nurses" element={<NurseManagement />} />
+          <Route path="/admin/pharmacy" element={<PharmacyManagement />} />
           <Route path="/admin/services" element={<ServiceManagement />} />
         </Route>
         <Route path="/doctor" element={<DoctorLayout />}>
