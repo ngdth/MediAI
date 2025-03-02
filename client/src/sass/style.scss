@@ -102,3 +102,20 @@
 .react-datepicker__triangle {
   display: none;
 }
+.cs-btn-container {
+  display: flex;
+  justify-content: center; 
+  gap: 20px; 
+}
+.table th, .table td {
+  border-right: 2px solid #ddd; 
+}
+
+.table {
+  border: 1px solid #ddd;
+  border-collapse: collapse; 
+}
+
+
+
+

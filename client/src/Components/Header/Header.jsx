@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
   FaEnvelope,
   FaFacebookF,
   FaInstagram,
   FaPinterestP,
   FaTwitter,
-} from 'react-icons/fa';
-import { FaAnglesRight, FaLocationDot } from 'react-icons/fa6';
-import { HiMiniMagnifyingGlass } from 'react-icons/hi2';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+} from "react-icons/fa";
+import { FaAnglesRight, FaLocationDot } from "react-icons/fa6";
+import { HiMiniMagnifyingGlass } from "react-icons/hi2";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Header = ({ isTopBar, variant }) => {
   const [isShowMobileMenu, setIsShowMobileMenu] = useState(false);
@@ -25,16 +25,16 @@ const Header = ({ isTopBar, variant }) => {
     const handleScroll = () => {
       const currentScrollPos = window.scrollY;
       if (currentScrollPos > prevScrollPos) {
-        setIsSticky('cs_gescout_sticky'); // Scrolling down
+        setIsSticky("cs_gescout_sticky"); // Scrolling down
       } else if (currentScrollPos !== 0) {
-        setIsSticky('cs_gescout_sticky cs_gescout_show'); // Scrolling up
+        setIsSticky("cs_gescout_sticky cs_gescout_show"); // Scrolling up
       } else {
         setIsSticky();
       }
       setPrevScrollPos(currentScrollPos); // Update previous scroll position
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
 
     const handleLogin = () => {
       setUsername(localStorage.getItem("username"));
@@ -43,7 +43,7 @@ const Header = ({ isTopBar, variant }) => {
     window.addEventListener("loginSuccess", handleLogin);
 
     return () => {
-      window.removeEventListener('scroll', handleScroll); // Cleanup the event listener
+      window.removeEventListener("scroll", handleScroll); // Cleanup the event listener
       window.removeEventListener("loginSuccess", handleLogin);
     };
   }, [prevScrollPos]);
@@ -56,73 +56,75 @@ const Header = ({ isTopBar, variant }) => {
   };
 
   const menu = {
-    email: 'demo@example.com',
-    location: '15/K, Dhaka London City, LOT',
-    logoUrl: '/assets/img/logo.svg',
-    logoLink: '/',
+    email: "demo@example.com",
+    location: "15/K, Dhaka London City, LOT",
+    logoUrl: "/assets/img/logo.png",
+    logoLink: "/",
     navItems: [
       {
-        label: 'Home',
-        href: '/',
+        label: "Home",
+        href: "/",
         subItems: [
-          { label: 'Main Home', href: '/' },
-          { label: 'Home V2', href: '/home-v2' },
-          { label: 'Home V3', href: '/home-v3' },
+          { label: "Main Home", href: "/" },
+          { label: "Home V2", href: "/home-v2" },
+          { label: "Home V3", href: "/home-v3" },
         ],
       },
-      { label: 'About', href: '/about' },
+      { label: "About", href: "/about" },
       {
-        label: 'Service',
-        href: '/service',
+        label: "Service",
+        href: "/service",
         subItems: [
-          { label: 'Service', href: '/service' },
-          { label: 'Service Details', href: '/service/service-details' },
-        ],
-      },
-      {
-        label: 'Blog',
-        href: '/blog',
-        subItems: [
-          { label: 'Blog List', href: '/blog' },
-          { label: 'Blog Details', href: '/blog/blog-details' },
+          { label: "Service", href: "/service" },
+          { label: "Service Details", href: "/service/service-details" },
         ],
       },
       {
-        label: 'Pages',
-        href: '/',
+        label: "Blog",
+        href: "/blog",
         subItems: [
-          { label: 'Appointments', href: '/appointments' },
-          { label: 'Doctors', href: '/doctors' },
-          { label: 'Doctor Details', href: '/doctors/doctor-details' },
-          { label: 'Timetable', href: '/timetable' },
-          { label: 'Portfolio', href: '/portfolio' },
-          { label: 'Appointments History', href: '/appointmentshistory' },
-          { label: 'Doctor Appointments', href: '/doctorappointments' },
-          { label: 'Error 404', href: '/error' },
+          { label: "Blog List", href: "/blog" },
+          { label: "Blog Details", href: "/blog/blog-details" },
         ],
       },
-      { label: 'Contact', href: '/contact' },
+      {
+        label: "Pages",
+        href: "/",
+        subItems: [
+          { label: "Appointments", href: "/appointments" },
+          { label: "Doctors", href: "/doctors" },
+          { label: "Doctor Details", href: "/doctors/doctor-details" },
+          { label: "Timetable", href: "/timetable" },
+          { label: "Portfolio", href: "/portfolio" },
+          { label: "Appointments History", href: "/appointmentshistory" },
+          { label: "Doctor Appointments", href: "/doctorappointments" },
+          { label: "Diagnosis Management", href: "/diagnosismanagement" },
+          { label: "Prescription Management", href: "/prescriptionmanagement" },
+          
+        ],
+      },
+      { label: "Contact", href: "/contact" },
     ],
-    btnUrl: '/contact',
-    btnText: 'Contact Now',
+    btnUrl: "/contact",
+    btnText: "Contact Now",
   };
 
   const accountMenu = username
     ? [
-      { label: "Profile", href: "/profile" },
-      { label: "Favorite", href: "/favorites" },
-      { label: "Logout", action: handleLogout },
-    ]
+        { label: "Profile", href: "/profile" },
+        { label: "Favorite", href: "/favorites" },
+        { label: "Logout", action: handleLogout },
+      ]
     : [
-      { label: "Login", href: "/login" },
-      { label: "Register", href: "/register" },
-    ];
+        { label: "Login", href: "/login" },
+        { label: "Register", href: "/register" },
+      ];
 
-  const handleOpenMobileSubmenu = index => {
+  const handleOpenMobileSubmenu = (index) => {
     if (openMobileSubmenuIndex.includes(index)) {
-      setOpenMobileSubmenuIndex(prev => prev.filter(f => f !== index));
+      setOpenMobileSubmenuIndex((prev) => prev.filter((f) => f !== index));
     } else {
-      setOpenMobileSubmenuIndex(prev => [...prev, index]);
+      setOpenMobileSubmenuIndex((prev) => [...prev, index]);
     }
   };
 
@@ -137,8 +139,8 @@ const Header = ({ isTopBar, variant }) => {
   return (
     <>
       <header
-        className={`cs_site_header cs_style_1 ${variant ? variant : ''}
-          cs_primary_color cs_sticky_header ${isSticky ? isSticky : ''}`}
+        className={`cs_site_header cs_style_1 ${variant ? variant : ""}
+          cs_primary_color cs_sticky_header ${isSticky ? isSticky : ""}`}
       >
         {isTopBar && (
           <div className="cs_top_header cs_blue_bg cs_white_color">
@@ -199,12 +201,12 @@ const Header = ({ isTopBar, variant }) => {
               <div className="cs_main_header_right">
                 <div className="cs_nav cs_primary_color">
                   <ul
-                    className={`cs_nav_list ${isShowMobileMenu && 'cs_active'}`}
+                    className={`cs_nav_list ${isShowMobileMenu && "cs_active"}`}
                   >
                     {menu.navItems.map((item, index) => (
                       <li
                         className={
-                          item.subItems ? 'menu-item-has-children' : ''
+                          item.subItems ? "menu-item-has-children" : ""
                         }
                         key={index}
                       >
@@ -218,8 +220,8 @@ const Header = ({ isTopBar, variant }) => {
                           <ul
                             style={{
                               display: openMobileSubmenuIndex.includes(index)
-                                ? 'block'
-                                : 'none',
+                                ? "block"
+                                : "none",
                             }}
                           >
                             {item.subItems.map((subItem, subIndex) => (
@@ -238,10 +240,11 @@ const Header = ({ isTopBar, variant }) => {
                         )}
                         {item.subItems?.length && (
                           <span
-                            className={`cs_menu_dropdown_toggle ${openMobileSubmenuIndex.includes(index)
-                              ? 'active'
-                              : ''
-                              }`}
+                            className={`cs_menu_dropdown_toggle ${
+                              openMobileSubmenuIndex.includes(index)
+                                ? "active"
+                                : ""
+                            }`}
                             onClick={() => handleOpenMobileSubmenu(index)}
                           >
                             <span></span>
@@ -258,7 +261,13 @@ const Header = ({ isTopBar, variant }) => {
                             {subItem.href ? (
                               <Link to={subItem.href}>{subItem.label}</Link>
                             ) : (
-                              <Link to="#" onClick={(e) => { e.preventDefault(); subItem.action(); }}>
+                              <Link
+                                to="#"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  subItem.action();
+                                }}
+                              >
                                 {subItem.label}
                               </Link>
                             )}
@@ -268,7 +277,9 @@ const Header = ({ isTopBar, variant }) => {
                     </li>
                   </ul>
                   <span
-                    className={`cs_menu_toggle ${isShowMobileMenu && 'cs_toggle_active'}`}
+                    className={`cs_menu_toggle ${
+                      isShowMobileMenu && "cs_toggle_active"
+                    }`}
                     onClick={() => setIsShowMobileMenu(!isShowMobileMenu)}
                   >
                     <span></span>
@@ -285,7 +296,9 @@ const Header = ({ isTopBar, variant }) => {
                   </div>
                   <form
                     action="#"
-                    className={`cs_header_search_form ${isSearchActive ? 'active' : ''}`}
+                    className={`cs_header_search_form ${
+                      isSearchActive ? "active" : ""
+                    }`}
                     onSubmit={handleSearch}
                   >
                     <div className="cs_header_search_form_in">
@@ -314,7 +327,7 @@ const Header = ({ isTopBar, variant }) => {
             </div>
           </div>
         </div>
-        {variant == 'cs_type_1' && (
+        {variant == "cs_type_1" && (
           <div className="cs_main_header_shape">
             <svg
               width={1679}

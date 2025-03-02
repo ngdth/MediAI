@@ -10,7 +10,7 @@ const headingData = {
 const leftSideData = {
   imageSrc: '/assets/img/post_details_1.jpeg',
   imageAlt: 'Post Image',
-  text: 'Medilo',
+  text: 'AMMA',
   secText: 'June,10,2024',
   thirdSecTitle: 'Make an Appointment',
 
@@ -126,7 +126,7 @@ const BlogsDetails = () => {
     <>
       <Section
         className={'cs_page_heading cs_bg_filed cs_center'}
-        backgroundImage="/assets/img/page_heading_bg.jpg"
+        backgroundImage="/assets/img/blog.jpg"
       >
         <PageHeading data={headingData} />
       </Section>
