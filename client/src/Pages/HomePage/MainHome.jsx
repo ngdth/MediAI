@@ -16,7 +16,7 @@ import ContactSection2 from '../../Components/ContactSection/ContactSection2.jsx
 const heroData = {
   primarySlider: [
     {
-      bgImageUrl: 'assets/img/hero_slider_3.jpg',
+      bgImageUrl: 'assets/img/background.jpg',
       title: 'We Hospital Doctors Patients <span>Service.</span>',
       contactSubtitle:
         'Medical ers piciatis unde omnis iste natus this the word medical this mountains, far from the countries Vokalia and, live the docor white teeth sitting on a dental for best medical.',
@@ -259,8 +259,8 @@ const teamData = {
 };
 
 const brandData = [
-  { image: '/assets/img/envato-logo.png', altText: 'Brand 1' },
-  { image: '/assets/img/envato-logo.png', altText: 'Brand 2' },
+  { image: '/assets/img/logo.png', altText: 'Brand 1' },
+  { image: '/assets/img/logo.png', altText: 'Brand 2' },
   { image: '/assets/img/envato-logo.png', altText: 'Brand 3' },
   { image: '/assets/img/envato-logo.png', altText: 'Brand 4' },
   { image: '/assets/img/envato-logo.png', altText: 'Brand 5' },
