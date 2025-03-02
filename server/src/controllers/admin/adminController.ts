@@ -3,6 +3,45 @@ import { Request, Response } from "express";
 import User, { Doctor, IDoctor, INurse, Nurse } from "../../models/User";
 import mongoose from "mongoose";
 
+export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
+    try {
+        // Lấy danh sách tất cả user có role là "user"
+        const users = await User.find({ role: "user" }).select("-password");
+
+        if (!users.length) {
+            res.status(404).json({ error: "No nurses found." });
+            return;
+        }
+
+        res.status(200).json(users);
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).json({ error: "Failed to fetch users." });
+    }
+};
+
+export const setUserStatus = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { userId } = req.params;
+
+        // Kiểm tra user có tồn tại không
+        const user = await User.findById(userId);
+        if (!user) {
+            res.status(404).json({ error: "User not found." });
+            return;
+        }
+
+        // Đảo trạng thái active (ban = false, unban = true)
+        user.active = !user.active;
+        await user.save();
+
+        res.status(200).json({ message: `User ${user.active ? "unbanned" : "banned"} successfully.` });
+    } catch (error) {
+        console.error("Error banning/unbanning user:", error);
+        res.status(500).json({ error: "Failed to update user status." });
+    }
+};
+
 export const createDoctorAccount = async (req: Request, res: Response): Promise<void> => {
     try {
         const { username, email, password, specialization, experience } = req.body;
@@ -128,10 +167,10 @@ export const getAllNurses = async (req: Request, res: Response): Promise<void> =
 
 export const createNurseAccount = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { username, email, password, department, shift } = req.body;
+        const { username, email, password, specialization, experience } = req.body;
 
         // Kiểm tra các trường bắt buộc
-        if (!username || !email || !password) {
+        if (!username || !email || !password || !specialization) {
             res.status(400).json({ error: "Missing required fields." });
             return;
         }
@@ -151,6 +190,8 @@ export const createNurseAccount = async (req: Request, res: Response): Promise<v
             username,
             email,
             password: hashedPassword,
+            specialization,
+            experience,
             role: "nurse",
         });
 
@@ -166,7 +207,7 @@ export const createNurseAccount = async (req: Request, res: Response): Promise<v
 export const updateNurseAccount = async (req: Request, res: Response): Promise<void> => {
     try {
         const nurseId = req.params.nurseId;
-        const { username, email, password } = req.body;
+        const { username, email, password, specialization, experience } = req.body;
 
         // Tìm nurse cần cập nhật
         const nurse = await Nurse.findById(nurseId) as INurse;
@@ -178,6 +219,8 @@ export const updateNurseAccount = async (req: Request, res: Response): Promise<v
         // Cập nhật thông tin nếu có
         if (username) nurse.username = username;
         if (email) nurse.email = email;
+        if (specialization) nurse.specialization = specialization;
+        if (experience !== undefined) nurse.experience = experience;
 
         // Kiểm tra email có bị trùng không
         const existingUser = await User.findOne({ email });

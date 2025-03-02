@@ -1,23 +1,25 @@
 import express from "express";
 import { authenticateToken, authorizeRole } from "../middlewares/authMiddleware";
-import { createDoctorAccount, createNurseAccount, deleteDoctorAccount, deleteNurseAccount, getAllNurses, updateDoctorAccount, updateNurseAccount } from "../controllers/admin/adminController";
+import { createDoctorAccount, createNurseAccount, deleteDoctorAccount, deleteNurseAccount, getAllNurses, getAllUsers, setUserStatus, updateDoctorAccount, updateNurseAccount } from "../controllers/admin/adminController";
 
 const router = express.Router();
 
-//Doctor management
-router.post("/doctors/create", createDoctorAccount);
+router.get("/users", authenticateToken, authorizeRole([ "admin"]), getAllUsers);
 
-router.put("/doctors/update/:doctorId", updateDoctorAccount);
+router.put("/users/status/:userId", authenticateToken, authorizeRole([ "admin"]), setUserStatus);
 
-router.delete("/doctors/delete/:doctorId", deleteDoctorAccount);
+router.post("/doctors/create", authenticateToken, authorizeRole([ "admin"]), createDoctorAccount);
 
-//Nurse management
-router.get("/nurses", getAllNurses);
+router.put("/doctors/update/:doctorId", authenticateToken, authorizeRole([ "admin"]), updateDoctorAccount);
 
-router.post("/nurses/create", createNurseAccount);
+router.delete("/doctors/delete/:doctorId", authenticateToken, authorizeRole([ "admin"]), deleteDoctorAccount);
 
-router.put("/nurses/update/:nurseId", updateNurseAccount);
+router.get("/nurses", authenticateToken, authorizeRole([ "admin"]), getAllNurses);
 
-router.delete("/nurses/delete/:nurseId", deleteNurseAccount);
+router.post("/nurses/create", authenticateToken, authorizeRole([ "admin"]), createNurseAccount);
+
+router.put("/nurses/update/:nurseId", authenticateToken, authorizeRole([ "admin"]), updateNurseAccount);
+
+router.delete("/nurses/delete/:nurseId", authenticateToken, authorizeRole([ "admin"]), deleteNurseAccount);
 
 export default router;
