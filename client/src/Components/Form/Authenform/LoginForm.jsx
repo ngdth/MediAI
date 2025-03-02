@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaGoogle } from "react-icons/fa6";
 import { Form, Button, Alert, Container, Row, Col } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import "../../sass/common/_general.scss";
+import "../../../sass/common/_general.scss"; 
 // import { GoogleLogin } from '@react-oauth/google';
 
 const LoginForm = ({ onLogin }) => {
@@ -13,10 +13,19 @@ const LoginForm = ({ onLogin }) => {
     const [error, setError] = useState("");
 
     //   const [isChecked, setIsChecked] = useState(false);
-
     //   const handleCheckboxChange = (e) => {
     //     setIsChecked(e.target.checked);
     //   };
+
+    useEffect(() => {
+        if (user) {
+            if (user.role === "admin") {
+                navigate("/admin/doctors");
+            } else {
+                navigate("/");
+            }
+        }
+    }, [user, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -53,22 +62,6 @@ const LoginForm = ({ onLogin }) => {
             localStorage.setItem("username", data.user.username);
 
             onLogin(data.user);
-
-            useEffect(() => {
-                if (user) {
-                    if (user.role === "admin") {
-                        navigate("/admin/dashboard"); 
-                    } else {
-                        navigate("/");
-                    }
-                }
-            }, [user, navigate]); // useEffect chỉ chạy khi `user` thay đổi
-
-            // if (data.user.role === "admin"){
-            //     navigate("/");
-            // }
-            // navigate("/");
-            
         } catch (err) {
             setError(err.message);
         }

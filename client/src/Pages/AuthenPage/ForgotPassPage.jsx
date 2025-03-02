@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Container, Row, Col, Image, Card } from "react-bootstrap";
-import ForgotPassForm from "../../components/Form/ForgotPassForm";
+import ForgotPassForm from "../../components/Form/Authenform/ForgotPassForm";
 
 function ForgotPassPage() {
 
