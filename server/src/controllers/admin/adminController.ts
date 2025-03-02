@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
-import User, { Doctor, IDoctor, INurse, Nurse } from "../../models/User";
+import User, { Doctor, IDoctor, INurse, IPharmacy, Nurse, Pharmacy } from "../../models/User";
 import mongoose from "mongoose";
 
 export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
@@ -268,5 +268,82 @@ export const deleteNurseAccount = async (req: Request, res: Response): Promise<v
     } catch (error) {
         console.error("Error deleting nurse account:", error);
         res.status(500).json({ error: "Failed to delete nurse account." });
+    }
+};
+
+export const getAllPharmacy = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const pharmacies = await Pharmacy.find().select("-password");
+        res.status(200).json(pharmacies);
+    } catch (error) {
+        console.error("Error fetching pharmacies:", error);
+        res.status(500).json({ error: "Failed to fetch pharmacies." });
+    }
+};
+
+export const createPharmacy = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { username, email, password, pharmacyName, location } = req.body;
+
+        if (!username || !email || !password || !pharmacyName || !location) {
+            res.status(400).json({ error: "All fields are required" });
+            return;
+        }
+
+        const newPharmacy = new Pharmacy({
+            username,
+            email,
+            password,
+            pharmacyName,
+            location,
+            role: "pharmacy",
+        });
+
+        await newPharmacy.save();
+        res.status(201).json({ message: "Pharmacy created successfully", pharmacy: newPharmacy });
+    } catch (error) {
+        console.error("Error creating pharmacy:", error);
+        res.status(500).json({ error: "Failed to create pharmacy." });
+    }
+};
+
+export const updatePharmacy = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { username, email, pharmacyName, location } = req.body;
+        const { id } = req.params;
+
+        const pharmacy = await Pharmacy.findById(id) as IPharmacy;
+        if (!pharmacy) {
+            res.status(404).json({ error: "Pharmacy not found" });
+            return;
+        }
+
+        pharmacy.username = username || pharmacy.username;
+        pharmacy.email = email || pharmacy.email;
+        pharmacy.pharmacyName = pharmacyName || pharmacy.pharmacyName;
+        pharmacy.location = location || pharmacy.location;
+
+        await pharmacy.save();
+        res.status(200).json({ message: "Pharmacy updated successfully", pharmacy });
+    } catch (error) {
+        console.error("Error updating pharmacy:", error);
+        res.status(500).json({ error: "Failed to update pharmacy." });
+    }
+};
+
+export const deletePharmacy = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const deletedPharmacy = await Pharmacy.findByIdAndDelete(id);
+
+        if (!deletedPharmacy) {
+            res.status(404).json({ error: "Pharmacy not found" });
+            return;
+        }
+
+        res.status(200).json({ message: "Pharmacy deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting pharmacy:", error);
+        res.status(500).json({ error: "Failed to delete pharmacy." });
     }
 };

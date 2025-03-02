@@ -1,6 +1,6 @@
 import express from "express";
 import { authenticateToken, authorizeRole } from "../middlewares/authMiddleware";
-import { createDoctorAccount, createNurseAccount, deleteDoctorAccount, deleteNurseAccount, getAllNurses, getAllUsers, setUserStatus, updateDoctorAccount, updateNurseAccount } from "../controllers/admin/adminController";
+import { createDoctorAccount, createNurseAccount, createPharmacy, deleteDoctorAccount, deleteNurseAccount, deletePharmacy, getAllNurses, getAllPharmacy, getAllUsers, setUserStatus, updateDoctorAccount, updateNurseAccount, updatePharmacy } from "../controllers/admin/adminController";
 
 const router = express.Router();
 
@@ -21,5 +21,13 @@ router.post("/nurses/create", authenticateToken, authorizeRole([ "admin"]), crea
 router.put("/nurses/update/:nurseId", authenticateToken, authorizeRole([ "admin"]), updateNurseAccount);
 
 router.delete("/nurses/delete/:nurseId", authenticateToken, authorizeRole([ "admin"]), deleteNurseAccount);
+
+router.get("/pharmacy", authenticateToken, authorizeRole([ "admin"]), getAllPharmacy);
+
+router.post("/pharmacy/create", authenticateToken, authorizeRole([ "admin"]), createPharmacy);
+
+router.put("/pharmacy/update/:pharmacyId", authenticateToken, authorizeRole([ "admin"]), updatePharmacy);
+
+router.delete("/pharmacy/delete/:pharmacyId", authenticateToken, authorizeRole([ "admin"]), deletePharmacy);
 
 export default router;

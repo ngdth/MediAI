@@ -1,0 +1,151 @@
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Modal, Button } from "react-bootstrap";
+
+const PharmacyManagement = () => {
+    const [pharmacy, setPharmacy] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [formData, setFormData] = useState({
+        username: "",
+        email: "",
+        password: "",
+        pharmacyName: "",
+        location: "",
+    });
+    const [editingPharmacy, setEditingPharmacy] = useState(null);
+    const token = localStorage.getItem("token");
+
+    useEffect(() => {
+        fetchPharmacy();
+    }, []);
+
+    const fetchPharmacy = async () => {
+        try {
+            const response = await axios.get("http://localhost:8080/admin/pharmacy", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setPharmacy(response.data);
+        } catch (error) {
+            console.error("Error fetching pharmacy:", error);
+        }
+    };
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            if (editingPharmacy) {
+                await axios.put(`http://localhost:8080/admin/pharmacy/update/${editingPharmacy._id}`, formData, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+            } else {
+                await axios.post("http://localhost:8080/admin/pharmacy/create", formData, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+            }
+            fetchPharmacy();
+            handleCloseModal();
+        } catch (error) {
+            console.error("Error saving pharmacy:", error);
+        }
+    };
+
+    const handleEdit = (pharmacy) => {
+        setFormData({
+            username: pharmacy.username,
+            email: pharmacy.email,
+            password: "",
+            pharmacyName: pharmacy.pharmacyName,
+            location: pharmacy.location,
+        });
+        setEditingPharmacy(pharmacy);
+        setShowModal(true);
+    };
+
+    const handleDelete = async (pharmacyId) => {
+        try {
+            await axios.delete(`http://localhost:8080/admin/pharmacy/delete/${pharmacyId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            fetchPharmacy();
+        } catch (error) {
+            console.error("Error deleting pharmacy:", error);
+        }
+    };
+
+    const handleShowModal = () => {
+        setFormData({ username: "", email: "", password: "", pharmacyName: "", location: "" });
+        setEditingPharmacy(null);
+        setShowModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
+
+    return (
+        <div className="container mt-5" style={{ minHeight: "80vh", display: "flex", flexDirection: "column", paddingTop: "100px" }}>
+            <h2 className="text-center mb-4">Pharmacy Management</h2>
+
+            <div className="d-flex justify-content-end mb-3">
+                <button className="btn btn-primary" onClick={handleShowModal}>
+                    Add Pharmacy
+                </button>
+            </div>
+
+            <div className="table-responsive">
+                <table className="table table-bordered text-center">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Pharmacy Name</th>
+                            <th>Location</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {pharmacy.map((pharmacy) => (
+                            <tr key={pharmacy._id}>
+                                <td>{pharmacy.username}</td>
+                                <td>{pharmacy.email}</td>
+                                <td>{pharmacy.pharmacyName}</td>
+                                <td>{pharmacy.location}</td>
+                                <td>
+                                    <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(pharmacy)}>Edit</button>
+                                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(pharmacy._id)}>Delete</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Modal thêm/sửa Pharmacy */}
+            <Modal show={showModal} onHide={handleCloseModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>{editingPharmacy ? "Edit Pharmacy" : "Add Pharmacy"}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <form onSubmit={handleSubmit}>
+                        <input type="text" name="username" placeholder="Username" value={formData.username} onChange={handleChange} required className="form-control mb-2" />
+                        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required className="form-control mb-2" />
+                        <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required={!editingPharmacy} className="form-control mb-2" />
+                        <input type="text" name="pharmacyName" placeholder="Pharmacy Name" value={formData.pharmacyName} onChange={handleChange} required className="form-control mb-2" />
+                        <input type="text" name="location" placeholder="Location" value={formData.location} onChange={handleChange} required className="form-control mb-2" />
+
+                        <div className="text-end">
+                            <Button variant="secondary" onClick={handleCloseModal} className="me-2">Cancel</Button>
+                            <Button type="submit" variant="primary">{editingPharmacy ? "Update" : "Add"}</Button>
+                        </div>
+                    </form>
+                </Modal.Body>
+            </Modal>
+        </div>
+    );
+};
+
+export default PharmacyManagement;
