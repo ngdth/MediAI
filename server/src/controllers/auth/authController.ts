@@ -274,3 +274,48 @@ export const deleteUnverifiedAcc = async (req: Request, res: Response): Promise<
         res.status(500).json({ message: "Error deleting user", error });
     }
 };
+
+//Change pasword
+export const changePassword: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { oldPassword, newPassword, confPassword  } = req.body;
+
+        if (!oldPassword || !newPassword || !confPassword) {
+            res.status(400).json({ message: "Missing required fields" });
+            return;
+        }
+
+        if (newPassword !== confPassword) {
+            res.status(400).json({ message: "New password and confirm password do not match" });
+            return;
+        }
+
+        const userId = req.params.id;
+        const user = await User.findById(userId); 
+        if (!user) {
+            res.status(404).json({ message: "User not found" });
+            return;
+        }
+
+
+        if (!user.password) {
+            res.status(500).json({ message: "Password is missing for this user." });
+            return;
+        }
+
+        const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+        if (!isPasswordValid) {
+            res.status(401).json({ message: "Wrong password" });
+            return;
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        await user.save();
+
+        res.status(200).json({ message: "Password change successful" });
+    } catch (error) {
+        console.error("Error changing password:", error);
+        res.status(500).json({ message: "Internal server error", error });
+    }
+};

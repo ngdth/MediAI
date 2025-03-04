@@ -30,6 +30,7 @@ import DoctorsResultPage from './Pages/Pages/DoctorsResultPage';
 import FavoritesPage from './Pages/User/FavoritesPage';
 import DoctorManagement from './Pages/Admin/DoctorManagement';
 import ServiceManagement from './Pages/Admin/ServiceManagement';
+import UserProfile from './pages/User/Profile';
 import 'aos/dist/aos.css';
 import Aos from 'aos';
 import { useEffect } from 'react';
@@ -75,6 +76,7 @@ function App() {
           <Route path="*" element={<ErrorPage />} />
           <Route path="/search" element={<DoctorsResultPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
+          <Route path="/user/profile" element={<UserProfile />} />
         </Route>
         <Route path="/" element={<LayoutWithoutHeader />}>
           <Route path="/login" element={<LoginPage />} />
@@ -84,6 +86,7 @@ function App() {
           <Route path="/resetPass" element={<ResetPass />} />
           <Route path="/admin/doctors" element={<DoctorManagement />} />
           <Route path="/admin/services" element={<ServiceManagement />} />
+
         </Route>
       </Routes>
       <ScrollUpButton />
