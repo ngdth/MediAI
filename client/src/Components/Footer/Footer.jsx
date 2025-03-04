@@ -11,7 +11,8 @@ import { Link } from 'react-router-dom';
 
 const data = {
   backgroundImage: 'assets/img/footer_bg.jpg',
-  logo: '/favicon.png',
+  logo: '/assets/img/logo.png',
+
   contact: [
     {
       icon: 'fa-regular fa-clock',
@@ -80,7 +81,7 @@ const data = {
 const Footer = () => {
   const data = {
     backgroundImage: '/assets/img/footer_bg.jpg',
-    logo: '/assets/img/footer_logo.svg',
+    logo: '/assets/img/footer_logo.png',
     contactText:
       'Open Hours of Government: <br /> Mon - Fri: 8.00 am. - 6.00 pm.',
     contactText2: '13/A, Miranda Halim City.',

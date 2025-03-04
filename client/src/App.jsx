@@ -1,6 +1,8 @@
 import { Route, Routes, useLocation } from 'react-router-dom';
 import Layout from './Components/Layout/Layout';
 import LayoutWithoutHeader from './components/Layout/LayoutWithoutHeader';
+import AdminLayout from './Components/Layout/AdminLayout';
+import DoctorLayout from './Components/Layout/DoctorLayout';
 import MainHome from './Pages/HomePage/MainHome';
 import HomeV2 from './Pages/HomePage/HomeV2';
 import HomeV3 from './Pages/HomePage/HomeV3';
@@ -25,10 +27,21 @@ import AppointmentsHistory from './Pages/Pages/AppointmentsHistory';
 import UpdateAppointment from './Pages/Pages/UpdateAppointment';
 import DoctorAppointments from './Pages/Pages/DoctorAppointments';
 import AppointmentDetail from './Pages/Pages/AppointmentDetail';
+import DiagnosisForm from "./Pages/Pages/DiagnosisForm";
+import DiagnosisManagement from "./Pages/Pages/DiagnosisManagement";
+import DiagnosisDetailPage from "./Pages/Pages/DiagnosisDetailPage";
+import UpdateDiagnosisPage from "./Pages/Pages/UpdateDiagnosisPage";
+import PrescriptionForm from "./Pages/Pages/PrescriptionForm";
+import PrescriptionManagement from "./Pages/Pages/PrescriptionManagement";
+import PrescriptionDetailPage from "./Pages/Pages/PrescriptionDetailPage";
+import UpdatePrescriptionPage from "./Pages/Pages/UpdatePrescriptionPage";
 import ScrollUpButton from './Components/ScrollUpButton';
 import DoctorsResultPage from './Pages/Pages/DoctorsResultPage';
 import FavoritesPage from './Pages/User/FavoritesPage';
+import UserManagement from './Pages/Admin/UserManagement';
 import DoctorManagement from './Pages/Admin/DoctorManagement';
+import NurseManagement from './Pages/Admin/NurseManagement';
+import PharmacyManagement from './Pages/Admin/PharmacyManagement';
 import ServiceManagement from './Pages/Admin/ServiceManagement';
 import UserProfile from './pages/User/Profile';
 import 'aos/dist/aos.css';
@@ -39,7 +52,7 @@ function App() {
   Aos.init({
     duration: 1500,
     delay: 0.25,
-    disable: 'mobile',
+    disable: "mobile",
   });
   const { pathname } = useLocation();
 
@@ -63,12 +76,28 @@ function App() {
           <Route path="/blog" element={<BlogsPage />} />
           <Route path="/blog/:blogId" element={<BlogsDetails />} />
           <Route path="/appointments" element={<Appointments />} />
-          <Route path="/appointmentshistory" element={<AppointmentsHistory />} />
-          <Route path="/updateappointment/:appointmentId" element={<UpdateAppointment />} />
-          <Route path="/appointment/:id" element={<AppointmentDetail />} />
+          <Route
+            path="/appointmentshistory"
+            element={<AppointmentsHistory />}
+          />
+          <Route
+            path="/updateappointment/:appointmentId"
+            element={<UpdateAppointment />}
+          />
+            <Route path="/updatediagnosis/:diagnosisId" element={<UpdateDiagnosisPage />} />
+            <Route path="/updateprescription/:prescriptionId" element={<UpdatePrescriptionPage />} />
+
           <Route path="/doctorappointments" element={<DoctorAppointments />} />
+          <Route path="/appointment/:id" element={<AppointmentDetail />} />
           <Route path="/doctors" element={<DoctorsPage />} />
           <Route path="/doctors/:doctorId" element={<DoctorsDetailsPage />} />
+          <Route path="/diagnosisform" element={<DiagnosisForm />} />
+          <Route path="/diagnosismanagement" element={<DiagnosisManagement />} />
+          <Route path="/diagnosisdetails/:id" element={<DiagnosisDetailPage />} />
+          <Route path="/prescriptionform" element={<PrescriptionForm />} />
+          <Route path="/prescriptionmanagement" element={<PrescriptionManagement />} />
+          <Route path="/prescriptiondetails/:id" element={<PrescriptionDetailPage />} />
+
           <Route path="/timetable" element={<TimeTablePage />} />
           <Route path="/portfolio" element={<PortfolioPage />} />
           <Route path="/error" element={<ErrorPage />} />
@@ -84,9 +113,19 @@ function App() {
           <Route path="/verify" element={<VerifyPage />} />
           <Route path="/forgotPass" element={<ForgotPass />} />
           <Route path="/resetPass" element={<ResetPass />} />
+        </Route>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="/admin/users" element={<UserManagement />} />
           <Route path="/admin/doctors" element={<DoctorManagement />} />
+          <Route path="/admin/nurses" element={<NurseManagement />} />
+          <Route path="/admin/pharmacy" element={<PharmacyManagement />} />
           <Route path="/admin/services" element={<ServiceManagement />} />
 
+        </Route>
+        <Route path="/doctor" element={<DoctorLayout />}>
+          <Route path="/doctor/doctors" element={<DoctorManagement />} />
+          <Route path="/doctor/nurses" element={<NurseManagement />} />
+          <Route path="/doctor/services" element={<ServiceManagement />} />
         </Route>
       </Routes>
       <ScrollUpButton />

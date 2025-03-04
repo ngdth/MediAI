@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Modal, Button } from "react-bootstrap";
 
-const DoctorManagement = () => {
-    const [doctors, setDoctors] = useState([]);
+const NurseManagement = () => {
+    const [nurses, setNurses] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState({
         username: "",
@@ -12,21 +12,21 @@ const DoctorManagement = () => {
         specialization: "",
         experience: 0,
     });
-    const [editingDoctor, setEditingDoctor] = useState(null);
+    const [editingNurse, setEditingNurse] = useState(null);
     const token = localStorage.getItem("token");
 
     useEffect(() => {
-        fetchDoctors();
+        fetchNurses();
     }, []);
 
-    const fetchDoctors = async () => {
+    const fetchNurses = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/user/doctors", {
+            const response = await axios.get("http://localhost:8080/admin/nurses", {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            setDoctors(response.data);
+            setNurses(response.data);
         } catch (error) {
-            console.error("Error fetching doctors:", error);
+            console.error("Error fetching nurses:", error);
         }
     };
 
@@ -37,48 +37,48 @@ const DoctorManagement = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            if (editingDoctor) {
-                await axios.put(`http://localhost:8080/admin/doctors/update/${editingDoctor._id}`, formData, {
+            if (editingNurse) {
+                await axios.put(`http://localhost:8080/admin/nurses/update/${editingNurse._id}`, formData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
             } else {
-                await axios.post("http://localhost:8080/admin/doctors/create", formData, {
+                await axios.post("http://localhost:8080/admin/nurses/create", formData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
             }
-            fetchDoctors();
+            fetchNurses();
             handleCloseModal();
         } catch (error) {
-            console.error("Error saving doctor:", error);
+            console.error("Error saving nurse:", error);
         }
     };
 
-    const handleEdit = (doctor) => {
+    const handleEdit = (nurse) => {
         setFormData({
-            username: doctor.username,
-            email: doctor.email,
+            username: nurse.username,
+            email: nurse.email,
             password: "",
-            specialization: doctor.specialization,
-            experience: doctor.experience,
+            specialization: nurse.specialization,
+            experience: nurse.experience,
         });
-        setEditingDoctor(doctor);
+        setEditingNurse(nurse);
         setShowModal(true);
     };
 
-    const handleDelete = async (doctorId) => {
+    const handleDelete = async (nurseId) => {
         try {
-            await axios.delete(`http://localhost:8080/admin/doctors/delete/${doctorId}`, {
+            await axios.delete(`http://localhost:8080/admin/nurses/delete/${nurseId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            fetchDoctors();
+            fetchNurses();
         } catch (error) {
-            console.error("Error deleting doctor:", error);
+            console.error("Error deleting nurse:", error);
         }
     };
 
     const handleShowModal = () => {
         setFormData({ username: "", email: "", password: "", specialization: "", experience: 0 });
-        setEditingDoctor(null);
+        setEditingNurse(null);
         setShowModal(true);
     };
 
@@ -88,11 +88,11 @@ const DoctorManagement = () => {
 
     return (
         <div className="container mt-5" style={{ minHeight: "80vh", display: "flex", flexDirection: "column", paddingTop: "100px" }}>
-            <h2 className="text-center mb-4">Doctor Management</h2>
+            <h2 className="text-center mb-4">Nurse Management</h2>
 
             <div className="d-flex justify-content-end mb-3">
                 <button className="btn btn-primary" onClick={handleShowModal}>
-                    Add Doctor
+                    Add Nurse
                 </button>
             </div>
 
@@ -108,15 +108,15 @@ const DoctorManagement = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {doctors.map((doctor) => (
-                            <tr key={doctor._id}>
-                                <td>{doctor.username}</td>
-                                <td>{doctor.email}</td>
-                                <td>{doctor.specialization}</td>
-                                <td>{doctor.experience} years</td>
+                        {nurses.map((nurse) => (
+                            <tr key={nurse._id}>
+                                <td>{nurse.username}</td>
+                                <td>{nurse.email}</td>
+                                <td>{nurse.specialization}</td>
+                                <td>{nurse.experience} years</td>
                                 <td>
-                                    <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(doctor)}>Edit</button>
-                                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(doctor._id)}>Delete</button>
+                                    <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(nurse)}>Edit</button>
+                                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(nurse._id)}>Delete</button>
                                 </td>
                             </tr>
                         ))}
@@ -127,19 +127,19 @@ const DoctorManagement = () => {
             {/* Modal thêm/sửa bác sĩ */}
             <Modal show={showModal} onHide={handleCloseModal} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>{editingDoctor ? "Edit Doctor" : "Add Doctor"}</Modal.Title>
+                    <Modal.Title>{editingNurse ? "Edit Nurse" : "Add Nurse"}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <form onSubmit={handleSubmit}>
                         <input type="text" name="username" placeholder="Username" value={formData.username} onChange={handleChange} required className="form-control mb-2" />
                         <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required className="form-control mb-2" />
-                        <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required={!editingDoctor} className="form-control mb-2" />
+                        <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required={!editingNurse} className="form-control mb-2" />
                         <input type="text" name="specialization" placeholder="Specialization" value={formData.specialization} onChange={handleChange} required className="form-control mb-2" />
                         <input type="number" name="experience" placeholder="Experience" value={formData.experience} onChange={handleChange} required className="form-control mb-2" />
 
                         <div className="text-end">
                             <Button variant="secondary" onClick={handleCloseModal} className="me-2">Cancel</Button>
-                            <Button type="submit" variant="primary">{editingDoctor ? "Update" : "Add"}</Button>
+                            <Button type="submit" variant="primary">{editingNurse ? "Update" : "Add"}</Button>
                         </div>
                     </form>
                 </Modal.Body>
@@ -148,4 +148,4 @@ const DoctorManagement = () => {
     );
 };
 
-export default DoctorManagement;
+export default NurseManagement;

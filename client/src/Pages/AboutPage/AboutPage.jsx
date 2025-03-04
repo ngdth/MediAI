@@ -140,7 +140,7 @@ const AboutPage = () => {
     <div className='about-page-area'>
       <Section
         className={'cs_page_heading cs_bg_filed cs_center'}
-        backgroundImage="/assets/img/page_heading_bg.jpg"
+        backgroundImage="/assets/img/aboutus.jpg"
       >
         <PageHeading data={headingData} />
       </Section>
