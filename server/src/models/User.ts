@@ -3,11 +3,13 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface IUser extends Document {
   username: string;
   email: string;
-  password: string;
+  password?: string;
+  imageUrl?: string;
+  googleId?: string;
   role: "admin" | "user" | "doctor" | "nurse" | "pharmacy";
   verified: boolean;
   active: boolean;
-  favorites: mongoose.Types.ObjectId[];
+  favorites?: mongoose.Types.ObjectId[];
 }
 
 export interface IDoctor extends IUser {
@@ -29,17 +31,18 @@ const UserSchema: Schema = new Schema(
   {
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: { type: String },
     imageUrl: { type: String, default: "" },
+    googleId: { type: String, unique: true, sparse: true },   // support google login
     role: { type: String, enum: ["admin", "user", "doctor", "nurse", "pharmacy"], default: "user" },
     verified: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
-    favorites: [{ type: mongoose.Types.ObjectId }],
+    favorites: [{ type: mongoose.Types.ObjectId, ref: "user" }],
   },
   { timestamps: true, discriminatorKey: "role" }
 );
 
-const User = mongoose.model<IUser>("user", UserSchema);
+const User = mongoose.model<IUser>("User", UserSchema);
 
 const DoctorSchema: Schema = new Schema(
   {
