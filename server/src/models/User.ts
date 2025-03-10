@@ -42,7 +42,7 @@ const UserSchema: Schema = new Schema(
   { timestamps: true, discriminatorKey: "role" }
 );
 
-const User = mongoose.model<IUser>("user", UserSchema);
+const User = mongoose.model<IUser>("User", UserSchema);
 
 const DoctorSchema: Schema = new Schema(
   {
