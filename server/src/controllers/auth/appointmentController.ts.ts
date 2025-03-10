@@ -6,19 +6,16 @@ import mongoose from 'mongoose';
 import Schedule from '../../models/Schedule';
 import { sendEmail  } from "../../config/email";
 
-// ✅ API: Đặt lịch hẹn & gửi email xác nhận
+//Đặt lịch hẹn & gửi email xác nhận
 export const createAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const userId = req.user?.id;
         const { patientName, date, time, symptoms } = req.body;
 
-        // ✅ Kiểm tra input, bỏ yêu cầu `doctorId`
         if (!patientName || !date || !time || !symptoms) {
             res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin" });
             return;
         }
-
-        // ✅ Tạo lịch hẹn không cần `doctorId`
         const newAppointment = new Appointment({
             userId,
             patientName,
@@ -29,15 +26,11 @@ export const createAppointment = async (req: Request, res: Response, next: NextF
         });
 
         await newAppointment.save();
-
-        // ✅ Lấy thông tin user
         const user = await User.findById(userId);
         if (!user) {
             res.status(404).json({ message: 'User không tồn tại' });
             return;
         }
-
-        // 📩 Gửi email xác nhận đặt lịch
         await sendEmail(user.email, {
             patientName,
             date,
@@ -64,26 +57,54 @@ export const getPendingAppointments = async (req: Request, res: Response): Promi
     }
 };
 
-export const updateAppointmentStatus = async (req: Request, res: Response): Promise<void> => {
+export const updateAppointmentStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id } = req.params;
         const { status } = req.body;
 
-        if (!["Accepted", "Rejected"].includes(status)) {
-            res.status(400).json({ message: "Trạng thái không hợp lệ" });
+        if (![AppointmentStatus.ACCEPTED, AppointmentStatus.REJECTED, AppointmentStatus.ASSIGNED].includes(status)) {
+            res.status(400).json({ message: "Invalid status" });
             return;
         }
 
-        const appointment = await Appointment.findByIdAndUpdate(id, { status }, { new: true });
-
+        const appointment = await Appointment.findById(id).populate("userId", "email username").populate("doctorId", "username");
         if (!appointment) {
-            res.status(404).json({ message: "Lịch hẹn không tồn tại" });
+            res.status(404).json({ message: "Appointment not found" });
             return;
         }
 
-        res.status(200).json({ message: `Lịch hẹn đã được cập nhật thành ${status}`, data: appointment });
+        if (status === AppointmentStatus.REJECTED) {
+            await Appointment.findByIdAndDelete(id);
+            res.status(200).json({ message: "Appointment has been removed" });
+            return;
+        }
+
+        appointment.status = status;
+        await appointment.save();
+
+        if (status === AppointmentStatus.ASSIGNED) {
+            if (!appointment.doctorId) {
+                res.status(400).json({ message: "Doctor must be assigned before confirming appointment." });
+                return;
+            }
+
+            const emailData = {
+                patientName: appointment.patientName,
+                doctorName: (appointment.doctorId as any).username,
+                date: appointment.date,
+                time: appointment.time,
+            };
+
+            await sendEmail((appointment.userId as any).email, emailData, "appointment_assigned");
+        }
+
+        res.status(200).json({
+            message: "Appointment updated successfully",
+            data: appointment,
+        });
     } catch (error) {
-        res.status(500).json({ message: "Lỗi khi cập nhật lịch hẹn", error });
+        console.error("Error updating appointment status:", error);
+        next(error);
     }
 };
 
@@ -176,7 +197,17 @@ export const assignDoctor = async (req: Request, res: Response): Promise<void> =
 // View all appointments
 export const viewAllAppointments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const appointments = await Appointment.find().populate('userId', 'username email').populate('doctorId', 'username email');
+        const { status } = req.query;
+
+        let filter = {};
+        if (status) {
+            filter = { status };
+        }
+
+        const appointments = await Appointment.find(filter)
+            .populate('userId', 'username email')
+            .populate('doctorId', 'username email');
+
         res.status(200).json({
             message: 'Appointments retrieved successfully',
             data: appointments,
