@@ -15,7 +15,7 @@ interface IScheduleModel extends Model<ISchedule> {
 // Define Schedule Schema
 const scheduleSchema = new Schema<ISchedule>(
     {
-        doctorId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        doctorId: { type: Schema.Types.ObjectId, ref: 'user', required: true },
         availableSlots: [
             {
                 date: { type: Date, required: true },

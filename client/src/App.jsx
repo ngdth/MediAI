@@ -42,7 +42,8 @@ import UserManagement from './Pages/Admin/UserManagement';
 import DoctorManagement from './Pages/Admin/DoctorManagement';
 import NurseManagement from './Pages/Admin/NurseManagement';
 import PharmacyManagement from './Pages/Admin/PharmacyManagement';
-import ServiceManagement from './Pages/Admin/ServiceManagement';
+// import ServiceManagement from './Pages/Admin/ServiceManagement';
+import AvailabilityCalendar from './Components/Doctor/AvailabilityCalendar';
 import 'aos/dist/aos.css';
 import Aos from 'aos';
 import { useEffect } from 'react';
@@ -83,9 +84,8 @@ function App() {
             path="/updateappointment/:appointmentId"
             element={<UpdateAppointment />}
           />
-            <Route path="/updatediagnosis/:diagnosisId" element={<UpdateDiagnosisPage />} />
-            <Route path="/updateprescription/:prescriptionId" element={<UpdatePrescriptionPage />} />
-
+          <Route path="/updatediagnosis/:diagnosisId" element={<UpdateDiagnosisPage />} />
+          <Route path="/updateprescription/:prescriptionId" element={<UpdatePrescriptionPage />} />
           <Route path="/doctorappointments" element={<DoctorAppointments />} />
           <Route path="/appointment/:id" element={<AppointmentDetail />} />
           <Route path="/doctors" element={<DoctorsPage />} />
@@ -117,12 +117,13 @@ function App() {
           <Route path="/admin/doctors" element={<DoctorManagement />} />
           <Route path="/admin/nurses" element={<NurseManagement />} />
           <Route path="/admin/pharmacy" element={<PharmacyManagement />} />
-          <Route path="/admin/services" element={<ServiceManagement />} />
+          {/* <Route path="/admin/services" element={<ServiceManagement />} /> */}
         </Route>
         <Route path="/doctor" element={<DoctorLayout />}>
-          <Route path="/doctor/doctors" element={<DoctorManagement />} />
+          <Route path="/doctor" element={<AvailabilityCalendar />} />
+          {/* <Route path="/doctor/doctors" element={<DoctorManagement />} />
           <Route path="/doctor/nurses" element={<NurseManagement />} />
-          <Route path="/doctor/services" element={<ServiceManagement />} />
+          <Route path="/doctor/services" element={<ServiceManagement />} /> */}
         </Route>
       </Routes>
       <ScrollUpButton />
