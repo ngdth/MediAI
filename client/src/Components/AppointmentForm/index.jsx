@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import axios from "axios"
 
-const hospitals = ["Bệnh viện Quốc tế Hạnh Phúc", "Bệnh viện Thuận Mỹ ITO Đồng Nai", "Bệnh viện Hoàn Mỹ Sài Gòn", "Phòng khám Thuận Mỹ Sài Gòn", "Phòng khám Quốc tế Hạnh Phúc (Estella)"];
+const hospitals = ["Phòng khám Y Khoa AMMA"];
 const specialties = ["Cấp cứu", "Chẩn đoán hình ảnh", "Chấn thương chỉnh hình", "Da liễu", "Hô hấp", "Nhãn khoa", "Nhi khoa", "Nội tiết", "Nội tổng quát", "Sản phụ", "Sơ sinh", "Tai Mũi Họng (hay ENT)", "Thận", "Thần kinh", "Tiết niệu", "Tim mạch", "Ung thư", "Cơ xương khớp", "Hậu môn trực tràng"];
 
 const AppointmentForm = () => {
@@ -21,6 +22,7 @@ const AppointmentForm = () => {
         appointmentTime: ''
     });
 
+    const [showPopup, setShowPopup] = useState(false);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -37,9 +39,40 @@ const AppointmentForm = () => {
 
     const today = new Date();
 
-    const handleSubmit = (e) => {
+    // ✅ Gửi API đặt lịch khám
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        navigate('/');
+
+        try {
+            const token = localStorage.getItem("token"); // ✅ Lấy token từ localStorage
+
+            if (!token) {
+                alert("Bạn cần đăng nhập trước khi đặt lịch.");
+                return;
+            }
+
+            const response = await axios.post(`http://localhost:8080/api/book`, {
+                patientName: formData.fullName,
+                date: formData.appointmentDate.toISOString().split("T")[0],
+                time: formData.appointmentTime,
+                symptoms: formData.specialty
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.status === 201) {
+                setShowPopup(true);
+                setTimeout(() => {
+                    navigate('/'); // ✅ Tự động về trang chủ sau 15s
+                }, 15000);
+            }
+        } catch (error) {
+            console.error("Lỗi đặt lịch:", error);
+            alert(error.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại.");
+        }
     };
 
     return (
@@ -53,7 +86,6 @@ const AppointmentForm = () => {
                     <input className="form-control" type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" required />
                     <input className="form-control" name="address" value={formData.address} onChange={handleChange} placeholder="Địa chỉ" required />
 
-                    {/* Đưa ngày sinh và giới tính lên cùng hàng */}
                     <div className="dob-gender-container">
                         <DatePicker
                             selected={formData.dateOfBirth}
@@ -125,6 +157,22 @@ const AppointmentForm = () => {
                     <button className="btn btn-primary" type="submit">Đăng ký</button>
                 </form>
             </div>
+
+            {showPopup && (
+                <div className="popup-overlay">
+                    <div className="popup-content">
+                        <span className="close-btn" onClick={() => navigate('/')}>✖</span>
+                        <div className="checkmark">✔</div>
+                        <h2>Đã đăng ký</h2>
+                        <p>
+                            Cảm ơn bạn đã đăng ký cuộc hẹn tại <b>{formData.hospital || "Bệnh Viện hoặc Phòng Khám"}</b>
+                            vào <b>{formData.appointmentDate ? formData.appointmentDate.toLocaleDateString("vi-VN") : "Chưa chọn ngày"} {formData.appointmentTime}</b>.
+                            Chúng tôi sẽ sớm liên lạc với bạn trong vòng 24 giờ để xác nhận lịch hẹn. Xin cảm ơn.
+                        </p>
+                        <button onClick={() => navigate('/')}>Trở về trang chủ</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

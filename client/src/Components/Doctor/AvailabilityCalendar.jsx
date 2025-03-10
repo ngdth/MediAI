@@ -84,7 +84,7 @@ function AvailabilityCalendar() {
   const handleSave = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/upsert",
+        "http://localhost:8080/schedule/upsert",
         { availableSlots },
         {
           headers: { Authorization: `Bearer ${token}` }
