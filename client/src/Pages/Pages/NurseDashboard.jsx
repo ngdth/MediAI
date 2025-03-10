@@ -4,35 +4,28 @@ import axios from "axios";
 const NurseDashboard = () => {
     const [appointments, setAppointments] = useState([]);
     const [doctors, setDoctors] = useState([]);
-    const [statusFilter, setStatusFilter] = useState("Pending"); // Trạng thái mặc định là Pending
+    const [filterStatus, setFilterStatus] = useState("Pending");
 
     useEffect(() => {
-        fetchAppointments();
+        fetchAppointments(filterStatus);
         fetchDoctors();
-    }, [statusFilter]); // Gọi lại API khi statusFilter thay đổi
+    }, [filterStatus]);
 
-    const fetchAppointments = async (status = "Pending") => {
+    const fetchAppointments = async (status) => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/`, {
+            const response = await axios.get(`http://localhost:8080/appointment?status=${status}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
             });
-    
-            // Lọc dữ liệu theo status
-            const filteredAppointments = response.data.data.filter(
-                appointment => appointment.status === status
-            );
-    
-            setAppointments(filteredAppointments);
+            setAppointments(response.data.data);
         } catch (error) {
             console.error("Lỗi khi lấy danh sách lịch hẹn:", error);
         }
     };
-    
 
     const fetchDoctors = async () => {
         try {
             const response = await axios.get("http://localhost:8080/user/doctors", {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             setDoctors(response.data);
         } catch (error) {
@@ -40,35 +33,36 @@ const NurseDashboard = () => {
         }
     };
 
-    const handleStatusChange = async (id, newStatus, doctorId = null) => {
+    const updateAppointmentStatus = async (id, status) => {
         try {
-            await axios.put(`http://localhost:8080/api/appointments/${id}/status`, { status: newStatus, doctorId }, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+            await axios.put(`http://localhost:8080/appointment/${id}/status`, { status }, {
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
-
-            if (newStatus === "Assigned" && doctorId) {
-                await axios.post(`http://localhost:8080/api/appointments/${id}/send-confirmation`, { doctorId }, {
-                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-                });
-            }
-
-            fetchAppointments(); // Cập nhật danh sách cuộc hẹn sau khi thay đổi trạng thái
+            fetchAppointments(filterStatus);
         } catch (error) {
-            console.error("Lỗi khi cập nhật trạng thái cuộc hẹn:", error);
+            console.error("Lỗi khi cập nhật trạng thái:", error);
+        }
+    };
+
+    const assignDoctor = async (id, doctorId) => {
+        try {
+            await axios.put(`http://localhost:8080/appointment/${id}/assign`, { doctorId }, {
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            });
+            fetchAppointments(filterStatus);
+        } catch (error) {
+            console.error("Lỗi khi gán bác sĩ:", error);
         }
     };
 
     return (
-        <div className="container mt-5">
-            <h2 className="text-center mb-4">Quản lý lịch hẹn</h2>
-
-            <div className="d-flex justify-content-between mb-3">
-                <label><strong>Lọc theo trạng thái:</strong></label>
-                <select className="form-select w-25" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+        <div className="nurse-dashboard container">
+            <h2 className="text-center mt-4">Quản lý lịch hẹn</h2>
+            <div className="filter-section mb-3">
+                <label className="me-2 fw-bold">Lọc theo trạng thái:</label>
+                <select className="form-select w-auto d-inline-block" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
                     <option value="Pending">Pending</option>
                     <option value="Assigned">Assigned</option>
-                    <option value="Accepted">Accepted</option>
-                    <option value="Rejected">Rejected</option>
                 </select>
             </div>
 
@@ -85,35 +79,38 @@ const NurseDashboard = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {appointments.map((appointment) => (
-                            <tr key={appointment._id}>
-                                <td>{appointment.patientName}</td>
-                                <td>{appointment.date}</td>
-                                <td>{appointment.time}</td>
-                                <td>{appointment.symptoms}</td>
-                                <td>
-                                    <select className="form-select" onChange={(e) => handleStatusChange(appointment._id, "Assigned", e.target.value)}>
-                                        <option value="">Chọn bác sĩ</option>
-                                        {doctors.map((doctor) => (
-                                            <option key={doctor._id} value={doctor._id}>
-                                                {doctor.username}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </td>
-                                <td>
-                                    {appointment.status === "Pending" && (
-                                        <>
-                                            <button className="btn btn-success btn-sm me-2" onClick={() => handleStatusChange(appointment._id, "Accepted")}>Xác nhận</button>
-                                            <button className="btn btn-danger btn-sm" onClick={() => handleStatusChange(appointment._id, "Rejected")}>Từ chối</button>
-                                        </>
-                                    )}
-                                    {appointment.status === "Assigned" && (
-                                        <span className="badge bg-info">Đã gán bác sĩ</span>
-                                    )}
-                                </td>
+                        {appointments.length > 0 ? (
+                            appointments.map((appointment) => (
+                                <tr key={appointment._id}>
+                                    <td>{appointment.patientName}</td>
+                                    <td>{new Date(appointment.date).toLocaleDateString("vi-VN")}</td>
+                                    <td>{appointment.time}</td>
+                                    <td>{appointment.symptoms}</td>
+                                    <td>
+                                        <select className="form-select" onChange={(e) => assignDoctor(appointment._id, e.target.value)}>
+                                            <option value="">Chọn bác sĩ</option>
+                                            {doctors.map((doctor) => (
+                                                <option key={doctor._id} value={doctor._id}>
+                                                    {doctor.username} - {doctor.specialization}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button className="btn btn-success me-2" onClick={() => updateAppointmentStatus(appointment._id, "Assigned")}>
+                                            Xác nhận
+                                        </button>
+                                        <button className="btn btn-danger" onClick={() => updateAppointmentStatus(appointment._id, "Rejected")}>
+                                            Từ chối
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="6">Không có lịch hẹn nào.</td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>
