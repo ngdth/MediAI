@@ -44,6 +44,7 @@ import NurseManagement from './Pages/Admin/NurseManagement';
 import PharmacyManagement from './Pages/Admin/PharmacyManagement';
 // import ServiceManagement from './Pages/Admin/ServiceManagement';
 import AvailabilityCalendar from './Components/Doctor/AvailabilityCalendar';
+import BookingAppointments from './Pages/Pages/Booking/BookingAppointments';
 import 'aos/dist/aos.css';
 import Aos from 'aos';
 import { useEffect } from 'react';
@@ -68,7 +69,7 @@ function App() {
         </Route>
         <Route path="/" element={<Layout variant="cs_type_1" />}>
           <Route path="/home-v3" element={<HomeV3 />} />
-        </Route>
+        </Route> 
         <Route path="/" element={<Layout />}>
           <Route path="/about" element={<AboutPage />} />
           <Route path="/service" element={<ServicePage />} />
@@ -76,6 +77,7 @@ function App() {
           <Route path="/blog" element={<BlogsPage />} />
           <Route path="/blog/:blogId" element={<BlogsDetails />} />
           <Route path="/appointments" element={<Appointments />} />
+          <Route path="/BookingAppointments" element={<BookingAppointments />} />
           <Route
             path="/appointmentshistory"
             element={<AppointmentsHistory />}
