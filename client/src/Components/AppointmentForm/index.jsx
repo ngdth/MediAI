@@ -166,10 +166,10 @@ const AppointmentForm = () => {
                         <h2>Đã đăng ký</h2>
                         <p>
                             Cảm ơn bạn đã đăng ký cuộc hẹn tại <b>{formData.hospital || "Bệnh Viện hoặc Phòng Khám"}</b>
-                            vào <b>{formData.appointmentDate ? formData.appointmentDate.toLocaleDateString("vi-VN") : "Chưa chọn ngày"} {formData.appointmentTime}</b>.
+                             vào <b>{formData.appointmentDate ? formData.appointmentDate.toLocaleDateString("vi-VN") : "Chưa chọn ngày"} {formData.appointmentTime}</b>.
                             Chúng tôi sẽ sớm liên lạc với bạn trong vòng 24 giờ để xác nhận lịch hẹn. Xin cảm ơn.
                         </p>
-                        <button onClick={() => navigate('/')}>Trở về trang chủ</button>
+                        <button className="btn-home" onClick={() => navigate('/')}>Trở về trang chủ</button>
                     </div>
                 </div>
             )}
