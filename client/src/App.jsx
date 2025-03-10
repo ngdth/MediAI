@@ -3,6 +3,7 @@ import Layout from './Components/Layout/Layout';
 import LayoutWithoutHeader from './components/Layout/LayoutWithoutHeader';
 import AdminLayout from './Components/Layout/AdminLayout';
 import DoctorLayout from './Components/Layout/DoctorLayout';
+import DoctorLayout from './Components/Layout/DoctorLayout';
 import MainHome from './Pages/HomePage/MainHome';
 import HomeV2 from './Pages/HomePage/HomeV2';
 import HomeV3 from './Pages/HomePage/HomeV3';
@@ -42,7 +43,8 @@ import UserManagement from './Pages/Admin/UserManagement';
 import DoctorManagement from './Pages/Admin/DoctorManagement';
 import NurseManagement from './Pages/Admin/NurseManagement';
 import PharmacyManagement from './Pages/Admin/PharmacyManagement';
-import ServiceManagement from './Pages/Admin/ServiceManagement';
+// import ServiceManagement from './Pages/Admin/ServiceManagement';
+import AvailabilityCalendar from './Components/Doctor/AvailabilityCalendar';
 import BookingAppointments from './Pages/Pages/Booking/BookingAppointments';
 import 'aos/dist/aos.css';
 import Aos from 'aos';
@@ -85,9 +87,8 @@ function App() {
             path="/updateappointment/:appointmentId"
             element={<UpdateAppointment />}
           />
-            <Route path="/updatediagnosis/:diagnosisId" element={<UpdateDiagnosisPage />} />
-            <Route path="/updateprescription/:prescriptionId" element={<UpdatePrescriptionPage />} />
-
+          <Route path="/updatediagnosis/:diagnosisId" element={<UpdateDiagnosisPage />} />
+          <Route path="/updateprescription/:prescriptionId" element={<UpdatePrescriptionPage />} />
           <Route path="/doctorappointments" element={<DoctorAppointments />} />
           <Route path="/appointment/:id" element={<AppointmentDetail />} />
           <Route path="/doctors" element={<DoctorsPage />} />
@@ -119,7 +120,7 @@ function App() {
           <Route path="/admin/doctors" element={<DoctorManagement />} />
           <Route path="/admin/nurses" element={<NurseManagement />} />
           <Route path="/admin/pharmacy" element={<PharmacyManagement />} />
-          <Route path="/admin/services" element={<ServiceManagement />} />
+          {/* <Route path="/admin/services" element={<ServiceManagement />} /> */}
         </Route>
         <Route path="/doctor" element={<DoctorLayout />}>
           <Route path="/doctor/doctors" element={<DoctorManagement />} />

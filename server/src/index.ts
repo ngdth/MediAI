@@ -26,7 +26,7 @@ const bootstrap = async () => {
   // app.use('/auth', authRoutes) // Use auth routes
 
   app.use('/api', appointmentRoutes); // Use appointment routes
-  app.use('/api', scheduleRouter); // Use schedule routes
+  app.use('/schedule', scheduleRouter); // Use schedule routes
   app.use('/service', serviceRouter); // Use service routes
   app.listen(PORT || 8080, () => {
     console.log(`✅ Server is listening on port: ${PORT || 8080}`)
