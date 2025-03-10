@@ -24,7 +24,7 @@ function AvailabilityCalendar() {
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/schedules/doctor`, {
+        const response = await axios.get(`http://localhost:8080/schedule/schedules/doctor`, {
           headers: { Authorization: `Bearer ${token}` },
         })
 
