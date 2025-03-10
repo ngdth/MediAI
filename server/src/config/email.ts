@@ -51,6 +51,30 @@ export const sendEmail = async (email: string, data: any, type: string) => {
             };
             break;
 
+        case "appointment_assigned":
+            mailOptions = {
+                from: `"AMMA" <${process.env.EMAIL_USER}>`,
+                to: email,
+                subject: "Lịch hẹn của bạn đã được xác nhận",
+                html: `
+                        <h2 style="color: #008080;">Lịch hẹn của bạn đã được xác nhận</h2>
+                        <p>Thưa Quý khách,</p>
+                        <p>Chúng tôi xin thông báo lịch hẹn của quý khách đã được xác nhận và được thực hiện bởi bác sĩ <strong>${data.doctorName}</strong>.</p>
+                        <p><strong>Chi tiết lịch hẹn:</strong></p>
+                        <ul>
+                            <li><strong>Bệnh nhân:</strong> ${data.patientName}</li>
+                            <li><strong>Bác sĩ phụ trách:</strong> ${data.doctorName}</li>
+                            <li><strong>Ngày:</strong> ${new Date(data.date).toLocaleDateString('vi-VN')}</li>
+                            <li><strong>Giờ:</strong> ${data.time}</li>
+                            <li><strong>Địa điểm:</strong> Phòng khám Y Khoa AMMA</li>
+                        </ul>
+                        <p>Nếu cần thay đổi lịch hẹn, vui lòng liên hệ hotline: <strong>0236 3650 676</strong></p>
+                        <p>Rất mong được đón tiếp Quý khách.</p>
+                        <p><strong>Phòng khám Y Khoa AMMA</strong></p>
+                    `,
+            };
+            break;
+            
         default:
             throw new Error("Invalid email type");
     }
