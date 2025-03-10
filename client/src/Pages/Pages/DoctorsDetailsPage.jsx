@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import PageHeading from '../../Components/PageHeading';
 import DoctorDetailsSection from '../../Components/DoctorDetailsSection';
+import BookingCalendar from '../../Components/Doctor/BookingCalendar';
 import {
   FaCertificate,
   FaEnvelope,
@@ -11,7 +12,6 @@ import {
   FaSuitcase,
   FaHeart,
 } from 'react-icons/fa6';
-import TeamSection from '../../Components/TeamSection';
 import Section from '../../Components/Section';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -139,7 +139,7 @@ const DoctorsDetailsPage = () => {
       </Section>
 
       <Section topSpaceLg="80" topSpaceMd="110">
-        <TeamSection variant={'cs_pagination cs_style_2'} data={teamData} />
+        <BookingCalendar doctorId={doctorId} token={token} />
       </Section>
 
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />

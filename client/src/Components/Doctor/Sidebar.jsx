@@ -14,19 +14,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           <li>
             <Link to="/doctor" className="menu-item">
               <FaTachometerAlt className="menu-icon" />
-              <span>Dashboard</span>
-            </Link>
-          </li>
-          <li>
-            <Link to="/doctor/doctors" className="menu-item">
-              <FaUserMd className="menu-icon" />
-              <span>Doctor Management</span>
-            </Link>
-          </li>
-          <li>
-            <Link to="/doctor/nurses" className="menu-item">
-              <FaUserNurse className="menu-icon" />
-              <span>Nurse Management</span>
+              <span>Schedule Management</span>
             </Link>
           </li>
         </ul>
