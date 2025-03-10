@@ -4,82 +4,119 @@ import axios from "axios";
 const NurseDashboard = () => {
     const [appointments, setAppointments] = useState([]);
     const [doctors, setDoctors] = useState([]);
-    
+    const [statusFilter, setStatusFilter] = useState("Pending"); // Trạng thái mặc định là Pending
+
     useEffect(() => {
         fetchAppointments();
         fetchDoctors();
-    }, []);
+    }, [statusFilter]); // Gọi lại API khi statusFilter thay đổi
 
-    const fetchAppointments = async () => {
+    const fetchAppointments = async (status = "Pending") => {
         try {
-            const response = await axios.get("http://localhost:8080/api/pending", {
+            const response = await axios.get(`http://localhost:8080/api/`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
             });
-            setAppointments(response.data.data);
+    
+            // Lọc dữ liệu theo status
+            const filteredAppointments = response.data.data.filter(
+                appointment => appointment.status === status
+            );
+    
+            setAppointments(filteredAppointments);
         } catch (error) {
             console.error("Lỗi khi lấy danh sách lịch hẹn:", error);
         }
     };
+    
 
     const fetchDoctors = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/users/doctors", {
+            const response = await axios.get("http://localhost:8080/user/doctors", {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
             });
-            setDoctors(response.data.data);
+            setDoctors(response.data);
         } catch (error) {
             console.error("Lỗi khi lấy danh sách bác sĩ:", error);
         }
     };
 
-    const handleAccept = async (id) => {
+    const handleStatusChange = async (id, newStatus, doctorId = null) => {
         try {
-            await axios.put(`http://localhost:8080/api/${id}/status`, { status: "Accepted" });
-            fetchAppointments();
-        } catch (error) {
-            console.error("Lỗi khi xác nhận lịch hẹn:", error);
-        }
-    };
+            await axios.put(`http://localhost:8080/api/appointments/${id}/status`, { status: newStatus, doctorId }, {
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+            });
 
-    const handleReject = async (id) => {
-        try {
-            await axios.put(`http://localhost:8080/api/${id}/status`, { status: "Rejected" });
-            fetchAppointments();
-        } catch (error) {
-            console.error("Lỗi khi từ chối lịch hẹn:", error);
-        }
-    };
+            if (newStatus === "Assigned" && doctorId) {
+                await axios.post(`http://localhost:8080/api/appointments/${id}/send-confirmation`, { doctorId }, {
+                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+                });
+            }
 
-    const handleAssignDoctor = async (id, doctorId) => {
-        try {
-            await axios.put(`http://localhost:8080/api/${id}/assign`, { doctorId });
-            fetchAppointments();
+            fetchAppointments(); // Cập nhật danh sách cuộc hẹn sau khi thay đổi trạng thái
         } catch (error) {
-            console.error("Lỗi khi gán bác sĩ:", error);
+            console.error("Lỗi khi cập nhật trạng thái cuộc hẹn:", error);
         }
     };
 
     return (
-        <div className="nurse-dashboard">
-            <h2>Quản lý lịch hẹn</h2>
-            <ul>
-                {appointments.map((appointment) => (
-                    <li key={appointment._id}>
-                        <p><strong>Tên bệnh nhân:</strong> {appointment.patientName}</p>
-                        <p><strong>Ngày:</strong> {appointment.date}</p>
-                        <p><strong>Giờ:</strong> {appointment.time}</p>
-                        <p><strong>Triệu chứng:</strong> {appointment.symptoms}</p>
-                        <button onClick={() => handleAccept(appointment._id)}>Xác nhận</button>
-                        <button onClick={() => handleReject(appointment._id)}>Từ chối</button>
-                        <select onChange={(e) => handleAssignDoctor(appointment._id, e.target.value)}>
-                            <option value="">Chọn bác sĩ</option>
-                            {doctors.map((doctor) => (
-                                <option key={doctor._id} value={doctor._id}>{doctor.username}</option>
-                            ))}
-                        </select>
-                    </li>
-                ))}
-            </ul>
+        <div className="container mt-5">
+            <h2 className="text-center mb-4">Quản lý lịch hẹn</h2>
+
+            <div className="d-flex justify-content-between mb-3">
+                <label><strong>Lọc theo trạng thái:</strong></label>
+                <select className="form-select w-25" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                    <option value="Pending">Pending</option>
+                    <option value="Assigned">Assigned</option>
+                    <option value="Accepted">Accepted</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+            </div>
+
+            <div className="table-responsive">
+                <table className="table table-bordered text-center">
+                    <thead>
+                        <tr>
+                            <th>Tên bệnh nhân</th>
+                            <th>Ngày</th>
+                            <th>Giờ</th>
+                            <th>Triệu chứng</th>
+                            <th>Bác sĩ phụ trách</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {appointments.map((appointment) => (
+                            <tr key={appointment._id}>
+                                <td>{appointment.patientName}</td>
+                                <td>{appointment.date}</td>
+                                <td>{appointment.time}</td>
+                                <td>{appointment.symptoms}</td>
+                                <td>
+                                    <select className="form-select" onChange={(e) => handleStatusChange(appointment._id, "Assigned", e.target.value)}>
+                                        <option value="">Chọn bác sĩ</option>
+                                        {doctors.map((doctor) => (
+                                            <option key={doctor._id} value={doctor._id}>
+                                                {doctor.username}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </td>
+                                <td>
+                                    {appointment.status === "Pending" && (
+                                        <>
+                                            <button className="btn btn-success btn-sm me-2" onClick={() => handleStatusChange(appointment._id, "Accepted")}>Xác nhận</button>
+                                            <button className="btn btn-danger btn-sm" onClick={() => handleStatusChange(appointment._id, "Rejected")}>Từ chối</button>
+                                        </>
+                                    )}
+                                    {appointment.status === "Assigned" && (
+                                        <span className="badge bg-info">Đã gán bác sĩ</span>
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 };
