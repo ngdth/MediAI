@@ -45,6 +45,7 @@ import PharmacyManagement from './Pages/Admin/PharmacyManagement';
 // import ServiceManagement from './Pages/Admin/ServiceManagement';
 import AvailabilityCalendar from './Components/Doctor/AvailabilityCalendar';
 import BookingAppointments from './Pages/Pages/Booking/BookingAppointments';
+import NurseDashboard from './Pages/Pages/NurseDashboard'
 import 'aos/dist/aos.css';
 import Aos from 'aos';
 import { useEffect } from 'react';
@@ -113,6 +114,8 @@ function App() {
           <Route path="/verify" element={<VerifyPage />} />
           <Route path="/forgotPass" element={<ForgotPass />} />
           <Route path="/resetPass" element={<ResetPass />} />
+        </Route>
+        <Route path="/nurse" element={<NurseDashboard />}>
         </Route>
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="/admin/users" element={<UserManagement />} />
