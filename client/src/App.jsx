@@ -3,7 +3,6 @@ import Layout from './Components/Layout/Layout';
 import LayoutWithoutHeader from './components/Layout/LayoutWithoutHeader';
 import AdminLayout from './Components/Layout/AdminLayout';
 import DoctorLayout from './Components/Layout/DoctorLayout';
-import DoctorLayout from './Components/Layout/DoctorLayout';
 import MainHome from './Pages/HomePage/MainHome';
 import HomeV2 from './Pages/HomePage/HomeV2';
 import HomeV3 from './Pages/HomePage/HomeV3';
@@ -123,9 +122,10 @@ function App() {
           {/* <Route path="/admin/services" element={<ServiceManagement />} /> */}
         </Route>
         <Route path="/doctor" element={<DoctorLayout />}>
-          <Route path="/doctor/doctors" element={<DoctorManagement />} />
+          <Route path="/doctor" element={<AvailabilityCalendar />} />
+          {/* <Route path="/doctor/doctors" element={<DoctorManagement />} />
           <Route path="/doctor/nurses" element={<NurseManagement />} />
-          <Route path="/doctor/services" element={<ServiceManagement />} />
+          <Route path="/doctor/services" element={<ServiceManagement />} /> */}
         </Route>
       </Routes>
       <ScrollUpButton />
