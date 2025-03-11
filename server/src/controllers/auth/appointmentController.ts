@@ -162,7 +162,28 @@ export const addDiagnosisAndPrescription = async (req: Request, res: Response, n
     }
 };
 
-
+export const getAppointmentById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { id } = req.params;
+  
+      // Tìm appointment theo ID
+      const appointment = await Appointment.findById(id)
+        .populate('userId', 'username email')
+        .populate('doctorId', 'username email');
+  
+      if (!appointment) {
+        res.status(404).json({ message: "Appointment not found" });
+        return;
+      }
+  
+      res.status(200).json({
+        message: "Appointment retrieved successfully",
+        data: appointment,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 
 
 // View all appointments

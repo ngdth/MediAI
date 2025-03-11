@@ -49,6 +49,8 @@ import NurseDashboard from './Pages/Pages/Nurse/NurseDashboard'
 import NursePending from './Pages/Pages/Nurse/NursePending'
 import NurseAssigned from './Pages/Pages/Nurse/NurseAssigned'
 import NurseLayout from './Pages/Pages/Nurse/NurseLayout'
+import ManageAppointments from './Components/Doctor/ManageAppointments';
+import ManageResult from './Components/Doctor/ManageResult';
 
 import UserProfile from './pages/User/Profile';
 import 'aos/dist/aos.css';
@@ -134,7 +136,10 @@ function App() {
           {/* <Route path="/admin/services" element={<ServiceManagement />} /> */}
         </Route>
         <Route path="/doctor" element={<DoctorLayout />}>
-          <Route path="/doctor" element={<AvailabilityCalendar />} />
+          <Route path="/doctor" element={<ManageAppointments />} />
+          <Route path="appointments/manage-result/:appointmentId" element={<ManageResult />} />
+          <Route path="/doctor/calendar" element={<AvailabilityCalendar />} />
+          {/* <Route path="/doctor/appointment/assign/:appointmentId" element={<AssignDoctor />} /> */}
           {/* <Route path="/doctor/doctors" element={<DoctorManagement />} />
           <Route path="/doctor/nurses" element={<NurseManagement />} /> */}
           {/* <Route path="/doctor/services" element={<ServiceManagement />} /> */}

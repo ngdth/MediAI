@@ -12,9 +12,15 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
         <ul className="menu-list">
           <li>
-            <Link to="/doctor" className="menu-item">
+            <Link to="/doctor/calendar" className="menu-item">
               <FaTachometerAlt className="menu-icon" />
               <span>Schedule Management</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/doctor" className="menu-item">
+              <FaUserMd className="menu-icon" />
+              <span>Manage Appointments</span>
             </Link>
           </li>
         </ul>
