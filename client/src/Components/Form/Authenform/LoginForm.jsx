@@ -20,7 +20,7 @@ const LoginForm = ({ onLogin }) => {
     useEffect(() => {
         if (user) {
             if (user.role === "admin") {
-                navigate("/admin/doctors");
+                navigate("/admin");
             } else {
                 navigate("/");
             }

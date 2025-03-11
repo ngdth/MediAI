@@ -17,8 +17,18 @@ class Mongo {
     if (this.isConnected) return
 
     try {
-      console.log('⏳ Connecting to MongoDB')
+      console.log(`
+       db         88b           d88  88b           d88         db         
+      d88b        888b         d888  888b         d888        d88b        
+     d8'8b        88'8b       d8'88  88'8b       d8'88       d8' 8b       
+    d8'  8b       88 '8b     d8' 88  88 '8b     d8' 88      d8'   8b      
+   d8YaaaaY8b     88  '8b   d8'  88  88  '8b   d8'  88     d8YaaaaY8b     
+  d8""""""""8b    88   '8b d8'   88  88   '8b d8'   88    d8""""""""8b    
+ d8'        '8b   88    '888'    88  88    '888'    88   d8'        '8b   
+d8'          '8b  88     '8'     88  88     '8'     88  d8'          '8b  
+`);
 
+      console.log('⏳ Connecting to MongoDB')
       const db = await this.instance.connect(this.mongoUri, this.mongoOptions)
       const connection = db.connection
 
