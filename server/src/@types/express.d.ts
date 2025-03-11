@@ -1,11 +1,7 @@
-import 'express'
-import jwt from 'jsonwebtoken'
+import { JwtPayload } from '../../middlewares/authMiddleware';
 
-declare global {
-  namespace Express {
+declare module 'express-serve-static-core' {
     interface Request {
-      user?: string | JwtPayload;
-      auth?: jwt.JwtPayload // { uid: string; role: string }
+        user?: JwtPayload;
     }
-  }
 }
