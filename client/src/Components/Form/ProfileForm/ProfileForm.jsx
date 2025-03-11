@@ -13,6 +13,7 @@ const ProfileForm = ({ user, onFormChange, isFormChanged }) => {
         address: user?.address || "",
         city: user?.city || "",
         country: user?.country || "",
+        phone: user?.phone || "", // Thêm số điện thoại
     });
 
     useEffect(() => {
@@ -27,6 +28,7 @@ const ProfileForm = ({ user, onFormChange, isFormChanged }) => {
                 address: user.address || "",
                 city: user.city || "",
                 country: user.country || "",
+                phone: user.phone || "", // Cập nhật số điện thoại
             });
         }
     }, [user]);
@@ -62,7 +64,7 @@ const ProfileForm = ({ user, onFormChange, isFormChanged }) => {
             );
             if (response.status === 200) {
                 alert("Profile updated successfully");
-                // Optional: You can call `onFormChange(false)` here to reset the form change state.
+                // onFormChange(false);
             }
         } catch (error) {
             console.error("Error updating profile", error);
@@ -71,7 +73,7 @@ const ProfileForm = ({ user, onFormChange, isFormChanged }) => {
     };
 
     if (!user) {
-        return <div className="danger">Cannot fetch user data!!!</div>; // Loading message when user data is not available
+        return <div className="danger text-center h3">Cannot fetch user data!!!</div>; // Loading message when user data is not available
     }
 
     return (
@@ -114,6 +116,21 @@ const ProfileForm = ({ user, onFormChange, isFormChanged }) => {
                     </div>
 
                     <div className="row mb-3">
+                    <div className="col-lg-6">
+                            <div className="form-group focused">
+                                <label className="form-control-label" htmlFor="input-last-name">
+                                    Tên
+                                </label>
+                                <input
+                                    type="text"
+                                    id="input-last-name"
+                                    className="form-control form-control-alternative"
+                                    name="lastName"
+                                    value={formData.lastName}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                        </div>
                         <div className="col-lg-6">
                             <div className="form-group focused">
                                 <label className="form-control-label" htmlFor="input-first-name">
@@ -125,21 +142,6 @@ const ProfileForm = ({ user, onFormChange, isFormChanged }) => {
                                     className="form-control form-control-alternative"
                                     name="firstName"
                                     value={formData.firstName}
-                                    onChange={handleChange}
-                                />
-                            </div>
-                        </div>
-                        <div className="col-lg-6">
-                            <div className="form-group focused">
-                                <label className="form-control-label" htmlFor="input-last-name">
-                                    Tên
-                                </label>
-                                <input
-                                    type="text"
-                                    id="input-last-name"
-                                    className="form-control form-control-alternative"
-                                    name="lastName"
-                                    value={formData.lastName}
                                     onChange={handleChange}
                                 />
                             </div>
@@ -239,12 +241,12 @@ const ProfileForm = ({ user, onFormChange, isFormChanged }) => {
                     </div>
                     <div className="row mb-3">
                         <div className="form-group focused">
-                            <label className="form-control-label" htmlFor="input-tel">
+                            <label className="form-control-label" htmlFor="input-phone">
                                 Số điện thoại
                             </label>
                             <input
                                 type="text"
-                                id="input-tel"
+                                id="input-phone"
                                 className="form-control form-control-alternative"
                                 name="tel"
                                 value={formData.phone}

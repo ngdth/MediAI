@@ -2,7 +2,7 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import Layout from './Components/Layout/Layout';
 import LayoutWithoutHeader from './components/Layout/LayoutWithoutHeader';
 import AdminLayout from './Components/Layout/AdminLayout';
-// import DoctorLayout from './Components/Layout/DoctorLayout';
+import DoctorLayout from './Components/Layout/DoctorLayout';
 import MainHome from './Pages/HomePage/MainHome';
 import HomeV2 from './Pages/HomePage/HomeV2';
 import HomeV3 from './Pages/HomePage/HomeV3';
