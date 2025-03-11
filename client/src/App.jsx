@@ -45,7 +45,11 @@ import PharmacyManagement from './Pages/Admin/PharmacyManagement';
 // import ServiceManagement from './Pages/Admin/ServiceManagement';
 import AvailabilityCalendar from './Components/Doctor/AvailabilityCalendar';
 import BookingAppointments from './Pages/Pages/Booking/BookingAppointments';
-import NurseDashboard from './Pages/Pages/NurseDashboard'
+import NurseDashboard from './Pages/Pages/Nurse/NurseDashboard'
+import NursePending from './Pages/Pages/Nurse/NursePending'
+import NurseAssigned from './Pages/Pages/Nurse/NurseAssigned'
+import NurseLayout from './Pages/Pages/Nurse/NurseLayout'
+
 import UserProfile from './pages/User/Profile';
 import 'aos/dist/aos.css';
 import Aos from 'aos';
@@ -117,7 +121,10 @@ function App() {
           <Route path="/forgotPass" element={<ForgotPass />} />
           <Route path="/resetPass" element={<ResetPass />} />
         </Route>
-        <Route path="/nurse" element={<NurseDashboard />}>
+        <Route path="/nurse" element={<NurseLayout />}>
+          <Route path="dashboard" element={<NurseDashboard />} />
+          <Route path="pending" element={<NursePending />} />
+          <Route path="assigned" element={<NurseAssigned />} />
         </Route>
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="/admin/users" element={<UserManagement />} />
@@ -129,8 +136,8 @@ function App() {
         <Route path="/doctor" element={<DoctorLayout />}>
           <Route path="/doctor" element={<AvailabilityCalendar />} />
           {/* <Route path="/doctor/doctors" element={<DoctorManagement />} />
-          <Route path="/doctor/nurses" element={<NurseManagement />} />
-          <Route path="/doctor/services" element={<ServiceManagement />} /> */}
+          <Route path="/doctor/nurses" element={<NurseManagement />} /> */}
+          {/* <Route path="/doctor/services" element={<ServiceManagement />} /> */}
         </Route>
       </Routes>
       <ScrollUpButton />
