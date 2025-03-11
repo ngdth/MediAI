@@ -1,68 +1,230 @@
-import React, { useState } from "react";
-import { Form, Button, Alert, Container, Row, Col } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+// import React, { useState } from "react";
+// import { Form, Button, Alert } from "react-bootstrap";
+// import axios from "axios"; // Thêm axios để gọi API
+// import { useNavigate } from "react-router-dom";
 
-const ForgotPassForm = () => {
-    const [email, setEmail] = useState("");
+// const ChangePassForm = ({ userId }) => {
+//     const [formData, setFormData] = useState({
+//         oldPassword: "",
+//         newPassword: "",
+//         confirmPassword: "",
+//     });
+
+//     const [error, setError] = useState("");
+//     const [loading, setLoading] = useState(false);
+//     const navigate = useNavigate();
+
+//     const handleChange = (e) => {
+//         const { name, value } = e.target;
+//         setFormData((prevData) => ({ ...prevData, [name]: value }));
+//     };
+
+//     const handleSubmit = async (e) => {
+//         e.preventDefault();
+//         setLoading(true);
+//         setError(""); // Reset any previous error
+
+//         if (formData.newPassword !== formData.confirmPassword) {
+//             setError("Mật khẩu mới và xác nhận mật khẩu không khớp");
+//             setLoading(false);
+//             return;
+//         }
+
+//         try {
+//             const token = localStorage.getItem("token");
+//             if (!token) {
+//                 console.error("No token found. Please login first.");
+//                 return;
+//             }
+
+//             const response = await axios.post(
+//                 `http://localhost:8080/user/changePassword/${userId}`,
+//                 {
+//                     oldPassword: formData.oldPassword,
+//                     newPassword: formData.newPassword,
+//                     confPassword: formData.confirmPassword,
+//                 },
+//                 {
+//                     headers: {
+//                         Authorization: `Bearer ${token}`,
+//                     },
+//                 }
+//             );
+
+//             if (response.status === 200) {
+//                 alert("Đổi mật khẩu thành công!");
+//                 navigate("/profile"); // Quay lại trang profile sau khi đổi mật khẩu thành công
+//             }
+//         } catch (error) {
+//             setError(error.response?.data?.message || "Đã xảy ra lỗi. Vui lòng thử lại.");
+//         }
+//         setLoading(false);
+//     };
+
+//     return (
+//         <div className="card-body" style={{ backgroundColor: "#F7FAFC" }}>
+//             <Form onSubmit={handleSubmit}>
+//                 {error && <Alert variant="danger">{error}</Alert>}
+
+//                 <Form.Group className="mb-3">
+//                     <Form.Label>Mật khẩu cũ</Form.Label>
+//                     <Form.Control
+//                         type="password"
+//                         placeholder="Nhập mật khẩu cũ"
+//                         name="oldPassword"
+//                         value={formData.oldPassword}
+//                         onChange={handleChange}
+//                         required
+//                     />
+//                 </Form.Group>
+
+//                 <Form.Group className="mb-3">
+//                     <Form.Label>Mật khẩu mới</Form.Label>
+//                     <Form.Control
+//                         type="password"
+//                         placeholder="Nhập mật khẩu mới"
+//                         name="newPassword"
+//                         value={formData.newPassword}
+//                         onChange={handleChange}
+//                         required
+//                     />
+//                 </Form.Group>
+
+//                 <Form.Group className="mb-3">
+//                     <Form.Label>Xác nhận mật khẩu mới</Form.Label>
+//                     <Form.Control
+//                         type="password"
+//                         placeholder="Xác nhận mật khẩu mới"
+//                         name="confirmPassword"
+//                         value={formData.confirmPassword}
+//                         onChange={handleChange}
+//                         required
+//                     />
+//                 </Form.Group>
+
+//                 <Button
+//                     variant="primary"
+//                     type="submit"
+//                     className="w-100"
+//                     disabled={loading}
+//                 >
+//                     {loading ? "Đang đổi mật khẩu..." : "Đổi mật khẩu"}
+//                 </Button>
+//             </Form>
+//         </div>
+//     );
+// };
+
+// export default ChangePassForm;
+
+import React, { useState } from "react";
+import { Form, Button, Alert } from "react-bootstrap";
+import axios from "axios";
+
+const ChangePassForm = ({ userId, onBackToProfile }) => {
+    const [formData, setFormData] = useState({
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+    });
+
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({ ...prevData, [name]: value }));
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(""); // Xóa lỗi cũ trước khi gửi
         setLoading(true);
+        setError(""); // Reset lỗi trước đó
+
+        if (formData.newPassword !== formData.confirmPassword) {
+            setError("Mật khẩu mới và xác nhận mật khẩu không khớp");
+            setLoading(false);
+            return;
+        }
 
         try {
-            const response = await fetch("http://localhost:8080/user/sendotp", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email }),
-            });
-            const result = await response.json();
-            if (response.ok) {
-                localStorage.setItem("resetEmail", email);
-                navigate("/resetPass");
-            } else {
-                setError(result.message || "Sending reset OTP failed");
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.error("No token found. Please login first.");
+                return;
             }
-        } catch (err) {
-            setError("An error occurred. Please try again.");
+
+            const response = await axios.post(
+                `http://localhost:8080/user/changePassword/${userId}`,
+                {
+                    oldPassword: formData.oldPassword,
+                    newPassword: formData.newPassword,
+                    confPassword: formData.confirmPassword,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (response.status === 200) {
+                alert("Đổi mật khẩu thành công!");
+                onBackToProfile(); // Gọi hàm để quay lại ProfileForm
+            }
+        } catch (error) {
+            setError(error.response?.data?.message || "Đã xảy ra lỗi. Vui lòng thử lại.");
         }
         setLoading(false);
     };
 
     return (
-        <Container>
-            <Row className="justify-content-center">
-                <Col md={12}>
-                    <h2 className="text-center mb-3">Forgot Password</h2>
-                    {error && <Alert variant="danger">{error}</Alert>}
-                    <Form onSubmit={handleSubmit}>
-                        <Form.Group controlId="formBasicEmail" className="pb-3">
-                            <Form.Label>
-                                Please enter the email address you'd like your password reset
-                            </Form.Label>
-                            <Form.Control
-                                type="email"
-                                placeholder="Enter email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                                className="mt-4 mb-3"
-                            />
-                        </Form.Group>
-                        <Button variant="primary" className="w-100 mb-2" type="submit" disabled={loading}>
-                            {loading ? "Sending OTP..." : "Send OTP"}
-                        </Button>
-                    </Form>
-                    <div className="text-center mt-3 text-muted">
-                        <Link to="/login">Back to Login</Link>
-                    </div>
-                </Col>
-            </Row>
-        </Container>
+        <div className="card-body" style={{ backgroundColor: "#F7FAFC" }}>
+            <Form onSubmit={handleSubmit}>
+                {error && <Alert variant="danger">{error}</Alert>}
+
+                <Form.Group className="mb-3">
+                    <Form.Label>Mật khẩu cũ</Form.Label>
+                    <Form.Control
+                        type="password"
+                        placeholder="Nhập mật khẩu cũ"
+                        name="oldPassword"
+                        value={formData.oldPassword}
+                        onChange={handleChange}
+                        required
+                    />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                    <Form.Label>Mật khẩu mới</Form.Label>
+                    <Form.Control
+                        type="password"
+                        placeholder="Nhập mật khẩu mới"
+                        name="newPassword"
+                        value={formData.newPassword}
+                        onChange={handleChange}
+                        required
+                    />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                    <Form.Label>Xác nhận mật khẩu mới</Form.Label>
+                    <Form.Control
+                        type="password"
+                        placeholder="Xác nhận mật khẩu mới"
+                        name="confirmPassword"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        required
+                    />
+                </Form.Group>
+
+                <Button variant="primary" type="submit" className="w-100" disabled={loading}>
+                    {loading ? "Đang đổi mật khẩu..." : "Đổi mật khẩu"}
+                </Button>
+            </Form>
+        </div>
     );
 };
 
-export default ForgotPassForm;
+export default ChangePassForm;
