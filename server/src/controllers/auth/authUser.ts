@@ -43,3 +43,37 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
+export const updateProfile = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const userId = req.user.id; // Lấy user id từ request
+        const { username, email, firstName, lastName, birthday, gender, address, city, country } = req.body;
+
+        // Cập nhật thông tin người dùng
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            {
+                username,
+                email,
+                firstName,
+                lastName,
+                birthday,
+                gender,
+                address,
+                city,
+                country,
+            },
+            { new: true } // Trả về user sau khi cập nhật
+        );
+
+        if (!updatedUser) {
+            res.status(404).json({ message: "User not found" });
+            return;
+        }
+
+        res.status(200).json({ user: updatedUser });
+    } catch (error) {
+        console.error("Error updating user profile:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};

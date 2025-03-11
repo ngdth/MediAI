@@ -46,6 +46,7 @@ import PharmacyManagement from './Pages/Admin/PharmacyManagement';
 import AvailabilityCalendar from './Components/Doctor/AvailabilityCalendar';
 import BookingAppointments from './Pages/Pages/Booking/BookingAppointments';
 import NurseDashboard from './Pages/Pages/NurseDashboard'
+import UserProfile from './pages/User/Profile';
 import 'aos/dist/aos.css';
 import Aos from 'aos';
 import { useEffect } from 'react';
@@ -107,6 +108,7 @@ function App() {
           <Route path="*" element={<ErrorPage />} />
           <Route path="/search" element={<DoctorsResultPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
+          <Route path="/profile" element={<UserProfile />} />
         </Route>
         <Route path="/" element={<LayoutWithoutHeader />}>
           <Route path="/login" element={<LoginPage />} />
