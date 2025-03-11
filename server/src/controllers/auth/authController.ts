@@ -2,7 +2,7 @@ import { Request, Response, RequestHandler } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../../models/User";
-import { sendVerificationEmail } from "../../config/email";
+import { sendEmail  } from "../../config/email";
 import { normalizeEmail } from "../../utils/normalizeEmail";
 import { generateVerificationCode } from "../../utils/generateToken";
 
@@ -37,7 +37,7 @@ export const registerUser: RequestHandler = async (req: Request, res: Response):
 
 
         try {
-            await sendVerificationEmail(normalizedEmail, verificationCode);
+            await sendEmail(normalizedEmail, { code: verificationCode }, "register");
         } catch (emailError) {
             console.error("Error sending verification email:", emailError);
             res.status(500).json({ message: "Failed to send verification email" });
@@ -176,8 +176,7 @@ export const sendOTP: RequestHandler = async (req: Request, res: Response): Prom
     const otp = Math.floor(100000 + Math.random() * 900000);
     TEMP_CODE_STORAGE.set(email, otp.toString());
 
-    await sendVerificationEmail(email, `Your OTP is ${otp}`);
-
+    await sendEmail(email, {code: `Your OTP is ${otp}`}, "register");
     res.status(200).json({ message: 'OTP sent to email' });
 };
 

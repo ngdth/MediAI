@@ -93,6 +93,7 @@ const Header = ({ isTopBar, variant }) => {
         href: "/",
         subItems: [
           { label: "Appointments", href: "/appointments" },
+          { label: "BookingAppointments", href: "/BookingAppointments"},
           { label: "Doctors", href: "/doctors" },
           { label: "Doctor Details", href: "/doctors/doctor-details" },
           { label: "Timetable", href: "/timetable" },
