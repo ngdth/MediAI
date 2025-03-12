@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
-import Sidebar from "../../../Components/Nurse/Sidebar";
-import TopBar from "../../../Components/Nurse/Topbar";
+import Sidebar from "../Nurse/Sidebar";
+import TopBar from "../Nurse/Topbar";
 
 const NurseLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);

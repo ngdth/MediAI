@@ -36,7 +36,7 @@ function AvailabilityCalendar() {
         data.forEach(schedule => {
           schedule.availableSlots.forEach(slot => {
             // Chuyển date từ ISO về định dạng YYYY-MM-DD
-            const dateKey = new Date(slot.date).toISOString().split("T")[0]
+            const dateKey = new Date(slot.date).toLocaleDateString("en-CA")
             const dateTimeKey = `${dateKey}-${slot.time.replace(":", "-")}`
             fetchedSlots[dateTimeKey] = !slot.isBooked // Chỉ hiển thị nếu chưa bị đặt
           })
