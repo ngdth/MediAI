@@ -23,14 +23,14 @@ interface IAppointment extends Document {
 
 const appointmentSchema = new Schema<IAppointment>(
     {
-        userId: { type: Schema.Types.String, ref: 'User', required: true },
+        userId: { type: Schema.Types.String, ref: 'user', required: true },
         patientName: { type: String },
         date: { type: Date, required: true },
         time: { type: String, required: true },
         symptoms: { type: String, required: true },
         status: { type: String, enum: Object.values(AppointmentStatus), default: AppointmentStatus.PENDING },
-        nurseId: { type: Schema.Types.String, ref: 'User' },
-        doctorId: { type: Schema.Types.String, ref: 'User' },
+        nurseId: { type: Schema.Types.String, ref: 'user' },
+        doctorId: { type: Schema.Types.String, ref: 'user' },
         diagnosis: { type: String },
         prescription: { type: String },
     },

@@ -45,7 +45,13 @@ import PharmacyManagement from './Pages/Admin/PharmacyManagement';
 // import ServiceManagement from './Pages/Admin/ServiceManagement';
 import AvailabilityCalendar from './Components/Doctor/AvailabilityCalendar';
 import BookingAppointments from './Pages/Pages/Booking/BookingAppointments';
-import NurseDashboard from './Pages/Pages/NurseDashboard'
+import NurseDashboard from './Pages/Pages/Nurse/NurseDashboard'
+import NursePending from './Pages/Pages/Nurse/NursePending'
+import NurseAssigned from './Pages/Pages/Nurse/NurseAssigned'
+import NurseLayout from './Pages/Pages/Nurse/NurseLayout'
+import ManageAppointments from './Components/Doctor/ManageAppointments';
+import ManageResult from './Components/Doctor/ManageResult';
+
 import UserProfile from './pages/User/Profile';
 import 'aos/dist/aos.css';
 import Aos from 'aos';
@@ -118,7 +124,10 @@ function App() {
           <Route path="/forgotPass" element={<ForgotPass />} />
           <Route path="/resetPass" element={<ResetPass />} />
         </Route>
-        <Route path="/nurse" element={<NurseDashboard />}>
+        <Route path="/nurse" element={<NurseLayout />}>
+          <Route path="dashboard" element={<NurseDashboard />} />
+          <Route path="pending" element={<NursePending />} />
+          <Route path="assigned" element={<NurseAssigned />} />
         </Route>
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="/admin/users" element={<UserManagement />} />
@@ -128,11 +137,13 @@ function App() {
           {/* <Route path="/admin/services" element={<ServiceManagement />} /> */}
         </Route>
         <Route path="/doctor" element={<DoctorLayout />}>
-          <Route path="/doctor" element={<AvailabilityCalendar />} />
+          <Route path="/doctor" element={<ManageAppointments />} />
+          <Route path="appointments/manage-result/:appointmentId" element={<ManageResult />} />
+          <Route path="/doctor/calendar" element={<AvailabilityCalendar />} />
+          {/* <Route path="/doctor/appointment/assign/:appointmentId" element={<AssignDoctor />} /> */}
           {/* <Route path="/doctor/doctors" element={<DoctorManagement />} />
-          <Route path="/doctor/nurses" element={<NurseManagement />} />
-          <Route path="/doctor/services" element={<ServiceManagement />} /> */}
-          <Route path="/doctor/calendar" element={<AvailabilityScheduler />} />
+          <Route path="/doctor/nurses" element={<NurseManagement />} /> */}
+          {/* <Route path="/doctor/services" element={<ServiceManagement />} /> */}
         </Route>
       </Routes>
       <ScrollUpButton />
