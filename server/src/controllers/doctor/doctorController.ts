@@ -112,12 +112,12 @@ export const addDoctorToFavorites = async (req: Request, res: Response): Promise
         const doctorObjectId = new mongoose.Types.ObjectId(doctorId);
 
         // Kiểm tra nếu bác sĩ đã có trong danh sách yêu thích
-        if (user.favorites.includes(doctorObjectId)) {
+        if (user.favorites?.includes(doctorObjectId)) {
             res.status(400).json({ message: "Doctor already in favorites." });
             return;
         }
 
-        user.favorites.push(doctorObjectId);
+        user.favorites?.push(doctorObjectId);
         await user.save();
 
         res.status(200).json({ message: "Doctor added to favorites.", favorites: user.favorites });
@@ -152,7 +152,7 @@ export const removeDoctorFromFavorites = async (req: Request, res: Response): Pr
         const doctorObjectId = new mongoose.Types.ObjectId(doctorId);
 
         // Kiểm tra nếu bác sĩ có trong danh sách yêu thích không
-        if (!user.favorites.includes(doctorObjectId)) {
+        if (!user.favorites?.includes(doctorObjectId)) {
             res.status(400).json({ message: "Doctor not found in favorites." });
             return;
         }

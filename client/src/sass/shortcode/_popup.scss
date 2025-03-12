@@ -36,3 +36,11 @@
     border: none;
     cursor: pointer;
 }
+
+.large-modal  {
+    width: 100%;
+    max-width: 1000px;
+    height: 80vh;
+    max-height: 90vh;
+    overflow-y: auto;
+}
