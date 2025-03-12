@@ -56,6 +56,7 @@ import UserProfile from './pages/User/Profile';
 import 'aos/dist/aos.css';
 import Aos from 'aos';
 import { useEffect } from 'react';
+import AvailabilityScheduler from './Components/Doctor/AvailabilityScheduler';
 
 function App() {
   Aos.init({

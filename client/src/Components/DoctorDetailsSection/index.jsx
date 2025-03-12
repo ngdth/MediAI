@@ -1,6 +1,7 @@
+import { Button } from "react-bootstrap";
 import { FaHeart } from "react-icons/fa6";
 
-const DoctorDetailsSection = ({ data, onFavoriteToggle, favoriteStatus }) => {
+const DoctorDetailsSection = ({ data, onFavoriteToggle, favoriteStatus, onBookNow }) => {
   // Kiểm tra nếu data không có hoặc có giá trị rỗng
   const image = data?.imageUrl;
   const name = data?.username;
@@ -25,23 +26,29 @@ const DoctorDetailsSection = ({ data, onFavoriteToggle, favoriteStatus }) => {
               <div className="cs_doctor_info_header">
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <h3 className="cs_doctor_title">{name}</h3>
-                  <button
-                    onClick={onFavoriteToggle}
-                    style={{
-                      padding: "8px 16px",
-                      backgroundColor: favoriteStatus ? "green" : "#007bff",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: "5px",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "5px",
-                    }}
-                  >
-                    <FaHeart />
-                    {favoriteStatus ? "Added to Favorites" : "Add to Favorites"}
-                  </button>
+                  <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                    <button
+                      onClick={onFavoriteToggle}
+                      style={{
+                        padding: "8px 16px",
+                        backgroundColor: favoriteStatus ? "green" : "#007bff",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "5px",
+                      }}
+                    >
+                      <FaHeart />
+                      {favoriteStatus ? "Added to Favorites" : "Add to Favorites"}
+                    </button>
+                    {/* ✅ Nút Book Doctor Now */}
+                    <Button variant="primary" onClick={onBookNow}>
+                      Book Doctor Now
+                    </Button>
+                  </div>
                 </div>
                 <p className="cs_doctor_subtitle mb-0">{subtitle}</p>
               </div>
