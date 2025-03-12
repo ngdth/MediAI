@@ -42,6 +42,7 @@ const BookingForm = ({ show, doctorId, onClose, onSubmit }) => {
       date: selectedDay,
       time: selectedSlot,
       symptoms: formData.reason,
+      doctorId: formData.doctorId
     };
   
     try {
