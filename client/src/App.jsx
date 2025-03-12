@@ -39,7 +39,7 @@ import PrescriptionDetailPage from "./Pages/Pages/PrescriptionDetailPage";
 import UpdatePrescriptionPage from "./Pages/Pages/UpdatePrescriptionPage";
 import BookingAppointments from './Pages/Pages/Booking/BookingAppointments';
 import ScrollUpButton from './Components/ScrollUpButton';
-import UserProfile from './pages/User/Profile';
+import UserProfile from './Pages/User/Profile';
 import FavoritesPage from './Pages/User/FavoritesPage';
 import UserManagement from './Pages/Admin/UserManagement';
 import DoctorManagement from './Pages/Admin/DoctorManagement';
