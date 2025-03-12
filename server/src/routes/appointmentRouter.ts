@@ -1,9 +1,9 @@
 import express from "express";
 import { authenticateToken, authorizeRole } from "../middlewares/authMiddleware";
-import { createAppointment, getPendingAppointments, updateAppointmentStatus, assignDoctor, cancelAppointment, addDiagnosisAndPrescription, getAppointmentById, createResultAndPrescription, getWaitingPrescriptionAppointments, getDetailAppointment, getUserAppointments, viewAllAppointments } from "../controllers/auth/appointmentController";
+import { createAppointment, getPendingAppointments, updateAppointmentStatus, assignDoctor, cancelAppointment, addDiagnosisAndPrescription, getAppointmentById, createResultAndPrescription, getWaitingPrescriptionAppointments, getDetailAppointment, getUserAppointments, viewAllAppointments, bookAppointment } from "../controllers/auth/appointmentController";
 const router = express.Router();
 // Appointment routes
-router.post("/book", authenticateToken, createAppointment);
+router.post("/booknodoctor", authenticateToken, createAppointment);
 router.get("/pending", authenticateToken, authorizeRole(["nurse"]), getPendingAppointments);
 router.get("/waiting", authenticateToken, authorizeRole(["doctor"]), getWaitingPrescriptionAppointments);
 router.put("/:id/status", authenticateToken, authorizeRole(["nurse"]), updateAppointmentStatus);
@@ -14,7 +14,7 @@ router.post("/:id/result-and-prescription", createResultAndPrescription);
 
 // router.post("/appointment", authenticateToken, authorizeRole(["doctor"]), createAppointment);
 // router.put("/appointment/:id", authenticateToken, authorizeRole(["nurse"]), updateAppointmentStatus);
-// router.post("/book",authenticateToken, bookAppointment);
+router.post("/book",authenticateToken, bookAppointment);
 router.get("/history/:id", authenticateToken,getDetailAppointment );
 router.get("/history", authenticateToken, getUserAppointments);
 router.get("/",authenticateToken,authorizeRole(["nurse"]), viewAllAppointments);
