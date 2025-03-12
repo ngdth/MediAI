@@ -47,6 +47,63 @@ export const createAppointment = async (req: Request, res: Response, next: NextF
     }
 };
 
+export const bookAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const userId = req.user?.id;
+        const { patientName, date, time, symptoms, doctorId } = req.body; // Thêm doctorId
+
+        // Kiểm tra đầu vào
+        if (!patientName || !date || !time || !symptoms || !doctorId) {
+            res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin" });
+            return;
+        }
+
+        // Kiểm tra xem bác sĩ có tồn tại không
+        const doctor = await User.findById(doctorId);
+        if (!doctor || doctor.role !== "doctor") {
+            res.status(404).json({ message: "Bác sĩ không tồn tại" });
+            return;
+        }
+
+        // Tạo lịch hẹn mới
+        const newAppointment = new Appointment({
+            userId,
+            doctorId,  // Lưu thông tin bác sĩ
+            patientName,
+            date,
+            time,
+            symptoms,
+            status: AppointmentStatus.ASSIGNED
+        });
+
+        await newAppointment.save();
+
+        // Tìm user để gửi email xác nhận
+        const user = await User.findById(userId);
+        if (!user) {
+            res.status(404).json({ message: "User không tồn tại" });
+            return;
+        }
+
+        // Gửi email thông báo
+        await sendEmail(user.email, {
+            patientName,
+            date,
+            time,
+            symptoms,
+            doctorName: doctor.username // Gửi kèm tên bác sĩ trong email
+        }, "appointment");
+
+        res.status(201).json({
+            message: "Yêu cầu đặt lịch hẹn đã được gửi, vui lòng kiểm tra email để xác nhận.",
+            appointment: newAppointment
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
 export const getPendingAppointments = async (req: Request, res: Response): Promise<void> => {
     try {
         const appointments = await Appointment.find({ status: "Pending" });
