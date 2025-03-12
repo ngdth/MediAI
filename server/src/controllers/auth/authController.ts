@@ -101,7 +101,7 @@ export const loginUser: RequestHandler = async (req: Request, res: Response): Pr
         const token = jwt.sign(
             { id: user._id, role: user.role },
             process.env.JWT_SECRET as string,
-            { expiresIn: "1h" }
+            { expiresIn: "4h" }
         );
 
         res.status(200).json({

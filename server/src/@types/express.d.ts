@@ -1,11 +1,18 @@
-import 'express'
-import jwt from 'jsonwebtoken'
+// import 'express'
+// // import jwt from 'jsonwebtoken'
+// import { JwtPayload } from '../middlewares/authMiddleware';
+// declare global {
+//   namespace Express {
+//     interface Request {
+//       user?: JwtPayload;        
 
-declare global {
-  namespace Express {
+//     }
+//   }
+// }
+import { JwtPayload } from '../../middlewares/authMiddleware';
+
+declare module 'express-serve-static-core' {
     interface Request {
-      user?: string | JwtPayload;
-      auth?: jwt.JwtPayload // { uid: string; role: string }
+        user?: JwtPayload;
     }
-  }
 }
