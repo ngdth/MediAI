@@ -42,7 +42,7 @@ const NurseAssigned = () => {
       await axios.put(`http://localhost:8080/appointment/${id}/status`, { status }, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      fetchAppointments(filterStatus);
+      fetchAppointments();
     } catch (error) {
       console.error("Lỗi khi cập nhật trạng thái:", error);
     }
@@ -71,7 +71,7 @@ const NurseAssigned = () => {
               <td>{appointment.symptoms}</td>
               <td>{doctors[appointment.doctorId._id]}</td>
               <td>
-                <button className="btn btn-success me-2" onClick={() => updateAppointmentStatus(appointment._id, "Accept")}>
+                <button className="btn btn-success me-2" onClick={() => updateAppointmentStatus(appointment._id, "Accepted")}>
                   Xác nhận
                 </button>
                 <button className="btn btn-danger me-2">Reject</button>
