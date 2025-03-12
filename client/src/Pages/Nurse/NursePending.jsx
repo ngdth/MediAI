@@ -1,20 +1,19 @@
-// NurseAssigned.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const NurseAssigned = () => {
+const NursePending = () => {
   const [appointments, setAppointments] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchAppointments();
+    fetchAppointments("Pending");
     fetchDoctors();
   }, []);
 
-  const fetchAppointments = async () => {
+  const fetchAppointments = async (status) => {
     try {
-      const response = await axios.get("http://localhost:8080/appointment?status=Assigned", {
+      const response = await axios.get(`http://localhost:8080/appointment?status=${status}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setAppointments(response.data.data);  // Assuming API returns data in response.data.data
@@ -41,6 +40,7 @@ const NurseAssigned = () => {
       await axios.put(`http://localhost:8080/appointment/${id}/status`, { status }, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
+      console.log("Appointment status updated successfully", status);
       fetchAppointments();  // Refresh the appointment list after updating status
     } catch (error) {
       console.error("Error updating appointment status:", error);
@@ -72,8 +72,8 @@ const NurseAssigned = () => {
               <th>Patient</th>
               <th>Date</th>
               <th>Time</th>
-              <th>Doctor</th>
               <th>Symptoms</th>
+              <th>Doctor</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -117,4 +117,4 @@ const NurseAssigned = () => {
   );
 };
 
-export default NurseAssigned;
+export default NursePending;
