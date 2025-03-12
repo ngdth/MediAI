@@ -14,6 +14,6 @@ router.get("/:id", getAppointmentById);
 // router.post("/book",authenticateToken, bookAppointment);
 router.get("/history/:id", authenticateToken,getDetailAppointment );
 router.get("/history", authenticateToken, getUserAppointments);
-router.get("/",authenticateToken, viewAllAppointments);
+router.get("/",authenticateToken,authorizeRole(["nurse"]), viewAllAppointments);
 router.delete("/:id/cancel", authenticateToken,cancelAppointment );
 export default router;

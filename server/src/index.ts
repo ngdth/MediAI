@@ -11,6 +11,8 @@ import adminRoutes from './routes/adminRoutes' // Import admin routes
 import appointmentRoutes from './routes/appointmentRouter'; // Import appointment routes
 import scheduleRouter from './routes/scheduleRouter'; // Import schedule routes
 import serviceRouter from './routes/serviceRoutes'; // Import service routes
+import blogRoutes from './routes/blogRoutes';
+import User from './models/User'; // Import blog routes
 const bootstrap = async () => {
   await mongo.connect()
 
@@ -28,6 +30,7 @@ const bootstrap = async () => {
 
   app.use('/appointment', appointmentRoutes); // Use appointment routes
   app.use('/schedule', scheduleRouter); // Use schedule routes
+  app.use('/blog', blogRoutes); // Use blog routes
   app.use('/service', serviceRouter); // Use service routes
   app.listen(PORT || 8080, () => {
     console.log(`✅ Server is listening on port: ${PORT || 8080}`)
