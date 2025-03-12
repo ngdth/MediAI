@@ -8,7 +8,8 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "typeRoots": ["./node_modules/@types", "./src/@types"]
   },
   "include": ["src", "src/middlewares", "../../auth"],
   "exclude": ["node_modules", "dist"]

@@ -52,6 +52,8 @@ import NursePending from './Pages/Nurse/NursePending'
 import NurseAssigned from './Pages/Nurse/NurseAssigned'
 import ManageAppointments from './Components/Doctor/ManageAppointments';
 import ManageResult from './Components/Doctor/ManageResult';
+import ManagePrescription from './Components/Doctor/ManagePrescription';
+import UserProfile from './pages/User/Profile';
 import 'aos/dist/aos.css';
 import Aos from 'aos';
 import { useEffect } from 'react';
@@ -132,6 +134,7 @@ function App() {
         <Route path="/doctor" element={<DoctorLayout />}>
           <Route path="/doctor" element={<ManageAppointments />} />
           <Route path="appointments/manage-result/:appointmentId" element={<ManageResult />} />
+          <Route path="/doctor/manage-prescription" element={<ManagePrescription />} />
           <Route path="/doctor/calendar" element={<AvailabilityCalendar />} />
           {/* <Route path="/doctor/appointment/assign/:appointmentId" element={<AssignDoctor />} /> */}
         </Route>

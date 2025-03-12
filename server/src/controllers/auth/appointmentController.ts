@@ -162,6 +162,59 @@ export const addDiagnosisAndPrescription = async (req: Request, res: Response, n
     }
 };
 
+// Tạo kết quả khám bệnh và đơn thuốc
+export const createResultAndPrescription = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const { id } = req.params;
+    const { vitals, tests, diagnosisDetails } = req.body;
+
+    try {
+        const appointment = await Appointment.findById(id);
+
+        if (!appointment) {
+            res.status(404).json({ message: "Appointment not found" });
+            return;
+        }
+
+        // Cập nhật các thông tin khám bệnh và đơn thuốc
+        appointment.vitals = vitals;
+        appointment.tests = tests;
+        appointment.diagnosisDetails = diagnosisDetails;
+        appointment.status = AppointmentStatus.WAITINGPRESCRIPTION;
+
+        await appointment.save();
+
+        res.status(200).json({
+            message: 'Result and prescription created successfully',
+            data: appointment
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getWaitingPrescriptionAppointments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        // Lọc các lịch hẹn có status "WAITINGPRESCRIPTION"
+        const appointments = await Appointment.find({ status: "WaitingPrescription" })
+            .populate('userId', 'username email')
+            .populate('doctorId', 'username email');
+
+        if (appointments.length === 0) {
+            res.status(404).json({ message: "No appointments found with status WAITINGPRESCRIPTION" });
+            return;
+        }
+
+        res.status(200).json({
+            message: "Appointments retrieved successfully",
+            data: appointments,
+        });
+    } catch (error) {
+        console.error("Error fetching waiting prescription appointments:", error);
+        res.status(500).json({ message: "Error fetching waiting prescription appointments", error });
+    }
+};
+
+
 export const getAppointmentById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
