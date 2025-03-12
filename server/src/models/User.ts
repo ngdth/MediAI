@@ -58,7 +58,7 @@ const UserSchema: Schema = new Schema(
   { timestamps: true, discriminatorKey: 'role' }
 );
 
-const User = mongoose.model<IUser>('User', UserSchema);
+const User = mongoose.model<IUser>('user', UserSchema);
 
 const DoctorSchema: Schema = new Schema(
   {
@@ -67,7 +67,7 @@ const DoctorSchema: Schema = new Schema(
   },
 );
 
-export const Doctor = User.discriminator<IDoctor>('Doctor', DoctorSchema);
+export const Doctor = User.discriminator<IDoctor>('doctor', DoctorSchema);
 
 const NurseSchema: Schema = new Schema(
   {
@@ -76,7 +76,7 @@ const NurseSchema: Schema = new Schema(
   },
 );
 
-export const Nurse = User.discriminator<INurse>('Nurse', NurseSchema);
+export const Nurse = User.discriminator<INurse>('nurse', NurseSchema);
 
 const PharmacySchema: Schema = new Schema(
   {
@@ -85,6 +85,6 @@ const PharmacySchema: Schema = new Schema(
   },
 );
 
-export const Pharmacy = User.discriminator<IPharmacy>('Pharmacy', PharmacySchema);
+export const Pharmacy = User.discriminator<IPharmacy>('pharmacy', PharmacySchema);
 
 export default User;
