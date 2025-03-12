@@ -37,6 +37,7 @@ import PrescriptionForm from "./Pages/Pages/PrescriptionForm";
 import PrescriptionManagement from "./Pages/Pages/PrescriptionManagement";
 import PrescriptionDetailPage from "./Pages/Pages/PrescriptionDetailPage";
 import UpdatePrescriptionPage from "./Pages/Pages/UpdatePrescriptionPage";
+import BookingAppointments from './Pages/Pages/Booking/BookingAppointments';
 import ScrollUpButton from './Components/ScrollUpButton';
 import UserProfile from './pages/User/Profile';
 import FavoritesPage from './Pages/User/FavoritesPage';
@@ -46,14 +47,12 @@ import NurseManagement from './Pages/Admin/NurseManagement';
 import PharmacyManagement from './Pages/Admin/PharmacyManagement';
 // import ServiceManagement from './Pages/Admin/ServiceManagement';
 import AvailabilityCalendar from './Components/Doctor/AvailabilityCalendar';
-import BookingAppointments from './Pages/Pages/Booking/BookingAppointments';
-import NurseDashboard from './Pages/Nurse/NurseDashboard'
-import NursePending from './Pages/Nurse/NursePending'
-import NurseAssigned from './Pages/Nurse/NurseAssigned'
 import ManageAppointments from './Components/Doctor/ManageAppointments';
 import ManageResult from './Components/Doctor/ManageResult';
 import ManagePrescription from './Components/Doctor/ManagePrescription';
-import UserProfile from './pages/User/Profile';
+import NurseDashboard from './Pages/Nurse/NurseDashboard'
+import NursePending from './Pages/Nurse/NursePending'
+import NurseAssigned from './Pages/Nurse/NurseAssigned'
 import 'aos/dist/aos.css';
 import Aos from 'aos';
 import { useEffect } from 'react';
