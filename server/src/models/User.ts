@@ -5,27 +5,19 @@ export interface IUser extends Document {
   firstname: string;
   lastname: string;
   email: string;
-<<<<<<< duong
-  password: string;
-  role: "admin" | "user" | "doctor" | "nurse" | "pharmacy";
-  verified: boolean;
-  active: boolean;
-  favorites: mongoose.Types.ObjectId[];
-=======
   password?: string;
+  imageUrl?: string;
+  googleId?: string;
   birthday: Date;
   phone: string;
   gender: 'Nam' | 'Nữ';
-  imageUrl?: string;
-  googleId?: string;
-  role: 'admin' | 'user' | 'doctor' | 'nurse' | 'pharmacy';
-  verified: boolean;
-  active: boolean;
   address: string;
   city: string;
   country: string;
+  role: "admin" | "user" | "doctor" | "nurse" | "pharmacy";
+  verified: boolean;
+  active: boolean;
   favorites?: mongoose.Types.ObjectId[];
->>>>>>> local
 }
 
 export interface IDoctor extends IUser {
@@ -47,21 +39,13 @@ const UserSchema: Schema = new Schema(
   {
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
-<<<<<<< duong
-    password: { type: String, required: true },
+    password: { type: String },
     imageUrl: { type: String, default: "" },
+    googleId: { type: String, unique: true, sparse: true },   // support google login
     role: { type: String, enum: ["admin", "user", "doctor", "nurse", "pharmacy"], default: "user" },
     verified: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
-    favorites: [{ type: mongoose.Types.ObjectId }],
-=======
-    password: { type: String },
-    imageUrl: { type: String, default: '' },
-    googleId: { type: String, unique: true, sparse: true },   // support google login
-    role: { type: String, enum: ['admin', 'user', 'doctor', 'nurse', 'pharmacy'], default: 'user' },
-    verified: { type: Boolean, default: false },
-    active: { type: Boolean, default: true },
-    favorites: [{ type: mongoose.Types.ObjectId, ref: 'User' }],
+    favorites: [{ type: mongoose.Types.ObjectId, ref: "user" }],
     firstname: { type: String,  },
     lastname: { type: String,  },
     birthday: { type: Date,  },
@@ -70,7 +54,6 @@ const UserSchema: Schema = new Schema(
     address: { type: String, required: true },
     city: { type: String, required: true },
     country: { type: String, required: true },
->>>>>>> local
   },
   { timestamps: true, discriminatorKey: 'role' }
 );

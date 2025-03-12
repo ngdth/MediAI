@@ -70,6 +70,14 @@ const ctaData = {
   buttonText: 'Booking Now',
 };
 
+const ctaDataBooking = {
+  imageUrl: '/assets/img/cta_img_1.jpg',
+  title: 'BOOKING APPOINTMENT',
+  subtitle: 'BOOKING APPOINTMENT',
+  buttonUrl: '/BookingAppointments',
+  buttonText: 'Booking Now',
+};
+
 const aboutData = {
   sectionSubtitle: 'OUR ABOUT US',
   sectionTitle: 'More Than 26+ Years About Provide Medical.',
@@ -614,6 +622,7 @@ const MainHome = () => {
         }
       >
         <CtaSection data={ctaData} />
+        <CtaSection data={ctaDataBooking} />
       </Section>
 
       {/* End CTA Section */}

@@ -5,6 +5,7 @@ import app from './utils/app' // (server)
 import mongo from './config/mongo' // (database)
 import { PORT } from './constants/index'
 // import authRoutes from './routes/userRoutes'
+import authRoutes from './routes/authRoutes' // Import auth routes
 import userRoutes from './routes/userRoutes' // Import user routes
 import adminRoutes from './routes/adminRoutes' // Import admin routes
 import appointmentRoutes from './routes/appointmentRouter'; // Import appointment routes
@@ -25,17 +26,11 @@ const bootstrap = async () => {
 
   app.use('/user', userRoutes) // Use user routes
   app.use('/admin', adminRoutes) // Use admin routes
-<<<<<<< duong
-  // app.use('/auth', authRoutes) // Use auth routes
-
-  app.use('/api', appointmentRoutes); // Use appointment routes
-  app.use('/api', scheduleRouter); // Use schedule routes
-=======
   app.use('/auth', authRoutes) // Use auth routes
-  app.use('/blog', blogRoutes); // Use blog routes
+
   app.use('/appointment', appointmentRoutes); // Use appointment routes
   app.use('/schedule', scheduleRouter); // Use schedule routes
->>>>>>> local
+  app.use('/blog', blogRoutes); // Use blog routes
   app.use('/service', serviceRouter); // Use service routes
   app.listen(PORT || 8080, () => {
     console.log(`✅ Server is listening on port: ${PORT || 8080}`)

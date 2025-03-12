@@ -5,25 +5,34 @@ export enum AppointmentStatus {
     PENDING = 'Pending',
     ACCEPTED = 'Accepted',
     REJECTED = 'Rejected',
+    ASSIGNED = 'Assigned',
 }
 
 interface IAppointment extends Document {
-    doctorId: string;
     userId: string;
     patientName?: string;
     date: Date;
     time: string;
+    symptoms: string;
     status: AppointmentStatus;
+    nurseId?: string;
+    doctorId?: string;
+    diagnosis?: string;
+    prescription?: string;
 }
 
 const appointmentSchema = new Schema<IAppointment>(
     {
-        doctorId: { type: Schema.Types.String, ref: 'User', required: true },
-        userId: { type: Schema.Types.String, ref: 'User', required: true },
-        patientName: { type: String},
+        userId: { type: Schema.Types.String, ref: 'user', required: true },
+        patientName: { type: String },
         date: { type: Date, required: true },
         time: { type: String, required: true },
+        symptoms: { type: String, required: true },
         status: { type: String, enum: Object.values(AppointmentStatus), default: AppointmentStatus.PENDING },
+        nurseId: { type: Schema.Types.String, ref: 'user' },
+        doctorId: { type: Schema.Types.String, ref: 'user' },
+        diagnosis: { type: String },
+        prescription: { type: String },
     },
     { timestamps: true }
 );

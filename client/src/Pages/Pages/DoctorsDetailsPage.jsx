@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import PageHeading from '../../Components/PageHeading';
 import DoctorDetailsSection from '../../Components/DoctorDetailsSection';
+// import BookingCalendar from '../../Components/Doctor/BookingCalendar';
+import BookingForm from '../../Components/Doctor/BookingForm';
 import {
   FaCertificate,
   FaEnvelope,
@@ -11,16 +13,17 @@ import {
   FaSuitcase,
   FaHeart,
 } from 'react-icons/fa6';
-import TeamSection from '../../Components/TeamSection';
 import Section from '../../Components/Section';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Button } from 'react-bootstrap';
 
 const DoctorsDetailsPage = () => {
   const [doctorDetails, setDoctorDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const { doctorId } = useParams(); // Lấy id bác sĩ từ URL
   const [favoriteStatus, setFavoriteStatus] = useState(false); // Thêm khai báo trạng thái này
+  const [showBookingForm, setShowBookingForm] = useState(false);
 
   // Lấy token từ localStorage
   const token = localStorage.getItem("token");
@@ -75,6 +78,12 @@ const DoctorsDetailsPage = () => {
         console.error("Error adding doctor to favorites:", error.response?.data || error);
       }
     }
+  };
+
+  const handleBookingSubmit = (bookingData) => {
+    console.log("Booking Data Submitted:", bookingData);
+    toast.success("Appointment booked successfully!");
+    setShowBookingForm(false); // Đóng modal sau khi đặt lịch
   };
 
   if (loading) {
@@ -135,12 +144,20 @@ const DoctorsDetailsPage = () => {
           data={{ ...doctorDetails, info: doctorInfo, progressBars }}
           onFavoriteToggle={handleFavoriteToggle}
           favoriteStatus={favoriteStatus}
+          onBookNow={() => setShowBookingForm(true)}
         />
       </Section>
+      {/* ✅ Popup BookingForm */}
+      <BookingForm
+        show={showBookingForm}
+        doctorId={doctorId}
+        onClose={() => setShowBookingForm(false)}
+        onSubmit={handleBookingSubmit}
+      />
 
-      <Section topSpaceLg="80" topSpaceMd="110">
-        <TeamSection variant={'cs_pagination cs_style_2'} data={teamData} />
-      </Section>
+      {/* <Section topSpaceLg="80" topSpaceMd="110">
+        <BookingCalendar doctorId={doctorId} token={token} />
+      </Section> */}
 
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
     </>

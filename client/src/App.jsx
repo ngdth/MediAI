@@ -42,10 +42,21 @@ import UserManagement from './Pages/Admin/UserManagement';
 import DoctorManagement from './Pages/Admin/DoctorManagement';
 import NurseManagement from './Pages/Admin/NurseManagement';
 import PharmacyManagement from './Pages/Admin/PharmacyManagement';
-import ServiceManagement from './Pages/Admin/ServiceManagement';
+// import ServiceManagement from './Pages/Admin/ServiceManagement';
+import AvailabilityCalendar from './Components/Doctor/AvailabilityCalendar';
+import BookingAppointments from './Pages/Pages/Booking/BookingAppointments';
+import NurseDashboard from './Pages/Pages/Nurse/NurseDashboard'
+import NursePending from './Pages/Pages/Nurse/NursePending'
+import NurseAssigned from './Pages/Pages/Nurse/NurseAssigned'
+import NurseLayout from './Pages/Pages/Nurse/NurseLayout'
+import ManageAppointments from './Components/Doctor/ManageAppointments';
+import ManageResult from './Components/Doctor/ManageResult';
+
+import UserProfile from './pages/User/Profile';
 import 'aos/dist/aos.css';
 import Aos from 'aos';
 import { useEffect } from 'react';
+import AvailabilityScheduler from './Components/Doctor/AvailabilityScheduler';
 
 function App() {
   Aos.init({
@@ -67,7 +78,7 @@ function App() {
         </Route>
         <Route path="/" element={<Layout variant="cs_type_1" />}>
           <Route path="/home-v3" element={<HomeV3 />} />
-        </Route>
+        </Route> 
         <Route path="/" element={<Layout />}>
           <Route path="/about" element={<AboutPage />} />
           <Route path="/service" element={<ServicePage />} />
@@ -75,6 +86,7 @@ function App() {
           <Route path="/blog" element={<BlogsPage />} />
           <Route path="/blog/:blogId" element={<BlogsDetails />} />
           <Route path="/appointments" element={<Appointments />} />
+          <Route path="/BookingAppointments" element={<BookingAppointments />} />
           <Route
             path="/appointmentshistory"
             element={<AppointmentsHistory />}
@@ -83,9 +95,8 @@ function App() {
             path="/updateappointment/:appointmentId"
             element={<UpdateAppointment />}
           />
-            <Route path="/updatediagnosis/:diagnosisId" element={<UpdateDiagnosisPage />} />
-            <Route path="/updateprescription/:prescriptionId" element={<UpdatePrescriptionPage />} />
-
+          <Route path="/updatediagnosis/:diagnosisId" element={<UpdateDiagnosisPage />} />
+          <Route path="/updateprescription/:prescriptionId" element={<UpdatePrescriptionPage />} />
           <Route path="/doctorappointments" element={<DoctorAppointments />} />
           <Route path="/appointment/:id" element={<AppointmentDetail />} />
           <Route path="/doctors" element={<DoctorsPage />} />
@@ -104,6 +115,7 @@ function App() {
           <Route path="*" element={<ErrorPage />} />
           <Route path="/search" element={<DoctorsResultPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
+          <Route path="/profile" element={<UserProfile />} />
         </Route>
         <Route path="/" element={<LayoutWithoutHeader />}>
           <Route path="/login" element={<LoginPage />} />
@@ -112,17 +124,26 @@ function App() {
           <Route path="/forgotPass" element={<ForgotPass />} />
           <Route path="/resetPass" element={<ResetPass />} />
         </Route>
+        <Route path="/nurse" element={<NurseLayout />}>
+          <Route path="dashboard" element={<NurseDashboard />} />
+          <Route path="pending" element={<NursePending />} />
+          <Route path="assigned" element={<NurseAssigned />} />
+        </Route>
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="/admin/users" element={<UserManagement />} />
           <Route path="/admin/doctors" element={<DoctorManagement />} />
           <Route path="/admin/nurses" element={<NurseManagement />} />
           <Route path="/admin/pharmacy" element={<PharmacyManagement />} />
-          <Route path="/admin/services" element={<ServiceManagement />} />
+          {/* <Route path="/admin/services" element={<ServiceManagement />} /> */}
         </Route>
         <Route path="/doctor" element={<DoctorLayout />}>
-          <Route path="/doctor/doctors" element={<DoctorManagement />} />
-          <Route path="/doctor/nurses" element={<NurseManagement />} />
-          <Route path="/doctor/services" element={<ServiceManagement />} />
+          <Route path="/doctor" element={<ManageAppointments />} />
+          <Route path="appointments/manage-result/:appointmentId" element={<ManageResult />} />
+          <Route path="/doctor/calendar" element={<AvailabilityCalendar />} />
+          {/* <Route path="/doctor/appointment/assign/:appointmentId" element={<AssignDoctor />} /> */}
+          {/* <Route path="/doctor/doctors" element={<DoctorManagement />} />
+          <Route path="/doctor/nurses" element={<NurseManagement />} /> */}
+          {/* <Route path="/doctor/services" element={<ServiceManagement />} /> */}
         </Route>
       </Routes>
       <ScrollUpButton />

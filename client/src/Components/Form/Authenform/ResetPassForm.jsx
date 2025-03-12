@@ -34,7 +34,7 @@ const ResetPassForm = () => {
         }
 
         try {
-            const response = await fetch("http://localhost:8080/user/resetpassword", {
+            const response = await fetch("http://localhost:8080/user/forgotPassword", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email: resetEmail, code: formData.otp, newPassword: formData.password }),

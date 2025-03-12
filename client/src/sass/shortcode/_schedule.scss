@@ -1,0 +1,248 @@
+.scheduler-container {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+}
+
+.scheduler-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.week-navigator {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.week-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: var(--dark-color);
+}
+
+.calendar-icon {
+    width: 18px;
+    height: 18px;
+    color: var(--primary-color);
+}
+
+.nav-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--light-color);
+    color: var(--dark-color);
+    transition: all 0.2s;
+}
+
+.nav-button:hover {
+    background-color: var(--border-color);
+    transform: scale(1.05);
+}
+
+.save-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.save-button:hover {
+    background-color: var(--primary-hover);
+}
+
+.save-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.save-success {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--success-color);
+    font-weight: 600;
+}
+
+.success-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.days-selector {
+    display: flex;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.days-selector::-webkit-scrollbar {
+    height: 6px;
+}
+
+.days-selector::-webkit-scrollbar-track {
+    background: var(--light-color);
+}
+
+.days-selector::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 6px;
+}
+
+.day-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 70px;
+    height: 80px;
+    border-radius: 10px;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.day-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow);
+}
+
+.day-card.selected {
+    background-color: var(--selected-color);
+    border-color: var(--primary-color);
+}
+
+.day-card.today {
+    background-color: var(--today-color);
+}
+
+.day-card.has-availability .availability-indicator {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: var(--success-color);
+}
+
+.day-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+.day-date {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--dark-color);
+}
+
+.day-schedule {
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.schedule-title {
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    color: var(--dark-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.time-slots-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 1rem;
+}
+
+.time-slot-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 8px;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.time-slot-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow);
+    background-color: #f0f0f0;
+}
+
+.time-slot-card.selected-slot {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+  }
+
+.time-slot-card.available {
+    background-color: var(--available-color);
+    border-color: var(--success-color);
+}
+
+.time-slot-time {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+.time-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--secondary-color);
+}
+
+.time-slot-card.available .time-icon {
+    color: var(--success-color);
+}
+
+.time-slot-status {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--secondary-color);
+}
+
+.time-slot-card.available .time-slot-status {
+    color: var(--success-color);
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .scheduler-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .week-navigator {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .time-slots-container {
+        grid-template-columns: 1fr;
+    }
+}

@@ -2,7 +2,7 @@ import { Request, Response, RequestHandler } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../../models/User";
-import { sendVerificationEmail } from "../../config/email";
+import { sendEmail  } from "../../config/email";
 import { normalizeEmail } from "../../utils/normalizeEmail";
 import { generateVerificationCode } from "../../utils/generateToken";
 
@@ -37,7 +37,7 @@ export const registerUser: RequestHandler = async (req: Request, res: Response):
 
 
         try {
-            await sendVerificationEmail(normalizedEmail, verificationCode);
+            await sendEmail(normalizedEmail, { code: verificationCode }, "register");
         } catch (emailError) {
             console.error("Error sending verification email:", emailError);
             res.status(500).json({ message: "Failed to send verification email" });
@@ -176,42 +176,12 @@ export const sendOTP: RequestHandler = async (req: Request, res: Response): Prom
     const otp = Math.floor(100000 + Math.random() * 900000);
     TEMP_CODE_STORAGE.set(email, otp.toString());
 
-    await sendVerificationEmail(email, `Your OTP is ${otp}`);
-
+    await sendEmail(email, {code: `Your OTP is ${otp}`}, "register");
     res.status(200).json({ message: 'OTP sent to email' });
 };
 
-// export const resetPassword : RequestHandler = async (req: Request, res: Response): Promise<void> => {
-//     const { email, otp, newPassword } = req.body;
 
-//     if (!email || !otp || !newPassword) {
-//         res.status(400).json({ message: "Missing required fields" });
-//         return;
-//     }
-//     // const user = await User.findOne({ email });
-//     try {
-//         const user = await User.findOne({ email });
-//         if (!user) throw new Error("User not found");
-//     } catch (error) {
-//         res.status(500).json({ message: "MongoDB error", error });
-//         return;
-//     }
-
-//     if (TEMP_CODE_STORAGE.get(email) !== otp) {
-//         res.status(400).json({ message: 'Invalid OTP' });
-//         return;
-//     }
-
-//     const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-//     user.password = hashedPassword;
-//     TEMP_CODE_STORAGE.delete(email);
-//     await user.save();
-
-//     res.status(200).json({ message: 'Password reset successful' });
-// };
-
-export const resetPassword: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+export const forgotPassword: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     try {
         const { email, code, newPassword } = req.body;
 
@@ -243,7 +213,7 @@ export const resetPassword: RequestHandler = async (req: Request, res: Response)
     }
 };
 
-//delete Unverified Account
+//delete Unverified Account - dùng trong lúc đăng kí tài khoản nhưng sai mail và trở về đăng ký lại
 export const deleteUnverifiedAcc = async (req: Request, res: Response): Promise<void> => {
     const { email } = req.body;
 
@@ -272,5 +242,49 @@ export const deleteUnverifiedAcc = async (req: Request, res: Response): Promise<
     } catch (error) {
         console.error("Error deleting user:", error);
         res.status(500).json({ message: "Error deleting user", error });
+    }
+};
+
+//Change pasword
+export const changePassword: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { oldPassword, newPassword, confPassword  } = req.body;
+
+        if (!oldPassword || !newPassword || !confPassword) {
+            res.status(400).json({ message: "Missing required fields" });
+            return;
+        }
+
+        if (newPassword !== confPassword) {
+            res.status(400).json({ message: "New password and confirm password do not match" });
+            return;
+        }
+
+        const userId = req.params.id;
+        const user = await User.findById(userId); 
+        if (!user) {
+            res.status(404).json({ message: "User not found" });
+            return;
+        }
+
+        if (!user.password) {
+            res.status(500).json({ message: "Password is missing for this user." });
+            return;
+        }
+
+        const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+        if (!isPasswordValid) {
+            res.status(401).json({ message: "Wrong password" });
+            return;
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        await user.save();
+
+        res.status(200).json({ message: "Password change successful" });
+    } catch (error) {
+        console.error("Error changing password:", error);
+        res.status(500).json({ message: "Internal server error", error });
     }
 };
