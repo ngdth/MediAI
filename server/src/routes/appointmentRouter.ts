@@ -10,6 +10,7 @@ addDiagnosisAndPrescription,
 getAppointmentById, 
 createResult, 
 createPrescription,
+getPrescriptionCreatedAppointments,
 bookAppointment, 
 getDetailAppointment, 
 getUserAppointments, 
@@ -21,6 +22,7 @@ const router = express.Router();
 router.post("/booknodoctor", authenticateToken, createAppointment);
 router.get("/pending", authenticateToken, authorizeRole(["doctor", "nurse"]), getPendingAppointments);
 router.get("/waiting", authenticateToken, authorizeRole(["doctor", "nurse"]), getWaitingPrescriptionAppointments);
+router.get("/prescription-created", authenticateToken, authorizeRole(["doctor"]), getPrescriptionCreatedAppointments);
 router.put("/:id/status", authenticateToken, authorizeRole(["doctor", "nurse"]), updateAppointmentStatus);
 router.put("/:id/assign", authenticateToken, authorizeRole(["doctor", "nurse"]), assignDoctor);
 router.put("/:id/diagnosis", authenticateToken, authorizeRole(["doctor", "nurse"]), addDiagnosisAndPrescription);
