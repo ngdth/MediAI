@@ -49,7 +49,7 @@ export const loginWithGoogle = passport.authenticate("google", {
 export const googleCallback = (req: Request, res: Response, next: NextFunction) => {
     passport.authenticate("google", { session: false }, (err, user, info) => {
         if (err || !user) {
-            return res.status(401).json({ message: "Google authentication failed" });
+            return res.status(401).json({ message: "Google authentication failed", err  } );
         }
 
         
