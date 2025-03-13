@@ -1,6 +1,21 @@
 import express from "express";
 import { authenticateToken, authorizeRole } from "../middlewares/authMiddleware";
-import { createAppointment, getPendingAppointments, updateAppointmentStatus, assignDoctor, cancelAppointment, addDiagnosisAndPrescription, getAppointmentById, createResultAndPrescription, getWaitingPrescriptionAppointments, getDetailAppointment, getUserAppointments, viewAllAppointments, bookAppointment } from "../controllers/auth/appointmentController";
+import { 
+createAppointment, 
+getPendingAppointments, 
+getWaitingPrescriptionAppointments,
+updateAppointmentStatus, 
+assignDoctor, 
+addDiagnosisAndPrescription, 
+getAppointmentById, 
+createResult, 
+createPrescription,
+bookAppointment, 
+getDetailAppointment, 
+getUserAppointments, 
+viewAllAppointments, 
+cancelAppointment, 
+} from "../controllers/auth/appointmentController";
 const router = express.Router();
 // Appointment routes
 router.post("/booknodoctor", authenticateToken, createAppointment);
@@ -10,7 +25,8 @@ router.put("/:id/status", authenticateToken, authorizeRole(["doctor", "nurse"]),
 router.put("/:id/assign", authenticateToken, authorizeRole(["doctor", "nurse"]), assignDoctor);
 router.put("/:id/diagnosis", authenticateToken, authorizeRole(["doctor", "nurse"]), addDiagnosisAndPrescription);
 router.get("/:id", getAppointmentById);
-router.post("/:id/result-and-prescription", createResultAndPrescription);
+router.post("/:id/createresult", createResult);
+router.post("/:id/createprescription", createPrescription);
 
 // router.post("/appointment", authenticateToken, authorizeRole(["doctor"]), createAppointment);
 // router.put("/appointment/:id", authenticateToken, authorizeRole(["nurse"]), updateAppointmentStatus);

@@ -219,8 +219,7 @@ export const addDiagnosisAndPrescription = async (req: Request, res: Response, n
     }
 };
 
-// Tạo kết quả khám bệnh và đơn thuốc
-export const createResultAndPrescription = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const createResult = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } = req.params;
     const { vitals, tests, diagnosisDetails } = req.body;
 
@@ -232,7 +231,6 @@ export const createResultAndPrescription = async (req: Request, res: Response, n
             return;
         }
 
-        // Cập nhật các thông tin khám bệnh và đơn thuốc
         appointment.vitals = vitals;
         appointment.tests = tests;
         appointment.diagnosisDetails = diagnosisDetails;
@@ -242,6 +240,32 @@ export const createResultAndPrescription = async (req: Request, res: Response, n
 
         res.status(200).json({
             message: 'Result and prescription created successfully',
+            data: appointment
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const createPrescription = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const { id } = req.params;
+    const { prescription } = req.body;
+
+    try {
+        const appointment = await Appointment.findById(id);
+        if (!appointment) {
+            res.status(404).json({ message: "Appointment not found" });
+            return;
+        }
+
+        // Cập nhật đơn thuốc
+        appointment.prescription = prescription;
+        appointment.status = AppointmentStatus.PRESCRIPTION_CREATED;
+
+        await appointment.save();
+
+        res.status(200).json({
+            message: 'Prescription created successfully',
             data: appointment
         });
     } catch (error) {

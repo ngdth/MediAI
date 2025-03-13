@@ -24,9 +24,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             </Link>
           </li>
           <li>
-            <Link to="/doctor/manage-prescription" className="menu-item">
+            <Link to="/doctor/medical-result" className="menu-item">
               <FaPills className="menu-icon" />
-              <span>Manage Prescription</span>
+              <span>Medical Result</span>
             </Link>
           </li>
         </ul>
