@@ -35,6 +35,6 @@ router.post("/:id/createprescription", createPrescription);
 router.post("/book",authenticateToken,authorizeRole(["user", "doctor", "nurse"]), bookAppointment);
 router.get("/history/:id", authenticateToken,getDetailAppointment );
 router.get("/history", authenticateToken, getUserAppointments);
-router.get("/",authenticateToken,authorizeRole(["doctor", "nurse"]), viewAllAppointments);
+router.get("/", viewAllAppointments);
 router.delete("/:id/cancel", authenticateToken,cancelAppointment );
 export default router;
