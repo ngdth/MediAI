@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
-const ManagePrescription = () => {
+const MedicalResult = () => {
     const [appointments, setAppointments] = useState([]);
     const navigate = useNavigate();
-    
+
     useEffect(() => {
         fetchWaitingAppointments();
     }, []);
-    
+
     const fetchWaitingAppointments = async () => {
         try {
             const response = await axios.get('http://localhost:8080/appointment/waiting', {
@@ -20,27 +21,19 @@ const ManagePrescription = () => {
             console.error('Error fetching waiting appointments:', error);
         }
     };
-    
-    const handleAssignToPharmacy = async (id) => {
-        try {
-            await axios.put(`http://localhost:8080/appointment/${id}/assign-to-pharmacy`, {}, {
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-            });
-            navigate('/doctor/manage-prescription');
-        } catch (error) {
-            console.error('Error assigning to pharmacy:', error);
-        }
-    };
-    
+
     return (
         <div className="container">
-            <h2 className="text-center mt-4">Quản lý đơn thuốc</h2>
+            <h2 className="text-center mt-4">Kết quả khám bệnh</h2>
             <table className="table table-bordered">
                 <thead>
                     <tr>
                         <th>Bệnh nhân</th>
                         <th>Ngày khám</th>
-                        <th>Kết luận và hướng điều trị</th>
+                        <th>Triệu chứng</th>
+                        <th>Chẩn đoán bệnh</th>
+                        <th>Mức độ nghiêm trọng</th>
+                        <th>Phương án điều trị</th>
                         <th>Thao tác</th>
                     </tr>
                 </thead>
@@ -49,9 +42,14 @@ const ManagePrescription = () => {
                         <tr key={appointment._id}>
                             <td>{appointment.patientName}</td>
                             <td>{new Date(appointment.date).toLocaleDateString("vi-VN")}</td>
-                            <td>{appointment.diagnosisDetails.treatmentPlan}</td>
+                            <td>{appointment.symptoms}</td>
+                            <td>{appointment.diagnosisDetails?.diseaseName}</td>
+                            <td>{appointment.diagnosisDetails?.severity}</td>
+                            <td>{appointment.diagnosisDetails?.treatmentPlan}</td>
                             <td>
-                                <button className="btn btn-success" onClick={() => handleAssignToPharmacy(appointment._id)}>Assign to Pharmacy</button>
+                                <Link to={`/doctor/manage-prescription/${appointment._id}`} className="btn btn-primary">
+                                    Tạo đơn thuốc
+                                </Link>
                             </td>
                         </tr>
                     )) : (
@@ -65,4 +63,4 @@ const ManagePrescription = () => {
     );
 };
 
-export default ManagePrescription;
+export default MedicalResult;

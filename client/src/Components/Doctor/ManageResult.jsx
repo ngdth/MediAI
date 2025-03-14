@@ -47,7 +47,7 @@ const ManageResult = () => {
   const handleSubmit = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:8080/appointment/${appointmentId}/result-and-prescription`,
+        `http://localhost:8080/appointment/${appointmentId}/createresult`,
         { vitals, tests, diagnosisDetails },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
