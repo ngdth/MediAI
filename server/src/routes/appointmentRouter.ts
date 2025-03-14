@@ -32,9 +32,9 @@ router.post("/:id/createprescription", createPrescription);
 
 // router.post("/appointment", authenticateToken, authorizeRole(["doctor"]), createAppointment);
 // router.put("/appointment/:id", authenticateToken, authorizeRole(["nurse"]), updateAppointmentStatus);
-router.post("/book",authenticateToken,authorizeRole(["user", "doctor", "nurse"]), bookAppointment);
-router.get("/history/:id", authenticateToken,getDetailAppointment );
+router.post("/book", authenticateToken, bookAppointment);
+router.get("/history/:id", authenticateToken, getDetailAppointment );
 router.get("/history", authenticateToken, getUserAppointments);
 router.get("/", viewAllAppointments);
-router.delete("/:id/cancel", authenticateToken,cancelAppointment );
+router.delete("/:id/cancel", authenticateToken, cancelAppointment );
 export default router;

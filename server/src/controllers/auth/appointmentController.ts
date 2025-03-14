@@ -49,9 +49,9 @@ export const createAppointment = async (req: Request, res: Response, next: NextF
 export const bookAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const userId = req.user?.id;
-        const { patientName, date, time, symptoms, doctorId } = req.body; 
+        const { patientName, age, gender, address, email, phone, date, time, symptoms, medicalHistory, familyMedicalHistory, doctorId } = req.body; 
 
-        if (!patientName || !date || !time || !symptoms || !doctorId) {
+        if (!patientName || !age || !gender || !address || !email || !phone || !date || !time || !symptoms || !doctorId) {
             res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin" });
             return;
         }
@@ -64,12 +64,21 @@ export const bookAppointment = async (req: Request, res: Response, next: NextFun
 
         const newAppointment = new Appointment({
             userId,
-            doctorId, 
             patientName,
+            age,
+            gender,
+            address,
+            email,
+            phone,
             date,
             time,
             symptoms,
-            status: AppointmentStatus.ASSIGNED
+            medicalHistory: {
+                personal: medicalHistory,
+                family: familyMedicalHistory
+            },
+            status: AppointmentStatus.ASSIGNED,
+            doctorId, 
         });
 
         await newAppointment.save();
