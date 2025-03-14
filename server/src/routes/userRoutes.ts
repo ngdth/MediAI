@@ -13,7 +13,7 @@ router.post("/login", loginUser);
 
 router.post("/verify", verifyAccount);
 
-router.get("/profile", authenticateToken,authorizeRole(["user", "admin"]), getUserProfile);
+router.get("/profile", authenticateToken, getUserProfile);
 
 router.get("/all", authenticateToken,authorizeRole([ "admin"]), getAllUsers);
 

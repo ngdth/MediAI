@@ -56,28 +56,24 @@ const Header = ({ isTopBar, variant }) => {
   };
 
   const menu = {
-    email: "demo@example.com",
-    location: "15/K, Dhaka London City, LOT",
-    logoUrl: "/assets/img/logo.png",
-    logoLink: "/",
+    // email: "demo@example.com",
+    // location: "15/K, Dhaka London City, LOT",
+    // logoUrl: "/assets/img/logo.png",
+    // logoLink: "/",
 
     navItems: [
       {
-        label: "Home",
+        label: "Trang chủ",
         href: "/",
-        subItems: [
-          { label: "Main Home", href: "/" },
-          { label: "Home V2", href: "/home-v2" },
-          { label: "Home V3", href: "/home-v3" },
-        ],
+
       },
-      { label: "About", href: "/about" },
+      { label: "Về chúng tôi", href: "/about" },
       {
-        label: "Service",
-        href: "/service",
+        label: "Bác sĩ",
+        href: "/doctors",
         subItems: [
-          { label: "Service", href: "/service" },
-          { label: "Service Details", href: "/service/service-details" },
+          { label: "Bác sĩ", href: "/doctors" },
+          { label: "Chi tiết bác sĩ", href: "/doctors/doctor-details" },
         ],
       },
       {
@@ -105,7 +101,7 @@ const Header = ({ isTopBar, variant }) => {
           
         ],
       },
-      { label: "Contact", href: "/contact" },
+      { label: "Liên hệ", href: "/contact" },
     ],
     btnUrl: "/contact",
     btnText: "Contact Now",
@@ -115,11 +111,11 @@ const Header = ({ isTopBar, variant }) => {
     ? [
         { label: "Profile", href: "/profile" },
         { label: "Favorite", href: "/favorites" },
-        { label: "Logout", action: handleLogout },
+        { label: "Đăng xuất", action: handleLogout },
       ]
     : [
-        { label: "Login", href: "/login" },
-        { label: "Register", href: "/register" },
+        { label: "Đăng nhập", href: "/login" },
+        { label: "Đăng ký", href: "/register" },
       ];
 
   const handleOpenMobileSubmenu = (index) => {
