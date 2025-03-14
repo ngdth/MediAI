@@ -84,7 +84,7 @@ export const googleCallback = (req: Request, res: Response, next: NextFunction) 
         const token = generateJwtToken(user);
 
         // Redirect về frontend kèm theo token
-        res.redirect("http://localhost:5173/login?token=${token}");
+        res.redirect(`http://localhost:5173/login?token=${token}`);
     })(req, res, next);
 };
 
