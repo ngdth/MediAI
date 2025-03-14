@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Container, Row, Col, Image, Card } from "react-bootstrap";
-import ResettPassForm from "../../components/Form/Authenform/ResetPassForm";
+import ResettPassForm from "../../Components/Form/Authenform/ResetPassForm";
 
 function ResetPassPage() {
 
