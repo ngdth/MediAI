@@ -7,6 +7,7 @@ export enum AppointmentStatus {
     REJECTED = 'Rejected',
     ASSIGNED = 'Assigned',
     WAITINGPRESCRIPTION = 'WaitingPrescription',
+    PRESCRIPTION_CREATED = 'Prescription_created',
 }
 
 interface IAppointment extends Document {
@@ -19,7 +20,12 @@ interface IAppointment extends Document {
     nurseId?: string;
     doctorId?: string;
     diagnosis?: string;
-    prescription?: string;
+    prescription?: {
+        medicineName: string;
+        unit: string;
+        quantity: string;
+        usage: string;
+    }[];
     vitals?: {
         pulse: string;
         bloodPressure: string;
@@ -56,7 +62,12 @@ const appointmentSchema = new Schema<IAppointment>(
         nurseId: { type: Schema.Types.String, ref: 'user' },
         doctorId: { type: Schema.Types.String, ref: 'user' },
         diagnosis: { type: String },
-        prescription: { type: String },
+        prescription: [{
+            medicineName: { type: String },
+            unit: { type: String },
+            quantity: { type: String },
+            usage: { type: String }
+        }],
         vitals: {
             pulse: { type: String },
             bloodPressure: { type: String },

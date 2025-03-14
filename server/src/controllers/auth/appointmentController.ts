@@ -3,9 +3,8 @@ import Appointment, { AppointmentStatus } from '../../models/Appointment'
 import User from '../../models/User';
 import mongoose from 'mongoose';
 import Schedule from '../../models/Schedule';
-import { sendEmail  } from "../../config/email";
+import { sendEmail } from "../../config/email";
 
-//Đặt lịch hẹn & gửi email xác nhận
 export const createAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const userId = req.user?.id;
@@ -50,25 +49,22 @@ export const createAppointment = async (req: Request, res: Response, next: NextF
 export const bookAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const userId = req.user?.id;
-        const { patientName, date, time, symptoms, doctorId } = req.body; // Thêm doctorId
+        const { patientName, date, time, symptoms, doctorId } = req.body; 
 
-        // Kiểm tra đầu vào
         if (!patientName || !date || !time || !symptoms || !doctorId) {
             res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin" });
             return;
         }
 
-        // Kiểm tra xem bác sĩ có tồn tại không
         const doctor = await User.findById(doctorId);
         if (!doctor || doctor.role !== "doctor") {
             res.status(404).json({ message: "Bác sĩ không tồn tại" });
             return;
         }
 
-        // Tạo lịch hẹn mới
         const newAppointment = new Appointment({
             userId,
-            doctorId,  // Lưu thông tin bác sĩ
+            doctorId, 
             patientName,
             date,
             time,
@@ -78,20 +74,18 @@ export const bookAppointment = async (req: Request, res: Response, next: NextFun
 
         await newAppointment.save();
 
-        // Tìm user để gửi email xác nhận
         const user = await User.findById(userId);
         if (!user) {
             res.status(404).json({ message: "User không tồn tại" });
             return;
         }
 
-        // Gửi email thông báo
         await sendEmail(user.email, {
             patientName,
             date,
             time,
             symptoms,
-            doctorName: doctor.username // Gửi kèm tên bác sĩ trong email
+            doctorName: doctor.username
         }, "appointment");
 
         res.status(201).json({
@@ -189,9 +183,8 @@ export const assignDoctor = async (req: Request, res: Response): Promise<void> =
 
 export const addDiagnosisAndPrescription = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { id } = req.params;  // ID của lịch hẹn
-        const { diagnosis, prescription } = req.body;  // Kết quả khám và đơn thuốc
-
+        const { id } = req.params; 
+        const { diagnosis, prescription } = req.body;
         if (!diagnosis || !prescription) {
             res.status(400).json({ message: "Diagnosis and prescription are required" });
             return;
@@ -203,10 +196,9 @@ export const addDiagnosisAndPrescription = async (req: Request, res: Response, n
             return;
         }
 
-        // Cập nhật kết quả khám và đơn thuốc
         appointment.diagnosis = diagnosis;
         appointment.prescription = prescription;
-        appointment.status = AppointmentStatus.ACCEPTED;  // Cập nhật trạng thái khi khám xong
+        appointment.status = AppointmentStatus.ACCEPTED; 
 
         await appointment.save();
 
@@ -219,8 +211,7 @@ export const addDiagnosisAndPrescription = async (req: Request, res: Response, n
     }
 };
 
-// Tạo kết quả khám bệnh và đơn thuốc
-export const createResultAndPrescription = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const createResult = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } = req.params;
     const { vitals, tests, diagnosisDetails } = req.body;
 
@@ -232,7 +223,6 @@ export const createResultAndPrescription = async (req: Request, res: Response, n
             return;
         }
 
-        // Cập nhật các thông tin khám bệnh và đơn thuốc
         appointment.vitals = vitals;
         appointment.tests = tests;
         appointment.diagnosisDetails = diagnosisDetails;
@@ -249,9 +239,33 @@ export const createResultAndPrescription = async (req: Request, res: Response, n
     }
 };
 
+export const createPrescription = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const { id } = req.params;
+    const { prescription } = req.body;
+
+    try {
+        const appointment = await Appointment.findById(id);
+        if (!appointment) {
+            res.status(404).json({ message: "Appointment not found" });
+            return;
+        }
+
+        appointment.prescription = prescription;
+        appointment.status = AppointmentStatus.PRESCRIPTION_CREATED;
+
+        await appointment.save();
+
+        res.status(200).json({
+            message: 'Prescription created successfully',
+            data: appointment
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export const getWaitingPrescriptionAppointments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        // Lọc các lịch hẹn có status "WAITINGPRESCRIPTION"
         const appointments = await Appointment.find({ status: "WaitingPrescription" })
             .populate('userId', 'username email')
             .populate('doctorId', 'username email');
@@ -271,29 +285,59 @@ export const getWaitingPrescriptionAppointments = async (req: Request, res: Resp
     }
 };
 
+export const getPrescriptionCreatedAppointments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const doctorId = req.user?.id;  // Lấy doctorId từ token (req.user đã được xác thực)
+
+        if (!doctorId) {
+            res.status(400).json({ message: "Doctor ID not found in token" });
+            return;
+        }
+
+        // Tìm tất cả các appointment có status "Prescription_created" và doctorId là bác sĩ hiện tại
+        const appointments = await Appointment.find({
+            status: AppointmentStatus.PRESCRIPTION_CREATED,
+            doctorId: doctorId  // Sử dụng doctorId từ token
+        })
+        .populate('userId', 'username email')  // Lấy thông tin user (bệnh nhân)
+        .populate('doctorId', 'username email');  // Lấy thông tin bác sĩ
+
+        if (appointments.length === 0) {
+            res.status(404).json({ message: "No appointments found with status 'Prescription_created'" });
+            return;
+        }
+
+        res.status(200).json({
+            message: "Appointments retrieved successfully",
+            data: appointments,
+        });
+    } catch (error) {
+        console.error("Error fetching prescription created appointments:", error);
+        res.status(500).json({ message: "Error fetching prescription created appointments", error });
+    }
+};
 
 export const getAppointmentById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { id } = req.params;
-  
-      // Tìm appointment theo ID
-      const appointment = await Appointment.findById(id)
-        .populate('userId', 'username email')
-        .populate('doctorId', 'username email');
-  
-      if (!appointment) {
-        res.status(404).json({ message: "Appointment not found" });
-        return;
-      }
-  
-      res.status(200).json({
-        message: "Appointment retrieved successfully",
-        data: appointment,
-      });
+        const { id } = req.params;
+
+        const appointment = await Appointment.findById(id)
+            .populate('userId', 'username email')
+            .populate('doctorId', 'username email');
+
+        if (!appointment) {
+            res.status(404).json({ message: "Appointment not found" });
+            return;
+        }
+
+        res.status(200).json({
+            message: "Appointment retrieved successfully",
+            data: appointment,
+        });
     } catch (error) {
-      next(error);
+        next(error);
     }
-  };
+};
 
 
 // View all appointments
@@ -433,7 +477,7 @@ export const cancelAppointment = async (req: Request, res: Response, next: NextF
 
 
         // await Schedule.findOneAndUpdate(
-            // { doctorId: appointment.doctorId, "availableSlots.date": appointment.date, "availableSlots.time": appointment.time },
+        // { doctorId: appointment.doctorId, "availableSlots.date": appointment.date, "availableSlots.time": appointment.time },
         //     { $set: { "availableSlots.$.isBooked": false } }
         // );
 
