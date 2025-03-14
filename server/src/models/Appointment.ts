@@ -13,6 +13,11 @@ export enum AppointmentStatus {
 interface IAppointment extends Document {
     userId: string;
     patientName?: string;
+    age?: number;
+    gender?: string;
+    address?: string;
+    email?: string;
+    phone?: string;
     date: Date;
     time: string;
     symptoms: string;
@@ -49,12 +54,21 @@ interface IAppointment extends Document {
         followUpSchedule: string;
         specialInstructions: string;
     };
+    medicalHistory?: {
+        personal: string;
+        family: string;
+    };
 }
 
 const appointmentSchema = new Schema<IAppointment>(
     {
         userId: { type: Schema.Types.String, ref: 'user', required: true },
         patientName: { type: String },
+        age: { type: Number },
+        gender: { type: String },
+        address: { type: String },
+        email: { type: String },
+        phone: { type: String },
         date: { type: Date, required: true },
         time: { type: String, required: true },
         symptoms: { type: String, required: true },
@@ -90,6 +104,10 @@ const appointmentSchema = new Schema<IAppointment>(
             treatmentPlan: { type: String },
             followUpSchedule: { type: String },
             specialInstructions: { type: String },
+        },
+        medicalHistory: {
+            personal: { type: String },
+            family: { type: String },
         },
     },
     { timestamps: true }

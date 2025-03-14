@@ -88,14 +88,8 @@ function App() {
           <Route path="/blog/:blogId" element={<BlogsDetails />} />
           <Route path="/appointments" element={<Appointments />} />
           <Route path="/BookingAppointments" element={<BookingAppointments />} />
-          <Route
-            path="/appointmentshistory"
-            element={<AppointmentsHistory />}
-          />
-          <Route
-            path="/updateappointment/:appointmentId"
-            element={<UpdateAppointment />}
-          />
+          <Route path="/appointmentshistory" element={<AppointmentsHistory />} />
+          <Route path="/updateappointment/:appointmentId" element={<UpdateAppointment />} />
           <Route path="/updatediagnosis/:diagnosisId" element={<UpdateDiagnosisPage />} />
           <Route path="/updateprescription/:prescriptionId" element={<UpdatePrescriptionPage />} />
           <Route path="/doctorappointments" element={<DoctorAppointments />} />

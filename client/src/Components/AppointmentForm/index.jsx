@@ -51,7 +51,7 @@ const AppointmentForm = () => {
                 return;
             }
 
-            const response = await axios.post(`http://localhost:8080/appointment/book`, {
+            const response = await axios.post(`http://localhost:8080/appointment/booknodoctor`, {
                 patientName: formData.fullName,
                 date: formData.appointmentDate.toISOString().split("T")[0],
                 time: formData.appointmentTime,
