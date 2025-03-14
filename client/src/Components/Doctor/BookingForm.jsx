@@ -11,7 +11,7 @@ const BookingForm = ({ show, doctorId, onClose, onSubmit }) => {
     address: "",
     email: "",
     phone: "",
-    reason: "",
+    symptoms: "",
     medicalHistory: "",
     familyMedicalHistory: "",
     doctorId,
@@ -39,9 +39,17 @@ const BookingForm = ({ show, doctorId, onClose, onSubmit }) => {
   
     const appointmentData = {
       patientName: formData.fullName,
+      age: formData.age,
+      gender: formData.gender,
+      address: formData.address,
+      email: formData.email,
+      phone: formData.phone,
       date: selectedDay,
       time: selectedSlot,
-      symptoms: formData.reason,
+      symptoms: formData.symptoms,
+      medicalHistory: formData?.medicalHistory,
+      familyMedicalHistory: formData?.familyMedicalHistory,
+      doctorId: formData.doctorId
     };
   
     try {
@@ -162,8 +170,8 @@ const BookingForm = ({ show, doctorId, onClose, onSubmit }) => {
                 <Form.Label className="text-start w-100">Lý do khám:</Form.Label>
                 <Form.Control
                   as="textarea"
-                  name="reason"
-                  value={formData.reason}
+                  name="symptoms"
+                  value={formData.symptoms}
                   onChange={handleChange}
                   placeholder="Triệu chứng, khám định kỳ, kiểm tra sức khỏe..."
                   required

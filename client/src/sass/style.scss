@@ -121,6 +121,121 @@
   border-collapse: collapse; 
 }
 
+.floating-menu {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column; 
+}
+
+.floating-btn {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  justify-content: center;
+  width: 80px;  
+  height: 80px;  
+  color: white;
+  border-radius: 12px; 
+  margin-bottom: 15px; 
+  font-size: 18px; 
+  text-decoration: none;
+  transition: all 0.3s ease;
+  padding: 12px 0;
+}
+
+.floating-btn i {
+  font-size: 30px; 
+}
+
+.floating-btn span {
+  margin-top: 5px; 
+  font-size: 14px; 
+}
+
+.floating-btn:hover {
+  opacity: 0.8;
+}
+
+.chat-btn {
+  background-color: #0066cc; 
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
 
+.booking-btn {
+  background-color: #0066cc; 
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
+.chat-box-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.chat-box {
+  background-color: #fff;
+  width: 400px;
+  max-width: 100%;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.chat-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.chat-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.chat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-content input {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.chat-content button {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.close-chat-btn {
+  background-color: transparent;
+  border: none;
+  font-size: 20px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.close-chat-btn:hover {
+  color: red;
+}

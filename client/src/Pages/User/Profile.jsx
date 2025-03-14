@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import ProfileForm from "../../components/Form/ProfileForm/ProfileForm"; 
-import ChangePassForm from "../../components/Form/ProfileForm/ChangePassForm"; 
+import ProfileForm from "../../components/Form/ProfileForm/ProfileForm";
+import ChangePassForm from "../../components/Form/ProfileForm/ChangePassForm";
 import { Button } from "react-bootstrap";
-import axios from "axios"; 
+import axios from "axios";
 
 const UserProfile = () => {
     const [user, setUser] = useState(null);
@@ -33,8 +33,8 @@ const UserProfile = () => {
         fetchUserInfo();
     }, []);
 
-    const handleFormChange = () => {
-        setIsFormChanged(true);
+    const handleFormChange = (changed) => {
+        setIsFormChanged(changed);
     };
 
     const handleChangePassClick = () => {
@@ -78,7 +78,7 @@ const UserProfile = () => {
                                         <div className="card-profile-image pt-3">
                                             <a href="#">
                                                 <img
-                                                    src={user?.imageUrl || "https://demos.creative-tim.com/argon-dashboard/assets-old/img/theme/team-4.jpg"}
+                                                    src={user?.imageUrl || "https://i.pinimg.com/736x/16/b2/e2/16b2e2579118bf6fba3b56523583117f.jpg"}
                                                     style={{ borderRadius: "50%", marginTop: "-6rem" }}
                                                     alt="User"
                                                 />
@@ -88,7 +88,7 @@ const UserProfile = () => {
                                 </div>
 
                                 <div className="card-body pt-0 pt-md-4 text-center">
-                                    <h3>{user?.fullName || "Nguyễn Văn A"}</h3>
+                                    <h3>{user?.lastName && user?.firstName ? `${user?.lastName} ${user?.firstName}` : ""}</h3>
                                     <div className="h5 font-weight-300">
                                         <i className="ni location_pin mr-2"></i>
                                         {user?.location || "Đà Nẵng, Việt Nam"}
@@ -110,12 +110,13 @@ const UserProfile = () => {
                                             <h3 className="mb-0">Thông tin của tôi</h3>
                                         </div>
                                         <div className="col-4 d-flex justify-content-end pe-5">
-                                            <Button
-                                                className="btn btn-sm btn-primary"
-                                                onClick={showChangePassForm ? handleBackToProfile : handleChangePassClick}
-                                            >
-                                                {showChangePassForm ? "Trở về" : "Đổi mật khẩu"}
-                                            </Button>
+                                            {!user?.googleId && (
+                                                <Button className="btn btn-sm btn-primary"
+                                                    onClick={showChangePassForm ? handleBackToProfile : handleChangePassClick}
+                                                >
+                                                    {showChangePassForm ? "Trở về" : "Đổi mật khẩu"}
+                                                </Button>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -123,7 +124,9 @@ const UserProfile = () => {
                                 {showChangePassForm ? (
                                     <ChangePassForm userId={user?._id} onBackToProfile={handleBackToProfile} />
                                 ) : (
-                                    <ProfileForm user={user} onFormChange={handleFormChange} isFormChanged={isFormChanged} />
+                                    //onFormChange bao hieu co su thay doi trong form
+                                    //isFormChanged de check xem nut cap nhat co bam duoc hay khong
+                                    <ProfileForm user={user} onFormChange={handleFormChange} isFormChanged={isFormChanged}/>
                                 )}
                             </div>
                         </div>

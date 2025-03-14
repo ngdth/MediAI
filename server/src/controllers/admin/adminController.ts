@@ -100,10 +100,12 @@ export const updateDoctorAccount = async (req: Request, res: Response): Promise<
         if (experience !== undefined) doctor.experience = experience;
 
         // Check email already in use
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            res.status(400).json({ error: "Email already in use." });
-            return;
+        if (email && email !== doctor.email) {
+            const existingUser = await User.findOne({ email });
+            if (existingUser) {
+                res.status(400).json({ error: "Email already in use." });
+                return;
+            }
         }
 
         // Nếu có password mới, hash lại trước khi lưu
@@ -222,11 +224,13 @@ export const updateNurseAccount = async (req: Request, res: Response): Promise<v
         if (specialization) nurse.specialization = specialization;
         if (experience !== undefined) nurse.experience = experience;
 
-        // Kiểm tra email có bị trùng không
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            res.status(400).json({ error: "Email already in use." });
-            return;
+        // Kiểm tra email mới có bị trùng không
+        if (email && email !== nurse.email) {
+            const existingUser = await User.findOne({ email });
+            if (existingUser) {
+                res.status(400).json({ error: "Email already in use." });
+                return;
+            }
         }
 
         // Nếu có password mới, mã hóa lại trước khi lưu

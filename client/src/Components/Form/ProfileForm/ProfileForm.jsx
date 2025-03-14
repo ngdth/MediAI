@@ -13,8 +13,8 @@ const ProfileForm = ({ user, onFormChange, isFormChanged }) => {
         address: user?.address || "",
         city: user?.city || "",
         country: user?.country || "",
-        phone: user?.phone || "", // Thêm số điện thoại
-    });
+        phone: user?.phone || "",
+    });   
 
     useEffect(() => {
         if (user) {
@@ -28,7 +28,7 @@ const ProfileForm = ({ user, onFormChange, isFormChanged }) => {
                 address: user.address || "",
                 city: user.city || "",
                 country: user.country || "",
-                phone: user.phone || "", // Cập nhật số điện thoại
+                phone: user.phone || "",
             });
         }
     }, [user]);
@@ -37,7 +37,7 @@ const ProfileForm = ({ user, onFormChange, isFormChanged }) => {
         const { name, value } = e.target;
         setFormData((prevState) => {
             const updatedData = { ...prevState, [name]: value };
-            onFormChange(); // Thông báo khi có thay đổi
+            onFormChange(true); // Thông báo khi có thay đổi
             return updatedData;
         });
     };
@@ -51,7 +51,7 @@ const ProfileForm = ({ user, onFormChange, isFormChanged }) => {
             alert("You must be logged in to update your profile");
             return;
         }
-
+        
         try {
             const response = await axios.put(
                 `http://localhost:8080/user/updateProfile/${user._id}`, // Your API endpoint to update user profile
@@ -64,7 +64,7 @@ const ProfileForm = ({ user, onFormChange, isFormChanged }) => {
             );
             if (response.status === 200) {
                 alert("Profile updated successfully");
-                // onFormChange(false);
+                onFormChange(false);
             }
         } catch (error) {
             console.error("Error updating profile", error);
@@ -116,21 +116,6 @@ const ProfileForm = ({ user, onFormChange, isFormChanged }) => {
                     </div>
 
                     <div className="row mb-3">
-                    <div className="col-lg-6">
-                            <div className="form-group focused">
-                                <label className="form-control-label" htmlFor="input-last-name">
-                                    Tên
-                                </label>
-                                <input
-                                    type="text"
-                                    id="input-last-name"
-                                    className="form-control form-control-alternative"
-                                    name="lastName"
-                                    value={formData.lastName}
-                                    onChange={handleChange}
-                                />
-                            </div>
-                        </div>
                         <div className="col-lg-6">
                             <div className="form-group focused">
                                 <label className="form-control-label" htmlFor="input-first-name">
@@ -142,6 +127,21 @@ const ProfileForm = ({ user, onFormChange, isFormChanged }) => {
                                     className="form-control form-control-alternative"
                                     name="firstName"
                                     value={formData.firstName}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                        </div>
+                        <div className="col-lg-6">
+                            <div className="form-group focused">
+                                <label className="form-control-label" htmlFor="input-last-name">
+                                    Tên
+                                </label>
+                                <input
+                                    type="text"
+                                    id="input-last-name"
+                                    className="form-control form-control-alternative"
+                                    name="lastName"
+                                    value={formData.lastName}
                                     onChange={handleChange}
                                 />
                             </div>

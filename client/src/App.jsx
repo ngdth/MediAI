@@ -1,8 +1,9 @@
 import { Route, Routes, useLocation } from 'react-router-dom';
 import Layout from './Components/Layout/Layout';
-import LayoutWithoutHeader from './components/Layout/LayoutWithoutHeader';
+import LayoutWithoutHeader from './Components/Layout/LayoutWithoutHeader';
 import AdminLayout from './Components/Layout/AdminLayout';
 import DoctorLayout from './Components/Layout/DoctorLayout';
+import NurseLayout from './Components/Layout/NurseLayout';
 import MainHome from './Pages/HomePage/MainHome';
 import HomeV2 from './Pages/HomePage/HomeV2';
 import HomeV3 from './Pages/HomePage/HomeV3';
@@ -18,6 +19,7 @@ import BlogsPage from './Pages/BlogsPage/BlogsPage';
 import BlogsDetails from './Pages/BlogsPage/BlogsDetails';
 import DoctorsPage from './Pages/Pages/DoctorsPage';
 import DoctorsDetailsPage from './Pages/Pages/DoctorsDetailsPage';
+import DoctorsResultPage from './Pages/Pages/DoctorsResultPage';
 import TimeTablePage from './Pages/Pages/TimeTablePage';
 import PortfolioPage from './Pages/Pages/PortfolioPage';
 import ErrorPage from './Pages/Pages/ErrorPage';
@@ -35,8 +37,9 @@ import PrescriptionForm from "./Pages/Pages/PrescriptionForm";
 import PrescriptionManagement from "./Pages/Pages/PrescriptionManagement";
 import PrescriptionDetailPage from "./Pages/Pages/PrescriptionDetailPage";
 import UpdatePrescriptionPage from "./Pages/Pages/UpdatePrescriptionPage";
+import BookingAppointments from './Pages/Pages/Booking/BookingAppointments';
 import ScrollUpButton from './Components/ScrollUpButton';
-import DoctorsResultPage from './Pages/Pages/DoctorsResultPage';
+import UserProfile from './Pages/User/Profile';
 import FavoritesPage from './Pages/User/FavoritesPage';
 import UserManagement from './Pages/Admin/UserManagement';
 import DoctorManagement from './Pages/Admin/DoctorManagement';
@@ -44,19 +47,17 @@ import NurseManagement from './Pages/Admin/NurseManagement';
 import PharmacyManagement from './Pages/Admin/PharmacyManagement';
 // import ServiceManagement from './Pages/Admin/ServiceManagement';
 import AvailabilityCalendar from './Components/Doctor/AvailabilityCalendar';
-import BookingAppointments from './Pages/Pages/Booking/BookingAppointments';
-import NurseDashboard from './Pages/Pages/Nurse/NurseDashboard'
-import NursePending from './Pages/Pages/Nurse/NursePending'
-import NurseAssigned from './Pages/Pages/Nurse/NurseAssigned'
-import NurseLayout from './Pages/Pages/Nurse/NurseLayout'
 import ManageAppointments from './Components/Doctor/ManageAppointments';
 import ManageResult from './Components/Doctor/ManageResult';
-
-import UserProfile from './pages/User/Profile';
+import MedicalResult from './Components/Doctor/MedicalResult';
+import ManagePrescriptionsRecord from './Components/Doctor/ManagePrescriptionsRecord'
+import PrescriptionsRecordResult from './Components/Doctor/PrescriptionsRecordResult'
+import NurseDashboard from './Pages/Nurse/NurseDashboard'
+import NursePending from './Pages/Nurse/NursePending'
+import NurseAssigned from './Pages/Nurse/NurseAssigned'
 import 'aos/dist/aos.css';
 import Aos from 'aos';
 import { useEffect } from 'react';
-import AvailabilityScheduler from './Components/Doctor/AvailabilityScheduler';
 
 function App() {
   Aos.init({
@@ -87,14 +88,8 @@ function App() {
           <Route path="/blog/:blogId" element={<BlogsDetails />} />
           <Route path="/appointments" element={<Appointments />} />
           <Route path="/BookingAppointments" element={<BookingAppointments />} />
-          <Route
-            path="/appointmentshistory"
-            element={<AppointmentsHistory />}
-          />
-          <Route
-            path="/updateappointment/:appointmentId"
-            element={<UpdateAppointment />}
-          />
+          <Route path="/appointmentshistory" element={<AppointmentsHistory />} />
+          <Route path="/updateappointment/:appointmentId" element={<UpdateAppointment />} />
           <Route path="/updatediagnosis/:diagnosisId" element={<UpdateDiagnosisPage />} />
           <Route path="/updateprescription/:prescriptionId" element={<UpdatePrescriptionPage />} />
           <Route path="/doctorappointments" element={<DoctorAppointments />} />
@@ -124,11 +119,6 @@ function App() {
           <Route path="/forgotPass" element={<ForgotPass />} />
           <Route path="/resetPass" element={<ResetPass />} />
         </Route>
-        <Route path="/nurse" element={<NurseLayout />}>
-          <Route path="dashboard" element={<NurseDashboard />} />
-          <Route path="pending" element={<NursePending />} />
-          <Route path="assigned" element={<NurseAssigned />} />
-        </Route>
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="/admin/users" element={<UserManagement />} />
           <Route path="/admin/doctors" element={<DoctorManagement />} />
@@ -139,11 +129,16 @@ function App() {
         <Route path="/doctor" element={<DoctorLayout />}>
           <Route path="/doctor" element={<ManageAppointments />} />
           <Route path="appointments/manage-result/:appointmentId" element={<ManageResult />} />
+          <Route path="/doctor/medical-result" element={<MedicalResult />} />
+          <Route path="/doctor/manage-prescription/:appointmentId" element={<ManagePrescriptionsRecord  />} />
+          <Route path="/doctor/manage-prescriptions-record" element={<PrescriptionsRecordResult />} />
           <Route path="/doctor/calendar" element={<AvailabilityCalendar />} />
           {/* <Route path="/doctor/appointment/assign/:appointmentId" element={<AssignDoctor />} /> */}
-          {/* <Route path="/doctor/doctors" element={<DoctorManagement />} />
-          <Route path="/doctor/nurses" element={<NurseManagement />} /> */}
-          {/* <Route path="/doctor/services" element={<ServiceManagement />} /> */}
+        </Route>
+        <Route path="/nurse" element={<NurseLayout />}>
+          <Route path="dashboard" element={<NurseDashboard />} />
+          <Route path="pending" element={<NursePending />} />
+          <Route path="assigned" element={<NurseAssigned />} />
         </Route>
       </Routes>
       <ScrollUpButton />

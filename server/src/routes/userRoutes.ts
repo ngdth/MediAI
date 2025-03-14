@@ -27,7 +27,7 @@ router.delete("/deleteUnverified", deleteUnverifiedAcc);
 
 router.post("/forgotPassword", forgotPassword);
 
-router.post("/updateProfile/:id", authenticateToken, updateProfile);
+router.put("/updateProfile/:id", authenticateToken, updateProfile);
 
 router.get("/doctors", getAllDoctors);
 
