@@ -12,21 +12,23 @@ import MedicalTabSection from '../../Components/MedicalTabSection/index.jsx';
 import BlogSection from '../../Components/BlogsSection/index.jsx';
 import Section from '../../Components/Section/index.jsx';
 import ContactSection2 from '../../Components/ContactSection/ContactSection2.jsx';
+import FloatingMenu from '../../Components/FloatingMenu';
 
 const heroData = {
   primarySlider: [
     {
       bgImageUrl: 'assets/img/background.jpg',
-      title: 'We Hospital Doctors Patients <span>Service.</span>',
-      contactSubtitle:
-        'Medical ers piciatis unde omnis iste natus this the word medical this mountains, far from the countries Vokalia and, live the docor white teeth sitting on a dental for best medical.',
-      contactTitle: 'Receive Medical Service.',
-      contact: 'Call Us at: (+2) 56 54 1453',
-      btnText1: 'Contact Now',
-      link: '/contact',
-      btnText2: 'Discover More',
-      link2: '/about',
-      iconImgUrl: 'assets/img/icons/hero_icon.png',
+      // title: 'We Hospital Doctors Patients <span>Service.</span>',
+      // contactSubtitle:
+      //   'Medical ers piciatis unde omnis iste natus this the word medical this mountains, far from the countries Vokalia and, live the docor white teeth sitting on a dental for best medical.',
+      
+      contactTitle: 'VÌ SỨC KHỎE GIA ĐÌNH BẠN',
+      contact: 'Liên hệ : (+2) 56 54 1453',
+      // btnText1: 'Contact Now',
+      // link: '/contact',
+      // btnText2: 'Discover More',
+      // link2: '/about',
+      // iconImgUrl: 'assets/img/icons/hero_icon.png',
     },
     {
       bgImageUrl: 'assets/img/hero_slider_2.jpg',
@@ -55,32 +57,30 @@ const heroData = {
       iconImgUrl: 'assets/img/icons/hero_icon.png',
     },
   ],
-  secondarySlider: [
-    'assets/img/hero_slider_sm_1.png',
-    'assets/img/hero_slider_sm_2.png',
-    'assets/img/hero_slider_sm_3.png',
-  ],
+  // secondarySlider: [
+  //   'assets/img/hero_slider_sm_1.png',
+  //   'assets/img/hero_slider_sm_2.png',
+  //   'assets/img/hero_slider_sm_3.png',
+  // ],
 };
 
 const ctaData = {
   imageUrl: '/assets/img/cta_img_1.jpg',
-  title: 'Meet The Team Support Medical Service.',
-  subtitle: 'For us, there are no minor aspects, because a quality',
+  title: 'TƯ VẤN SỨC KHỎE TRỰC TUYẾN CÙNG BÁC SĨ',
   buttonUrl: '/appointments',
   buttonText: 'Booking Now',
 };
 
 const ctaDataBooking = {
   imageUrl: '/assets/img/cta_img_1.jpg',
-  title: 'BOOKING APPOINTMENT',
-  subtitle: 'BOOKING APPOINTMENT',
+  title: 'ĐẶT LỊCH KHÁM TRỰC TUYẾN',
   buttonUrl: '/BookingAppointments',
   buttonText: 'Booking Now',
 };
 
 const aboutData = {
   sectionSubtitle: 'OUR ABOUT US',
-  sectionTitle: 'More Than 26+ Years About Provide Medical.',
+  sectionTitle: '20 năm cung cấp dịch vụ y tế.',
   aboutText:
     'We are privileged to work with hundreds of future-thinking medial, including many of the world’s top hardware, software, and brands, feel safe and comfortable in establishing.',
   service:
@@ -267,17 +267,17 @@ const teamData = {
 };
 
 const brandData = [
-  { image: '/assets/img/logo.png', altText: 'Brand 1' },
-  { image: '/assets/img/logo.png', altText: 'Brand 2' },
-  { image: '/assets/img/envato-logo.png', altText: 'Brand 3' },
-  { image: '/assets/img/envato-logo.png', altText: 'Brand 4' },
-  { image: '/assets/img/envato-logo.png', altText: 'Brand 5' },
-  { image: '/assets/img/envato-logo.png', altText: 'Brand 6' },
+  // { image: '/assets/img/logo.png', altText: 'Brand 1' },
+  // { image: '/assets/img/logo.png', altText: 'Brand 2' },
+  // { image: '/assets/img/envato-logo.png', altText: 'Brand 3' },
+  // { image: '/assets/img/envato-logo.png', altText: 'Brand 4' },
+  // { image: '/assets/img/envato-logo.png', altText: 'Brand 5' },
+  // { image: '/assets/img/envato-logo.png', altText: 'Brand 6' },
 ];
 
 const sectionData = {
-  subtitle: 'WHY CHOOSE US',
-  title: 'Medical Ready To Get This <br /> Health Solution.',
+  subtitle: 'HƯỚNG DẪN KHÁM BỆNH',
+  title: 'HƯỚNG DẪN ĐẶT LỊCH KHÁM TRỰC TUYẾN',
   services: [
     {
       iconUrl: '/assets/img/icons/service_icon_9.png',
@@ -692,9 +692,9 @@ const MainHome = () => {
 
       {/* End Why Choose Us Section */}
       {/* Start Projects Section */}
-      <Section topSpaceLg="70" topSpaceMd="110" className="cs_tabs">
+      {/* <Section topSpaceLg="70" topSpaceMd="110" className="cs_tabs">
         <ProjectSection data={projectData} />
-      </Section>
+      </Section> */}
 
       {/* End Projects Section */}
       {/* Start CTA Section */}
@@ -723,7 +723,7 @@ const MainHome = () => {
 
       {/* End Contact Solution */}
       {/* Start Blog Section */}
-
+      <FloatingMenu />
       <Section
         topSpaceLg="70"
         topSpaceMd="110"
