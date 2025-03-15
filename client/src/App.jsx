@@ -102,7 +102,6 @@ function App() {
           <Route path="/prescriptionform" element={<PrescriptionForm />} />
           <Route path="/prescriptionmanagement" element={<PrescriptionManagement />} />
           <Route path="/prescriptiondetails/:id" element={<PrescriptionDetailPage />} />
-
           <Route path="/timetable" element={<TimeTablePage />} />
           <Route path="/portfolio" element={<PortfolioPage />} />
           <Route path="/error" element={<ErrorPage />} />
@@ -131,7 +130,7 @@ function App() {
           <Route path="appointments/manage-result/:appointmentId" element={<ManageResult />} />
           <Route path="/doctor/medical-result" element={<MedicalResult />} />
           <Route path="/doctor/manage-prescription/:appointmentId" element={<ManagePrescriptionsRecord  />} />
-          <Route path="/doctor/manage-prescriptions-record" element={<PrescriptionsRecordResult />} />
+          <Route path="/doctor/manage-prescription-result" element={<PrescriptionsRecordResult />} />
           <Route path="/doctor/calendar" element={<AvailabilityCalendar />} />
           {/* <Route path="/doctor/appointment/assign/:appointmentId" element={<AssignDoctor />} /> */}
         </Route>

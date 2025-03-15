@@ -30,7 +30,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             </Link>
           </li>
           <li>
-            <Link to="/doctor/manage-prescriptions-record" className="menu-item">
+            <Link to="/doctor/manage-prescription-result" className="menu-item">
               <FaPills className="menu-icon" />
               <span>Prescriptions Record Result</span>
             </Link>
