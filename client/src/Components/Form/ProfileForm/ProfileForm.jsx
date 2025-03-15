@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Form, Button } from "react-bootstrap";
+import DatePicker from "react-datepicker";
+import { Form, Button, Container, Row, Col } from "react-bootstrap";
+import { toast } from "react-toastify";
 import axios from "axios";
 
-const ProfileForm = ({ user, onFormChange, isFormChanged }) => {
+const ProfileForm = ({ user, setUser }) => {
+    const [isFormChanged, setIsFormChanged] = useState(false);
     const [formData, setFormData] = useState({
         username: user?.username || "",
         email: user?.email || "",
@@ -14,7 +17,7 @@ const ProfileForm = ({ user, onFormChange, isFormChanged }) => {
         city: user?.city || "",
         country: user?.country || "",
         phone: user?.phone || "",
-    });   
+    });
 
     useEffect(() => {
         if (user) {
@@ -23,7 +26,7 @@ const ProfileForm = ({ user, onFormChange, isFormChanged }) => {
                 email: user.email || "",
                 firstName: user.firstName || "",
                 lastName: user.lastName || "",
-                birthday: user.birthday || "",
+                birthday: user.birthday ? new Date(user.birthday) : null,
                 gender: user.gender || "",
                 address: user.address || "",
                 city: user.city || "",
@@ -37,237 +40,193 @@ const ProfileForm = ({ user, onFormChange, isFormChanged }) => {
         const { name, value } = e.target;
         setFormData((prevState) => {
             const updatedData = { ...prevState, [name]: value };
-            onFormChange(true); // Thông báo khi có thay đổi
+            setIsFormChanged(true);
             return updatedData;
         });
     };
 
-    // Handle submit form and call API to update user profile
-    const handleSubmit = async (e) => {
-        e.preventDefault(); // Prevent default form submission
+    const handleDateChange = (date) => {
+        setFormData((prevState) => ({
+            ...prevState,
+            birthday: date,
+        }));
+        setIsFormChanged(true);
+    };
 
-        const token = localStorage.getItem("token"); // Get token from localStorage
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem("token");
         if (!token) {
-            alert("You must be logged in to update your profile");
+            toast.error("You must be logged in to update your profile");
             return;
         }
-        
+
         try {
             const response = await axios.put(
-                `http://localhost:8080/user/updateProfile/${user._id}`, // Your API endpoint to update user profile
+                `http://localhost:8080/user/updateProfile/${user._id}`,
                 formData,
                 {
-                    headers: {
-                        Authorization: `Bearer ${token}`, // Send token in the Authorization header
-                    },
+                    headers: { Authorization: `Bearer ${token}` },
                 }
             );
             if (response.status === 200) {
-                alert("Profile updated successfully");
-                onFormChange(false);
+                toast.success("Profile updated successfully!");
+                localStorage.setItem("username", formData.username);
+                const updatedUserResponse = await axios.get("http://localhost:8080/user/profile", {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setUser(updatedUserResponse.data.user);
+                setIsFormChanged(false);
+                setTimeout(() => {
+                    window.location.reload();
+                }, 6000);
             }
         } catch (error) {
-            console.error("Error updating profile", error);
-            alert("Failed to update profile. Please try again.");
+            toast.error("Failed to update profile. Please try again.");
         }
     };
 
-    if (!user) {
-        return <div className="danger text-center h3">Cannot fetch user data!!!</div>; // Loading message when user data is not available
-    }
+    if (!user) return <div></div>;
 
     return (
-        <div className="card-body" style={{ backgroundColor: "#F7FAFC" }}>
+        <Container className="card-body p-4" style={{ backgroundColor: "#F7FAFC" }}>
             <Form onSubmit={handleSubmit}>
-                {/* Thông tin cơ bản */}
-                <h6 className="heading-small text-muted mb-4 ps-4">Thông tin cơ bản</h6>
-                <div className="pl-lg-4 ps-5">
-                    <div className="row mb-3">
-                        <div className="col-lg-6">
-                            <div className="form-group focused">
-                                <label className="form-control-label" htmlFor="input-username">
-                                    Tên đăng nhập
-                                </label>
-                                <input
-                                    type="text"
-                                    id="input-username"
-                                    className="form-control form-control-alternative"
-                                    name="username"
-                                    value={formData.username}
-                                    onChange={handleChange}
-                                />
-                            </div>
-                        </div>
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label className="form-control-label" htmlFor="input-email">
-                                    Địa chỉ email
-                                </label>
-                                <input
-                                    type="email"
-                                    id="input-email"
-                                    className="form-control form-control-alternative"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row mb-3">
-                        <div className="col-lg-6">
-                            <div className="form-group focused">
-                                <label className="form-control-label" htmlFor="input-first-name">
-                                    Họ
-                                </label>
-                                <input
-                                    type="text"
-                                    id="input-first-name"
-                                    className="form-control form-control-alternative"
-                                    name="firstName"
-                                    value={formData.firstName}
-                                    onChange={handleChange}
-                                />
-                            </div>
-                        </div>
-                        <div className="col-lg-6">
-                            <div className="form-group focused">
-                                <label className="form-control-label" htmlFor="input-last-name">
-                                    Tên
-                                </label>
-                                <input
-                                    type="text"
-                                    id="input-last-name"
-                                    className="form-control form-control-alternative"
-                                    name="lastName"
-                                    value={formData.lastName}
-                                    onChange={handleChange}
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row pb-3">
-                        <div className="col-lg-6">
-                            <div className="form-group focused">
-                                <label className="form-control-label" htmlFor="input-birthday">
-                                    Ngày sinh
-                                </label>
-                                <input
-                                    type="date"
-                                    id="input-birthday"
-                                    className="form-control form-control-alternative"
-                                    name="birthday"
-                                    value={formData.birthday}
-                                    onChange={handleChange}
-                                />
-                            </div>
-                        </div>
-                        <div className="col-lg-6">
-                            <div className="form-group focused">
-                                <label className="form-control-label" htmlFor="input-gender">
-                                    Giới tính
-                                </label>
-                                <select
-                                    id="input-gender"
-                                    className="form-control form-control-alternative mySelect"
-                                    name="gender"
-                                    value={formData.gender}
-                                    onChange={handleChange}
-                                >
-                                    <option value="male">Nam</option>
-                                    <option value="female">Nữ</option>
-                                    <option value="other">Khác</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <hr className="my-4" />
-
-                {/* Liên hệ */}
-                <h6 className="heading-small text-muted mb-4 ps-4">Liên hệ</h6>
-                <div className="pl-lg-4 ps-5">
-                    <div className="row mb-3">
-                        <div className="col-md-12">
-                            <div className="form-group focused">
-                                <label className="form-control-label" htmlFor="input-address">
-                                    Địa chỉ
-                                </label>
-                                <input
-                                    id="input-address"
-                                    className="form-control form-control-alternative"
-                                    name="address"
-                                    value={formData.address}
-                                    onChange={handleChange}
-                                    type="text"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="row mb-3">
-                        <div className="col-lg-6">
-                            <div className="form-group focused">
-                                <label className="form-control-label" htmlFor="input-city">
-                                    Thành phố
-                                </label>
-                                <input
-                                    type="text"
-                                    id="input-city"
-                                    className="form-control form-control-alternative"
-                                    name="city"
-                                    value={formData.city}
-                                    onChange={handleChange}
-                                />
-                            </div>
-                        </div>
-                        <div className="col-lg-6">
-                            <div className="form-group focused">
-                                <label className="form-control-label" htmlFor="input-country">
-                                    Quốc Gia
-                                </label>
-                                <input
-                                    type="text"
-                                    id="input-country"
-                                    className="form-control form-control-alternative"
-                                    name="country"
-                                    value={formData.country}
-                                    onChange={handleChange}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="row mb-3">
-                        <div className="form-group focused">
-                            <label className="form-control-label" htmlFor="input-phone">
-                                Số điện thoại
-                            </label>
-                            <input
+                <Row className="mb-3">
+                    <Col md={6}>
+                        <Form.Group>
+                            <Form.Label>Tên đăng nhập</Form.Label>
+                            <Form.Control
                                 type="text"
-                                id="input-phone"
-                                className="form-control form-control-alternative"
-                                name="tel"
+                                name="username"
+                                value={formData.username}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                        <Form.Group>
+                            <Form.Label>Địa chỉ email</Form.Label>
+                            <Form.Control
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+                    </Col>
+                </Row>
+
+                <Row className="mb-3">
+                    <Col md={6}>
+                        <Form.Group>
+                            <Form.Label>Họ</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="lastName"
+                                value={formData.lastName}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                        <Form.Group>
+                            <Form.Label>Tên</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="firstName"
+                                value={formData.firstName}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+                    </Col>
+                </Row>
+
+                <Row>
+                    <Col md={6}>
+                        <Form.Group>
+                            <Form.Label>Ngày sinh</Form.Label>
+                            <DatePicker
+                                selected={formData.birthday}
+                                onChange={handleDateChange}
+                                dateFormat="dd-MM-yyyy"
+                                className="form-control"
+                                placeholderText="dd-mm-yyyy"
+                            />
+                        </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                        <Form.Group>
+                            <Form.Label>Giới tính</Form.Label>
+                            <Form.Select name="gender" value={formData.gender} onChange={handleChange}>
+                                <option value="">Chọn giới tính</option>
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                            </Form.Select>
+                        </Form.Group>
+                    </Col>
+                </Row>
+
+                <hr className="my-3" />
+
+                {/* <h6 className="heading-small text-muted mb-4">Liên hệ</h6> */}
+                <Row className="mb-3">
+                    <Col md={12}>
+                        <Form.Group>
+                            <Form.Label>Địa chỉ</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="address"
+                                value={formData.address}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+                    </Col>
+                </Row>
+                <Row className="mb-3">
+                    <Col md={6}>
+                        <Form.Group>
+                            <Form.Label>Thành phố</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="city"
+                                value={formData.city}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                        <Form.Group>
+                            <Form.Label>Quốc gia</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="country"
+                                value={formData.country}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+                    </Col>
+                </Row>
+                <Row className="mb-3">
+                    <Col>
+                        <Form.Group>
+                            <Form.Label>Số điện thoại</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="phone"
                                 value={formData.phone}
                                 onChange={handleChange}
                             />
-                        </div>
-                    </div>
-                </div>
+                        </Form.Group>
+                    </Col>
+                </Row>
 
-                {/* Button Cập nhật */}
-                <div className="text-end mt-4 pe-4">
-                    <Button
-                        type="submit"
-                        className="btn btn-primary"
-                        disabled={!isFormChanged} // Disable button if no form changes
-                    >
+                <div className="text-end">
+                    <Button type="submit" className="cs_btn cs_style_1 cs_color_1" disabled={!isFormChanged}>
                         Cập nhật thông tin
                     </Button>
                 </div>
             </Form>
-        </div>
+        </Container>
     );
 };
 

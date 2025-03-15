@@ -5,10 +5,10 @@ import { Link, useNavigate } from "react-router-dom";
 const RegisterForm = ({ onRegistering }) => {
     //"/verify-otp"
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({ username: "", email: "", password: "", confirmedPassword: "" });
+    const [formData, setFormData] = useState({ username: "", email: "", password: "", confirmedPassword: "", phone: "", gender:""});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-
+    
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
@@ -25,6 +25,13 @@ const RegisterForm = ({ onRegistering }) => {
 
         setLoading(true);
         try {
+
+
+            if (!formData.gender) {
+                setError("Vui lòng chọn giới tính.");
+                setLoading(false);
+                return;
+            }
             const response = await fetch("http://localhost:8080/user/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -32,6 +39,8 @@ const RegisterForm = ({ onRegistering }) => {
                     username: formData.username,
                     email: formData.email,
                     password: formData.confirmedPassword,
+                    phone: formData.phone,
+                    gender: formData.gender,
                 }),
             });
             const result = await response.json();
@@ -53,12 +62,12 @@ const RegisterForm = ({ onRegistering }) => {
         <Container className="justify-content-center">
             <Row>
                 <Col md={12}>
-                    <h3 className="text-center mb-5">Register</h3>
+                    <h3 className="text-center mb-3">Đăng ký tài khoản</h3>
 
                     {error && <Alert variant="danger">{error}</Alert>}
 
                     <Form onSubmit={handleSubmit}>
-                        <Form.Group className="mb-4">
+                        <Form.Group className="mb-2">
                             <Form.Control
                                 type="username"
                                 name="username"
@@ -68,7 +77,7 @@ const RegisterForm = ({ onRegistering }) => {
                                 required
                             />
                         </Form.Group>
-                        <Form.Group className="mb-4">
+                        <Form.Group className="mb-2">
                             <Form.Control
                                 type="email"
                                 name="email"
@@ -79,7 +88,7 @@ const RegisterForm = ({ onRegistering }) => {
                             />
                         </Form.Group>
 
-                        <Form.Group className="mb-4">
+                        <Form.Group className="mb-2">
                             <Form.Control
                                 type="password"
                                 name="password"
@@ -90,7 +99,7 @@ const RegisterForm = ({ onRegistering }) => {
                             />
                         </Form.Group>
 
-                        <Form.Group className="mb-4">
+                        <Form.Group className="mb-2">
                             <Form.Control
                                 type="password"
                                 name="confirmedPassword"
@@ -100,19 +109,23 @@ const RegisterForm = ({ onRegistering }) => {
                                 required
                             />
                         </Form.Group>
-
-                        <p className="text-muted text-center" style={{ fontSize: "12px" }}>
-                            By creating an account, you agree to the <br />
-                            <Link to="/*" className="text-decoration-underline">
-                                Terms of Service
-                            </Link>{" "}
-                            and{" "}
-                            <Link to="/*" className="text-decoration-underline">
-                                Privacy Policy
-                            </Link>
-                            .
-                        </p>
-
+                        <Form.Group className="mb-2">
+                            <Form.Control
+                                type="tel"
+                                name="phone"
+                                placeholder="Số điện thọai"
+                                value={formData.phone}
+                                onChange={handleChange}
+                                pattern="^(\+84|0)(3|5|7|8|9)[0-9]{8}$"
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Select name="gender" value={formData.gender} onChange={handleChange}>
+                                <option value="">Chọn giới tính</option>
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                            </Form.Select>
+                        </Form.Group>
                         <div className="text-center">
                             <Button
                                 type="submit"
@@ -124,7 +137,7 @@ const RegisterForm = ({ onRegistering }) => {
                             </Button>
                         </div>
 
-                        <p className="text-muted text-center mt-4 small">
+                        <p className="text-muted text-center mt-2 small">
                             Have an account?{" "}
                             <Link className="text-decoration-underline text-primary " to="/login">
                                 Log In
