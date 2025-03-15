@@ -60,7 +60,18 @@ const LoginForm = ({ onLogin }) => {
             localStorage.setItem("token", data.token);
             localStorage.setItem("username", data.user.username);
             onLogin(data.user);
-            navigate("/");
+
+            if (data.user.role === "admin") {
+                navigate("/admin");
+            } else if (data.user.role === "nurse") {
+                navigate("/nurse");
+            } else if (data.user.role === "doctor") {
+                navigate("/doctor");
+            }else if (data.user.role === "pharmacy") {
+                navigate("/pharmacy");
+            } else if (data.user.role === "head of department") {
+                navigate("/headofdepartment");
+            } else {navigate("/");}
         } catch (err) {
             setError(err.message);
             console.log(err);
