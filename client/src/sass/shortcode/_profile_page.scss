@@ -10,25 +10,23 @@
     background-clip: border-box;
 }
 
-.mySelect {
-    width: 100%; // Chiều rộng full container
-    height: 37px; // Chiều cao lớn hơn bình thường
-    font-size: 1rem; // Kích thước chữ lớn hơn
-    padding: 0 0 0 10px; // Khoảng cách giữa nội dung và viền
-    border-radius: 6px; // Bo góc mềm mại
-    border-width: 1px;
-    border-color: #dee2e6;
-    background-color: white; // Màu nền nhẹ
-    color: #333; // Màu chữ tối
 
-    // Tuỳ chỉnh dropdown icon (chỉ dành cho Chrome, Edge, Safari)
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    
-    // Đặt vị trí dropdown arrow icon
-    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23000' d='M2 5L0 3h4z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 10px top 8px; /* Dịch mũi tên lên */
-    background-size: 10px;
+.circle-image {
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: auto;
+    aspect-ratio: 1 / 1; /* Đảm bảo tỷ lệ luôn là hình vuông */
+    max-width: 100%; /* Để ảnh không bị co kéo khi thu nhỏ */
+}
+
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
 }

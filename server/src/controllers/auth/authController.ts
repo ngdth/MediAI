@@ -10,7 +10,7 @@ const TEMP_CODE_STORAGE: Map<string, string> = new Map();
 
 
 export const registerUser: RequestHandler = async (req: Request, res: Response): Promise<void> => {
-    const { email, username, password } = req.body;
+    const { email, username, password, phone, gender } = req.body;
 
     try {
         const normalizedEmail = normalizeEmail(email);
@@ -50,6 +50,8 @@ export const registerUser: RequestHandler = async (req: Request, res: Response):
             username: username.trim(),
             password: hashedPassword,
             role: "user",
+            phone: phone,
+            gender: gender,
             verified: false,
         });
 
@@ -280,7 +282,7 @@ export const changePassword: RequestHandler = async (req: Request, res: Response
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         user.password = hashedPassword;
-        await user.save();
+        await user.save({ validateModifiedOnly: true });
 
         res.status(200).json({ message: "Password change successful" });
     } catch (error) {
