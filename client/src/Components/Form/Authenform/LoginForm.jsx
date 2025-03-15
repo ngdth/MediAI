@@ -73,8 +73,7 @@ const LoginForm = ({ onLogin }) => {
 
     return (
         <form onSubmit={handleSubmit}>
-            <h3 className="mb-4 text-center">Welcome Back!</h3>
-            <p className="text-center">Please login to your account to continue</p>
+            <h3 className="mb-4 text-center">Đăng nhập</h3>
 
             <div className="d-flex flex-row align-items-center justify-content-center">
                 <button className="btn btn-outline-danger d-flex align-items-center" type="button" onClick={handleGoogleLogin}>
@@ -83,11 +82,11 @@ const LoginForm = ({ onLogin }) => {
             </div>
 
             <div className="divider cs_center my-4">
-                <p className="text-center fw-bold mx-3 mb-0">Or</p>
+                <p className="text-center fw-bold mx-3 mb-0">Hoặc</p>
             </div>
 
             <div className="mb-4">
-                <label htmlFor="email">Email Address</label>
+                <label htmlFor="email">Email</label>
                 <input
                     id="email"
                     type="email"
@@ -98,7 +97,7 @@ const LoginForm = ({ onLogin }) => {
             </div>
 
             <div className="mb-2">
-                <label htmlFor="password">Password</label>
+                <label htmlFor="password">Mật khẩu</label>
                 <input
                     id="password"
                     type="password"
@@ -112,18 +111,18 @@ const LoginForm = ({ onLogin }) => {
 
             <div className="d-flex justify-content-end">
                 <Link className="text-decoration-underline small" to="/forgotPass">
-                    Forgot password?
+                    Quên mật khẩu?
                 </Link>
             </div>
 
             <div className="text-center">
                 <Button type="submit" className="cs_btn cs_style_1 cs_color_1" style={{ border: "none", outline: "none" }}>
-                    Login
+                    Đăng nhập
                 </Button>
                 <p className="small mt-2 pt-1 mb-2">
-                    Don't have an account?{" "}
+                    Bạn chưa có tài khoản?{" "}
                     <Link to="/register" className="link-primary text-decoration-underline">
-                        Register
+                        Đăng ký
                     </Link>
                 </p>
             </div>
