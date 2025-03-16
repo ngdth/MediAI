@@ -497,3 +497,38 @@ export const cancelAppointment = async (req: Request, res: Response, next: NextF
         next(error);
     }
 };
+
+export const removeDoctorFromAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            res.status(400).json({ message: 'Invalid appointment ID' });
+            return;
+        }
+
+        const appointment = await Appointment.findById(id);
+        if (!appointment) {
+            res.status(404).json({ message: 'Appointment not found' });
+            return;
+        }
+
+        // Xóa doctorId và cập nhật status về Pending
+        await Appointment.updateOne(
+            { _id: id },
+            {
+                $unset: { doctorId: "" }, // Xóa trường doctorId
+                $set: { status: AppointmentStatus.PENDING } // Cập nhật trạng thái
+            }
+        );
+
+        await appointment.save();
+
+        res.status(200).json({
+            message: 'Doctor removed from appointment successfully',
+            data: appointment,
+        });
+    } catch (error) {
+        next(error);
+    }
+};

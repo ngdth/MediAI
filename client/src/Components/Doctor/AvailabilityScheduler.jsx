@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 
 export default function AvailabilityScheduler({ doctorId, selectedDay, setSelectedDay, selectedSlot, setSelectedSlot }) {
-  const [currentWeekStart, setCurrentWeekStart] = useState(() => {
-    const today = new Date();
-    const day = today.getDay();
-    const diff = today.getDate() - day;
-    return new Date(today.setDate(diff));
-  });
+  // const [currentWeekStart, setCurrentWeekStart] = useState(() => {
+  //   const today = new Date();
+  //   const day = today.getDay();
+  //   const diff = today.getDate() - day;
+  //   return new Date(today.setDate(diff));
+  // });
 
   const [availabilityData, setAvailabilityData] = useState({});
   const token = localStorage.getItem("token");
@@ -55,14 +55,15 @@ export default function AvailabilityScheduler({ doctorId, selectedDay, setSelect
   const getDaysOfWeek = () => {
     const days = [];
     const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const today = new Date(); // Lấy ngày hiện tại
 
     for (let i = 0; i < 7; i++) {
-      const date = new Date(currentWeekStart);
-      date.setDate(date.getDate() + i);
+      const date = new Date(today);
+      date.setDate(today.getDate() + i); // Lấy ngày tiếp theo
 
       const dateString = date.toLocaleDateString("en-CA");
       days.push({
-        name: dayNames[i],
+        name: dayNames[date.getDay()], // Lấy tên thứ trong tuần
         date: date,
         dateString: dateString,
         isSelected: dateString === selectedDay,
