@@ -34,7 +34,7 @@ const UserManagement = () => {
 
     return (
         <div className="container mt-5" style={{ minHeight: "80vh", display: "flex", flexDirection: "column", paddingTop: "100px" }}>
-            <h2 className="text-center mb-4">User Management</h2>
+            <h2 className="text-center mb-4">Quán Lý Người Dùng </h2>
 
             <div className="table-responsive">
                 <table className="table table-bordered text-center">
@@ -42,8 +42,8 @@ const UserManagement = () => {
                         <tr>
                             <th>Username</th>
                             <th>Email</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>Trạng thái </th>
+                            <th>Hoạt động </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -58,7 +58,7 @@ const UserManagement = () => {
                                         size="sm"
                                         onClick={() => handleBanUnban(user._id, user.active)}
                                     >
-                                        {user.active ? "Ban" : "Unban"}
+                                        {user.active ? "Cấm " : "Bỏ Cấm "}
                                     </Button>
                                 </td>
                             </tr>

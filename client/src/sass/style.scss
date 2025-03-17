@@ -239,3 +239,39 @@
 .close-chat-btn:hover {
   color: red;
 }
+.chat-btn {
+  display: flex;
+  align-items: center;
+}
+
+.chat-btn i {
+  margin-right: 5px;
+}
+
+.chat-box {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  height: 400px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.message {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.outgoing {
+  text-align: right;
+  background-color: #f1f1f1;
+}
+
+.incoming {
+  text-align: left;
+  background-color: #e1f5fe;
+}

@@ -109,8 +109,8 @@ const Header = ({ isTopBar, variant }) => {
 
   const accountMenu = username
     ? [
-        { label: "Profile", href: "/profile" },
-        { label: "Favorite", href: "/favorites" },
+        { label: "Hồ sơ ", href: "/profile" },
+        { label: "Danh sách yêu thích ", href: "/favorites" },
         { label: "Đăng xuất", action: handleLogout },
       ]
     : [
