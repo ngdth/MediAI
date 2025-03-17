@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import AssignModal from './AssignModal';
 
 const PrescriptionsRecordResult = () => {
     const [appointments, setAppointments] = useState([]);
-    const navigate = useNavigate();
+    const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+    const [modalShow, setModalShow] = useState(false);
 
     // Fetch prescription created appointments for the doctor
     useEffect(() => {
@@ -23,20 +24,21 @@ const PrescriptionsRecordResult = () => {
     }, []);
 
     // Handle assign action for pharmacy or doctor
-    const handleAssign = async (id, type) => {
+    const handleRemoveDoctor = async (id) => {
         try {
-            const apiEndpoint = type === 'doctor'
-                ? `http://localhost:8080/appointment/${id}/assign-to-doctor`
-                : `http://localhost:8080/appointment/${id}/assign-to-pharmacy`;
-            
-            await axios.put(apiEndpoint, {}, {
+            // Gọi API remove doctor
+            await axios.put(`http://localhost:8080/appointment/${id}/remove-doctor`, {}, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
-            alert(`Prescription assigned to ${type}`);
-            navigate('/doctor/manage-prescription'); // Navigate back to Manage Prescription page
+            alert(`Doctor removed from prescription.`);
         } catch (error) {
-            console.error(`Error assigning prescription to ${type}:`, error);
+            console.error(`Error processing action:`, error);
         }
+    };
+
+    const openAssignModal = (appointmentId) => {
+        setSelectedAppointmentId(appointmentId);
+        setModalShow(true);
     };
 
     return (
@@ -60,13 +62,13 @@ const PrescriptionsRecordResult = () => {
                             <td>
                                 <button
                                     className="btn btn-success"
-                                    onClick={() => handleAssign(appointment._id, 'doctor')}
+                                    onClick={() => handleRemoveDoctor(appointment._id)}
                                 >
                                     Assign to Doctor
                                 </button>
                                 <button
                                     className="btn btn-primary ml-2"
-                                    onClick={() => handleAssign(appointment._id, 'pharmacy')}
+                                    onClick={() => openAssignModal(appointment._id)}
                                 >
                                     Assign to Pharmacy
                                 </button>
@@ -79,6 +81,12 @@ const PrescriptionsRecordResult = () => {
                     )}
                 </tbody>
             </table>
+
+            <AssignModal
+                show={modalShow}
+                appointmentId={selectedAppointmentId}
+                handleClose={() => setModalShow(false)}
+            />
         </div>
     );
 };

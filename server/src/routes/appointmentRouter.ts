@@ -16,6 +16,8 @@ getDetailAppointment,
 getUserAppointments, 
 viewAllAppointments, 
 cancelAppointment, 
+removeDoctorFromAppointment,
+assignToPharmacy, 
 } from "../controllers/auth/appointmentController";
 const router = express.Router();
 // Appointment routes
@@ -29,12 +31,13 @@ router.put("/:id/diagnosis", authenticateToken, authorizeRole(["doctor", "nurse"
 router.get("/:id", getAppointmentById);
 router.post("/:id/createresult", createResult);
 router.post("/:id/createprescription", createPrescription);
-
+router.put("/:id/remove-doctor", authenticateToken, authorizeRole(["doctor", "nurse"]), removeDoctorFromAppointment);
+router.put("/:id/assign-pharmacy", authenticateToken, authorizeRole(["doctor", "nurse"]), assignToPharmacy);
 // router.post("/appointment", authenticateToken, authorizeRole(["doctor"]), createAppointment);
 // router.put("/appointment/:id", authenticateToken, authorizeRole(["nurse"]), updateAppointmentStatus);
-router.post("/book",authenticateToken,authorizeRole(["user", "doctor", "nurse"]), bookAppointment);
-router.get("/history/:id", authenticateToken,getDetailAppointment );
+router.post("/book", authenticateToken, bookAppointment);
+router.get("/history/:id", authenticateToken, getDetailAppointment );
 router.get("/history", authenticateToken, getUserAppointments);
 router.get("/", viewAllAppointments);
-router.delete("/:id/cancel", authenticateToken,cancelAppointment );
+router.delete("/:id/cancel", authenticateToken, cancelAppointment );
 export default router;

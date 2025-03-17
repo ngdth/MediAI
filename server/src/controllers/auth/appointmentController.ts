@@ -49,9 +49,9 @@ export const createAppointment = async (req: Request, res: Response, next: NextF
 export const bookAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const userId = req.user?.id;
-        const { patientName, date, time, symptoms, doctorId } = req.body; 
+        const { patientName, age, gender, address, email, phone, date, time, symptoms, medicalHistory, familyMedicalHistory, doctorId } = req.body; 
 
-        if (!patientName || !date || !time || !symptoms || !doctorId) {
+        if (!patientName || !age || !gender || !address || !email || !phone || !date || !time || !symptoms || !doctorId) {
             res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin" });
             return;
         }
@@ -64,12 +64,21 @@ export const bookAppointment = async (req: Request, res: Response, next: NextFun
 
         const newAppointment = new Appointment({
             userId,
-            doctorId, 
             patientName,
+            age,
+            gender,
+            address,
+            email,
+            phone,
             date,
             time,
             symptoms,
-            status: AppointmentStatus.ASSIGNED
+            medicalHistory: {
+                personal: medicalHistory,
+                family: familyMedicalHistory
+            },
+            status: AppointmentStatus.ASSIGNED,
+            doctorId, 
         });
 
         await newAppointment.save();
@@ -483,6 +492,72 @@ export const cancelAppointment = async (req: Request, res: Response, next: NextF
 
         res.status(200).json({
             message: 'Appointment cancelled successfully',
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const removeDoctorFromAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            res.status(400).json({ message: 'Invalid appointment ID' });
+            return;
+        }
+
+        const appointment = await Appointment.findById(id);
+        if (!appointment) {
+            res.status(404).json({ message: 'Appointment not found' });
+            return;
+        }
+
+        // Xóa doctorId và cập nhật status về Pending
+        await Appointment.updateOne(
+            { _id: id },
+            {
+                $unset: { doctorId: "" }, // Xóa trường doctorId
+                $set: { status: AppointmentStatus.PENDING } // Cập nhật trạng thái
+            }
+        );
+
+        await appointment.save();
+
+        res.status(200).json({
+            message: 'Doctor removed from appointment successfully',
+            data: appointment,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const assignToPharmacy = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const { pharmacyId } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(pharmacyId)) {
+            res.status(400).json({ message: "Invalid appointment ID or pharmacy ID" });
+            return;
+        }
+
+        const appointment = await Appointment.findById(id);
+        if (!appointment) {
+            res.status(404).json({ message: "Appointment not found" });
+            return;
+        }
+
+        // Gán pharmacyId và cập nhật trạng thái thành DONE
+        appointment.pharmacyId = pharmacyId;
+        appointment.status = AppointmentStatus.DONE;
+
+        await appointment.save();
+
+        res.status(200).json({
+            message: "Appointment assigned to pharmacy successfully",
+            data: appointment,
         });
     } catch (error) {
         next(error);

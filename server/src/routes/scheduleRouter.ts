@@ -10,9 +10,9 @@ router.get("/schedules/:doctorId",authenticateToken, getSchedulesByDoctor ); // 
 
 router.get("/schedules",authenticateToken, getAllSchedules ); // View all schedules
 
-router.post("/upsert",authenticateToken, authorizeRole(['doctor']), upsertSchedule ); // Manage schedule
+router.post("/upsert",authenticateToken, authorizeRole(["doctor"]), upsertSchedule ); // Manage schedule
 
-router.get("/schedules/doctor",authenticateToken, authorizeRole(['doctor']), getSchedulesByToken );
+router.get("/schedules/doctor",authenticateToken, authorizeRole(["doctor"]), getSchedulesByToken );
 
 // create router for update schedule and delete schedule
 router.post("/create",authenticateToken, authorizeRole(['doctor']), createSchedule); // Create schedule

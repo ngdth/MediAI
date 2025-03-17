@@ -57,7 +57,7 @@ const ManagePrescriptionsRecord = () => {
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             );
             alert('Đơn thuốc đã được tạo!');
-            navigate('/doctor/manage-prescription');
+            navigate('/doctor/manage-prescription-result');
         } catch (error) {
             console.error("Error creating prescription:", error);
         }

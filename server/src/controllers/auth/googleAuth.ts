@@ -9,7 +9,7 @@ passport.use(
         {
             clientID: process.env.GOOGLE_CLIENT_ID || "",
             clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-            callbackURL: process.env.GOOGLE_CALLBACK_URL || "/auth/google/callback"
+            callbackURL: process.env.GOOGLE_CALLBACK_URL || "/auth/callback"
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
@@ -29,12 +29,23 @@ passport.use(
                     });
 
                     await user.save();
+                    console.log("✅ User created:", user);
                 }
 
                 // callback user
                 return done(null, user);
-            } catch (err) {
-                return done(err, false);
+            } catch (err : any) {
+                if (err.code === 11000 && err.keyPattern.email) {
+                    console.log("User with this email already exists. Updating googleId...");
+                    let user = await User.findOne({ email: profile.emails?.[0]?.value });
+            
+                    if (user) {
+                        user.googleId = profile.id;
+                        await user.save();
+                    }
+                } else {
+                    throw err;
+                }
             }
         }
     )
@@ -46,20 +57,34 @@ export const loginWithGoogle = passport.authenticate("google", {
 });
 
 
+// export const googleCallback = (req: Request, res: Response, next: NextFunction) => {
+//     passport.authenticate("google", { session: false }, (err, user, info) => {
+//         if (err || !user) {
+//             console.error("❌ Google authentication error:", err);
+//             return res.status(401).json({ message: "Google authentication failed" });
+//         }
+
+        
+//         const token = generateJwtToken(user);
+//         console.log("✅ Google login successful. Token generated:", token);
+
+//         return res.status(200).json({
+//             message: "Google login successful",
+//             user,
+//             token
+//         });
+//     })(req, res, next);
+// };
 export const googleCallback = (req: Request, res: Response, next: NextFunction) => {
     passport.authenticate("google", { session: false }, (err, user, info) => {
         if (err || !user) {
             return res.status(401).json({ message: "Google authentication failed", err  } );
         }
 
-        
         const token = generateJwtToken(user);
 
-        return res.status(200).json({
-            message: "Google login successful",
-            user,
-            token
-        });
+        // Redirect về frontend kèm theo token
+        res.redirect(`http://localhost:5173/login?token=${token}`);
     })(req, res, next);
 };
 

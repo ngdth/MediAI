@@ -12,7 +12,8 @@ import appointmentRoutes from './routes/appointmentRouter'; // Import appointmen
 import scheduleRouter from './routes/scheduleRouter'; // Import schedule routes
 import serviceRouter from './routes/serviceRoutes'; // Import service routes
 import blogRoutes from './routes/blogRoutes';
-import User from './models/User'; // Import blog routes
+import pharmacyRoutes from './routes/pharmacyRoutes';
+
 const bootstrap = async () => {
   await mongo.connect()
 
@@ -29,6 +30,7 @@ const bootstrap = async () => {
   app.use('/auth', authRoutes) // Use auth routes
 
   app.use('/appointment', appointmentRoutes); // Use appointment routes
+  app.use('/pharmacy', pharmacyRoutes);
   app.use('/schedule', scheduleRouter); // Use schedule routes
   app.use('/blog', blogRoutes); // Use blog routes
   app.use('/service', serviceRouter); // Use service routes

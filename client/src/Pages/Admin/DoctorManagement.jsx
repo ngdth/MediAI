@@ -97,7 +97,6 @@ const DoctorManagement = () => {
     return (
         <div className="container mt-5" style={{ minHeight: "80vh", display: "flex", flexDirection: "column", paddingTop: "100px" }}>
             <h2 className="text-center mb-4">Quản Lý Bác Sĩ </h2>
-
             <div className="d-flex justify-content-end mb-3">
                 <button className="btn btn-primary" onClick={handleShowModal}>
                     Tạo tài khoản bác sĩ

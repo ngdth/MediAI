@@ -8,17 +8,24 @@ export enum AppointmentStatus {
     ASSIGNED = 'Assigned',
     WAITINGPRESCRIPTION = 'WaitingPrescription',
     PRESCRIPTION_CREATED = 'Prescription_created',
+    DONE = 'Done',
 }
 
 interface IAppointment extends Document {
     userId: string;
     patientName?: string;
+    age?: number;
+    gender?: string;
+    address?: string;
+    email?: string;
+    phone?: string;
     date: Date;
     time: string;
     symptoms: string;
     status: AppointmentStatus;
     nurseId?: string;
     doctorId?: string;
+    pharmacyId?: string;
     diagnosis?: string;
     prescription?: {
         medicineName: string;
@@ -49,18 +56,28 @@ interface IAppointment extends Document {
         followUpSchedule: string;
         specialInstructions: string;
     };
+    medicalHistory?: {
+        personal: string;
+        family: string;
+    };
 }
 
 const appointmentSchema = new Schema<IAppointment>(
     {
         userId: { type: Schema.Types.String, ref: 'user', required: true },
         patientName: { type: String },
+        age: { type: Number },
+        gender: { type: String },
+        address: { type: String },
+        email: { type: String },
+        phone: { type: String },
         date: { type: Date, required: true },
         time: { type: String, required: true },
         symptoms: { type: String, required: true },
         status: { type: String, enum: Object.values(AppointmentStatus), default: AppointmentStatus.PENDING },
         nurseId: { type: Schema.Types.String, ref: 'user' },
         doctorId: { type: Schema.Types.String, ref: 'user' },
+        pharmacyId: { type: Schema.Types.String, ref: 'user' },
         diagnosis: { type: String },
         prescription: [{
             medicineName: { type: String },
@@ -90,6 +107,10 @@ const appointmentSchema = new Schema<IAppointment>(
             treatmentPlan: { type: String },
             followUpSchedule: { type: String },
             specialInstructions: { type: String },
+        },
+        medicalHistory: {
+            personal: { type: String },
+            family: { type: String },
         },
     },
     { timestamps: true }
