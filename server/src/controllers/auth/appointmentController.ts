@@ -532,3 +532,34 @@ export const removeDoctorFromAppointment = async (req: Request, res: Response, n
         next(error);
     }
 };
+
+export const assignToPharmacy = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const { pharmacyId } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(pharmacyId)) {
+            res.status(400).json({ message: "Invalid appointment ID or pharmacy ID" });
+            return;
+        }
+
+        const appointment = await Appointment.findById(id);
+        if (!appointment) {
+            res.status(404).json({ message: "Appointment not found" });
+            return;
+        }
+
+        // Gán pharmacyId và cập nhật trạng thái thành DONE
+        appointment.pharmacyId = pharmacyId;
+        appointment.status = AppointmentStatus.DONE;
+
+        await appointment.save();
+
+        res.status(200).json({
+            message: "Appointment assigned to pharmacy successfully",
+            data: appointment,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
