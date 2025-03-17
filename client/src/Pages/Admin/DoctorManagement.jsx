@@ -87,7 +87,7 @@ const DoctorManagement = () => {
     };
 
     return (
-        <div className="container mt-5" style={{ minHeight: "80vh", display: "flex", flexDirection: "column", paddingTop: "100px" }}>
+        <div className="container mt-5" style={{ minHeight: "80vh", display: "flex", flexDirection: "column" }}>
             <h2 className="text-center mb-4">Doctor Management</h2>
 
             <div className="d-flex justify-content-end mb-3">
