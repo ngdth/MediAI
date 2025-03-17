@@ -2,59 +2,66 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import axios from "axios";
 
-const AssignModal = ({ show, handleClose, onAssign, type }) => {
-    const [list, setList] = useState([]);
+const AssignModal = ({ show, handleClose, onAssign, appointmentId }) => {
+    const [pharmacy, setPharmacy] = useState([]);
     const [selectedId, setSelectedId] = useState("");
 
     useEffect(() => {
         if (!show) return;
 
-        const fetchList = async () => {
+        const fetchPharmacy = async () => {
             try {
-                const endpoint = type === "doctor"
-                    ? "http://localhost:8080/user/doctors"
-                    : "http://localhost:8080/admin/pharmacy";
-
-                const response = await axios.get(endpoint, {
+                const response = await axios.get("http://localhost:8080/admin/pharmacy", {
                     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                 });
 
-                setList(response.data);
+                setPharmacy(response.data);
             } catch (error) {
-                console.error(`Error fetching ${type} list:`, error);
+                console.error("Error fetching pharmacy list:", error);
             }
         };
 
-        fetchList();
-    }, [show, type]);
+        fetchPharmacy();
+    }, [show]);
 
-    const handleAssign = () => {
+    const handleAssign = async () => {
         if (!selectedId) {
-            alert("Vui lòng chọn một người để gán!");
+            alert("Vui lòng chọn một nhà thuốc để gán!");
             return;
         }
-        onAssign(selectedId);
-        handleClose();
+
+        try {
+            await axios.put(`http://localhost:8080/appointment/${appointmentId}/assign-pharmacy`, 
+                { pharmacyId: selectedId }, 
+                { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+            );
+
+            alert("Gán nhà thuốc thành công!");
+            handleClose();
+        } catch (error) {
+            console.error("Error assigning pharmacy:", error);
+            alert("Có lỗi xảy ra khi gán nhà thuốc!");
+        }
     };
 
     return (
         <Modal show={show} onHide={handleClose} centered>
             <Modal.Header closeButton>
-                <Modal.Title>Chọn {type === "doctor" ? "Bác sĩ" : "Nhà thuốc"}</Modal.Title>
+                <Modal.Title>Chọn nhà thuốc</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
                     <Form.Group>
-                        <Form.Label>{type === "doctor" ? "Chọn bác sĩ" : "Chọn nhà thuốc"}</Form.Label>
+                        <Form.Label>Chọn nhà thuốc</Form.Label>
                         <Form.Control
                             as="select"
                             value={selectedId}
                             onChange={(e) => setSelectedId(e.target.value)}
                         >
                             <option value="">-- Chọn --</option>
-                            {list.map((item) => (
-                                <option key={item._id} value={item._id}>
-                                    {item.username} ({item.email})
+                            {pharmacy.map((pharmacy) => (
+                                <option key={pharmacy._id} value={pharmacy._id}>
+                                    {pharmacy.username} ({pharmacy.email})
                                 </option>
                             ))}
                         </Form.Control>
