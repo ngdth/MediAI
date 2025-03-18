@@ -14,25 +14,25 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           <li>
             <Link to="/doctor/calendar" className="menu-item">
               <FaTachometerAlt className="menu-icon" />
-              <span>Schedule Management</span>
+              <span>Quản lý lịch khám </span>
             </Link>
           </li>
           <li>
             <Link to="/doctor" className="menu-item">
               <FaUserMd className="menu-icon" />
-              <span>Manage Appointments</span>
+              <span>Quản lý lịch hẹn</span>
             </Link>
           </li>
           <li>
             <Link to="/doctor/medical-result" className="menu-item">
               <FaPills className="menu-icon" />
-              <span>Medical Result</span>
+              <span>Quản lý kết quả khám</span>
             </Link>
           </li>
           <li>
             <Link to="/doctor/manage-prescription-result" className="menu-item">
               <FaPills className="menu-icon" />
-              <span>Prescriptions Record Result</span>
+              <span>Quản lý đơn thuốc</span>
             </Link>
           </li>
         </ul>

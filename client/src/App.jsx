@@ -55,6 +55,7 @@ import PrescriptionsRecordResult from './Components/Doctor/PrescriptionsRecordRe
 import NurseDashboard from './Pages/Nurse/NurseDashboard'
 import NursePending from './Pages/Nurse/NursePending'
 import NurseAssigned from './Pages/Nurse/NurseAssigned'
+import GeneralHealthKetchup from './Components/Nurse/GeneralHealthKetchup';
 import PharmacyeDashboard from './Pages/Pharmacy/PharmacyDashboard'
 import PharmacyPending from './Pages/Pharmacy/PharmacyPending'
 import PrescriptionDetail from './Pages/Pharmacy/PrescriptionDetail'
@@ -143,6 +144,7 @@ function App() {
           <Route path="dashboard" element={<NurseDashboard />} />
           <Route path="pending" element={<NursePending />} />
           <Route path="assigned" element={<NurseAssigned />} />
+          <Route path="/nurse/generalhealthketchup" element={<GeneralHealthKetchup />} />
         </Route>
         <Route path="/pharmacy" element={<PharmacyLayout />}>
           <Route path="dashboard" element={<PharmacyeDashboard />} />
