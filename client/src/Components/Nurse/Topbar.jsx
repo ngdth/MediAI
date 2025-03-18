@@ -33,7 +33,7 @@ const TopBar = ({ isSidebarOpen }) => {
                         <Link className="text-white">{username}</Link>
                         <ul>
                           <li>
-                            <Link to="/profile">Profile</Link>
+                            <Link to="/profile">Hồ Sơ</Link>
                           </li>
                           <li>
                             <Link
@@ -43,7 +43,7 @@ const TopBar = ({ isSidebarOpen }) => {
                                 handleLogout();
                               }}
                             >
-                              Logout
+                              Đăng xuất 
                             </Link>
                           </li>
                         </ul>

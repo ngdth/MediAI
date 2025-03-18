@@ -20,19 +20,19 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           <li>
             <Link to="/admin/users" className="menu-item">
               <FaUser className="menu-icon" />
-              <span>User Management</span>
+              <span>Quản Lý Người dùng </span>
             </Link>
           </li>
           <li>
             <Link to="/admin/doctors" className="menu-item">
               <FaUserMd className="menu-icon" />
-              <span>Doctor Management</span>
+              <span>Quản Lý Bác Sĩ </span>
             </Link>
           </li>
           <li>
             <Link to="/admin/nurses" className="menu-item">
               <FaUserNurse className="menu-icon" />
-              <span>Nurse Management</span>
+              <span>Quản Lý Y Tá </span>
             </Link>
           </li>
           <li>
