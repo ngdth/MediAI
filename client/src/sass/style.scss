@@ -275,3 +275,41 @@
   text-align: left;
   background-color: #e1f5fe;
 }
+/* Áp dụng cho tất cả các bảng */
+.table {
+  width: 100%; /* Đảm bảo bảng chiếm toàn bộ chiều rộng */
+  table-layout: fixed; /* Đảm bảo tất cả các cột có cùng chiều rộng */
+  border-collapse: collapse; /* Gộp các đường kẻ bảng */
+}
+
+/* Đảm bảo mỗi ô trong bảng có đường viền như nhau */
+.table th, .table td {
+  border: 1px solid #ddd;
+  padding: 10px; /* Khoảng cách trong ô */
+  text-align: left; /* Căn chỉnh văn bản bên trái */
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  text-decoration: none;
+  color: #333; /* Màu mặc định */
+}
+
+.menu-item:hover {
+  background-color: #f0f0f0;
+}
+
+// .menu-item .menu-icon {
+//   margin-right: 10px;
+// }
+
+.menu-item.active {
+  background-color: #3046d8;  /* Màu nền khi chọn */
+  color: white; /* Màu chữ khi chọn */
+}
+.pending .table {
+  margin-top: 50px; /* Tạo khoảng cách trên cho table */
+}
+
+
