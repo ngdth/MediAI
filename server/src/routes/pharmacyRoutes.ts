@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.get("/appointments/done", authenticateToken, authorizeRole(["pharmacy"]), getDoneAppointments);
 
-router.post("/create", createBill);
+router.post("/createBill", createBill);
 
 export default router;

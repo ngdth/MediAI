@@ -15,9 +15,7 @@ const ServiceManagement = () => {
         name: "",
         description: "",
         department: "",
-        category: "",
         price: 0,
-        duration: "",
         status: "active"
     };
 
@@ -135,9 +133,7 @@ const ServiceManagement = () => {
                             <th>Name</th>
                             <th>Description</th>
                             <th>Department</th>
-                            <th>Category</th>
                             <th>Price</th>
-                            <th>Duration</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -148,9 +144,7 @@ const ServiceManagement = () => {
                                 <td>{service.name}</td>
                                 <td>{service.description}</td>
                                 <td>{service.department}</td>
-                                <td>{service.category}</td>
                                 <td>{service.price} VND</td>
-                                <td>{service.duration} Phút</td>
                                 <td>{service.status}</td>
                                 <td>
                                     <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(service)}>Edit</button>
@@ -187,9 +181,7 @@ const ServiceManagement = () => {
                         <input type="text" name="name" placeholder="Service Name" value={formData.name} onChange={handleChange} required className="form-control mb-2" />
                         <input type="text" name="description" placeholder="Description" value={formData.description} onChange={handleChange} required className="form-control mb-2" />
                         <input type="text" name="department" placeholder="Department" value={formData.department} onChange={handleChange} required className="form-control mb-2" />
-                        <input type="text" name="category" placeholder="Category" value={formData.category} onChange={handleChange} required className="form-control mb-2" />
                         <input type="number" name="price" placeholder="Price" value={formData.price} onChange={handleChange} required min="1" className="form-control mb-2" />
-                        <input type="text" name="duration" placeholder="Duration" value={formData.duration} onChange={handleChange} required className="form-control mb-2" />
                         <Button type="submit" variant="primary">{editingService ? "Update" : "Add"}</Button>
                     </form>
                 </Modal.Body>
