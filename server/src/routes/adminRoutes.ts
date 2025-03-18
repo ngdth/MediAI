@@ -4,30 +4,30 @@ import { createDoctorAccount, createNurseAccount, createPharmacy, deleteDoctorAc
 
 const router = express.Router();
 
-router.get("/users", authenticateToken, authorizeRole([ "admin"]), getAllUsers);
+router.get("/users", authenticateToken, authorizeRole(["admin"]), getAllUsers);
 
-router.put("/users/status/:userId", authenticateToken, authorizeRole([ "admin"]), setUserStatus);
+router.put("/users/status/:userId", authenticateToken, authorizeRole(["admin"]), setUserStatus);
 
-router.post("/doctors/create", authenticateToken, authorizeRole([ "admin"]), createDoctorAccount);
+router.post("/doctors/create", authenticateToken, authorizeRole(["admin"]), createDoctorAccount);
 
-router.put("/doctors/update/:doctorId", authenticateToken, authorizeRole([ "admin"]), updateDoctorAccount);
+router.put("/doctors/update/:doctorId", authenticateToken, authorizeRole(["admin"]), updateDoctorAccount);
 
-router.delete("/doctors/delete/:doctorId", authenticateToken, authorizeRole([ "admin"]), deleteDoctorAccount);
+router.delete("/doctors/delete/:doctorId", authenticateToken, authorizeRole(["admin"]), deleteDoctorAccount);
 
-router.get("/nurses", authenticateToken, authorizeRole([ "admin"]), getAllNurses);
+router.get("/nurses", authenticateToken, authorizeRole(["admin"]), getAllNurses);
 
-router.post("/nurses/create", authenticateToken, authorizeRole([ "admin"]), createNurseAccount);
+router.post("/nurses/create", authenticateToken, authorizeRole(["admin"]), createNurseAccount);
 
-router.put("/nurses/update/:nurseId", authenticateToken, authorizeRole([ "admin"]), updateNurseAccount);
+router.put("/nurses/update/:nurseId", authenticateToken, authorizeRole(["admin"]), updateNurseAccount);
 
-router.delete("/nurses/delete/:nurseId", authenticateToken, authorizeRole([ "admin"]), deleteNurseAccount);
+router.delete("/nurses/delete/:nurseId", authenticateToken, authorizeRole(["admin"]), deleteNurseAccount);
 
-router.get("/pharmacy", authenticateToken, authorizeRole([ "admin"]), getAllPharmacy);
+router.get("/pharmacy", authenticateToken, getAllPharmacy);
 
-router.post("/pharmacy/create", authenticateToken, authorizeRole([ "admin"]), createPharmacy);
+router.post("/pharmacy/create", authenticateToken, authorizeRole(["admin"]), createPharmacy);
 
-router.put("/pharmacy/update/:pharmacyId", authenticateToken, authorizeRole([ "admin"]), updatePharmacy);
+router.put("/pharmacy/update/:pharmacyId", authenticateToken, authorizeRole(["admin"]), updatePharmacy);
 
-router.delete("/pharmacy/delete/:pharmacyId", authenticateToken, authorizeRole([ "admin"]), deletePharmacy);
+router.delete("/pharmacy/delete/:pharmacyId", authenticateToken, authorizeRole(["admin"]), deletePharmacy);
 
 export default router;

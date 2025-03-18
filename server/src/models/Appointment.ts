@@ -8,6 +8,7 @@ export enum AppointmentStatus {
     ASSIGNED = 'Assigned',
     WAITINGPRESCRIPTION = 'WaitingPrescription',
     PRESCRIPTION_CREATED = 'Prescription_created',
+    DONE = 'Done',
 }
 
 interface IAppointment extends Document {
@@ -24,6 +25,7 @@ interface IAppointment extends Document {
     status: AppointmentStatus;
     nurseId?: string;
     doctorId?: string;
+    pharmacyId?: string;
     diagnosis?: string;
     prescription?: {
         medicineName: string;
@@ -75,6 +77,7 @@ const appointmentSchema = new Schema<IAppointment>(
         status: { type: String, enum: Object.values(AppointmentStatus), default: AppointmentStatus.PENDING },
         nurseId: { type: Schema.Types.String, ref: 'user' },
         doctorId: { type: Schema.Types.String, ref: 'user' },
+        pharmacyId: { type: Schema.Types.String, ref: 'user' },
         diagnosis: { type: String },
         prescription: [{
             medicineName: { type: String },

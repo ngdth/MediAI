@@ -107,7 +107,7 @@ const ServiceManagement = () => {
     };
 
     return (
-        <div className="container mt-5" style={{ minHeight: "80vh", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        <div className="container mt-5" style={{ minHeight: "80vh", display: "flex", flexDirection: "column" }}>
             <h2 className="text-center mb-4">Service Management</h2>
 
             <div className="d-flex justify-content-end mb-3">

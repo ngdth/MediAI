@@ -87,12 +87,12 @@ const NurseManagement = () => {
     };
 
     return (
-        <div className="container mt-5" style={{ minHeight: "80vh", display: "flex", flexDirection: "column", paddingTop: "100px" }}>
-            <h2 className="text-center mb-4">Nurse Management</h2>
+        <div className="container mt-5" style={{ minHeight: "80vh", display: "flex", flexDirection: "column" }}>
+            <h2 className="text-center mb-4">Quản Lý Y Tá </h2>
 
             <div className="d-flex justify-content-end mb-3">
                 <button className="btn btn-primary" onClick={handleShowModal}>
-                    Add Nurse
+                Tạo tài khoản y tá 
                 </button>
             </div>
 
@@ -100,11 +100,11 @@ const NurseManagement = () => {
                 <table className="table table-bordered text-center">
                     <thead>
                         <tr>
-                            <th>Username</th>
+                            <th>Họ tên </th>
                             <th>Email</th>
-                            <th>Specialization</th>
-                            <th>Experience</th>
-                            <th>Actions</th>
+                            <th>Chuyên khoa </th>
+                            <th>Kinh nghiệm </th>
+                            <th>Hoạt động </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -113,10 +113,10 @@ const NurseManagement = () => {
                                 <td>{nurse.username}</td>
                                 <td>{nurse.email}</td>
                                 <td>{nurse.specialization}</td>
-                                <td>{nurse.experience} years</td>
+                                <td>{nurse.experience} năm </td>
                                 <td>
-                                    <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(nurse)}>Edit</button>
-                                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(nurse._id)}>Delete</button>
+                                    <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(nurse)}>Chỉnh sửa</button>
+                                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(nurse._id)}>Xóa</button>
                                 </td>
                             </tr>
                         ))}
@@ -127,15 +127,37 @@ const NurseManagement = () => {
             {/* Modal thêm/sửa bác sĩ */}
             <Modal show={showModal} onHide={handleCloseModal} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>{editingNurse ? "Edit Nurse" : "Add Nurse"}</Modal.Title>
+                    <Modal.Title style={{ fontWeight: 'bold', width: '100%' }}>
+                        {editingNurse ? "Chỉnh sửa y tá " : "Thêm y tá "}
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <form onSubmit={handleSubmit}>
-                        <input type="text" name="username" placeholder="Username" value={formData.username} onChange={handleChange} required className="form-control mb-2" />
-                        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required className="form-control mb-2" />
-                        <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required={!editingNurse} className="form-control mb-2" />
-                        <input type="text" name="specialization" placeholder="Specialization" value={formData.specialization} onChange={handleChange} required className="form-control mb-2" />
-                        <input type="number" name="experience" placeholder="Experience" value={formData.experience} onChange={handleChange} required className="form-control mb-2" />
+                        <div className="form-title mb-3">
+                            <h4 style={{ fontWeight: 'bold' }}>
+                                {editingNurse ? "Edit Nurse Details" : "Thông Tin Y Tá "}
+                            </h4>
+                        </div>
+                        <div className="form-group mb-3">
+                            <label htmlFor="username" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Họ tên </label>
+                            <input type="text" name="username" id="username" placeholder="Username" value={formData.username} onChange={handleChange} required className="form-control" />
+                        </div>
+                        <div className="form-group mb-3">
+                            <label htmlFor="email" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Email</label>
+                            <input type="email" name="email" id="email" placeholder="Email" value={formData.email} onChange={handleChange} required className="form-control" />
+                        </div>
+                        <div className="form-group mb-3">
+                            <label htmlFor="password" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Mật khẩu </label>
+                            <input type="password" name="password" id="password" placeholder="Password" value={formData.password} onChange={handleChange} required={!editingNurse} className="form-control" />
+                        </div>
+                        <div className="form-group mb-3">
+                            <label htmlFor="specialization" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Chuyên khoa </label>
+                            <input type="text" name="specialization" id="specialization" placeholder="Specialization" value={formData.specialization} onChange={handleChange} required className="form-control" />
+                        </div>
+                        <div className="form-group mb-3">
+                            <label htmlFor="experience" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Kinh nghiệm </label>
+                            <input type="number" name="experience" id="experience" placeholder="Experience" value={formData.experience} onChange={handleChange} required className="form-control" />
+                        </div>
 
                         <div className="text-end">
                             <Button variant="secondary" onClick={handleCloseModal} className="me-2">Cancel</Button>
