@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Modal, Button } from "react-bootstrap";
+import { FaFileExport } from "react-icons/fa";  // Import biểu tượng cho nút Export
 
 const NurseManagement = () => {
     const [nurses, setNurses] = useState([]);
@@ -53,6 +54,22 @@ const NurseManagement = () => {
         }
     };
 
+    const handleExportTemplate = () => {
+        const headers = ["Họ tên", "Email", "Mật khẩu", "Chuyên khoa", "Kinh nghiệm"];
+        const csvContent = headers.join(",") + "\n";
+        const now = new Date();
+        const vietnamTime = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+        const dateString = vietnamTime.toISOString().slice(0, 19).replace(/[-T]/g, "_").replace(":", "-");  
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const fileName = `nurse_template_${dateString}.csv`;
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;  
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+    
     const handleEdit = (nurse) => {
         setFormData({
             username: nurse.username,
@@ -90,9 +107,13 @@ const NurseManagement = () => {
         <div className="container mt-5" style={{ minHeight: "80vh", display: "flex", flexDirection: "column", paddingTop: "100px" }}>
             <h2 className="text-center mb-4">Quản Lý Y Tá </h2>
 
-            <div className="d-flex justify-content-end mb-3">
+            <div className="d-flex justify-content-between mb-3">
                 <button className="btn btn-primary" onClick={handleShowModal}>
-                Tạo tài khoản y tá 
+                    Tạo tài khoản y tá
+                </button>
+                <button className="btn btn-secondary" onClick={handleExportTemplate}>
+                    <FaFileExport className="me-2" />
+                    Export Template
                 </button>
             </div>
 

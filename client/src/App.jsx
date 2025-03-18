@@ -55,6 +55,7 @@ import PrescriptionsRecordResult from './Components/Doctor/PrescriptionsRecordRe
 import NurseDashboard from './Pages/Nurse/NurseDashboard'
 import NursePending from './Pages/Nurse/NursePending'
 import NurseAssigned from './Pages/Nurse/NurseAssigned'
+import GeneralHealthKetchup from './Components/Nurse/GeneralHealthKetchup';
 import 'aos/dist/aos.css';
 import Aos from 'aos';
 import { useEffect } from 'react';
@@ -138,6 +139,7 @@ function App() {
           <Route path="dashboard" element={<NurseDashboard />} />
           <Route path="pending" element={<NursePending />} />
           <Route path="assigned" element={<NurseAssigned />} />
+          <Route path="/nurse/generalhealthketchup" element={<GeneralHealthKetchup />} />
         </Route>
       </Routes>
       <ScrollUpButton />
