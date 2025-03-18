@@ -55,6 +55,11 @@ import PrescriptionsRecordResult from './Components/Doctor/PrescriptionsRecordRe
 import NurseDashboard from './Pages/Nurse/NurseDashboard'
 import NursePending from './Pages/Nurse/NursePending'
 import NurseAssigned from './Pages/Nurse/NurseAssigned'
+import PharmacyeDashboard from './Pages/Pharmacy/PharmacyDashboard'
+import PharmacyPending from './Pages/Pharmacy/PharmacyPending'
+import PrescriptionDetail from './Pages/Pharmacy/PrescriptionDetail'
+import AllPrescription from './Pages/Pharmacy/AllPrescription'
+import PharmacyLayout from './Components/Layout/PharmacyLayout';
 import 'aos/dist/aos.css';
 import Aos from 'aos';
 import { useEffect } from 'react';
@@ -138,6 +143,12 @@ function App() {
           <Route path="dashboard" element={<NurseDashboard />} />
           <Route path="pending" element={<NursePending />} />
           <Route path="assigned" element={<NurseAssigned />} />
+        </Route>
+        <Route path="/pharmacy" element={<PharmacyLayout />}>
+          <Route path="dashboard" element={<PharmacyeDashboard />} />
+          <Route path="pending" element={<PharmacyPending />} />
+          <Route path="allPreScription" element={<AllPrescription />} />
+          <Route path="prescription/:appointmentId" element={<PrescriptionDetail  />} />
         </Route>
       </Routes>
       <ScrollUpButton />

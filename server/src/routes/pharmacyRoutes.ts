@@ -4,7 +4,7 @@ import { createBill, getDoneAppointments } from "../controllers/auth/pharmacyCon
 
 const router = express.Router();
 
-router.get("appointments/done", authenticateToken, authorizeRole(["pharmacy"]), getDoneAppointments);
+router.get("/appointments/done", authenticateToken, authorizeRole(["pharmacy"]), getDoneAppointments);
 
 router.post("/create", createBill);
 
