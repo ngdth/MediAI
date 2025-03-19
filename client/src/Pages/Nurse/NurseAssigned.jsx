@@ -74,7 +74,7 @@ const NurseAssigned = () => {
                 <button className="btn btn-success me-2" onClick={() => updateAppointmentStatus(appointment._id, "Accepted")}>
                   Xác nhận
                 </button>
-                <button className="btn btn-danger me-2">Reject</button>
+                <button className="btn btn-danger">Từ chối</button>
               </td>
             </tr>
           ))}

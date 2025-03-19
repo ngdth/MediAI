@@ -38,7 +38,7 @@ export const getDoneAppointments = async (req: Request, res: Response, next: Nex
 
 export const createBill = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { appointmentId, consultationFee, testFees, medicineFees, additionalFees, paymentMethod } = req.body;
+        const { appointmentId, testFees, medicineFees, additionalFees, paymentMethod } = req.body;
 
         const appointment = await Appointment.findById(appointmentId)
             .populate('userId', 'username phone email specialization')
@@ -49,7 +49,7 @@ export const createBill = async (req: Request, res: Response, next: NextFunction
             res.status(404).json({ message: "Appointment not found" });
         }
 
-        const totalAmount = calculateTotalAmount(consultationFee, testFees, medicineFees, additionalFees);
+        const totalAmount = calculateTotalAmount(testFees, medicineFees, additionalFees);
 
         const newBill = new Bill({
             billId: `BILL-${Date.now()}`,
@@ -57,11 +57,11 @@ export const createBill = async (req: Request, res: Response, next: NextFunction
             dateIssued: new Date(),
             paymentStatus: 'Pending',
             paymentMethod,
-            patientName: appointment?.userId.username,
-            patientPhone: appointment?.userId.phone,
-            patientEmail: appointment?.userId.email,
-            doctorName: appointment?.doctorId?.username,
-            doctorSpecialization: appointment?.doctorId?.specialization,
+            patientName: (appointment?.userId as any)?.username,
+            patientPhone: (appointment?.userId as any)?.phone,
+            patientEmail: (appointment?.userId as any)?.email,
+            doctorName: (appointment?.doctorId as any)?.username,
+            doctorSpecialization: (appointment?.doctorId as any)?.specialization,
             testFees,
             medicineFees,
             additionalFees,
@@ -70,6 +70,9 @@ export const createBill = async (req: Request, res: Response, next: NextFunction
         });
 
         await newBill.save();
+        
+         // Update Appointment Status
+         await Appointment.findByIdAndUpdate(appointmentId, { status: AppointmentStatus.BILL_CREATED });
 
         res.status(201).json({ message: 'Bill created successfully', bill: newBill });
     } catch (error) {
