@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom"; // Thêm useNavigate để điều hướng
 
-const NursePending = () => {
+const NurseAppointmentList = () => {
   const [appointments, setAppointments] = useState([]);
-  const [doctors, setDoctors] = useState([]);
+  const [doctors, setDoctors] = useState({});
   const [loading, setLoading] = useState(true);
-  const [selectedDoctor, setSelectedDoctor] = useState({});
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const navigate = useNavigate(); // Khởi tạo useNavigate
 
   useEffect(() => {
-    fetchAppointments("Pending");
+    fetchAppointments();
     fetchDoctors();
   }, []);
 
-  const fetchAppointments = async (status) => {
+  const fetchAppointments = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/appointment?status=${status}`, {
+      const response = await axios.get("http://localhost:8080/appointment/", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
+      console.log("Appointments data:", response.data.data);
       setAppointments(response.data.data);
       setLoading(false);
     } catch (error) {
@@ -30,37 +32,14 @@ const NursePending = () => {
       const response = await axios.get("http://localhost:8080/user/doctors", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      setDoctors(response.data);
+      const doctorMap = {};
+      response.data.forEach((doctor) => {
+        doctorMap[doctor._id] = doctor.username;
+      });
+      console.log("Doctors data:", doctorMap);
+      setDoctors(doctorMap);
     } catch (error) {
       console.error("Error fetching doctors:", error);
-    }
-  };
-
-  const updateAppointmentStatus = async (id, status) => {
-    try {
-      await axios.put(`http://localhost:8080/appointment/${id}/status`, { status }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      console.log("Appointment status updated successfully", status);
-      fetchAppointments("Pending");
-    } catch (error) {
-      console.error("Error updating appointment status:", error);
-    }
-  };
-
-  const assignDoctor = async (id) => {
-    if (!selectedDoctor || !selectedDoctor._id) {
-      alert("Vui lòng chọn bác sĩ trước khi xác nhận.");
-      return;
-    }
-    try {
-      await axios.put(`http://localhost:8080/appointment/${id}/assign`, { doctorId: selectedDoctor._id }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      await updateAppointmentStatus(id, "Assigned");
-      fetchAppointments("Pending");
-    } catch (error) {
-      console.error("Error assigning doctor:", error);
     }
   };
 
@@ -83,10 +62,10 @@ const NursePending = () => {
           : b.patientName.localeCompare(a.patientName);
       }
 
-      if (sortConfig.key === "symptoms") {
+      if (sortConfig.key === "status") {
         return sortConfig.direction === "asc"
-          ? a.symptoms.localeCompare(b.symptoms)
-          : b.symptoms.localeCompare(a.symptoms);
+          ? a.status.localeCompare(b.status)
+          : b.status.localeCompare(a.status);
       }
 
       if (sortConfig.key === "time") {
@@ -105,14 +84,28 @@ const NursePending = () => {
           : bDateTime - aDateTime;
       }
 
+      if (sortConfig.key === "doctor") {
+        const aDoctorId = typeof a.doctorId === "object" ? a.doctorId?._id : a.doctorId;
+        const bDoctorId = typeof b.doctorId === "object" ? b.doctorId?._id : b.doctorId;
+        const aDoctorName = doctors[aDoctorId] || "";
+        const bDoctorName = doctors[bDoctorId] || "";
+        return sortConfig.direction === "asc"
+          ? aDoctorName.localeCompare(bDoctorName)
+          : bDoctorName.localeCompare(aDoctorName);
+      }
+
       return 0;
     });
     return sortableAppointments;
-  }, [appointments, sortConfig]);
+  }, [appointments, sortConfig, doctors]);
+
+  const handleViewDetail = (appointmentId) => {
+    navigate(`/nurse/general-health/${appointmentId}`); // Điều hướng đến trang GeneralHealthKetchup với ID
+  };
 
   return (
     <div className="pending">
-      <h2>Assigned Appointments</h2>
+      <h2>All Appointments</h2>
       {loading ? (
         <p>Loading...</p>
       ) : (
@@ -141,15 +134,24 @@ const NursePending = () => {
               </th>
               <th>
                 <span
-                  onClick={() => handleSort("symptoms")}
+                  onClick={() => handleSort("status")}
                   style={{ cursor: "pointer" }}
                 >
-                  Symptoms{" "}
-                  {sortConfig.key === "symptoms" &&
+                  Status{" "}
+                  {sortConfig.key === "status" &&
                     (sortConfig.direction === "asc" ? "↑" : "↓")}
                 </span>
               </th>
-              <th>Doctor</th>
+              <th>
+                <span
+                  onClick={() => handleSort("doctor")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Doctor{" "}
+                  {sortConfig.key === "doctor" &&
+                    (sortConfig.direction === "asc" ? "↑" : "↓")}
+                </span>
+              </th>
               <th>Action</th>
             </tr>
           </thead>
@@ -162,39 +164,27 @@ const NursePending = () => {
                     {new Date(appointment.date).toLocaleDateString("vi-VN")}{" "}
                     {appointment.time}
                   </td>
-                  <td>{appointment.symptoms}</td>
+                  <td>{appointment.status}</td>
                   <td>
-                    <select
-                      className="form-select"
-                      onChange={(e) => setSelectedDoctor(doctors.find(doctor => doctor._id === e.target.value))}
-                    >
-                      <option value="">Chọn bác sĩ</option>
-                      {doctors.map((doctor) => (
-                        <option key={doctor._id} value={doctor._id}>
-                          {doctor.username} - {doctor.specialization}
-                        </option>
-                      ))}
-                    </select>
+                    {doctors[
+                      typeof appointment.doctorId === "object"
+                        ? appointment.doctorId?._id
+                        : appointment.doctorId
+                    ] || "N/A"}
                   </td>
                   <td>
                     <button
-                      className="btn btn-success me-2"
-                      onClick={() => assignDoctor(appointment._id)}
+                      className="btn btn-primary"
+                      onClick={() => handleViewDetail(appointment._id)}
                     >
-                      Xác nhận
-                    </button>
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => updateAppointmentStatus(appointment._id, "Rejected")}
-                    >
-                      Từ chối
+                      View Detail
                     </button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="5">Không có lịch hẹn nào.</td>
+                <td colSpan="5">No appointments available.</td>
               </tr>
             )}
           </tbody>
@@ -204,4 +194,4 @@ const NursePending = () => {
   );
 };
 
-export default NursePending;
+export default NurseAppointmentList;
