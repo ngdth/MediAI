@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // Thêm useNavigate để điều hướng
+import { useNavigate } from "react-router-dom";
 
 const NurseAppointmentList = () => {
   const [appointments, setAppointments] = useState([]);
   const [doctors, setDoctors] = useState({});
   const [loading, setLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
-  const navigate = useNavigate(); // Khởi tạo useNavigate
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchAppointments();
@@ -100,7 +100,7 @@ const NurseAppointmentList = () => {
   }, [appointments, sortConfig, doctors]);
 
   const handleViewDetail = (appointmentId) => {
-    navigate(`/nurse/general-health/${appointmentId}`); // Điều hướng đến trang GeneralHealthKetchup với ID
+    navigate(`/nurse/general-health/${appointmentId}`);
   };
 
   return (

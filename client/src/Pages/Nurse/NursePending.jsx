@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const NursePending = () => {
   const [appointments, setAppointments] = useState([]);
@@ -7,6 +8,7 @@ const NursePending = () => {
   const [loading, setLoading] = useState(true);
   const [selectedDoctor, setSelectedDoctor] = useState({});
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchAppointments("Pending");
@@ -110,6 +112,10 @@ const NursePending = () => {
     return sortableAppointments;
   }, [appointments, sortConfig]);
 
+  const handleViewDetail = (appointmentId) => {
+    navigate(`/nurse/general-health/${appointmentId}`);
+  };
+  
   return (
     <div className="pending">
       <h2>Assigned Appointments</h2>
@@ -188,6 +194,12 @@ const NursePending = () => {
                       onClick={() => updateAppointmentStatus(appointment._id, "Rejected")}
                     >
                       Từ chối
+                    </button>
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => handleViewDetail(appointment._id)}
+                    >
+                      View Detail
                     </button>
                   </td>
                 </tr>

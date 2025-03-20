@@ -4,7 +4,6 @@ import axios from "axios";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 
-// Đăng ký các thành phần cần thiết của Chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const Dashboard = () => {
@@ -15,17 +14,14 @@ const Dashboard = () => {
     accepted: 0,
   });
 
-  // Fetch dữ liệu thống kê khi component được load
   useEffect(() => {
     fetchStats();
   }, []);
 
-  // Gọi API để lấy dữ liệu thống kê về các trạng thái của appointment
   const fetchStats = async () => {
     try {
       console.log("Fetching stats...");
 
-      // Sử dụng Promise.all để gọi các API đồng thời
       const [pendingResponse, assignedResponse, canceledResponse, acceptedResponse] = await Promise.all([
         axios.get("http://localhost:8080/appointment?status=Pending", { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
         axios.get("http://localhost:8080/appointment?status=Assigned", { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
@@ -33,7 +29,6 @@ const Dashboard = () => {
         axios.get("http://localhost:8080/appointment?status=Accepted", { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
       ]);
 
-      // Kiểm tra và in ra số lượng cuộc hẹn cho từng trạng thái
       const pendingCount = pendingResponse.data?.data?.length || 0;
       const assignedCount = assignedResponse.data?.data?.length || 0;
       const canceledCount = canceledResponse.data?.data?.length || 0;
@@ -44,7 +39,6 @@ const Dashboard = () => {
       console.log("Canceled appointments:", canceledCount);
       console.log("Accepted appointments:", acceptedCount);
 
-      // Cập nhật state với số liệu từ API
       setStats({
         pending: pendingCount,
         assigned: assignedCount,
@@ -56,7 +50,6 @@ const Dashboard = () => {
     }
   };
 
-  // Dữ liệu biểu đồ
   const chartData = {
     labels: ["Pending", "Assigned", "Canceled", "Accepted"],
     datasets: [
@@ -68,13 +61,11 @@ const Dashboard = () => {
     ],
   };
 
-  // Kiểm tra dữ liệu biểu đồ trước khi render
   console.log("Chart data: ", chartData);
 
   return (
-    <div className="dashboard">
+    <div className="nurse-dashboard">
       <h2>Dashboard</h2>
-      {/* Kiểm tra dữ liệu biểu đồ trước khi vẽ */}
       {chartData.datasets[0].data.every(value => value === 0) ? (
         <p>No data available for chart.</p>
       ) : (
