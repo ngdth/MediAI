@@ -43,11 +43,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           </li>
           <li>
             <NavLink 
-<<<<<<< HEAD
-              to="/nurse/list" 
-=======
               to="/nurse/list"
->>>>>>> d9cea62507f634f817503beac555e21a1181a9c2
               className="menu-item"
               activeClassName="active"
             >
