@@ -294,10 +294,20 @@ export const createPharmacy = async (req: Request, res: Response): Promise<void>
             return;
         }
 
+        // Kiểm tra email đã tồn tại chưa
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            res.status(400).json({ error: "Email already in use." });
+            return;
+        }
+
+        // Mã hóa mật khẩu
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         const newPharmacy = new Pharmacy({
             username,
             email,
-            password,
+            hashedPassword,
             pharmacyName,
             location,
             role: "pharmacy",
@@ -313,19 +323,32 @@ export const createPharmacy = async (req: Request, res: Response): Promise<void>
 
 export const updatePharmacy = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { username, email, pharmacyName, location } = req.body;
-        const { id } = req.params;
+        const pharmacyId = req.params.pharmacyId;
+        const { username, email, password, pharmacyName, location } = req.body;
+        
 
-        const pharmacy = await Pharmacy.findById(id) as IPharmacy;
+        const pharmacy = await Pharmacy.findById(pharmacyId) as IPharmacy;
         if (!pharmacy) {
             res.status(404).json({ error: "Pharmacy not found" });
             return;
         }
 
+        // Kiểm tra email mới có bị trùng không
+        if (email && email !== pharmacy.email) {
+            const existingUser = await User.findOne({ email });
+            if (existingUser) {
+                res.status(400).json({ error: "Email already in use." });
+                return;
+            }
+        }
         pharmacy.username = username || pharmacy.username;
-        pharmacy.email = email || pharmacy.email;
         pharmacy.pharmacyName = pharmacyName || pharmacy.pharmacyName;
         pharmacy.location = location || pharmacy.location;
+        // Nếu có password mới, mã hóa lại trước khi lưu
+        if (password) {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            pharmacy.password = hashedPassword;
+        }
 
         await pharmacy.save();
         res.status(200).json({ message: "Pharmacy updated successfully", pharmacy });
@@ -337,8 +360,8 @@ export const updatePharmacy = async (req: Request, res: Response): Promise<void>
 
 export const deletePharmacy = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { id } = req.params;
-        const deletedPharmacy = await Pharmacy.findByIdAndDelete(id);
+        const pharmacyId = req.params.pharmacyId;
+        const deletedPharmacy = await Pharmacy.findByIdAndDelete(pharmacyId);
 
         if (!deletedPharmacy) {
             res.status(404).json({ error: "Pharmacy not found" });

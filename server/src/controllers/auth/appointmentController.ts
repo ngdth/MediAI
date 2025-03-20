@@ -141,7 +141,7 @@ export const updateAppointmentStatus = async (req: Request, res: Response, next:
         appointment.status = status;
         await appointment.save();
 
-        if (status === AppointmentStatus.ASSIGNED) {
+        if (status === AppointmentStatus.ACCEPTED) {
             if (!appointment.doctorId) {
                 res.status(400).json({ message: "Doctor must be assigned before confirming appointment." });
                 return;
@@ -352,11 +352,14 @@ export const getAppointmentById = async (req: Request, res: Response, next: Next
 // View all appointments
 export const viewAllAppointments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { status } = req.query;
+        const { status, doctorId } = req.query;
 
         let filter = {};
         if (status) {
-            filter = { status };
+            filter = { ...filter, status };
+        }
+        if (doctorId) {
+            filter = { ...filter, doctorId };
         }
 
         const appointments = await Appointment.find(filter)

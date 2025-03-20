@@ -16,7 +16,6 @@ const LoginForm = ({ onLogin }) => {
 
         if (token) {
             localStorage.setItem("token", token);
-            console.log(token)
             fetchUserData(token);
         }
     }, []);
@@ -58,6 +57,7 @@ const LoginForm = ({ onLogin }) => {
             if (!response.ok) throw new Error(data.message || "Login failed");
 
             localStorage.setItem("token", data.token);
+            console.log(data.token);
             localStorage.setItem("username", data.user.username);
             onLogin(data.user);
 

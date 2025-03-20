@@ -87,9 +87,7 @@
             if (name) service.name = name;
             if (description) service.description = description;
             if (department) service.department = department;
-            if (category) service.category = category;
             if (price !== undefined) service.price = price;
-            if (duration) service.duration = duration;
             if (status) service.status = status;
 
             await service.save();
@@ -117,6 +115,16 @@
 
             await Service.findByIdAndDelete(serviceId);
             res.status(200).json({ message: "Service deleted successfully." });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    // Lấy danh sách tất cả dịch vụ có status = active
+    export const getActiveServices = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const activeServices = await Service.find({ status: "active" });
+            res.status(200).json(activeServices);
         } catch (error) {
             next(error);
         }

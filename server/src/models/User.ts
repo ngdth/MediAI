@@ -42,7 +42,7 @@ const UserSchema: Schema = new Schema(
     password: { type: String },
     imageUrl: { type: String, default: "" },
     googleId: { type: String, unique: true, sparse: true },   // support google login
-    role: { type: String, enum: ["admin", "user", "doctor", "nurse", "pharmacy"], default: "user" },
+    role: { type: String, enum: ["admin", "user", "doctor", "nurse", "pharmacy", "head of department"], default: "user" },
     verified: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
     favorites: [{ type: mongoose.Types.ObjectId, ref: "user" }],

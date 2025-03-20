@@ -46,20 +46,25 @@ import DoctorManagement from "./Pages/Admin/DoctorManagement";
 import NurseManagement from "./Pages/Admin/NurseManagement";
 import PharmacyManagement from "./Pages/Admin/PharmacyManagement";
 // import ServiceManagement from './Pages/Admin/ServiceManagement';
-import AvailabilityCalendar from "./Components/Doctor/AvailabilityCalendar";
-import ManageAppointments from "./Components/Doctor/ManageAppointments";
-import ManageResult from "./Components/Doctor/ManageResult";
-import MedicalResult from "./Components/Doctor/MedicalResult";
-import ManagePrescriptionsRecord from "./Components/Doctor/ManagePrescriptionsRecord";
-import PrescriptionsRecordResult from "./Components/Doctor/PrescriptionsRecordResult";
-import NurseDashboard from "./Pages/Nurse/NurseDashboard";
-import NursePending from "./Pages/Nurse/NursePending";
-import NurseAssigned from "./Pages/Nurse/NurseAssigned";
+import AvailabilityCalendar from './Components/Doctor/AvailabilityCalendar';
+import ManageAppointments from './Components/Doctor/ManageAppointments';
+import ManageResult from './Components/Doctor/ManageResult';
+import MedicalResult from './Components/Doctor/MedicalResult';
+import ManagePrescriptionsRecord from './Components/Doctor/ManagePrescriptionsRecord'
+import PrescriptionsRecordResult from './Components/Doctor/PrescriptionsRecordResult'
+import NurseDashboard from './Pages/Nurse/NurseDashboard'
+import NursePending from './Pages/Nurse/NursePending'
+import NurseAssigned from './Pages/Nurse/NurseAssigned'
 import NurseAppointmentList from "./Pages/Nurse/NurseAppointmentList";
 import GeneralHealthKetchup from "./Pages/Nurse/GeneralHealthKetchup";
-import "aos/dist/aos.css";
-import Aos from "aos";
-import { useEffect } from "react";
+import PharmacyeDashboard from './Pages/Pharmacy/PharmacyDashboard'
+import PharmacyPending from './Pages/Pharmacy/PharmacyPending'
+import PrescriptionDetail from './Pages/Pharmacy/PrescriptionDetail'
+import AllPrescription from './Pages/Pharmacy/AllPrescription'
+import PharmacyLayout from './Components/Layout/PharmacyLayout';
+import 'aos/dist/aos.css';
+import Aos from 'aos';
+import { useEffect } from 'react';
 
 function App() {
   Aos.init({
@@ -178,6 +183,12 @@ function App() {
           <Route path="assigned" element={<NurseAssigned />} />
           <Route path="list" element={<NurseAppointmentList />} />
           <Route path="general-health/:appointmentId" element={<GeneralHealthKetchup />} />
+        </Route>
+        <Route path="/pharmacy" element={<PharmacyLayout />}>
+          <Route path="dashboard" element={<PharmacyeDashboard />} />
+          <Route path="pending" element={<PharmacyPending />} />
+          <Route path="allPreScription" element={<AllPrescription />} />
+          <Route path="prescription/:appointmentId" element={<PrescriptionDetail  />} />
         </Route>
       </Routes>
       <ScrollUpButton />

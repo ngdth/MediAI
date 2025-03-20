@@ -38,7 +38,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           <li>
             <Link to="/admin/pharmacy" className="menu-item">
               <FaHospital className="menu-icon" />
-              <span>Pharmacy Management</span>
+              <span>Quản Lý Nhà Thuốc</span>
             </Link>
           </li>
           {/* <li>
