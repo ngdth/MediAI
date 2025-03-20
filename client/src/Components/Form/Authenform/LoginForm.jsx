@@ -64,7 +64,7 @@ const LoginForm = ({ onLogin }) => {
             if (data.user.role === "admin") {
                 navigate("/admin");
             } else if (data.user.role === "nurse") {
-                navigate("/nurse");
+                navigate("/nurse/dashboard");
             } else if (data.user.role === "doctor") {
                 navigate("/doctor");
             }else if (data.user.role === "pharmacy") {
