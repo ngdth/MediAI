@@ -43,7 +43,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           </li>
           <li>
             <NavLink 
-              to="/nurse/appointments" 
+              to="/nurse/list"
               className="menu-item"
               activeClassName="active"
             >
