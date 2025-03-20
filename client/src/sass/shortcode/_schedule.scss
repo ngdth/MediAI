@@ -33,35 +33,35 @@
     color: var(--primary-color);
 }
 
-.nav-button {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background-color: var(--light-color);
-    color: var(--dark-color);
-    transition: all 0.2s;
-}
+// .nav-button {
+//     width: 36px;
+//     height: 36px;
+//     border-radius: 50%;
+//     background-color: var(--light-color);
+//     color: var(--dark-color);
+//     transition: all 0.2s;
+// }
 
-.nav-button:hover {
-    background-color: var(--border-color);
-    transform: scale(1.05);
-}
+// .nav-button:hover {
+//     background-color: var(--border-color);
+//     transform: scale(1.05);
+// }
 
-.save-button {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: var(--primary-color);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    font-weight: 600;
-    transition: background-color 0.2s;
-}
+// .save-button {
+//     display: flex;
+//     align-items: center;
+//     gap: 0.5rem;
+//     background-color: var(--primary-color);
+//     color: white;
+//     padding: 0.5rem 1rem;
+//     border-radius: 6px;
+//     font-weight: 600;
+//     transition: background-color 0.2s;
+// }
 
-.save-button:hover {
-    background-color: var(--primary-hover);
-}
+// .save-button:hover {
+//     background-color: var(--primary-hover);
+// }
 
 .save-icon {
     width: 16px;
