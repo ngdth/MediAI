@@ -8,8 +8,8 @@ import { PORT } from './constants/index'
 import authRoutes from './routes/authRoutes' // Import auth routes
 import userRoutes from './routes/userRoutes' // Import user routes
 import adminRoutes from './routes/adminRoutes' // Import admin routes
-import appointmentRoutes from './routes/appointmentRouter'; // Import appointment routes
-import scheduleRouter from './routes/scheduleRouter'; // Import schedule routes
+import appointmentRoutes from './routes/appointmentRoutes'; // Import appointment routes
+import scheduleRouter from './routes/scheduleRoutes'; // Import schedule routes
 import serviceRouter from './routes/serviceRoutes'; // Import service routes
 import blogRoutes from './routes/blogRoutes';
 import pharmacyRoutes from './routes/pharmacyRoutes';

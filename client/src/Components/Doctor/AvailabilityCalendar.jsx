@@ -24,7 +24,7 @@ function AvailabilityCalendar() {
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/schedule/schedules/doctor`, {
+        const response = await axios.get(`http://localhost:8080/schedule/token`, {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -36,8 +36,9 @@ function AvailabilityCalendar() {
         data.forEach(schedule => {
           schedule.availableSlots.forEach(slot => {
             // Chuyển date từ ISO về định dạng YYYY-MM-DD
-            const dateKey = new Date(slot.date).toLocaleDateString("en-CA")
-            const dateTimeKey = `${dateKey}-${slot.time.replace(":", "-")}`
+            const dateKey = slot.date.split("T")[0]; // Giữ đúng YYYY-MM-DD
+            const [hour, minute] = slot.time.split(":");
+            const dateTimeKey = `${dateKey}-${parseInt(hour)}-${parseInt(minute)}`;
             fetchedSlots[dateTimeKey] = !slot.isBooked // Chỉ hiển thị nếu chưa bị đặt
           })
         })

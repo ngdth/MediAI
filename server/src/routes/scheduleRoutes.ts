@@ -6,13 +6,13 @@ import { authenticateToken, authorizeRole } from '../middlewares/authMiddleware'
 
 const router = express.Router();
 
-router.get("/schedules/:doctorId",authenticateToken, getSchedulesByDoctor ); // View doctor schedule
+router.get("/schedules/:doctorId",authenticateToken, getSchedulesByDoctor); // View doctor schedule
 
-router.get("/schedules",authenticateToken, getAllSchedules ); // View all schedules
+router.get("/schedules",authenticateToken, getAllSchedules); // View all schedules
 
-router.post("/upsert",authenticateToken, authorizeRole(["doctor"]), upsertSchedule ); // Manage schedule
+router.post("/upsert",authenticateToken, authorizeRole(["doctor"]), upsertSchedule); // Manage schedule
 
-router.get("/schedules/doctor",authenticateToken, authorizeRole(["doctor"]), getSchedulesByToken );
+router.get("/token",authenticateToken, authorizeRole(["doctor"]), getSchedulesByToken);
 
 // create router for update schedule and delete schedule
 router.post("/create",authenticateToken, authorizeRole(['doctor']), createSchedule); // Create schedule
