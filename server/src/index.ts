@@ -13,6 +13,7 @@ import scheduleRouter from './routes/scheduleRouter'; // Import schedule routes
 import serviceRouter from './routes/serviceRoutes'; // Import service routes
 import blogRoutes from './routes/blogRoutes';
 import pharmacyRoutes from './routes/pharmacyRoutes';
+import paymentRoutes from './routes/paymentRoutes';
 
 const bootstrap = async () => {
   await mongo.connect()
@@ -34,6 +35,7 @@ const bootstrap = async () => {
   app.use('/schedule', scheduleRouter); // Use schedule routes
   app.use('/blog', blogRoutes); // Use blog routes
   app.use('/service', serviceRouter); // Use service routes
+  app.use('/payment', paymentRoutes); // Use payment routes
   app.listen(PORT || 8080, () => {
     console.log(`✅ Server is listening on port: ${PORT || 8080}`)
   })

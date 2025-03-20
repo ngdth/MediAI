@@ -1,6 +1,6 @@
 import express from "express";
 import { authenticateToken, authorizeRole } from "../middlewares/authMiddleware";
-import { createService, getAllServices, getServiceById, updateService, deleteService } from "../controllers/admin/serviceController";
+import { createService, getAllServices, getServiceById, updateService, deleteService,getActiveServices } from "../controllers/admin/serviceController";
 
 const router = express.Router();
 
@@ -18,5 +18,8 @@ router.put("/update/:serviceId", authenticateToken, authorizeRole(["admin"]), up
 
 // Xóa dịch vụ theo ID
 router.delete("/delete/:serviceId", authenticateToken, authorizeRole(["admin"]), deleteService);
+
+// Lấy danh sách tất cả dịch vụ có status = active
+router.get("/active", getActiveServices);
 
 export default router;

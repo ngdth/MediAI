@@ -1,6 +1,5 @@
-// Sidebar.jsx
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { FaBars, FaTimes, FaTachometerAlt, FaClipboard, FaCheckCircle, FaCalendarAlt } from "react-icons/fa";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
@@ -13,28 +12,44 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
         <ul className="menu-list">
           <li>
-            <Link to="/nurse/dashboard" className="menu-item">
+            <NavLink 
+              to="/nurse/dashboard" 
+              className="menu-item"
+              activeClassName="active"
+            >
               <FaTachometerAlt className="menu-icon" />
               <span>Dashboard</span>
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/nurse/pending" className="menu-item">
+            <NavLink 
+              to="/nurse/pending" 
+              className="menu-item"
+              activeClassName="active"
+            >
               <FaClipboard className="menu-icon" />
-              <span>Pending</span>
-            </Link>
+              <span>Lịch hẹn chờ phân công</span>
+            </NavLink>
           </li>
           <li>
-            <Link to="/nurse/assigned" className="menu-item">
+            <NavLink 
+              to="/nurse/assigned" 
+              className="menu-item"
+              activeClassName="active"
+            >
               <FaCheckCircle className="menu-icon" />
-              <span>Assigned</span>
-            </Link>
+              <span>Lịch hẹn chờ xác nhận</span>
+            </NavLink>
           </li>
           <li>
-            <Link to="/nurse/appointments" className="menu-item">
+            <NavLink 
+              to="/nurse/appointments" 
+              className="menu-item"
+              activeClassName="active"
+            >
               <FaCalendarAlt className="menu-icon" />
-              <span>Appointments</span>
-            </Link>
+              <span>Danh sách lịch hẹn</span>
+            </NavLink>
           </li>
         </ul>
       </div>

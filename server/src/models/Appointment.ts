@@ -9,6 +9,7 @@ export enum AppointmentStatus {
     WAITINGPRESCRIPTION = 'WaitingPrescription',
     PRESCRIPTION_CREATED = 'Prescription_created',
     DONE = 'Done',
+    BILL_CREATED = 'Bill_created',
 }
 
 interface IAppointment extends Document {
