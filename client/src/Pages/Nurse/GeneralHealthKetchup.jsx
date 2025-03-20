@@ -45,49 +45,90 @@ const GeneralHealthKetchup = () => {
     setEditMode((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
-  const handleInputChange = (field, value, subField = null) => {
+  const handleInputChange = async (field, value, subField = null) => {
+    let updatedValue = value;
+    if (field === "gender") {
+      updatedValue = value === "Nam" ? "male" : value === "Nữ" ? "female" : value;
+    }
+
     if (subField) {
       setAppointmentData((prev) => ({
         ...prev,
-        [field]: { ...prev[field], [subField]: value },
+        [field]: { ...prev[field], [subField]: updatedValue },
       }));
     } else {
-      setAppointmentData((prev) => ({ ...prev, [field]: value }));
+      setAppointmentData((prev) => ({ ...prev, [field]: updatedValue }));
+    }
+
+    // Gửi yêu cầu cập nhật từng trường lên server
+    try {
+      await axios.put(
+        `http://localhost:8080/appointment/${appointmentId}/update-field`,
+        { field, subField, value: updatedValue },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      fetchAppointmentData(); // Cập nhật lại dữ liệu sau khi lưu
+    } catch (error) {
+      console.error("Error updating field:", error);
     }
   };
 
   const renderField = (label, field, value, subField = null) => {
     const isEditing = editMode[`${field}${subField || ""}`];
+    let displayValue = value;
+
+    if (field === "gender") {
+      displayValue = value === "male" ? "Nam" : value === "female" ? "Nữ" : value || "Chưa có dữ liệu";
+    } else if (field === "doctorId" && !subField) {
+      displayValue = value?.username || "Chưa có dữ liệu"; // Hiển thị username của bác sĩ
+    } else {
+      displayValue = value ? (typeof value === "object" ? JSON.stringify(value) : value) : "Chưa có dữ liệu";
+    }
+
     return (
       <tr>
         <td>{label}</td>
         <td>
           {isEditing ? (
-            subField === "prescription" ? (
+            field === "prescription" && !subField ? (
               <textarea
                 value={JSON.stringify(value || [])}
                 onChange={(e) => handleInputChange(field, JSON.parse(e.target.value || "[]"))}
                 className="form-control"
               />
+            ) : field === "gender" && !subField ? (
+              <select
+                value={displayValue}
+                onChange={(e) => handleInputChange(field, e.target.value)}
+                className="form-control"
+              >
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
+              </select>
             ) : (
               <input
                 type={typeof value === "number" ? "number" : "text"}
-                value={value || ""}
+                value={field === "gender" ? displayValue : value || ""}
                 onChange={(e) => handleInputChange(field, e.target.value, subField)}
                 className="form-control"
+                disabled={field === "doctorId" && !subField} // Không cho chỉnh sửa tên bác sĩ trực tiếp
               />
             )
           ) : (
-            <span>{value ? (typeof value === "object" ? JSON.stringify(value) : value) : "Chưa có dữ liệu"}</span>
+            <span>{displayValue}</span>
           )}
         </td>
         <td>
-          <button
-            className="btn btn-sm btn-warning"
-            onClick={() => toggleEditMode(`${field}${subField || ""}`)}
-          >
-            {isEditing ? "Lưu" : "Thay đổi"}
-          </button>
+          {field !== "doctorId" && (
+            <button
+              className="btn btn-sm btn-warning"
+              onClick={() => toggleEditMode(`${field}${subField || ""}`)}
+            >
+              {isEditing ? "Lưu" : "Thay đổi"}
+            </button>
+          )}
         </td>
       </tr>
     );
@@ -120,7 +161,7 @@ const GeneralHealthKetchup = () => {
             {renderField("Giờ", "time", time)}
             {renderField("Triệu chứng", "symptoms", symptoms)}
             {renderField("Trạng thái", "status", status)}
-            {renderField("ID Bác sĩ", "doctorId", doctorId)}
+            {renderField("Tên bác sĩ", "doctorId", doctorId)}
           </tbody>
         </table>
 
@@ -212,7 +253,7 @@ const GeneralHealthKetchup = () => {
 
       <div className="d-flex justify-content-end mt-4">
         <button type="submit" className="btn btn-primary" onClick={handleSubmit}>
-          Lưu
+          Lưu toàn bộ
         </button>
       </div>
     </div>

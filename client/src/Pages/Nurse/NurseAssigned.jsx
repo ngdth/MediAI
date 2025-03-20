@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const NurseAssigned = () => {
   const [appointments, setAppointments] = useState([]);
   const [doctors, setDoctors] = useState({});
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchAppointments("Assigned");
@@ -103,7 +105,11 @@ const NurseAssigned = () => {
     return sortableAppointments;
   }, [appointments, sortConfig, doctors]);
 
- return (
+  const handleViewDetail = (appointmentId) => {
+    navigate(`/nurse/general-health/${appointmentId}`);
+  };
+
+  return (
     <div className="pending">
       <h2>Pending Appointments</h2>
       <table className="table">
@@ -175,6 +181,12 @@ const NurseAssigned = () => {
                     onClick={() => updateAppointmentStatus(appointment._id, "Rejected")}
                   >
                     Từ chối
+                  </button>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => handleViewDetail(appointment._id)}
+                  >
+                    View Detail
                   </button>
                 </td>
               </tr>
