@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+<<<<<<< HEAD
 import { useNavigate } from "react-router-dom"; // Thêm useNavigate để điều hướng
+=======
+import { useNavigate } from "react-router-dom";
+>>>>>>> d9cea62507f634f817503beac555e21a1181a9c2
 
 const NurseAppointmentList = () => {
   const [appointments, setAppointments] = useState([]);
   const [doctors, setDoctors] = useState({});
   const [loading, setLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+<<<<<<< HEAD
   const navigate = useNavigate(); // Khởi tạo useNavigate
+=======
+  const navigate = useNavigate();
+>>>>>>> d9cea62507f634f817503beac555e21a1181a9c2
 
   useEffect(() => {
     fetchAppointments();
@@ -100,7 +108,11 @@ const NurseAppointmentList = () => {
   }, [appointments, sortConfig, doctors]);
 
   const handleViewDetail = (appointmentId) => {
+<<<<<<< HEAD
     navigate(`/nurse/general-health/${appointmentId}`); // Điều hướng đến trang GeneralHealthKetchup với ID
+=======
+    navigate(`/nurse/general-health/${appointmentId}`);
+>>>>>>> d9cea62507f634f817503beac555e21a1181a9c2
   };
 
   return (
