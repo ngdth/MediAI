@@ -1,34 +1,34 @@
-import { Route, Routes, useLocation } from 'react-router-dom';
-import Layout from './Components/Layout/Layout';
-import LayoutWithoutHeader from './Components/Layout/LayoutWithoutHeader';
-import AdminLayout from './Components/Layout/AdminLayout';
-import DoctorLayout from './Components/Layout/DoctorLayout';
-import NurseLayout from './Components/Layout/NurseLayout';
-import MainHome from './Pages/HomePage/MainHome';
-import HomeV2 from './Pages/HomePage/HomeV2';
-import HomeV3 from './Pages/HomePage/HomeV3';
-import AboutPage from './Pages/AboutPage/AboutPage';
-import LoginPage from './Pages/AuthenPage/LoginPage';
-import RegisterPage from './Pages/AuthenPage/RegisterPage';
-import ForgotPass from './Pages/AuthenPage/ForgotPassPage';
-import ResetPass from './Pages/AuthenPage/ResetPassPage';
-import VerifyPage from './Pages/AuthenPage/VerifyPage';
-import ServicePage from './Pages/Service/ServicePage';
-import ServiceDetails from './Pages/Service/ServiceDetails';
-import BlogsPage from './Pages/BlogsPage/BlogsPage';
-import BlogsDetails from './Pages/BlogsPage/BlogsDetails';
-import DoctorsPage from './Pages/Pages/DoctorsPage';
-import DoctorsDetailsPage from './Pages/Pages/DoctorsDetailsPage';
-import DoctorsResultPage from './Pages/Pages/DoctorsResultPage';
-import TimeTablePage from './Pages/Pages/TimeTablePage';
-import PortfolioPage from './Pages/Pages/PortfolioPage';
-import ErrorPage from './Pages/Pages/ErrorPage';
-import ContactPage from './Pages/ContactPage/ContactPage';
-import Appointments from './Pages/Pages/Appointments';
-import AppointmentsHistory from './Pages/Pages/AppointmentsHistory';
-import UpdateAppointment from './Pages/Pages/UpdateAppointment';
-import DoctorAppointments from './Pages/Pages/DoctorAppointments';
-import AppointmentDetail from './Pages/Pages/AppointmentDetail';
+import { Route, Routes, useLocation } from "react-router-dom";
+import Layout from "./Components/Layout/Layout";
+import LayoutWithoutHeader from "./Components/Layout/LayoutWithoutHeader";
+import AdminLayout from "./Components/Layout/AdminLayout";
+import DoctorLayout from "./Components/Layout/DoctorLayout";
+import NurseLayout from "./Components/Layout/NurseLayout";
+import MainHome from "./Pages/HomePage/MainHome";
+import HomeV2 from "./Pages/HomePage/HomeV2";
+import HomeV3 from "./Pages/HomePage/HomeV3";
+import AboutPage from "./Pages/AboutPage/AboutPage";
+import LoginPage from "./Pages/AuthenPage/LoginPage";
+import RegisterPage from "./Pages/AuthenPage/RegisterPage";
+import ForgotPass from "./Pages/AuthenPage/ForgotPassPage";
+import ResetPass from "./Pages/AuthenPage/ResetPassPage";
+import VerifyPage from "./Pages/AuthenPage/VerifyPage";
+import ServicePage from "./Pages/Service/ServicePage";
+import ServiceDetails from "./Pages/Service/ServiceDetails";
+import BlogsPage from "./Pages/BlogsPage/BlogsPage";
+import BlogsDetails from "./Pages/BlogsPage/BlogsDetails";
+import DoctorsPage from "./Pages/Pages/DoctorsPage";
+import DoctorsDetailsPage from "./Pages/Pages/DoctorsDetailsPage";
+import DoctorsResultPage from "./Pages/Pages/DoctorsResultPage";
+import TimeTablePage from "./Pages/Pages/TimeTablePage";
+import PortfolioPage from "./Pages/Pages/PortfolioPage";
+import ErrorPage from "./Pages/Pages/ErrorPage";
+import ContactPage from "./Pages/ContactPage/ContactPage";
+import Appointments from "./Pages/Pages/Appointments";
+import AppointmentsHistory from "./Pages/Pages/AppointmentsHistory";
+import UpdateAppointment from "./Pages/Pages/UpdateAppointment";
+import DoctorAppointments from "./Pages/Pages/DoctorAppointments";
+import AppointmentDetail from "./Pages/Pages/AppointmentDetail";
 import DiagnosisForm from "./Pages/Pages/DiagnosisForm";
 import DiagnosisManagement from "./Pages/Pages/DiagnosisManagement";
 import DiagnosisDetailPage from "./Pages/Pages/DiagnosisDetailPage";
@@ -37,14 +37,14 @@ import PrescriptionForm from "./Pages/Pages/PrescriptionForm";
 import PrescriptionManagement from "./Pages/Pages/PrescriptionManagement";
 import PrescriptionDetailPage from "./Pages/Pages/PrescriptionDetailPage";
 import UpdatePrescriptionPage from "./Pages/Pages/UpdatePrescriptionPage";
-import BookingAppointments from './Pages/Pages/Booking/BookingAppointments';
-import ScrollUpButton from './Components/ScrollUpButton';
-import UserProfile from './Pages/User/Profile';
-import FavoritesPage from './Pages/User/FavoritesPage';
-import UserManagement from './Pages/Admin/UserManagement';
-import DoctorManagement from './Pages/Admin/DoctorManagement';
-import NurseManagement from './Pages/Admin/NurseManagement';
-import PharmacyManagement from './Pages/Admin/PharmacyManagement';
+import BookingAppointments from "./Pages/Pages/Booking/BookingAppointments";
+import ScrollUpButton from "./Components/ScrollUpButton";
+import UserProfile from "./Pages/User/Profile";
+import FavoritesPage from "./Pages/User/FavoritesPage";
+import UserManagement from "./Pages/Admin/UserManagement";
+import DoctorManagement from "./Pages/Admin/DoctorManagement";
+import NurseManagement from "./Pages/Admin/NurseManagement";
+import PharmacyManagement from "./Pages/Admin/PharmacyManagement";
 // import ServiceManagement from './Pages/Admin/ServiceManagement';
 import AvailabilityCalendar from './Components/Doctor/AvailabilityCalendar';
 import ManageAppointments from './Components/Doctor/ManageAppointments';
@@ -55,7 +55,8 @@ import PrescriptionsRecordResult from './Components/Doctor/PrescriptionsRecordRe
 import NurseDashboard from './Pages/Nurse/NurseDashboard'
 import NursePending from './Pages/Nurse/NursePending'
 import NurseAssigned from './Pages/Nurse/NurseAssigned'
-import GeneralHealthKetchup from './Components/Nurse/GeneralHealthKetchup';
+import NurseAppointmentList from "./Pages/Nurse/NurseAppointmentList";
+import GeneralHealthKetchup from "./Pages/Nurse/GeneralHealthKetchup";
 import PharmacyeDashboard from './Pages/Pharmacy/PharmacyDashboard'
 import PharmacyPending from './Pages/Pharmacy/PharmacyPending'
 import PrescriptionDetail from './Pages/Pharmacy/PrescriptionDetail'
@@ -85,7 +86,7 @@ function App() {
         </Route>
         <Route path="/" element={<Layout variant="cs_type_1" />}>
           <Route path="/home-v3" element={<HomeV3 />} />
-        </Route> 
+        </Route>
         <Route path="/" element={<Layout />}>
           <Route path="/about" element={<AboutPage />} />
           <Route path="/service" element={<ServicePage />} />
@@ -93,21 +94,48 @@ function App() {
           <Route path="/blog" element={<BlogsPage />} />
           <Route path="/blog/:blogId" element={<BlogsDetails />} />
           <Route path="/appointments" element={<Appointments />} />
-          <Route path="/BookingAppointments" element={<BookingAppointments />} />
-          <Route path="/appointmentshistory" element={<AppointmentsHistory />} />
-          <Route path="/updateappointment/:appointmentId" element={<UpdateAppointment />} />
-          <Route path="/updatediagnosis/:diagnosisId" element={<UpdateDiagnosisPage />} />
-          <Route path="/updateprescription/:prescriptionId" element={<UpdatePrescriptionPage />} />
+          <Route
+            path="/BookingAppointments"
+            element={<BookingAppointments />}
+          />
+          <Route
+            path="/appointmentshistory"
+            element={<AppointmentsHistory />}
+          />
+          <Route
+            path="/updateappointment/:appointmentId"
+            element={<UpdateAppointment />}
+          />
+          <Route
+            path="/updatediagnosis/:diagnosisId"
+            element={<UpdateDiagnosisPage />}
+          />
+          <Route
+            path="/updateprescription/:prescriptionId"
+            element={<UpdatePrescriptionPage />}
+          />
           <Route path="/doctorappointments" element={<DoctorAppointments />} />
           <Route path="/appointment/:id" element={<AppointmentDetail />} />
           <Route path="/doctors" element={<DoctorsPage />} />
           <Route path="/doctors/:doctorId" element={<DoctorsDetailsPage />} />
           <Route path="/diagnosisform" element={<DiagnosisForm />} />
-          <Route path="/diagnosismanagement" element={<DiagnosisManagement />} />
-          <Route path="/diagnosisdetails/:id" element={<DiagnosisDetailPage />} />
+          <Route
+            path="/diagnosismanagement"
+            element={<DiagnosisManagement />}
+          />
+          <Route
+            path="/diagnosisdetails/:id"
+            element={<DiagnosisDetailPage />}
+          />
           <Route path="/prescriptionform" element={<PrescriptionForm />} />
-          <Route path="/prescriptionmanagement" element={<PrescriptionManagement />} />
-          <Route path="/prescriptiondetails/:id" element={<PrescriptionDetailPage />} />
+          <Route
+            path="/prescriptionmanagement"
+            element={<PrescriptionManagement />}
+          />
+          <Route
+            path="/prescriptiondetails/:id"
+            element={<PrescriptionDetailPage />}
+          />
           <Route path="/timetable" element={<TimeTablePage />} />
           <Route path="/portfolio" element={<PortfolioPage />} />
           <Route path="/error" element={<ErrorPage />} />
@@ -133,10 +161,19 @@ function App() {
         </Route>
         <Route path="/doctor" element={<DoctorLayout />}>
           <Route path="/doctor" element={<ManageAppointments />} />
-          <Route path="appointments/manage-result/:appointmentId" element={<ManageResult />} />
+          <Route
+            path="appointments/manage-result/:appointmentId"
+            element={<ManageResult />}
+          />
           <Route path="/doctor/medical-result" element={<MedicalResult />} />
-          <Route path="/doctor/manage-prescription/:appointmentId" element={<ManagePrescriptionsRecord  />} />
-          <Route path="/doctor/manage-prescription-result" element={<PrescriptionsRecordResult />} />
+          <Route
+            path="/doctor/manage-prescription/:appointmentId"
+            element={<ManagePrescriptionsRecord />}
+          />
+          <Route
+            path="/doctor/manage-prescription-result"
+            element={<PrescriptionsRecordResult />}
+          />
           <Route path="/doctor/calendar" element={<AvailabilityCalendar />} />
           {/* <Route path="/doctor/appointment/assign/:appointmentId" element={<AssignDoctor />} /> */}
         </Route>
@@ -144,7 +181,8 @@ function App() {
           <Route path="dashboard" element={<NurseDashboard />} />
           <Route path="pending" element={<NursePending />} />
           <Route path="assigned" element={<NurseAssigned />} />
-          <Route path="/nurse/generalhealthketchup" element={<GeneralHealthKetchup />} />
+          <Route path="list" element={<NurseAppointmentList />} />
+          <Route path="general-health/:appointmentId" element={<GeneralHealthKetchup />} />
         </Route>
         <Route path="/pharmacy" element={<PharmacyLayout />}>
           <Route path="dashboard" element={<PharmacyeDashboard />} />
