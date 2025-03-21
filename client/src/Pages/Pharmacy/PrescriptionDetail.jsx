@@ -101,6 +101,7 @@ const PrescriptionsDetail = () => {
         try {
             const testFees = selectedServices.map(service => ({
                 name: service.name,
+                department: service.department,
                 price: service.price
             }));
     
@@ -110,8 +111,10 @@ const PrescriptionsDetail = () => {
                 return {
                     name: prescription.medicineName,
                     quantity,
+                    unit: prescription.unit,
                     unitPrice: price,
-                    totalPrice: price * quantity
+                    totalPrice: price * quantity,
+                    usage: prescription.usage,
                 };
             });
     
@@ -134,7 +137,7 @@ const PrescriptionsDetail = () => {
             console.log(response);
             if (response.status === 201) {
                 toast.success("Tạo hóa đơn thành công!");
-                setTimeout(() => navigate("/pharmacy/pending"), 10000);
+                setTimeout(() => navigate("/pharmacy/pending"), 6000);
                 // navigate("/pharmacy/pending");
             } else {
                 toast.error(response.data?.message || "Tạo hóa đơn thất bại!");

@@ -99,7 +99,7 @@ export const createBill = async (req: Request, res: Response, next: NextFunction
             billId: `BILL-${Date.now()}`,
             appointmentId,
             dateIssued: new Date(),
-            paymentStatus: 'Pending',
+            paymentStatus: 'Unpaid',
             paymentMethod,
             patientName: appointment.patientName,
             patientPhone: appointment?.phone,
@@ -158,7 +158,7 @@ export const getBills = async (req: Request, res: Response, next: NextFunction):
 export const getBillId = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { billId } = req.params;
-        const bill = await Bill.findOne({ billId });
+        const bill = await Bill.findById(billId);
         if (!bill) {
             console.warn('Bill not found:', billId);
             res.status(404).json({ message: 'Bill not found' });
