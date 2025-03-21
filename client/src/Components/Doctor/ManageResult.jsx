@@ -1,70 +1,149 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const ManageResult = () => {
   const { appointmentId } = useParams();
-  const [appointment, setAppointment] = useState({});
+  const [appointment, setAppointment] = useState(null);
+  const [doctorId, setDoctorId] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [vitals, setVitals] = useState({
-    pulse: '',
-    bloodPressure: '',
-    temperature: '',
-    weight: '',
-    height: '',
-    generalCondition: '',
+    pulse: "",
+    bloodPressure: "",
+    temperature: "",
+    weight: "",
+    height: "",
+    generalCondition: "",
   });
   const [tests, setTests] = useState({
-    bloodTest: '',
-    urineTest: '',
-    xRay: '',
-    ultrasound: '',
-    mri: '',
-    ecg: '',
+    bloodTest: "",
+    urineTest: "",
+    xRay: "",
+    ultrasound: "",
+    mri: "",
+    ecg: "",
   });
   const [diagnosisDetails, setDiagnosisDetails] = useState({
-    diseaseName: '',
-    severity: '',
-    treatmentPlan: '',
-    followUpSchedule: '',
-    specialInstructions: '',
+    diseaseName: "",
+    severity: "", // Sẽ được chọn từ dropdown
+    treatmentPlan: "",
+    followUpSchedule: "", // Sẽ được chọn từ input date
+    specialInstructions: "",
   });
 
+  const token = localStorage.getItem("token");
+
+  // Lấy doctorId từ thông tin người dùng hiện tại
+  useEffect(() => {
+    const fetchDoctorId = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/user/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setDoctorId(response.data.id);
+      } catch (error) {
+        console.error("Error fetching doctor ID:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchDoctorId();
+  }, [token]);
+
+  // Lấy thông tin lịch hẹn
   const fetchAppointmentDetails = async () => {
     try {
       const response = await axios.get(`http://localhost:8080/appointment/${appointmentId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
-      setAppointment(response.data.data);
+      console.log("Appointment details:", response.data);
+      setAppointment(response.data.data.appointment);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching appointment details:", error);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchAppointmentDetails();
-  }, [appointmentId]);
+    if (doctorId) {
+      fetchAppointmentDetails();
+    }
+  }, [appointmentId, doctorId]);
 
   const handleSubmit = async () => {
+    console.log("Token before sending request:", token);
+    console.log("Payload:", { vitals, tests, diagnosisDetails });
+  
+    if (!doctorId) {
+      alert("Không thể xác định bác sĩ. Vui lòng đăng nhập lại.");
+      return;
+    }
+  
+    // Kiểm tra dữ liệu trước khi gửi
+    if (
+      !vitals.pulse ||
+      !vitals.bloodPressure ||
+      !vitals.temperature ||
+      !vitals.weight ||
+      !vitals.height ||
+      !vitals.generalCondition ||
+      !tests.bloodTest ||
+      !tests.urineTest ||
+      !tests.xRay ||
+      !tests.ultrasound ||
+      !tests.mri ||
+      !tests.ecg ||
+      !diagnosisDetails.diseaseName ||
+      !diagnosisDetails.severity ||
+      !diagnosisDetails.treatmentPlan ||
+      !diagnosisDetails.followUpSchedule ||
+      !diagnosisDetails.specialInstructions
+    ) {
+      alert("Vui lòng điền đầy đủ thông tin trước khi gửi.");
+      return;
+    }
+  
     try {
       const response = await axios.post(
         `http://localhost:8080/appointment/${appointmentId}/createresult`,
         { vitals, tests, diagnosisDetails },
-        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert('Kết quả khám bệnh và đơn thuốc đã được tạo!');
+      alert("Kết quả khám bệnh đã được tạo thành công!");
     } catch (error) {
-      console.error("Error creating result and prescription:", error);
+      console.error("Error creating result:", error);
+      const errorMessage = error.response?.data?.message || "Có lỗi xảy ra khi tạo kết quả khám bệnh.";
+      alert(errorMessage);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="container">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (!appointment) {
+    return (
+      <div className="container">
+        <p>Không tìm thấy lịch hẹn.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container">
       <h2 className="text-center mb-4">Kết quả khám bệnh</h2>
-      
+
       {/* Thông tin bệnh nhân */}
       <div>
         <strong>Patient:</strong> {appointment.patientName}
-        <p><strong>Symptoms:</strong> {appointment.symptoms}</p>
+        <p>
+          <strong>Symptoms:</strong> {appointment.symptoms}
+        </p>
       </div>
 
       {/* Thông tin khám bệnh (Bảng) */}
@@ -251,7 +330,9 @@ const ManageResult = () => {
                 <input
                   type="text"
                   value={diagnosisDetails.diseaseName}
-                  onChange={(e) => setDiagnosisDetails({ ...diagnosisDetails, diseaseName: e.target.value })}
+                  onChange={(e) =>
+                    setDiagnosisDetails({ ...diagnosisDetails, diseaseName: e.target.value })
+                  }
                   placeholder="Tên bệnh"
                   className="form-control"
                 />
@@ -260,13 +341,18 @@ const ManageResult = () => {
             <tr>
               <td>Mức độ nghiêm trọng</td>
               <td>
-                <input
-                  type="text"
+                <select
                   value={diagnosisDetails.severity}
-                  onChange={(e) => setDiagnosisDetails({ ...diagnosisDetails, severity: e.target.value })}
-                  placeholder="Mức độ nghiêm trọng"
+                  onChange={(e) =>
+                    setDiagnosisDetails({ ...diagnosisDetails, severity: e.target.value })
+                  }
                   className="form-control"
-                />
+                >
+                  <option value="">Chọn mức độ nghiêm trọng</option>
+                  <option value="mild">Nhẹ</option>
+                  <option value="moderate">Trung bình</option>
+                  <option value="severe">Nặng</option>
+                </select>
               </td>
             </tr>
             <tr>
@@ -274,7 +360,9 @@ const ManageResult = () => {
               <td>
                 <textarea
                   value={diagnosisDetails.treatmentPlan}
-                  onChange={(e) => setDiagnosisDetails({ ...diagnosisDetails, treatmentPlan: e.target.value })}
+                  onChange={(e) =>
+                    setDiagnosisDetails({ ...diagnosisDetails, treatmentPlan: e.target.value })
+                  }
                   placeholder="Kết luận và hướng điều trị"
                   className="form-control"
                 />
@@ -284,10 +372,11 @@ const ManageResult = () => {
               <td>Lịch tái khám</td>
               <td>
                 <input
-                  type="text"
+                  type="date"
                   value={diagnosisDetails.followUpSchedule}
-                  onChange={(e) => setDiagnosisDetails({ ...diagnosisDetails, followUpSchedule: e.target.value })}
-                  placeholder="Lịch tái khám"
+                  onChange={(e) =>
+                    setDiagnosisDetails({ ...diagnosisDetails, followUpSchedule: e.target.value })
+                  }
                   className="form-control"
                 />
               </td>
@@ -297,7 +386,12 @@ const ManageResult = () => {
               <td>
                 <textarea
                   value={diagnosisDetails.specialInstructions}
-                  onChange={(e) => setDiagnosisDetails({ ...diagnosisDetails, specialInstructions: e.target.value })}
+                  onChange={(e) =>
+                    setDiagnosisDetails({
+                      ...diagnosisDetails,
+                      specialInstructions: e.target.value,
+                    })
+                  }
                   placeholder="Chỉ định đặc biệt"
                   className="form-control"
                 />
