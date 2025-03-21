@@ -61,7 +61,7 @@ import PharmacyeDashboard from "./Pages/Pharmacy/PharmacyDashboard";
 import PharmacyPending from "./Pages/Pharmacy/PharmacyPending";
 import PrescriptionDetail from "./Pages/Pharmacy/PrescriptionDetail";
 import AllBills from "./pages/Pharmacy/AllBills";
-import BillUpdate from "./pages/Pharmacy/BillUpdate";
+// import BillUpdate from "./pages/Pharmacy/BillUpdate";
 import PharmacyLayout from "./Components/Layout/PharmacyLayout";
 import "aos/dist/aos.css";
 import Aos from "aos";
