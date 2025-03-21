@@ -154,7 +154,7 @@ function App() {
                     <Route path="pending" element={<PharmacyPending />} />
                     <Route path="bills" element={<AllBills />} />
                     <Route path="prescription/:appointmentId" element={<PrescriptionDetail />} />
-                    <Route path="bill/:billId" element={<BillUpdate />} />
+                    {/* <Route path="bill/:billId" element={<BillUpdate />} /> */}
                 </Route>
             </Routes>
             <ScrollUpButton />

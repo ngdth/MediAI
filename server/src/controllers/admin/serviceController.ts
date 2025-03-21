@@ -5,9 +5,9 @@
     // Tạo dịch vụ mới
     export const createService = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { name, description, department, category, price, duration, status } = req.body;
+            const { name, description, department, price, status } = req.body;
 
-            if (!name || !description || !department || !category || !price || !duration) {
+            if (!name || !description || !department || !price ) {
                 res.status(400).json({ error: "Missing required fields." });
                 return;
             }
@@ -22,9 +22,7 @@
                 name,
                 description,
                 department,
-                category,
                 price,
-                duration,
                 status: status || "active",
             });
 
@@ -32,6 +30,7 @@
             res.status(201).json({ message: "Service created successfully.", service: newService });
         } catch (error) {
             next(error);
+            console.log(error);
         }
     };
 
@@ -71,7 +70,7 @@
     export const updateService = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { serviceId } = req.params;
-            const { name, description, department, category, price, duration, status } = req.body;
+            const { name, description, department, price, status } = req.body;
 
             if (!mongoose.Types.ObjectId.isValid(serviceId)) {
                 res.status(400).json({ error: "Invalid service ID." });
