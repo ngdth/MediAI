@@ -208,7 +208,7 @@ export const updateAppointmentStatus = async (req: Request, res: Response, next:
     } catch (error) {
         res.status(500).json({
             message: "Error updating appointment status",
-            error: error.message,
+            error: error,
         });
     }
 };
