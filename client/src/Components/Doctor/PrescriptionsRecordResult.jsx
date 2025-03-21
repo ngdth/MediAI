@@ -19,7 +19,8 @@ const PrescriptionsRecordResult = () => {
                 setAppointments(response.data.data || []);
             } catch (error) {
                 console.error('Error fetching prescription created appointments:', error);
-                alert(error.response?.data?.message || "Có lỗi xảy ra khi lấy danh sách đơn thuốc.");
+                // Xóa alert để không hiển thị thông báo lỗi
+                setAppointments([]);
             } finally {
                 setLoading(false);
             }
@@ -32,7 +33,7 @@ const PrescriptionsRecordResult = () => {
         try {
             await axios.put(
                 `http://localhost:8080/appointment/${id}/status`,
-                { status: "Pending" }, // Sửa thành "Pending" để khớp với enum
+                { status: "Pending" },
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             );
             alert(`Appointment status updated to Pending.`);

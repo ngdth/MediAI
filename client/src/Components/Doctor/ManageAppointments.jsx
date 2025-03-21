@@ -38,14 +38,10 @@ const ManageAppointment = () => {
                     }
                 );
                 console.log("Appointments data:", response.data);
-
-                // Lọc các appointment mà doctorId cuối cùng khớp với doctorId của bác sĩ đang đăng nhập
                 const filteredAppointments = (response.data.data || []).filter((item) => {
                     const appointment = item.appointment;
                     const doctorIds = appointment.doctorId || [];
-                    // Lấy doctorId cuối cùng trong mảng
                     const lastDoctor = doctorIds.length > 0 ? doctorIds[doctorIds.length - 1] : null;
-                    // Nếu lastDoctor là một đối tượng (do populate), lấy _id; nếu không, giữ nguyên giá trị
                     const lastDoctorId = lastDoctor && typeof lastDoctor === 'object' ? lastDoctor._id : lastDoctor;
                     return lastDoctorId === doctorId;
                 });
