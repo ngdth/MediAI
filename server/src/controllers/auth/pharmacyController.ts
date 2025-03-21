@@ -50,6 +50,7 @@ export const getDoneAppointments = async (req: Request, res: Response, next: Nex
 export const createBill = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { appointmentId, testFees, medicineFees, additionalFees, paymentMethod } = req.body;
+        console.log('Request body:', req.body);
 
         // Kiểm tra nếu appointmentId không được cung cấp
         if (!appointmentId) {
@@ -57,39 +58,44 @@ export const createBill = async (req: Request, res: Response, next: NextFunction
             return;
         }
 
-
         // Lấy thông tin appointment
-        // const appointment = await Appointment.findById(appointmentId)
-        //     .populate('userId', 'username specialization')
-        //     .populate('doctorId', 'username specialization')
-        //     .lean();
-
         const appointment = await Appointment.findById(appointmentId)
             .populate({
                 path: 'doctorId',
-                select: 'username specialization', // Chỉ lấy 2 trường này
-                model: 'user' // Chỉ định model gốc vì dùng discriminator
+                select: 'username specialization _id',
+                model: 'user'
             })
             .populate({
                 path: 'userId',
-                select: 'username email',
+                select: 'username email _id',
+                model: 'user'
+            })
+            .populate({
+                path: 'pharmacyId',
+                select: 'name email _id',
                 model: 'user'
             });
 
-        console.log('Appointment:', appointment);
+        console.log('Appointment found:', appointment ? 'Yes' : 'No');
         if (!appointment) {
             res.status(404).json({ message: "Appointment not found" });
             return;
         }
 
-        const user = appointment.userId as { email?: string }; // Ensure userId is treated as an object
-        const userEmail = user?.email; // Accessing the email from user object
-        if (!userEmail) {
-            console.error("❌ Không tìm thấy email bệnh nhân!");
-            res.status(500).json({ message: "Patient email not found" });
+        // Log thông tin doctor để debug
+        console.log('Doctor info:', appointment.doctorId);
+        // Lấy thông tin người dùng
+        const user = appointment.userId as { email?: string; _id?: string };
+        const userEmail = user?.email;
+        const userId = user?._id;
+
+        if (!userEmail || !userId) {
+            console.error("❌ Không tìm thấy thông tin bệnh nhân!");
+            res.status(500).json({ message: "Patient information not found" });
             return;
         }
-        console.log("✅ Patient Email Found:", userEmail);
+        console.log("✅ Patient info found - Email:", userEmail, "ID:", userId);
+
         // Kiểm tra paymentMethod hợp lệ
         const validPaymentMethods = ["MOMO", "Cash"];
         if (!validPaymentMethods.includes(paymentMethod)) {
@@ -99,14 +105,35 @@ export const createBill = async (req: Request, res: Response, next: NextFunction
 
         // Tính tổng tiền
         const totalAmount = calculateTotalAmount(testFees, medicineFees, additionalFees);
+        console.log("✅ Total amount calculated:", totalAmount);
+
+        let doctorName, doctorSpecialization, doctorId;
+        // Lấy thông tin bác sĩ
+        const doctors = appointment.doctorId;
+        // Kiểm tra xem doctors có phải là mảng không
+        if (Array.isArray(doctors) && doctors.length > 0) {
+            const doctor = doctors[0] as unknown as { username: string; specialization: string; _id: string };
+            doctorName = doctor.username;
+            doctorSpecialization = doctor.specialization;
+            doctorId = doctor._id;
+        } else {
+            const doctor = doctors as any;
+            doctorName = doctor?.username;
+            doctorSpecialization = doctor?.specialization;
+            doctorId = doctor?._id;
+        }
+        console.log("✅ Doctor info extracted:", { doctorName, doctorSpecialization, doctorId });
 
 
-        const doctor = appointment.doctorId as { username?: string; specialization?: string };
-        const doctorName = doctor?.username;
-        const doctorSpecialization = doctor?.specialization;
+        // Lấy thông tin nhà thuốc
+        const pharmacy = appointment.pharmacyId as { _id?: string };
+        const pharmacyId = pharmacy?._id;
+
         // Tạo hóa đơn mới
         const newBill = new Bill({
-            billId: `BILL-${Date.now()}`,
+            userId: userId,
+            doctorId,
+            pharmacyId: pharmacyId,
             appointmentId,
             dateIssued: new Date(),
             paymentStatus: 'Unpaid',
@@ -123,21 +150,40 @@ export const createBill = async (req: Request, res: Response, next: NextFunction
             transactionId: null
         });
 
+        console.log("✅ New bill created with data:", {
+            userId,
+            doctorId,
+            pharmacyId,
+            appointmentId,
+            paymentMethod,
+            totalAmount,
+            doctorSpecialization
+        });
+
         // Lưu hóa đơn vào DB
-        await newBill.save();
+        const savedBill = await newBill.save();
+        console.log("✅ Bill saved successfully with ID:", savedBill._id);
 
         // Update Appointment Status
         await Appointment.findByIdAndUpdate(appointmentId, { status: AppointmentStatus.BILL_CREATED });
+        console.log("✅ Appointment status updated to BILL_CREATED");
 
-        if (userEmail) {
-            await sendEmail(userEmail, newBill, "create_bill");
-        }
-        console.log('patient email:', userEmail);
-        res.status(201).json({ message: 'Bill created successfully', bill: newBill });
+        // Gửi email thông báo
+        // if (userEmail) {
+        //     await sendEmail(userEmail, newBill, "create_bill");
+        //     console.log("✅ Email sent to patient:", userEmail);
+        // }
+
+        res.status(201).json({
+            message: 'Bill created successfully',
+            bill: savedBill
+        });
     } catch (error) {
+        console.error("❌ Error creating bill:", error);
         next(error);
     }
 };
+
 // get all bills
 export const getBills = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -171,7 +217,7 @@ export const getBillsByUser = async (req: Request, res: Response, next: NextFunc
         const userId = req.user._id || req.user.id;
         const userRole = req.user.role;
         console.log(`✅ Extracted userId: ${userId}, userRole: ${userRole}`);
-        
+
         if (!userId) {
             res.status(401).json({ message: "Unauthorized: User ID not found in token" });
             return;
@@ -208,10 +254,10 @@ export const getBillsByUser = async (req: Request, res: Response, next: NextFunc
         }
 
         console.log(`Found ${bills.length} bills for user with role ${userRole}`);
-        res.status(200).json({ 
+        res.status(200).json({
             message: "Bills retrieved successfully",
             count: bills.length,
-            bills 
+            bills
         });
     } catch (error) {
         console.error('Error fetching bills:', error);
@@ -228,7 +274,7 @@ export const getBillDetail = async (req: Request, res: Response, next: NextFunct
 
         // Tìm hóa đơn theo ID
         const bill = await Bill.findById(billId);
-        
+
         if (!bill) {
             console.warn('Bill not found:', billId);
             res.status(404).json({ message: 'Bill not found' });
