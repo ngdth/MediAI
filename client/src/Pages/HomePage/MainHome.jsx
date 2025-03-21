@@ -71,13 +71,6 @@ const ctaData = {
   buttonText: 'Booking Now',
 };
 
-const ctaDataBooking = {
-  imageUrl: '/assets/img/cta_img_1.jpg',
-  title: 'ĐẶT LỊCH KHÁM TRỰC TUYẾN',
-  buttonUrl: '/BookingAppointments',
-  buttonText: 'Booking Now',
-};
-
 const aboutData = {
   sectionSubtitle: 'OUR ABOUT US',
   sectionTitle: '20 năm cung cấp dịch vụ y tế.',
@@ -622,7 +615,6 @@ const MainHome = () => {
         }
       >
         <CtaSection data={ctaData} />
-        <CtaSection data={ctaDataBooking} />
       </Section>
 
       {/* End CTA Section */}

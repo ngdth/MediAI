@@ -5,6 +5,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 const ManagePrescriptionsRecord = () => {
     const { appointmentId } = useParams();
     const [appointment, setAppointment] = useState({});
+    const [services, setServices] = useState([]);
+    const [selectedServices, setSelectedServices] = useState([]);
     const [prescriptions, setPrescriptions] = useState([
         { medicineName: '', unit: '', quantity: '', usage: '' } // default empty prescription row
     ]);
@@ -22,8 +24,20 @@ const ManagePrescriptionsRecord = () => {
         }
     };
 
+    const fetchAllServices = async () => {
+        try {
+            const response = await axios.get("http://localhost:8080/service/active", {
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            });
+            setServices(response.data);
+        } catch (error) {
+            console.error("Error fetching services:", error);
+        }
+    };
+
     useEffect(() => {
         fetchAppointmentDetails();
+        fetchAllServices();
     }, [appointmentId]);
 
     // Handle adding a new row for prescription
@@ -41,6 +55,23 @@ const ManagePrescriptionsRecord = () => {
         setPrescriptions(updatedPrescriptions);
     };
 
+    //Hàm thêm dịch vụ
+    const addServiceRow = () => {
+        setSelectedServices([...selectedServices, { serviceId: "", name: "", department: "", price: 0 }]);
+    };
+
+    const handleServiceChange = (index, serviceId) => {
+        const selectedService = services.find((service) => service._id === serviceId);
+        const updatedSelectedServices = [...selectedServices];
+        updatedSelectedServices[index] = {
+            serviceId: selectedService._id,
+            name: selectedService.name,
+            department: selectedService.department,
+            price: selectedService.price,
+        };
+        setSelectedServices(updatedSelectedServices);
+    };
+
     // Handle form submission
     const handleSubmitPrescription = async () => {
         try {
@@ -50,10 +81,18 @@ const ManagePrescriptionsRecord = () => {
                 quantity: prescription.quantity,
                 usage: prescription.usage
             }));
+            
+            const serviceUsed = selectedServices.map(service => ({
+                name: service.name,
+                department: service.department,
+                price: service.price
+            }));
 
             await axios.post(
                 `http://localhost:8080/appointment/${appointmentId}/createprescription`,
-                { prescription: prescriptionData },
+                { prescription: prescriptionData, 
+                    service: serviceUsed
+                 },
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             );
             alert('Đơn thuốc đã được tạo!');
@@ -133,8 +172,50 @@ const ManagePrescriptionsRecord = () => {
                     ))}
                 </tbody>
             </table>
-
-            <button className="btn btn-success" onClick={addPrescriptionRow}>+ Thêm thuốc</button>
+            <button className="btn btn-success mb-4" onClick={addPrescriptionRow}>+ Thêm thuốc</button>
+            <h3 className="mt-5">Thông tin dịch vụ khám</h3>
+            <table className="table table-bordered">
+                <thead>
+                    <tr>
+                        <th className="text-center">STT</th>
+                        <th className="text-center">Tên dịch vụ</th>
+                        <th className="text-center">Khoa</th>
+                        <th className="text-center">Giá tiền</th>
+                        <th className="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {selectedServices.map((service, index) => (
+                        <tr key={index}>
+                            <td className="text-center">{index + 1}</td>
+                            <td>
+                                <select
+                                    className="form-control"
+                                    value={service.serviceId}
+                                    onChange={(e) => handleServiceChange(index, e.target.value)}
+                                >
+                                    <option value="">Chọn dịch vụ</option>
+                                    {services.map((s) => (
+                                        <option className='text-center' key={s._id} value={s._id}>
+                                            {s.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </td>
+                            <td className="text-center">{service.department}</td>
+                            <td className="text-center">{service.price.toLocaleString()} VND</td>
+                            <td className="text-center">
+                                <button className="btn btn-danger" onClick={() => removeServiceRow(index)}>
+                                    Xóa
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            <button className="btn btn-success" onClick={addServiceRow}>
+                + Thêm dịch vụ
+            </button>
 
             {/* Submit Button */}
             <div className="d-flex justify-content-end mt-4">

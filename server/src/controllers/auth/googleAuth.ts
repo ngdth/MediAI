@@ -56,37 +56,37 @@ export const loginWithGoogle = passport.authenticate("google", {
     scope: ["profile", "email"]
 });
 
+// export const googleCallback = (req: Request, res: Response, next: NextFunction) => {
+//     passport.authenticate("google", { session: false }, (err, user, info) => {
+//         if (err || !user) {
+//             console.error("❌ Google authentication error:", err);
+//             return res.status(401).json({ message: "Google authentication failed" });
+//         }
+
+        
+//         const token = generateJwtToken(user);
+//         console.log("✅ Google login successful. Token generated:", token);
+
+//         return res.status(200).json({
+//             message: "Google login successful",
+//             user,
+//             token
+//         });
+//     })(req, res, next);
+// };
 
 export const googleCallback = (req: Request, res: Response, next: NextFunction) => {
     passport.authenticate("google", { session: false }, (err, user, info) => {
         if (err || !user) {
-            console.error("❌ Google authentication error:", err);
-            return res.status(401).json({ message: "Google authentication failed" });
+            return res.status(401).json({ message: "Google authentication failed", err  } );
         }
 
-        
         const token = generateJwtToken(user);
-        console.log("✅ Google login successful. Token generated:", token);
 
-        return res.status(200).json({
-            message: "Google login successful",
-            user,
-            token
-        });
+        // Redirect về frontend kèm theo token
+        res.redirect(`http://localhost:5173/login?token=${token}`);
     })(req, res, next);
 };
-// export const googleCallback = (req: Request, res: Response, next: NextFunction) => {
-//     passport.authenticate("google", { session: false }, (err, user, info) => {
-//         if (err || !user) {
-//             return res.status(401).json({ message: "Google authentication failed", err  } );
-//         }
-
-//         const token = generateJwtToken(user);
-
-//         // Redirect về frontend kèm theo token
-//         res.redirect(`http://localhost:5173/login?token=${token}`);
-//     })(req, res, next);
-// };
 
 const generateJwtToken = (user: any): string => {
     const payload = {

@@ -25,12 +25,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             </Link>
           </li>
           <li>
-            <Link to="/pharmacy/allPreScription" className="menu-item">
-              <FaCheckCircle className="menu-icon" />
-              <span>All Prescriptions</span>
-            </Link>
-          </li>
-          <li>
             <Link to="/pharmacy/bills" className="menu-item">
               <FaCalendarAlt className="menu-icon" />
               <span>Bills</span>

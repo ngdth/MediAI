@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import Appointment, { AppointmentStatus } from '../../models/Appointment'
+import Appointment, { AppointmentStatus, IAppointment } from '../../models/Appointment'
 import User from '../../models/User';
 import mongoose from 'mongoose';
 import Schedule from '../../models/Schedule';
@@ -116,6 +116,55 @@ export const getPendingAppointments = async (req: Request, res: Response): Promi
     }
 };
 
+export const updateAppointmentField = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const { field, subField, value } = req.body;
+  
+      if (!field || value === undefined) {
+        res.status(400).json({ message: "Field and value are required" });
+        return;
+      }
+  
+      const appointment = await Appointment.findById(id);
+      if (!appointment) {
+        res.status(404).json({ message: "Appointment not found" });
+        return;
+      }
+  
+      const typedAppointment = appointment as mongoose.Document & IAppointment;
+  
+      if (!subField) {
+        if (field in typedAppointment) {
+          (typedAppointment as any)[field] = value; // Ép kiểu tạm thời để tránh lỗi
+        } else {
+          res.status(400).json({ message: `Field '${field}' is not valid` });
+          return;
+        }
+      } else {
+        if (!(field in typedAppointment)) {
+          typedAppointment[field] = {} as any; // Khởi tạo nếu chưa có
+        }
+        if (typedAppointment[field] && typeof typedAppointment[field] === 'object') {
+          (typedAppointment[field] as any)[subField] = value; // Ép kiểu để cập nhật
+        } else {
+          res.status(400).json({ message: `Subfield '${subField}' in '${field}' is not valid` });
+          return;
+        }
+      }
+  
+      await typedAppointment.save();
+  
+      res.status(200).json({
+        message: "Field updated successfully",
+        data: typedAppointment,
+      });
+    } catch (error) {
+      console.error("Error updating appointment field:", error);
+      next(error);
+    }
+  };
+
 export const updateAppointmentStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id } = req.params;
@@ -141,7 +190,7 @@ export const updateAppointmentStatus = async (req: Request, res: Response, next:
         appointment.status = status;
         await appointment.save();
 
-        if (status === AppointmentStatus.ASSIGNED) {
+        if (status === AppointmentStatus.ACCEPTED) {
             if (!appointment.doctorId) {
                 res.status(400).json({ message: "Doctor must be assigned before confirming appointment." });
                 return;
@@ -250,7 +299,7 @@ export const createResult = async (req: Request, res: Response, next: NextFuncti
 
 export const createPrescription = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } = req.params;
-    const { prescription } = req.body;
+    const { prescription, service } = req.body;
 
     try {
         const appointment = await Appointment.findById(id);
@@ -260,6 +309,7 @@ export const createPrescription = async (req: Request, res: Response, next: Next
         }
 
         appointment.prescription = prescription;
+        appointment.service = service;
         appointment.status = AppointmentStatus.PRESCRIPTION_CREATED;
 
         await appointment.save();
@@ -352,11 +402,14 @@ export const getAppointmentById = async (req: Request, res: Response, next: Next
 // View all appointments
 export const viewAllAppointments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { status } = req.query;
+        const { status, doctorId } = req.query;
 
         let filter = {};
         if (status) {
-            filter = { status };
+            filter = { ...filter, status };
+        }
+        if (doctorId) {
+            filter = { ...filter, doctorId };
         }
 
         const appointments = await Appointment.find(filter)
