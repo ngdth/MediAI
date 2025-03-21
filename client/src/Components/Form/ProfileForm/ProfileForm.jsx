@@ -110,7 +110,6 @@ const ProfileForm = ({ user, setUser }) => {
                                 type="email"
                                 name="email"
                                 value={formData.email}
-                                onChange={handleChange}
                             />
                         </Form.Group>
                     </Col>
@@ -151,6 +150,7 @@ const ProfileForm = ({ user, setUser }) => {
                                 dateFormat="dd-MM-yyyy"
                                 className="form-control"
                                 placeholderText="dd-mm-yyyy"
+                                maxDate={new Date()}
                             />
                         </Form.Group>
                     </Col>
