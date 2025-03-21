@@ -201,6 +201,22 @@ export const updateAppointmentStatus = async (req: Request, res: Response, next:
         appointment.status = status;
         await appointment.save();
 
+        if (status === AppointmentStatus.ACCEPTED) {
+            if (!appointment.doctorId) {
+                res.status(400).json({ message: "Doctor must be assigned before confirming appointment." });
+                return;
+            }
+
+            const emailData = {
+                patientName: appointment.patientName,
+                doctorName: (appointment.doctorId as any).username,
+                date: appointment.date,
+                time: appointment.time,
+            };
+
+            await sendEmail((appointment.userId as any).email, emailData, "appointment_assigned");
+        }
+        
         res.status(200).json({
             message: "Appointment status updated successfully",
             data: appointment,
