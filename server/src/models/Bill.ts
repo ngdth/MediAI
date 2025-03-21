@@ -1,8 +1,8 @@
 import { Schema, model, Document } from 'mongoose';
 
 interface IBill extends Document {
-    billId: string;
     appointmentId: string;
+    userId: string;
     dateIssued: Date;
     paymentStatus: string;
     paymentMethod: string;
@@ -31,11 +31,11 @@ interface IBill extends Document {
 
 const billSchema = new Schema<IBill>(
     {
-        billId: { type: String, required: true, unique: true },
+        userId: { type: String, ref: 'User', required: true },
         appointmentId: { type: String, ref: 'Appointment', required: true },
         dateIssued: { type: Date, default: Date.now },
         paymentStatus: { type: String, enum: ['Paid', 'Unpaid', 'Paying'], default: 'Unpaid' },
-        paymentMethod: { type: String, enum: ['MOMO', 'VNPAY', 'Cash'], default: 'Cash' },
+        paymentMethod: { type: String, enum: ['MOMO', 'Cash'], default: 'Cash' },
         patientName: { type: String, required: true },
         patientPhone: { type: String },
         patientEmail: { type: String },
