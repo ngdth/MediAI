@@ -9,6 +9,49 @@ import mongoose from 'mongoose';
 import Schedule from '../../models/Schedule';
 import { sendEmail } from "../../config/email";
 
+// Tạo lịch hẹn không có bác sĩ
+export const createAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const userId = req.user?.id;
+        const { patientName, date, time, symptoms } = req.body;
+
+        if (!patientName || !date || !time || !symptoms) {
+            res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin" });
+            return;
+        }
+
+        const newAppointment = new Appointment({
+            userId,
+            patientName,
+            date,
+            time,
+            symptoms,
+            status: AppointmentStatus.PENDING,
+        });
+
+        await newAppointment.save();
+        const user = await User.findById(userId);
+        if (!user) {
+            res.status(404).json({ message: 'User không tồn tại' });
+            return;
+        }
+
+        await sendEmail(user.email, {
+            patientName,
+            date,
+            time,
+            symptoms,
+        }, "appointment");
+
+        res.status(201).json({
+            message: 'Yêu cầu đặt lịch hẹn đã được gửi, vui lòng kiểm tra email để xác nhận.',
+            appointment: newAppointment,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 // Đặt lịch hẹn với bác sĩ
 export const bookAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -64,6 +107,183 @@ export const bookAppointment = async (req: Request, res: Response, next: NextFun
         res.status(201).json({
             message: "Yêu cầu đặt lịch hẹn đã được gửi, vui lòng kiểm tra email để xác nhận.",
             appointment: newAppointment,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Lấy danh sách lịch hẹn đang chờ xử lý
+export const getPendingAppointments = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const appointments = await Appointment.find({ status: "Pending" })
+            .populate('userId', 'username email')
+            .populate('doctorId', 'username email');
+
+        res.status(200).json({ message: "Danh sách lịch hẹn cần xử lý", data: appointments });
+    } catch (error) {
+        res.status(500).json({ message: "Lỗi khi lấy danh sách lịch hẹn", error });
+    }
+};
+
+// Cập nhật trường trong lịch hẹn
+export const updateAppointmentField = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const { field, subField, value } = req.body;
+
+        if (!field || value === undefined) {
+            res.status(400).json({ message: "Field and value are required" });
+            return;
+        }
+
+        const appointment = await Appointment.findById(id);
+        if (!appointment) {
+            res.status(404).json({ message: "Appointment not found" });
+            return;
+        }
+
+        const typedAppointment = appointment as mongoose.Document & IAppointment;
+
+        if (!subField) {
+            if (field in typedAppointment) {
+                (typedAppointment as any)[field] = value;
+            } else {
+                res.status(400).json({ message: `Field '${field}' is not valid` });
+                return;
+            }
+        } else {
+            if (!(field in typedAppointment)) {
+                typedAppointment[field] = {} as any;
+            }
+            if (typedAppointment[field] && typeof typedAppointment[field] === 'object') {
+                (typedAppointment[field] as any)[subField] = value;
+            } else {
+                res.status(400).json({ message: `Subfield '${subField}' in '${field}' is not valid` });
+                return;
+            }
+        }
+
+        await typedAppointment.save();
+
+        res.status(200).json({
+            message: "Field updated successfully",
+            data: typedAppointment,
+        });
+    } catch (error) {
+        console.error("Error updating appointment field:", error);
+        next(error);
+    }
+};
+
+// Cập nhật trạng thái lịch hẹn
+export const updateAppointmentStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    try {
+        const appointment = await Appointment.findById(id);
+        if (!appointment) {
+            res.status(404).json({ message: "Appointment not found" });
+            return;
+        }
+
+        const validStatuses = Object.values(AppointmentStatus);
+        if (!validStatuses.includes(status)) {
+            res.status(400).json({
+                message: "Invalid status",
+                receivedStatus: status,
+                validStatuses: validStatuses,
+            });
+            return;
+        }
+
+        appointment.status = status;
+        await appointment.save();
+
+        res.status(200).json({
+            message: "Appointment status updated successfully",
+            data: appointment,
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Error updating appointment status",
+            error: error.message,
+        });
+    }
+};
+
+// Gán bác sĩ cho lịch hẹn
+export const assignDoctor = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const { doctorId } = req.body;
+
+        if (!doctorId) {
+            res.status(400).json({ message: "Cần chọn bác sĩ để gán lịch hẹn" });
+            return;
+        }
+
+        const appointment = await Appointment.findById(id);
+        if (!appointment) {
+            res.status(404).json({ message: "Lịch hẹn không tồn tại" });
+            return;
+        }
+
+        if (!appointment.doctorId.includes(doctorId)) {
+            appointment.doctorId.push(doctorId);
+        }
+        appointment.status = AppointmentStatus.ASSIGNED;
+
+        await appointment.save();
+
+        res.status(200).json({ message: "Đã chỉ định bác sĩ", data: appointment });
+    } catch (error) {
+        res.status(500).json({ message: "Lỗi khi gán bác sĩ", error });
+    }
+};
+
+// Thêm chẩn đoán và đơn thuốc
+export const addDiagnosisAndPrescription = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const { diagnosis, prescription } = req.body;
+        const doctorId = req.user?.id;
+
+        if (!diagnosis || !prescription) {
+            res.status(400).json({ message: "Diagnosis and prescription are required" });
+            return;
+        }
+
+        const appointment = await Appointment.findById(id);
+        if (!appointment) {
+            res.status(404).json({ message: "Appointment not found" });
+            return;
+        }
+
+        appointment.diagnosis = diagnosis;
+
+        if (prescription && Array.isArray(prescription)) {
+            for (const presc of prescription) {
+                const newPrescription = new Prescription({
+                    appointmentId: id,
+                    doctorId: doctorId,
+                    ...presc,
+                });
+                await newPrescription.save();
+            }
+
+            if (!appointment.doctorId.includes(doctorId)) {
+                appointment.doctorId.push(doctorId);
+            }
+        }
+
+        appointment.status = AppointmentStatus.ACCEPTED;
+        await appointment.save();
+
+        res.status(200).json({
+            message: "Diagnosis and prescription added successfully",
+            data: appointment,
         });
     } catch (error) {
         next(error);
