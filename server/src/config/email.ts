@@ -91,7 +91,7 @@ export const sendEmail = async (email: string, data: any, type: string) => {
                         <p><strong>Tổng tiền:</strong> ${data.totalAmount} VNĐ</p>
                         <p><strong>Phương thức thanh toán:</strong> ${data.paymentMethod}</p>
                         <p>Trân trọng,</p>
-                        <p><strong>Phòng khám XYZ</strong></p>
+                        <p><strong>Phòng khám Y Khoa AMMA</strong></p>
                     `,
             };
             break;
