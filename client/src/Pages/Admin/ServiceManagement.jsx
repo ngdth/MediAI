@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Modal, Button, Toast } from "react-bootstrap"; // ❌ Bỏ ToastContainer ở đây
+import { Modal, Button, Form  } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 
 const ServiceManagement = () => {
@@ -187,24 +187,34 @@ const ServiceManagement = () => {
                     <Modal.Title>{editingService ? "Chỉnh sửa dịch vụ" : "Thêm dịch vụ"}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <form onSubmit={handleSubmit}>
-                        <label className="text-start" style={{ marginBottom: 0 }}>Tên dịch vụ</label>
-                        <input type="text" name="name" placeholder="Nhập tên dịch vụ" value={formData.name} onChange={handleChange} required className="form-control"/>
-                        <label className="text-start" style={{ marginBottom: 0 }}>Mô tả</label>
-                        <input type="text" name="description" placeholder="Nhập mô tả" value={formData.description} onChange={handleChange} required className="form-control"/>
-                        <label className="text-start" style={{ marginBottom: 0 }}>Khoa</label>
-                        <input type="text" name="department" placeholder="Nhập khoa" value={formData.department} onChange={handleChange} required className="form-control"/>
-                        <label className="text-start" style={{ marginBottom: 0 }}>Giá</label>
-                        <input type="number" name="price" placeholder="Nhập giá" value={formData.price} onChange={handleChange} required min="1" className="form-control"/>
-                        <label className="text-start" style={{ marginBottom: 0 }}>Trạng thái</label>
-                        <select name="status" value={formData.status} onChange={handleChange} required className="form-control mb-3">
-                            <option value="active">Hoạt động</option>
-                            <option value="inactive">Ngừng hoạt động</option>
-                        </select>
+                    <Form onSubmit={handleSubmit}>
+                        <Form.Group>
+                            <Form.Label className="d-block text-start">Tên dịch vụ</Form.Label>
+                            <Form.Control type="text" name="name" placeholder="Nhập tên dịch vụ" value={formData.name} onChange={handleChange} required />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label className="d-block text-start">Mô tả</Form.Label>
+                            <Form.Control type="text" name="description" placeholder="Nhập mô tả" value={formData.description} onChange={handleChange} required />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label className="d-block text-start">Khoa</Form.Label>
+                            <Form.Control type="text" name="department" placeholder="Nhập khoa" value={formData.department} onChange={handleChange} required />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label className="d-block text-start">Giá</Form.Label>
+                            <Form.Control type="number" name="price" placeholder="Nhập giá" value={formData.price} onChange={handleChange} required min="1" />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label className="d-block text-start">Trạng thái</Form.Label>
+                            <Form.Select name="status" value={formData.status} onChange={handleChange} required>
+                                <option value="active">Hoạt động</option>
+                                <option value="inactive">Ngừng hoạt động</option>
+                            </Form.Select>
+                        </Form.Group>
                         <Button type="submit" variant="primary">
                             {editingService ? "Cập nhật" : "Thêm mới"}
                         </Button>
-                    </form>
+                    </Form>
                 </Modal.Body>
             </Modal>
             <ToastContainer position="top-right" autoClose={6000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover/>
