@@ -4,7 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 const ManagePrescriptionsRecord = () => {
     const { appointmentId } = useParams();
-    const [appointment, setAppointment] = useState({});
+    const [appointmentData, setAppointmentData] = useState(null); // Đổi tên để rõ ràng hơn
+    const [loading, setLoading] = useState(true);
     const [prescriptions, setPrescriptions] = useState([
         { medicineName: '', unit: '', quantity: '', usage: '' } // default empty prescription row
     ]);
@@ -13,12 +14,17 @@ const ManagePrescriptionsRecord = () => {
     // Fetch appointment details for prescription
     const fetchAppointmentDetails = async () => {
         try {
+            setLoading(true);
             const response = await axios.get(`http://localhost:8080/appointment/${appointmentId}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
-            setAppointment(response.data.data);
+            console.log("Appointment details:", response.data);
+            setAppointmentData(response.data.data || null);
         } catch (error) {
             console.error("Error fetching appointment details:", error);
+            alert(error.response?.data?.message || "Có lỗi xảy ra khi lấy thông tin lịch hẹn.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -60,8 +66,28 @@ const ManagePrescriptionsRecord = () => {
             navigate('/doctor/manage-prescription-result');
         } catch (error) {
             console.error("Error creating prescription:", error);
+            alert(error.response?.data?.message || "Có lỗi xảy ra khi tạo đơn thuốc.");
         }
     };
+
+    if (loading) {
+        return (
+            <div className="container">
+                <p>Loading...</p>
+            </div>
+        );
+    }
+
+    if (!appointmentData) {
+        return (
+            <div className="container">
+                <p>Không tìm thấy thông tin lịch hẹn.</p>
+            </div>
+        );
+    }
+
+    const appointment = appointmentData.appointment; // Truy cập vào appointment
+    const diagnosis = appointmentData.diagnosisDetails && appointmentData.diagnosisDetails.length > 0 ? appointmentData.diagnosisDetails[0] : null; // Lấy phần tử đầu tiên của diagnosisDetails
 
     return (
         <div className="container">
@@ -69,12 +95,12 @@ const ManagePrescriptionsRecord = () => {
 
             {/* Hiển thị thông tin khám bệnh */}
             <div className="patient-info">
-                <p><strong>Họ và tên:</strong> {appointment.patientName}</p>
-                <p><strong>Ngày khám:</strong> {new Date(appointment.date).toLocaleDateString()}</p>
-                <p><strong>Triệu chứng:</strong> {appointment.symptoms}</p>
-                <p><strong>Chẩn đoán bệnh:</strong> {appointment.diagnosisDetails?.diseaseName}</p>
-                <p><strong>Mức độ nghiêm trọng:</strong> {appointment.diagnosisDetails?.severity}</p>
-                <p><strong>Phương án điều trị:</strong> {appointment.diagnosisDetails?.treatmentPlan}</p>
+                <p><strong>Họ và tên:</strong> {appointment?.patientName || "Không có thông tin"}</p>
+                <p><strong>Ngày khám:</strong> {appointment?.date ? new Date(appointment.date).toLocaleDateString("vi-VN") : "Không có thông tin"}</p>
+                <p><strong>Triệu chứng:</strong> {appointment?.symptoms || "Không có thông tin"}</p>
+                <p><strong>Chẩn đoán bệnh:</strong> {diagnosis?.diseaseName || "Chưa có chẩn đoán"}</p>
+                <p><strong>Mức độ nghiêm trọng:</strong> {diagnosis?.severity || "Chưa có thông tin"}</p>
+                <p><strong>Phương án điều trị:</strong> {diagnosis?.treatmentPlan || "Chưa có phương án"}</p>
             </div>
 
             {/* Đơn thuốc */}

@@ -1,10 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
-import Appointment, { AppointmentStatus, IAppointment } from '../../models/Appointment'
+import Appointment, { AppointmentStatus, IAppointment } from '../../models/Appointment';
+import Prescription from '../../models/Prescription';
+import Vitals from '../../models/Vitals';
+import Tests from '../../models/Tests';
+import DiagnosisDetails from '../../models/DiagnosisDetails';
 import User from '../../models/User';
 import mongoose from 'mongoose';
 import Schedule from '../../models/Schedule';
 import { sendEmail } from "../../config/email";
 
+// Tạo lịch hẹn không có bác sĩ
 export const createAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const userId = req.user?.id;
@@ -14,13 +19,14 @@ export const createAppointment = async (req: Request, res: Response, next: NextF
             res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin" });
             return;
         }
+
         const newAppointment = new Appointment({
             userId,
             patientName,
             date,
             time,
             symptoms,
-            status: AppointmentStatus.PENDING
+            status: AppointmentStatus.PENDING,
         });
 
         await newAppointment.save();
@@ -29,27 +35,28 @@ export const createAppointment = async (req: Request, res: Response, next: NextF
             res.status(404).json({ message: 'User không tồn tại' });
             return;
         }
+
         await sendEmail(user.email, {
             patientName,
             date,
             time,
-            symptoms
+            symptoms,
         }, "appointment");
 
         res.status(201).json({
             message: 'Yêu cầu đặt lịch hẹn đã được gửi, vui lòng kiểm tra email để xác nhận.',
-            appointment: newAppointment
+            appointment: newAppointment,
         });
-
     } catch (error) {
         next(error);
     }
 };
 
+// Đặt lịch hẹn với bác sĩ
 export const bookAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const userId = req.user?.id;
-        const { patientName, age, gender, address, email, phone, date, time, symptoms, medicalHistory, familyMedicalHistory, doctorId } = req.body; 
+        const { patientName, age, gender, address, email, phone, date, time, symptoms, medicalHistory, familyMedicalHistory, doctorId } = req.body;
 
         if (!patientName || !age || !gender || !address || !email || !phone || !date || !time || !symptoms || !doctorId) {
             res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin" });
@@ -75,10 +82,10 @@ export const bookAppointment = async (req: Request, res: Response, next: NextFun
             symptoms,
             medicalHistory: {
                 personal: medicalHistory,
-                family: familyMedicalHistory
+                family: familyMedicalHistory,
             },
             status: AppointmentStatus.ASSIGNED,
-            doctorId, 
+            doctorId: [doctorId],
         });
 
         await newAppointment.save();
@@ -94,128 +101,119 @@ export const bookAppointment = async (req: Request, res: Response, next: NextFun
             date,
             time,
             symptoms,
-            doctorName: doctor.username
+            doctorName: doctor.username,
         }, "appointment");
 
         res.status(201).json({
             message: "Yêu cầu đặt lịch hẹn đã được gửi, vui lòng kiểm tra email để xác nhận.",
-            appointment: newAppointment
+            appointment: newAppointment,
         });
-
     } catch (error) {
         next(error);
     }
 };
 
+// Lấy danh sách lịch hẹn đang chờ xử lý
 export const getPendingAppointments = async (req: Request, res: Response): Promise<void> => {
     try {
-        const appointments = await Appointment.find({ status: "Pending" });
+        const appointments = await Appointment.find({ status: "Pending" })
+            .populate('userId', 'username email')
+            .populate('doctorId', 'username email');
+
         res.status(200).json({ message: "Danh sách lịch hẹn cần xử lý", data: appointments });
     } catch (error) {
         res.status(500).json({ message: "Lỗi khi lấy danh sách lịch hẹn", error });
     }
 };
 
+// Cập nhật trường trong lịch hẹn
 export const updateAppointmentField = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { id } = req.params;
-      const { field, subField, value } = req.body;
-  
-      if (!field || value === undefined) {
-        res.status(400).json({ message: "Field and value are required" });
-        return;
-      }
-  
-      const appointment = await Appointment.findById(id);
-      if (!appointment) {
-        res.status(404).json({ message: "Appointment not found" });
-        return;
-      }
-  
-      const typedAppointment = appointment as mongoose.Document & IAppointment;
-  
-      if (!subField) {
-        if (field in typedAppointment) {
-          (typedAppointment as any)[field] = value; // Ép kiểu tạm thời để tránh lỗi
-        } else {
-          res.status(400).json({ message: `Field '${field}' is not valid` });
-          return;
-        }
-      } else {
-        if (!(field in typedAppointment)) {
-          typedAppointment[field] = {} as any; // Khởi tạo nếu chưa có
-        }
-        if (typedAppointment[field] && typeof typedAppointment[field] === 'object') {
-          (typedAppointment[field] as any)[subField] = value; // Ép kiểu để cập nhật
-        } else {
-          res.status(400).json({ message: `Subfield '${subField}' in '${field}' is not valid` });
-          return;
-        }
-      }
-  
-      await typedAppointment.save();
-  
-      res.status(200).json({
-        message: "Field updated successfully",
-        data: typedAppointment,
-      });
-    } catch (error) {
-      console.error("Error updating appointment field:", error);
-      next(error);
-    }
-  };
-
-export const updateAppointmentStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
         const { id } = req.params;
-        const { status } = req.body;
+        const { field, subField, value } = req.body;
 
-        if (![AppointmentStatus.ACCEPTED, AppointmentStatus.REJECTED, AppointmentStatus.ASSIGNED].includes(status)) {
-            res.status(400).json({ message: "Invalid status" });
+        if (!field || value === undefined) {
+            res.status(400).json({ message: "Field and value are required" });
             return;
         }
 
-        const appointment = await Appointment.findById(id).populate("userId", "email username").populate("doctorId", "username");
+        const appointment = await Appointment.findById(id);
         if (!appointment) {
             res.status(404).json({ message: "Appointment not found" });
             return;
         }
 
-        if (status === AppointmentStatus.REJECTED) {
-            await Appointment.findByIdAndDelete(id);
-            res.status(200).json({ message: "Appointment has been removed" });
+        const typedAppointment = appointment as mongoose.Document & IAppointment;
+
+        if (!subField) {
+            if (field in typedAppointment) {
+                (typedAppointment as any)[field] = value;
+            } else {
+                res.status(400).json({ message: `Field '${field}' is not valid` });
+                return;
+            }
+        } else {
+            if (!(field in typedAppointment)) {
+                typedAppointment[field] = {} as any;
+            }
+            if (typedAppointment[field] && typeof typedAppointment[field] === 'object') {
+                (typedAppointment[field] as any)[subField] = value;
+            } else {
+                res.status(400).json({ message: `Subfield '${subField}' in '${field}' is not valid` });
+                return;
+            }
+        }
+
+        await typedAppointment.save();
+
+        res.status(200).json({
+            message: "Field updated successfully",
+            data: typedAppointment,
+        });
+    } catch (error) {
+        console.error("Error updating appointment field:", error);
+        next(error);
+    }
+};
+
+// Cập nhật trạng thái lịch hẹn
+export const updateAppointmentStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    try {
+        const appointment = await Appointment.findById(id);
+        if (!appointment) {
+            res.status(404).json({ message: "Appointment not found" });
+            return;
+        }
+
+        const validStatuses = Object.values(AppointmentStatus);
+        if (!validStatuses.includes(status)) {
+            res.status(400).json({
+                message: "Invalid status",
+                receivedStatus: status,
+                validStatuses: validStatuses,
+            });
             return;
         }
 
         appointment.status = status;
         await appointment.save();
 
-        if (status === AppointmentStatus.ACCEPTED) {
-            if (!appointment.doctorId) {
-                res.status(400).json({ message: "Doctor must be assigned before confirming appointment." });
-                return;
-            }
-
-            const emailData = {
-                patientName: appointment.patientName,
-                doctorName: (appointment.doctorId as any).username,
-                date: appointment.date,
-                time: appointment.time,
-            };
-
-            await sendEmail((appointment.userId as any).email, emailData, "appointment_assigned");
-        }
-
         res.status(200).json({
-            message: "Appointment updated successfully",
+            message: "Appointment status updated successfully",
             data: appointment,
         });
     } catch (error) {
-        console.error("Error updating appointment status:", error);
-        next(error);
+        res.status(500).json({
+            message: "Error updating appointment status",
+            error: error.message,
+        });
     }
 };
 
+// Gán bác sĩ cho lịch hẹn
 export const assignDoctor = async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
@@ -226,12 +224,18 @@ export const assignDoctor = async (req: Request, res: Response): Promise<void> =
             return;
         }
 
-        const appointment = await Appointment.findByIdAndUpdate(id, { doctorId, status: "Assigned" }, { new: true });
-
+        const appointment = await Appointment.findById(id);
         if (!appointment) {
             res.status(404).json({ message: "Lịch hẹn không tồn tại" });
             return;
         }
+
+        if (!appointment.doctorId.includes(doctorId)) {
+            appointment.doctorId.push(doctorId);
+        }
+        appointment.status = AppointmentStatus.ASSIGNED;
+
+        await appointment.save();
 
         res.status(200).json({ message: "Đã chỉ định bác sĩ", data: appointment });
     } catch (error) {
@@ -239,10 +243,13 @@ export const assignDoctor = async (req: Request, res: Response): Promise<void> =
     }
 };
 
+// Thêm chẩn đoán và đơn thuốc
 export const addDiagnosisAndPrescription = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { id } = req.params; 
+        const { id } = req.params;
         const { diagnosis, prescription } = req.body;
+        const doctorId = req.user?.id;
+
         if (!diagnosis || !prescription) {
             res.status(400).json({ message: "Diagnosis and prescription are required" });
             return;
@@ -255,9 +262,23 @@ export const addDiagnosisAndPrescription = async (req: Request, res: Response, n
         }
 
         appointment.diagnosis = diagnosis;
-        appointment.prescription = prescription;
-        appointment.status = AppointmentStatus.ACCEPTED; 
 
+        if (prescription && Array.isArray(prescription)) {
+            for (const presc of prescription) {
+                const newPrescription = new Prescription({
+                    appointmentId: id,
+                    doctorId: doctorId,
+                    ...presc,
+                });
+                await newPrescription.save();
+            }
+
+            if (!appointment.doctorId.includes(doctorId)) {
+                appointment.doctorId.push(doctorId);
+            }
+        }
+
+        appointment.status = AppointmentStatus.ACCEPTED;
         await appointment.save();
 
         res.status(200).json({
@@ -269,37 +290,67 @@ export const addDiagnosisAndPrescription = async (req: Request, res: Response, n
     }
 };
 
+// Tạo kết quả (Vitals, Tests, DiagnosisDetails)
 export const createResult = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } = req.params;
     const { vitals, tests, diagnosisDetails } = req.body;
+    const doctorId = req.user?.id;
 
     try {
         const appointment = await Appointment.findById(id);
-
         if (!appointment) {
             res.status(404).json({ message: "Appointment not found" });
             return;
         }
 
-        appointment.vitals = vitals;
-        appointment.tests = tests;
-        appointment.diagnosisDetails = diagnosisDetails;
-        appointment.status = AppointmentStatus.WAITINGPRESCRIPTION;
+        if (vitals) {
+            const newVitals = new Vitals({
+                appointmentId: id,
+                userId: appointment.userId,
+                ...vitals,
+            });
+            await newVitals.save();
+        }
 
+        if (tests) {
+            const newTests = new Tests({
+                appointmentId: id,
+                userId: appointment.userId,
+                ...tests,
+            });
+            await newTests.save();
+        }
+
+        if (diagnosisDetails) {
+            const newDiagnosisDetails = new DiagnosisDetails({
+                appointmentId: id,
+                doctorId: doctorId,
+                ...diagnosisDetails,
+            });
+            await newDiagnosisDetails.save();
+
+            if (!appointment.doctorId.includes(doctorId)) {
+                appointment.doctorId.push(doctorId);
+            }
+        }
+
+        appointment.status = AppointmentStatus.WAITINGPRESCRIPTION;
         await appointment.save();
 
         res.status(200).json({
-            message: 'Result and prescription created successfully',
-            data: appointment
+            message: "Result created successfully",
+            data: appointment,
         });
     } catch (error) {
         next(error);
     }
 };
 
+// Tạo đơn thuốc
 export const createPrescription = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } = req.params;
     const { prescription } = req.body;
+    const doctorId = req.user?.id;
 
     try {
         const appointment = await Appointment.findById(id);
@@ -308,20 +359,34 @@ export const createPrescription = async (req: Request, res: Response, next: Next
             return;
         }
 
-        appointment.prescription = prescription;
-        appointment.status = AppointmentStatus.PRESCRIPTION_CREATED;
+        if (prescription && Array.isArray(prescription)) {
+            for (const presc of prescription) {
+                const newPrescription = new Prescription({
+                    appointmentId: id,
+                    doctorId: doctorId,
+                    ...presc,
+                });
+                await newPrescription.save();
+            }
 
+            if (!appointment.doctorId.includes(doctorId)) {
+                appointment.doctorId.push(doctorId);
+            }
+        }
+
+        appointment.status = AppointmentStatus.PRESCRIPTION_CREATED;
         await appointment.save();
 
         res.status(200).json({
             message: 'Prescription created successfully',
-            data: appointment
+            data: appointment,
         });
     } catch (error) {
         next(error);
     }
 };
 
+// Lấy danh sách lịch hẹn đang chờ đơn thuốc
 export const getWaitingPrescriptionAppointments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const appointments = await Appointment.find({ status: "WaitingPrescription" })
@@ -333,9 +398,24 @@ export const getWaitingPrescriptionAppointments = async (req: Request, res: Resp
             return;
         }
 
+        const appointmentsWithDetails = await Promise.all(appointments.map(async (appointment) => {
+            const prescriptions = await Prescription.find({ appointmentId: appointment._id }).populate('doctorId', 'username');
+            const vitals = await Vitals.find({ appointmentId: appointment._id });
+            const tests = await Tests.find({ appointmentId: appointment._id });
+            const diagnosisDetails = await DiagnosisDetails.find({ appointmentId: appointment._id }).populate('doctorId', 'username');
+
+            return {
+                appointment,
+                prescriptions,
+                vitals,
+                tests,
+                diagnosisDetails,
+            };
+        }));
+
         res.status(200).json({
             message: "Appointments retrieved successfully",
-            data: appointments,
+            data: appointmentsWithDetails,
         });
     } catch (error) {
         console.error("Error fetching waiting prescription appointments:", error);
@@ -343,31 +423,46 @@ export const getWaitingPrescriptionAppointments = async (req: Request, res: Resp
     }
 };
 
+// Lấy danh sách lịch hẹn đã tạo đơn thuốc
 export const getPrescriptionCreatedAppointments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const doctorId = req.user?.id;  // Lấy doctorId từ token (req.user đã được xác thực)
+        const doctorId = req.user?.id;
 
         if (!doctorId) {
             res.status(400).json({ message: "Doctor ID not found in token" });
             return;
         }
 
-        // Tìm tất cả các appointment có status "Prescription_created" và doctorId là bác sĩ hiện tại
         const appointments = await Appointment.find({
             status: AppointmentStatus.PRESCRIPTION_CREATED,
-            doctorId: doctorId  // Sử dụng doctorId từ token
+            doctorId: doctorId,
         })
-        .populate('userId', 'username email')  // Lấy thông tin user (bệnh nhân)
-        .populate('doctorId', 'username email');  // Lấy thông tin bác sĩ
+            .populate('userId', 'username email')
+            .populate('doctorId', 'username email');
 
         if (appointments.length === 0) {
             res.status(404).json({ message: "No appointments found with status 'Prescription_created'" });
             return;
         }
 
+        const appointmentsWithDetails = await Promise.all(appointments.map(async (appointment) => {
+            const prescriptions = await Prescription.find({ appointmentId: appointment._id }).populate('doctorId', 'username');
+            const vitals = await Vitals.find({ appointmentId: appointment._id });
+            const tests = await Tests.find({ appointmentId: appointment._id });
+            const diagnosisDetails = await DiagnosisDetails.find({ appointmentId: appointment._id }).populate('doctorId', 'username');
+
+            return {
+                appointment,
+                prescriptions,
+                vitals,
+                tests,
+                diagnosisDetails,
+            };
+        }));
+
         res.status(200).json({
             message: "Appointments retrieved successfully",
-            data: appointments,
+            data: appointmentsWithDetails,
         });
     } catch (error) {
         console.error("Error fetching prescription created appointments:", error);
@@ -375,6 +470,7 @@ export const getPrescriptionCreatedAppointments = async (req: Request, res: Resp
     }
 };
 
+// Lấy thông tin chi tiết lịch hẹn theo ID
 export const getAppointmentById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id } = req.params;
@@ -388,17 +484,27 @@ export const getAppointmentById = async (req: Request, res: Response, next: Next
             return;
         }
 
+        const prescriptions = await Prescription.find({ appointmentId: id }).populate('doctorId', 'username');
+        const vitals = await Vitals.find({ appointmentId: id });
+        const tests = await Tests.find({ appointmentId: id });
+        const diagnosisDetails = await DiagnosisDetails.find({ appointmentId: id }).populate('doctorId', 'username');
+
         res.status(200).json({
             message: "Appointment retrieved successfully",
-            data: appointment,
+            data: {
+                appointment,
+                prescriptions,
+                vitals,
+                tests,
+                diagnosisDetails,
+            },
         });
     } catch (error) {
         next(error);
     }
 };
 
-
-// View all appointments
+// Xem tất cả lịch hẹn
 export const viewAllAppointments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { status, doctorId } = req.query;
@@ -415,16 +521,31 @@ export const viewAllAppointments = async (req: Request, res: Response, next: Nex
             .populate('userId', 'username email')
             .populate('doctorId', 'username email');
 
+        const appointmentsWithDetails = await Promise.all(appointments.map(async (appointment) => {
+            const prescriptions = await Prescription.find({ appointmentId: appointment._id }).populate('doctorId', 'username');
+            const vitals = await Vitals.find({ appointmentId: appointment._id });
+            const tests = await Tests.find({ appointmentId: appointment._id });
+            const diagnosisDetails = await DiagnosisDetails.find({ appointmentId: appointment._id }).populate('doctorId', 'username');
+
+            return {
+                appointment,
+                prescriptions,
+                vitals,
+                tests,
+                diagnosisDetails,
+            };
+        }));
+
         res.status(200).json({
             message: 'Appointments retrieved successfully',
-            data: appointments,
+            data: appointmentsWithDetails,
         });
     } catch (error) {
         next(error);
     }
 };
 
-// get All appointments of all user
+// Lấy tất cả lịch hẹn của người dùng
 export const getUserAppointments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const userId = req.user?.id;
@@ -438,10 +559,8 @@ export const getUserAppointments = async (req: Request, res: Response, next: Nex
         let filter = {};
 
         if (userRole === 'nurse') {
-
             filter = {};
         } else {
-            // ✅ Nếu là user, chỉ lấy lịch hẹn của chính mình
             filter = { userId };
         }
 
@@ -455,15 +574,31 @@ export const getUserAppointments = async (req: Request, res: Response, next: Nex
             return;
         }
 
+        const appointmentsWithDetails = await Promise.all(appointments.map(async (appointment) => {
+            const prescriptions = await Prescription.find({ appointmentId: appointment._id }).populate('doctorId', 'username');
+            const vitals = await Vitals.find({ appointmentId: appointment._id });
+            const tests = await Tests.find({ appointmentId: appointment._id });
+            const diagnosisDetails = await DiagnosisDetails.find({ appointmentId: appointment._id }).populate('doctorId', 'username');
+
+            return {
+                appointment,
+                prescriptions,
+                vitals,
+                tests,
+                diagnosisDetails,
+            };
+        }));
+
         res.status(200).json({
             message: 'Appointments retrieved successfully',
-            data: appointments,
+            data: appointmentsWithDetails,
         });
     } catch (error) {
         next(error);
     }
 };
 
+// Lấy chi tiết lịch hẹn
 export const getDetailAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const userId = req.user?.id;
@@ -480,7 +615,6 @@ export const getDetailAppointment = async (req: Request, res: Response, next: Ne
             return;
         }
 
-        // Get appointment by id
         const appointment = await Appointment.findById(id)
             .populate('doctorId', 'username email')
             .populate('userId', 'username email');
@@ -490,20 +624,32 @@ export const getDetailAppointment = async (req: Request, res: Response, next: Ne
             return;
         }
 
-        // If user is not nurse and not owner of appointment
         if (userRole !== 'nurse' && appointment.userId.toString() !== userId) {
             res.status(403).json({ message: 'Permission denied to get this appointment' });
             return;
         }
 
+        const prescriptions = await Prescription.find({ appointmentId: id }).populate('doctorId', 'username');
+        const vitals = await Vitals.find({ appointmentId: id });
+        const tests = await Tests.find({ appointmentId: id });
+        const diagnosisDetails = await DiagnosisDetails.find({ appointmentId: id }).populate('doctorId', 'username');
+
         res.status(200).json({
             message: 'Appointment retrieved successfully',
-            data: appointment,
+            data: {
+                appointment,
+                prescriptions,
+                vitals,
+                tests,
+                diagnosisDetails,
+            },
         });
     } catch (error) {
         next(error);
     }
 };
+
+// Hủy lịch hẹn
 export const cancelAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const userId = req.user?.id;
@@ -515,13 +661,11 @@ export const cancelAppointment = async (req: Request, res: Response, next: NextF
             return;
         }
 
-
         const appointment = await Appointment.findById(id);
         if (!appointment) {
             res.status(404).json({ message: 'Appointment not found' });
             return;
         }
-
 
         if (userRole !== 'nurse' && appointment.userId.toString() !== userId) {
             res.status(403).json({ message: 'You do not have permission to cancel this appointment' });
@@ -533,14 +677,12 @@ export const cancelAppointment = async (req: Request, res: Response, next: NextF
             return;
         }
 
+        await Prescription.deleteMany({ appointmentId: id });
+        await Vitals.deleteMany({ appointmentId: id });
+        await Tests.deleteMany({ appointmentId: id });
+        await DiagnosisDetails.deleteMany({ appointmentId: id });
 
         await Appointment.findByIdAndDelete(id);
-
-
-        // await Schedule.findOneAndUpdate(
-        // { doctorId: appointment.doctorId, "availableSlots.date": appointment.date, "availableSlots.time": appointment.time },
-        //     { $set: { "availableSlots.$.isBooked": false } }
-        // );
 
         res.status(200).json({
             message: 'Appointment cancelled successfully',
@@ -550,6 +692,7 @@ export const cancelAppointment = async (req: Request, res: Response, next: NextF
     }
 };
 
+// Xóa bác sĩ khỏi lịch hẹn
 export const removeDoctorFromAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id } = req.params;
@@ -565,19 +708,14 @@ export const removeDoctorFromAppointment = async (req: Request, res: Response, n
             return;
         }
 
-        // Xóa doctorId và cập nhật status về Pending
-        await Appointment.updateOne(
-            { _id: id },
-            {
-                $unset: { doctorId: "" }, // Xóa trường doctorId
-                $set: { status: AppointmentStatus.PENDING } // Cập nhật trạng thái
-            }
-        );
+        // Xóa tất cả doctorId và cập nhật status về Pending
+        appointment.doctorId = [];
+        appointment.status = AppointmentStatus.PENDING;
 
         await appointment.save();
 
         res.status(200).json({
-            message: 'Doctor removed from appointment successfully',
+            message: 'All doctors removed from appointment successfully',
             data: appointment,
         });
     } catch (error) {
@@ -585,6 +723,7 @@ export const removeDoctorFromAppointment = async (req: Request, res: Response, n
     }
 };
 
+// Gán lịch hẹn cho nhà thuốc
 export const assignToPharmacy = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id } = req.params;
@@ -601,7 +740,6 @@ export const assignToPharmacy = async (req: Request, res: Response, next: NextFu
             return;
         }
 
-        // Gán pharmacyId và cập nhật trạng thái thành DONE
         appointment.pharmacyId = pharmacyId;
         appointment.status = AppointmentStatus.DONE;
 

@@ -4,14 +4,12 @@ import { useNavigate } from "react-router-dom";
 
 const NurseAppointmentList = () => {
   const [appointments, setAppointments] = useState([]);
-  const [doctors, setDoctors] = useState({});
   const [loading, setLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchAppointments();
-    fetchDoctors();
   }, []);
 
   const fetchAppointments = async () => {
@@ -19,27 +17,12 @@ const NurseAppointmentList = () => {
       const response = await axios.get("http://localhost:8080/appointment/", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      console.log("Appointments data:", response.data.data);
+      console.log("Appointments data:", response.data);
       setAppointments(response.data.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching appointments:", error);
-    }
-  };
-
-  const fetchDoctors = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/user/doctors", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      const doctorMap = {};
-      response.data.forEach((doctor) => {
-        doctorMap[doctor._id] = doctor.username;
-      });
-      console.log("Doctors data:", doctorMap);
-      setDoctors(doctorMap);
-    } catch (error) {
-      console.error("Error fetching doctors:", error);
+      setLoading(false);
     }
   };
 
@@ -56,23 +39,26 @@ const NurseAppointmentList = () => {
     if (!sortConfig.key) return sortableAppointments;
 
     sortableAppointments.sort((a, b) => {
+      const appointmentA = a.appointment;
+      const appointmentB = b.appointment;
+
       if (sortConfig.key === "patientName") {
         return sortConfig.direction === "asc"
-          ? a.patientName.localeCompare(b.patientName)
-          : b.patientName.localeCompare(a.patientName);
+          ? appointmentA.patientName.localeCompare(appointmentB.patientName)
+          : appointmentB.patientName.localeCompare(appointmentA.patientName);
       }
 
       if (sortConfig.key === "status") {
         return sortConfig.direction === "asc"
-          ? a.status.localeCompare(b.status)
-          : b.status.localeCompare(a.status);
+          ? appointmentA.status.localeCompare(appointmentB.status)
+          : appointmentB.status.localeCompare(appointmentA.status);
       }
 
       if (sortConfig.key === "time") {
-        const aDateOnly = new Date(a.date).toISOString().split("T")[0];
-        const bDateOnly = new Date(b.date).toISOString().split("T")[0];
-        const aDateTime = new Date(`${aDateOnly}T${a.time}:00`);
-        const bDateTime = new Date(`${bDateOnly}T${b.time}:00`);
+        const aDateOnly = new Date(appointmentA.date).toISOString().split("T")[0];
+        const bDateOnly = new Date(appointmentB.date).toISOString().split("T")[0];
+        const aDateTime = new Date(`${aDateOnly}T${appointmentA.time}:00`);
+        const bDateTime = new Date(`${bDateOnly}T${appointmentB.time}:00`);
 
         if (isNaN(aDateTime.getTime()) || isNaN(bDateTime.getTime())) {
           console.error("Invalid date format:", aDateTime, bDateTime);
@@ -85,19 +71,21 @@ const NurseAppointmentList = () => {
       }
 
       if (sortConfig.key === "doctor") {
-        const aDoctorId = typeof a.doctorId === "object" ? a.doctorId?._id : a.doctorId;
-        const bDoctorId = typeof b.doctorId === "object" ? b.doctorId?._id : b.doctorId;
-        const aDoctorName = doctors[aDoctorId] || "";
-        const bDoctorName = doctors[bDoctorId] || "";
+        const aDoctorNames = appointmentA.doctorId
+          .map((doctor) => doctor.username)
+          .join(", ");
+        const bDoctorNames = appointmentB.doctorId
+          .map((doctor) => doctor.username)
+          .join(", ");
         return sortConfig.direction === "asc"
-          ? aDoctorName.localeCompare(bDoctorName)
-          : bDoctorName.localeCompare(aDoctorName);
+          ? aDoctorNames.localeCompare(bDoctorNames)
+          : bDoctorNames.localeCompare(aDoctorNames);
       }
 
       return 0;
     });
     return sortableAppointments;
-  }, [appointments, sortConfig, doctors]);
+  }, [appointments, sortConfig]);
 
   const handleViewDetail = (appointmentId) => {
     navigate(`/nurse/general-health/${appointmentId}`);
@@ -157,33 +145,34 @@ const NurseAppointmentList = () => {
           </thead>
           <tbody>
             {sortedAppointments.length > 0 ? (
-              sortedAppointments.map((appointment) => (
-                <tr key={appointment._id}>
-                  <td>{appointment.patientName}</td>
-                  <td>
-                    {new Date(appointment.date).toLocaleDateString("vi-VN")}{" "}
-                    {appointment.time}
-                  </td>
-                  <td>{appointment.status}</td>
-                  <td>
-                    {doctors[
-                      typeof appointment.doctorId === "object"
-                        ? appointment.doctorId?._id
-                        : appointment.doctorId
-                    ] || "N/A"}
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => handleViewDetail(appointment._id)}
-                    >
-                      View Detail
-                    </button>
-                  </td>
-                </tr>
-              ))
+              sortedAppointments.map((item) => {
+                const appointment = item.appointment;
+                const doctorNames = appointment.doctorId
+                  .map((doctor) => doctor.username)
+                  .join(", ");
+
+                return (
+                  <tr key={appointment._id}>
+                    <td>{appointment.patientName}</td>
+                    <td>
+                      {new Date(appointment.date).toLocaleDateString("vi-VN")}{" "}
+                      {appointment.time}
+                    </td>
+                    <td>{appointment.status}</td>
+                    <td>{doctorNames || "No doctor assigned"}</td>
+                    <td>
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => handleViewDetail(appointment._id)}
+                      >
+                        View Detail
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
-              <tr>
+              <tr key="no-appointments">
                 <td colSpan="5">No appointments available.</td>
               </tr>
             )}

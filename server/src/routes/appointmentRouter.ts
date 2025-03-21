@@ -30,8 +30,8 @@ router.put("/:id/status", authenticateToken, authorizeRole(["doctor", "nurse"]),
 router.put("/:id/assign", authenticateToken, authorizeRole(["doctor", "nurse"]), assignDoctor);
 router.put("/:id/diagnosis", authenticateToken, authorizeRole(["doctor", "nurse"]), addDiagnosisAndPrescription);
 router.get("/:id", getAppointmentById);
-router.post("/:id/createresult", createResult);
-router.post("/:id/createprescription", createPrescription);
+router.post("/:id/createresult", authenticateToken, createResult);
+router.post("/:id/createprescription", authenticateToken, createPrescription);
 router.put("/:id/remove-doctor", authenticateToken, authorizeRole(["doctor", "nurse"]), removeDoctorFromAppointment);
 router.put("/:id/assign-pharmacy", authenticateToken, authorizeRole(["doctor", "nurse"]), assignToPharmacy);
 router.put("/:id/update-field", authenticateToken, authorizeRole(["doctor", "nurse"]), updateAppointmentField);
