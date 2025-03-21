@@ -6,14 +6,18 @@ import { sendEmail } from '../../config/email';
 import mongoose from 'mongoose';
 
 export const getDoneAppointments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    console.log("Starting getDoneAppointments function");
     try {
         const pharmacyId = req.user?.id; // Lấy pharmacyId từ token (req.user đã được xác thực)
+        console.log(`Extracted pharmacyId from token: ${pharmacyId}`);
 
         if (!pharmacyId) {
+            console.log("Error: Pharmacy ID not found in token");
             res.status(400).json({ message: "Pharmacy ID not found in token" });
             return;
         }
 
+        console.log(`Searching for appointments with status DONE and pharmacyId: ${pharmacyId}`);
         // Tìm tất cả các appointment có status "Done" và pharmacyId trùng với tài khoản nhà thuốc đang đăng nhập
         const appointments = await Appointment.find({
             status: AppointmentStatus.DONE,
@@ -23,11 +27,15 @@ export const getDoneAppointments = async (req: Request, res: Response, next: Nex
             .populate('doctorId', 'username email')  // Lấy thông tin bác sĩ
             .populate('pharmacyId', 'name email');  // Lấy thông tin nhà thuốc
 
+        console.log(`Found ${appointments.length} done appointments`);
+
         if (appointments.length === 0) {
+            console.log("No done appointments found for this pharmacy");
             res.status(404).json({ message: "No done appointments found for this pharmacy" });
             return;
         }
 
+        console.log("Successfully retrieved done appointments");
         res.status(200).json({
             message: "Done appointments retrieved successfully",
             data: appointments,
@@ -36,6 +44,7 @@ export const getDoneAppointments = async (req: Request, res: Response, next: Nex
         console.error("Error fetching done appointments:", error);
         res.status(500).json({ message: "Error fetching done appointments", error });
     }
+    console.log("Completed getDoneAppointments function");
 };
 
 export const createBill = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -89,7 +98,7 @@ export const createBill = async (req: Request, res: Response, next: NextFunction
         }
 
         // Tính tổng tiền
-        const totalAmount = calculateTotalAmount( testFees, medicineFees, additionalFees);
+        const totalAmount = calculateTotalAmount(testFees, medicineFees, additionalFees);
 
 
         const doctor = appointment.doctorId as { username?: string; specialization?: string };
@@ -156,44 +165,100 @@ export const getBills = async (req: Request, res: Response, next: NextFunction):
     }
 }
 // get bill by id
-export const getBillId = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getBillsByUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        // Lấy thông tin user từ token (đã được xác thực qua middleware)
+        const userId = req.user._id || req.user.id;
+        const userRole = req.user.role;
+        console.log(`✅ Extracted userId: ${userId}, userRole: ${userRole}`);
+        
+        if (!userId) {
+            res.status(401).json({ message: "Unauthorized: User ID not found in token" });
+            return;
+        }
+
+        let bills;
+
+        // Phân quyền truy cập dựa trên vai trò người dùng
+        if (userRole === 'user') {
+            // Bệnh nhân chỉ xem được hóa đơn của mình
+            bills = await Bill.find({ userId: userId });
+        } else if (userRole === 'doctor') {
+            // Bác sĩ xem được hóa đơn của các cuộc hẹn mà họ phụ trách
+            const appointments = await Appointment.find({ doctorId: userId });
+            console.log(`✅ Found ${appointments.length} appointments for doctor with ID: ${userId}`);
+            if (!appointments.length) {
+                res.status(404).json({ message: "No appointments found for this doctor" });
+                return;
+            }
+            const appointmentIds = appointments.map(app => app._id);
+            console.log(`✅ Extracted appointment IDs: ${appointmentIds}`);
+            bills = await Bill.find({ appointmentId: { $in: appointmentIds } });
+        } else if (userRole === 'admin' || userRole === 'pharmacy') {
+            // Admin và nhà thuốc có thể xem tất cả hóa đơn
+            bills = await Bill.find();
+        } else {
+            res.status(403).json({ message: "Forbidden: Insufficient permissions" });
+            return;
+        }
+
+        if (!bills || bills.length === 0) {
+            res.status(404).json({ message: "No bills found" });
+            return;
+        }
+
+        console.log(`Found ${bills.length} bills for user with role ${userRole}`);
+        res.status(200).json({ 
+            message: "Bills retrieved successfully",
+            count: bills.length,
+            bills 
+        });
+    } catch (error) {
+        console.error('Error fetching bills:', error);
+        res.status(500).json({ message: "Internal server error", error: error });
+    }
+};
+
+// Lấy chi tiết một hóa đơn cụ thể dựa trên ID và token
+export const getBillDetail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { billId } = req.params;
-        // Kiểm tra billId có phải ObjectId không
-        const isObjectId = mongoose.Types.ObjectId.isValid(billId);
+        const userId = req.user._id || req.user.id;
+        const userRole = req.user.role.toLowerCase(); // Chuyển thành chữ thường để so sánh nhất quán
 
-        // Tìm theo _id hoặc billId
-        const bill = await Bill.findOne({
-            $or: [
-                { _id: isObjectId ? billId : undefined },
-                { billId: billId }
-            ]
-        });
+        // Tìm hóa đơn theo ID
+        const bill = await Bill.findById(billId);
+        
         if (!bill) {
             console.warn('Bill not found:', billId);
             res.status(404).json({ message: 'Bill not found' });
             return;
         }
-        if (req.user.role === 'Patient' && bill.patientEmail !== req.user.email) {
-            console.warn('Access denied for patient:', req.user.email);
-            res.status(403).json({ message: 'Access denied' });
+
+        // Kiểm tra quyền truy cập
+        if (userRole === 'user' && bill.userId.toString() !== userId.toString()) {
+            console.warn('Access denied for patient:', userId);
+            res.status(403).json({ message: 'Access denied: You can only view your own bills' });
             return;
         }
-        if (req.user.role === 'Doctor') {
+
+        if (userRole === 'doctor') {
             const appointment = await Appointment.findById(bill.appointmentId);
-            if (!appointment || !appointment.doctorId || appointment.doctorId.toString() !== req.user._id.toString()) {
-                console.warn('Access denied for doctor:', req.user._id);
-                res.status(403).json({ message: 'Access denied' });
+            if (!appointment || appointment.doctorId.toString() !== userId.toString()) {
+                console.warn('Access denied for doctor:', userId);
+                res.status(403).json({ message: 'Access denied: This bill is not associated with your appointments' });
                 return;
             }
         }
+
         console.log('Bill found:', bill);
         res.status(200).json({ bill });
     } catch (error) {
         console.error('Error fetching bill details:', error);
-        next(error);
+        res.status(500).json({ message: 'Internal server error', error: error });
     }
-}
+};
+
 // update bill ( payment status)
 export const updateBill = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {

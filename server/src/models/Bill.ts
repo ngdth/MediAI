@@ -11,11 +11,11 @@ interface IBill extends Document {
     patientEmail: string;
     doctorName: string;
     doctorSpecialization: string;
-    testFees: { 
-        name: string; 
+    testFees: {
+        name: string;
         department: string;
-        price: number; 
-      }[];
+        price: number;
+    }[];
     medicineFees: {
         name: string;
         unit: string;
@@ -23,7 +23,7 @@ interface IBill extends Document {
         unitPrice: number;
         totalPrice: number;
         usage: string;
-      }[];
+    }[];
     additionalFees: number;
     totalAmount: number;
     transactionId?: string;
@@ -31,7 +31,7 @@ interface IBill extends Document {
 
 const billSchema = new Schema<IBill>(
     {
-        userId: { type: String, ref: 'User', required: true },
+        userId: { type: String, ref: 'User' },
         appointmentId: { type: String, ref: 'Appointment', required: true },
         dateIssued: { type: Date, default: Date.now },
         paymentStatus: { type: String, enum: ['Paid', 'Unpaid', 'Paying'], default: 'Unpaid' },
@@ -39,13 +39,13 @@ const billSchema = new Schema<IBill>(
         patientName: { type: String, required: true },
         patientPhone: { type: String },
         patientEmail: { type: String },
-        doctorName: { type: String, required: true },
+        doctorName: { type: String },
         doctorSpecialization: { type: String },
         testFees: [{
             name: String,
             department: String,
             price: Number
-          }],
+        }],
         medicineFees: [{
             name: String,
             unit: String,
@@ -53,7 +53,7 @@ const billSchema = new Schema<IBill>(
             unitPrice: Number,
             totalPrice: Number,
             usage: String
-          }],
+        }],
         additionalFees: { type: Number, default: 0 },
         totalAmount: { type: Number, required: true },
         transactionId: { type: String },
