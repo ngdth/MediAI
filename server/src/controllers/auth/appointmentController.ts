@@ -390,10 +390,7 @@ export const updateNurseFields = async (req: Request, res: Response, next: NextF
         if (vitals) {
             const existingVitals = await Vitals.findOne({ appointmentId: id });
             if (existingVitals) {
-                await Vitals.updateOne(
-                    { appointmentId: id },
-                    { $set: vitals }
-                );
+                await Vitals.updateOne({ appointmentId: id }, { $set: vitals });
             } else {
                 const newVitals = new Vitals({
                     appointmentId: id,
@@ -407,10 +404,7 @@ export const updateNurseFields = async (req: Request, res: Response, next: NextF
         if (tests) {
             const existingTests = await Tests.findOne({ appointmentId: id });
             if (existingTests) {
-                await Tests.updateOne(
-                    { appointmentId: id },
-                    { $set: tests }
-                );
+                await Tests.updateOne({ appointmentId: id }, { $set: tests });
             } else {
                 const newTests = new Tests({
                     appointmentId: id,

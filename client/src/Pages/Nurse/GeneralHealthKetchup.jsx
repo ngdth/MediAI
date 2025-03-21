@@ -77,17 +77,41 @@ const GeneralHealthKetchup = () => {
     }));
   };
 
-  const handleInputChange = (field, value, subField = null) => {
+  const handleInputChange = async (field, value, subField = null) => {
+    let updatedValue = value;
+
+    // Cập nhật state cục bộ
     if (subField) {
       setAppointmentData((prev) => ({
         ...prev,
-        [field]: [{ ...prev[field]?.[0], [subField]: value }],
+        [field]: [{ ...prev[field]?.[0], [subField]: updatedValue }],
       }));
     } else {
       setAppointmentData((prev) => ({
         ...prev,
-        appointment: { ...prev.appointment, [field]: value },
+        appointment: { ...prev.appointment, [field]: updatedValue },
       }));
+    }
+
+    // Gửi request cập nhật từng field
+    try {
+      const payload = {};
+      if (field === "vitals") {
+        payload.vitals = { [subField]: updatedValue };
+      } else if (field === "tests") {
+        payload.tests = { [subField]: updatedValue };
+      }
+
+      await axios.put(
+        `http://localhost:8080/appointment/${appointmentId}/update-nurse-fields`,
+        payload,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      fetchAppointmentData(); // Làm mới dữ liệu sau khi cập nhật
+    } catch (error) {
+      console.error("Error updating field:", error);
     }
   };
 
