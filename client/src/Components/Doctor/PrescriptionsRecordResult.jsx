@@ -6,33 +6,46 @@ const PrescriptionsRecordResult = () => {
     const [appointments, setAppointments] = useState([]);
     const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
     const [modalShow, setModalShow] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-    // Fetch prescription created appointments for the doctor
     useEffect(() => {
         const fetchPrescriptionCreatedAppointments = async () => {
             try {
+                setLoading(true);
                 const response = await axios.get('http://localhost:8080/appointment/prescription-created', {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                 });
-                setAppointments(response.data.data);  // Lưu danh sách các appointment vào state
+                console.log("Appointments data:", response.data);
+                setAppointments(response.data.data || []);
             } catch (error) {
                 console.error('Error fetching prescription created appointments:', error);
+                // Xóa alert để không hiển thị thông báo lỗi
+                setAppointments([]);
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchPrescriptionCreatedAppointments();
     }, []);
 
-    // Handle assign action for pharmacy or doctor
-    const handleRemoveDoctor = async (id) => {
+    const handleAssignToDoctor = async (id) => {
         try {
-            // Gọi API remove doctor
-            await axios.put(`http://localhost:8080/appointment/${id}/remove-doctor`, {}, {
+            await axios.put(
+                `http://localhost:8080/appointment/${id}/status`,
+                { status: "Pending" },
+                { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+            );
+            alert(`Appointment status updated to Pending.`);
+
+            // Refresh the list after updating status
+            const response = await axios.get('http://localhost:8080/appointment/prescription-created', {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
-            alert(`Doctor removed from prescription.`);
+            setAppointments(response.data.data || []);
         } catch (error) {
-            console.error(`Error processing action:`, error);
+            console.error(`Error updating appointment status:`, error);
+            alert(error.response?.data?.message || "Có lỗi xảy ra khi cập nhật trạng thái lịch hẹn.");
         }
     };
 
@@ -41,46 +54,86 @@ const PrescriptionsRecordResult = () => {
         setModalShow(true);
     };
 
+    if (loading) {
+        return (
+            <div className="container">
+                <p>Loading...</p>
+            </div>
+        );
+    }
+
     return (
         <div className="container">
-            <h2 className="text-center mt-4">Quản lý đơn thuốc</h2>
-            <table className="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Bệnh nhân</th>
-                        <th>Ngày khám</th>
-                        <th>Kết luận và hướng điều trị</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {appointments.length > 0 ? appointments.map((appointment) => (
-                        <tr key={appointment._id}>
-                            <td>{appointment.patientName}</td>
-                            <td>{new Date(appointment.date).toLocaleDateString("vi-VN")}</td>
-                            <td>{appointment.diagnosisDetails.treatmentPlan}</td>
-                            <td>
-                                <button
-                                    className="btn btn-success"
-                                    onClick={() => handleRemoveDoctor(appointment._id)}
-                                >
-                                    Assign to Doctor
-                                </button>
-                                <button
-                                    className="btn btn-primary ml-2"
-                                    onClick={() => openAssignModal(appointment._id)}
-                                >
-                                    Assign to Pharmacy
-                                </button>
-                            </td>
-                        </tr>
-                    )) : (
+            <h2 className="text-center mt-4 mb-4">Quản lý đơn thuốc</h2>
+            {appointments.length === 0 ? (
+                <div className="text-center">
+                    <p>Không có đơn thuốc nào được tạo.</p>
+                </div>
+            ) : (
+                <table className="table table-bordered table-striped">
+                    <thead className="thead-dark">
                         <tr>
-                            <td colSpan="4">Không có đơn thuốc nào được tạo.</td>
+                            <th>#</th>
+                            <th>Bệnh nhân</th>
+                            <th>Ngày khám</th>
+                            <th>Giờ khám</th>
+                            <th>Triệu chứng</th>
+                            <th>Chẩn đoán bệnh</th>
+                            <th>Mức độ nghiêm trọng</th>
+                            <th>Kết luận và hướng điều trị</th>
+                            <th>Đơn thuốc</th>
+                            <th>Thao tác</th>
                         </tr>
-                    )}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {appointments.map((item, index) => {
+                            const appointment = item.appointment;
+                            const diagnosis = item.diagnosisDetails && item.diagnosisDetails.length > 0 ? item.diagnosisDetails[0] : null;
+                            const prescriptionList = item.prescriptions || [];
+
+                            return (
+                                <tr key={appointment._id}>
+                                    <td>{index + 1}</td>
+                                    <td>{appointment.patientName || "Không có thông tin"}</td>
+                                    <td>{new Date(appointment.date).toLocaleDateString("vi-VN")}</td>
+                                    <td>{appointment.time || "Không có thông tin"}</td>
+                                    <td>{appointment.symptoms || "Không có thông tin"}</td>
+                                    <td>{diagnosis?.diseaseName || "Chưa có chẩn đoán"}</td>
+                                    <td>{diagnosis?.severity || "Chưa có thông tin"}</td>
+                                    <td>{diagnosis?.treatmentPlan || "Chưa có phương án"}</td>
+                                    <td>
+                                        {prescriptionList.length > 0 ? (
+                                            <ul>
+                                                {prescriptionList.map((prescription, idx) => (
+                                                    <li key={idx}>
+                                                        {prescription.medicineName} - {prescription.quantity} {prescription.unit} - {prescription.usage}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            "Chưa có đơn thuốc"
+                                        )}
+                                    </td>
+                                    <td>
+                                        <button
+                                            className="btn btn-success btn-sm mr-2"
+                                            onClick={() => handleAssignToDoctor(appointment._id)}
+                                        >
+                                            Assign to Doctor
+                                        </button>
+                                        <button
+                                            className="btn btn-primary btn-sm"
+                                            onClick={() => openAssignModal(appointment._id)}
+                                        >
+                                            Assign to Pharmacy
+                                        </button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            )}
 
             <AssignModal
                 show={modalShow}

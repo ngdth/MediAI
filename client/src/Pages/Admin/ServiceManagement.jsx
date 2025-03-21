@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Modal, Button, Toast, ToastContainer } from "react-bootstrap";
+import { Modal, Button, Toast } from "react-bootstrap"; // ❌ Bỏ ToastContainer ở đây
+import { ToastContainer, toast } from 'react-toastify';
 
 const ServiceManagement = () => {
     const [services, setServices] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [showToast, setShowToast] = useState(false);
-    const [toastMessage, setToastMessage] = useState("");
-    const [toastVariant, setToastVariant] = useState("bg-success");
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [deleteServiceId, setDeleteServiceId] = useState(null);
     
@@ -36,15 +34,16 @@ const ServiceManagement = () => {
         } catch (error) {
             console.error("Error fetching services:", error.response?.data?.error || error.message);
             setServices([]);
-            showToastMessage(error.response?.data?.error || "Error fetching services", "bg-danger");
+            showToastMessage(error.response?.data?.error || "Error fetching services", "error");
         }
     };
 
     const showToastMessage = (message, variant) => {
-        setToastMessage(message);
-        setToastVariant(variant);
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 60000);
+        if (variant === "success") {
+            toast.success(message);
+        } else {
+            toast.error(message);
+        }
     };
 
     const handleChange = (e) => {
@@ -62,18 +61,18 @@ const ServiceManagement = () => {
                 await axios.put(`http://localhost:8080/service/update/${editingService._id}`, formData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                showToastMessage("Service updated successfully", "bg-success");
+                showToastMessage("Service updated successfully", "success");
             } else {
                 await axios.post("http://localhost:8080/service/create", formData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                showToastMessage("Service added successfully", "bg-success");
+                showToastMessage("Service added successfully", "success");
             }
             fetchServices();
             handleCloseModal();
         } catch (error) {
             console.error("Error saving service:", error.response?.data?.error || error.message);
-            showToastMessage(error.response?.data?.error || "Error saving service", "bg-danger");
+            showToastMessage(error.response?.data?.error || "Error saving service", "error");
         }
     };
 
@@ -89,11 +88,11 @@ const ServiceManagement = () => {
             await axios.delete(`http://localhost:8080/service/delete/${deleteServiceId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            showToastMessage("Service deleted successfully", "bg-success");
+            showToastMessage("Service deleted successfully", "success");
             fetchServices();
         } catch (error) {
             console.error("Error deleting service:", error.response?.data?.error || error.message);
-            showToastMessage(error.response?.data?.error || "Error deleting service", "bg-danger");
+            showToastMessage(error.response?.data?.error || "Error deleting service", "error");
         }
         setConfirmDelete(false);
     };
@@ -117,13 +116,6 @@ const ServiceManagement = () => {
                     Add Service
                 </button>
             </div>
-
-            {/* Toast thông báo */}
-            <ToastContainer position="top-end" className="p-3">
-                <Toast show={showToast} className={toastVariant} autohide onClose={() => setShowToast(false)}>
-                    <Toast.Body className="text-white">{toastMessage}</Toast.Body>
-                </Toast>
-            </ToastContainer>
 
             {/* Danh sách dịch vụ */}
             <div className="table-responsive">
@@ -182,10 +174,25 @@ const ServiceManagement = () => {
                         <input type="text" name="description" placeholder="Description" value={formData.description} onChange={handleChange} required className="form-control mb-2" />
                         <input type="text" name="department" placeholder="Department" value={formData.department} onChange={handleChange} required className="form-control mb-2" />
                         <input type="number" name="price" placeholder="Price" value={formData.price} onChange={handleChange} required min="1" className="form-control mb-2" />
+                        <select name="status" value={formData.status} onChange={handleChange} required className="form-control mb-2">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
                         <Button type="submit" variant="primary">{editingService ? "Update" : "Add"}</Button>
                     </form>
                 </Modal.Body>
             </Modal>
+            <ToastContainer
+                position="top-right"
+                autoClose={6000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
         </div>
     );
 };

@@ -3,8 +3,9 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
 const GeneralHealthKetchup = () => {
-  const [appointmentData, setAppointmentData] = useState({});
+  const [appointmentData, setAppointmentData] = useState(null); // Khởi tạo là null để kiểm tra loading
   const [editMode, setEditMode] = useState({});
+  const [expandedDoctors, setExpandedDoctors] = useState({});
   const navigate = useNavigate();
   const { appointmentId } = useParams();
 
@@ -19,7 +20,8 @@ const GeneralHealthKetchup = () => {
       const response = await axios.get(`http://localhost:8080/appointment/${appointmentId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      setAppointmentData(response.data.data);
+      console.log("API Response:", response.data); // Log để kiểm tra dữ liệu
+      setAppointmentData(response.data.data); // Gán dữ liệu từ response.data.data
     } catch (error) {
       console.error("Error fetching appointment data:", error);
     }
@@ -30,7 +32,11 @@ const GeneralHealthKetchup = () => {
     try {
       await axios.post(
         `http://localhost:8080/appointment/${appointmentId}/createresult`,
-        { vitals: appointmentData.vitals, tests: appointmentData.tests, diagnosisDetails: appointmentData.diagnosisDetails },
+        {
+          vitals: appointmentData.vitals[0], // Lấy phần tử đầu tiên nếu là mảng
+          tests: appointmentData.tests[0],
+          diagnosisDetails: appointmentData.diagnosisDetails[0],
+        },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
@@ -45,6 +51,13 @@ const GeneralHealthKetchup = () => {
     setEditMode((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
+  const toggleDoctorExpansion = (doctorId) => {
+    setExpandedDoctors((prev) => ({
+      ...prev,
+      [doctorId]: !prev[doctorId],
+    }));
+  };
+
   const handleInputChange = async (field, value, subField = null) => {
     let updatedValue = value;
     if (field === "gender") {
@@ -54,13 +67,15 @@ const GeneralHealthKetchup = () => {
     if (subField) {
       setAppointmentData((prev) => ({
         ...prev,
-        [field]: { ...prev[field], [subField]: updatedValue },
+        [field]: [{ ...prev[field]?.[0], [subField]: updatedValue }],
       }));
     } else {
-      setAppointmentData((prev) => ({ ...prev, [field]: updatedValue }));
+      setAppointmentData((prev) => ({
+        ...prev,
+        appointment: { ...prev.appointment, [field]: updatedValue },
+      }));
     }
 
-    // Gửi yêu cầu cập nhật từng trường lên server
     try {
       await axios.put(
         `http://localhost:8080/appointment/${appointmentId}/update-field`,
@@ -69,7 +84,7 @@ const GeneralHealthKetchup = () => {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      fetchAppointmentData(); // Cập nhật lại dữ liệu sau khi lưu
+      fetchAppointmentData();
     } catch (error) {
       console.error("Error updating field:", error);
     }
@@ -81,8 +96,6 @@ const GeneralHealthKetchup = () => {
 
     if (field === "gender") {
       displayValue = value === "male" ? "Nam" : value === "female" ? "Nữ" : value || "Chưa có dữ liệu";
-    } else if (field === "doctorId" && !subField) {
-      displayValue = value?.username || "Chưa có dữ liệu"; // Hiển thị username của bác sĩ
     } else {
       displayValue = value ? (typeof value === "object" ? JSON.stringify(value) : value) : "Chưa có dữ liệu";
     }
@@ -92,13 +105,7 @@ const GeneralHealthKetchup = () => {
         <td>{label}</td>
         <td>
           {isEditing ? (
-            field === "prescription" && !subField ? (
-              <textarea
-                value={JSON.stringify(value || [])}
-                onChange={(e) => handleInputChange(field, JSON.parse(e.target.value || "[]"))}
-                className="form-control"
-              />
-            ) : field === "gender" && !subField ? (
+            field === "gender" && !subField ? (
               <select
                 value={displayValue}
                 onChange={(e) => handleInputChange(field, e.target.value)}
@@ -113,7 +120,6 @@ const GeneralHealthKetchup = () => {
                 value={field === "gender" ? displayValue : value || ""}
                 onChange={(e) => handleInputChange(field, e.target.value, subField)}
                 className="form-control"
-                disabled={field === "doctorId" && !subField} // Không cho chỉnh sửa tên bác sĩ trực tiếp
               />
             )
           ) : (
@@ -121,26 +127,29 @@ const GeneralHealthKetchup = () => {
           )}
         </td>
         <td>
-          {field !== "doctorId" && (
-            <button
-              className="btn btn-sm btn-warning"
-              onClick={() => toggleEditMode(`${field}${subField || ""}`)}
-            >
-              {isEditing ? "Lưu" : "Thay đổi"}
-            </button>
-          )}
+          <button
+            className="btn btn-sm btn-warning"
+            onClick={() => toggleEditMode(`${field}${subField || ""}`)}
+          >
+            {isEditing ? "Lưu" : "Thay đổi"}
+          </button>
         </td>
       </tr>
     );
   };
 
-  const { patientName, age, gender, address, email, phone, date, time, symptoms, status, doctorId, prescription, vitals, tests, diagnosisDetails, medicalHistory } = appointmentData;
+  if (!appointmentData) {
+    return <div>Loading...</div>; // Hiển thị loading khi dữ liệu chưa sẵn sàng
+  }
+
+  const { appointment, prescriptions, vitals, tests, diagnosisDetails } = appointmentData;
 
   return (
     <div className="container">
       <h2 className="text-center mt-4">Thông tin chi tiết lịch hẹn</h2>
 
       <div className="mb-4">
+        {/* Thông tin cơ bản */}
         <h3 className="text-primary">Thông tin cơ bản</h3>
         <table className="table table-bordered">
           <thead>
@@ -151,34 +160,20 @@ const GeneralHealthKetchup = () => {
             </tr>
           </thead>
           <tbody>
-            {renderField("Tên bệnh nhân", "patientName", patientName)}
-            {renderField("Tuổi", "age", age)}
-            {renderField("Giới tính", "gender", gender)}
-            {renderField("Địa chỉ", "address", address)}
-            {renderField("Email", "email", email)}
-            {renderField("Số điện thoại", "phone", phone)}
-            {renderField("Ngày", "date", date ? new Date(date).toLocaleDateString("vi-VN") : "")}
-            {renderField("Giờ", "time", time)}
-            {renderField("Triệu chứng", "symptoms", symptoms)}
-            {renderField("Trạng thái", "status", status)}
-            {renderField("Tên bác sĩ", "doctorId", doctorId)}
+            {renderField("Tên bệnh nhân", "patientName", appointment?.patientName)}
+            {renderField("Tuổi", "age", appointment?.age)}
+            {renderField("Giới tính", "gender", appointment?.gender)}
+            {renderField("Địa chỉ", "address", appointment?.address)}
+            {renderField("Email", "email", appointment?.email)}
+            {renderField("Số điện thoại", "phone", appointment?.phone)}
+            {renderField("Ngày", "date", appointment?.date ? new Date(appointment.date).toLocaleDateString("vi-VN") : "")}
+            {renderField("Giờ", "time", appointment?.time)}
+            {renderField("Triệu chứng", "symptoms", appointment?.symptoms)}
+            {renderField("Trạng thái", "status", appointment?.status)}
           </tbody>
         </table>
 
-        <h3 className="text-primary">Đơn thuốc</h3>
-        <table className="table table-bordered">
-          <thead>
-            <tr>
-              <th>Chỉ số</th>
-              <th>Giá trị</th>
-              <th>Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {renderField("Đơn thuốc", "prescription", prescription)}
-          </tbody>
-        </table>
-
+        {/* Thông tin khám thể lực */}
         <h3 className="text-primary">Thông tin khám thể lực</h3>
         <table className="table table-bordered">
           <thead>
@@ -189,52 +184,16 @@ const GeneralHealthKetchup = () => {
             </tr>
           </thead>
           <tbody>
-            {renderField("Mạch (số nhịp/phút)", "vitals", vitals?.pulse, "pulse")}
-            {renderField("Huyết áp (mmHg)", "vitals", vitals?.bloodPressure, "bloodPressure")}
-            {renderField("Nhiệt độ cơ thể (°C)", "vitals", vitals?.temperature, "temperature")}
-            {renderField("Cân nặng (kg)", "vitals", vitals?.weight, "weight")}
-            {renderField("Chiều cao (cm)", "vitals", vitals?.height, "height")}
-            {renderField("Tình trạng chung", "vitals", vitals?.generalCondition, "generalCondition")}
+            {renderField("Mạch (số nhịp/phút)", "vitals", vitals?.[0]?.pulse, "pulse")}
+            {renderField("Huyết áp (mmHg)", "vitals", vitals?.[0]?.bloodPressure, "bloodPressure")}
+            {renderField("Nhiệt độ cơ thể (°C)", "vitals", vitals?.[0]?.temperature, "temperature")}
+            {renderField("Cân nặng (kg)", "vitals", vitals?.[0]?.weight, "weight")}
+            {renderField("Chiều cao (cm)", "vitals", vitals?.[0]?.height, "height")}
+            {renderField("Tình trạng chung", "vitals", vitals?.[0]?.generalCondition, "generalCondition")}
           </tbody>
         </table>
 
-        <h3 className="text-primary">Kết quả xét nghiệm</h3>
-        <table className="table table-bordered">
-          <thead>
-            <tr>
-              <th>Chỉ số</th>
-              <th>Giá trị</th>
-              <th>Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {renderField("Xét nghiệm máu", "tests", tests?.bloodTest, "bloodTest")}
-            {renderField("Xét nghiệm nước tiểu", "tests", tests?.urineTest, "urineTest")}
-            {renderField("X-quang", "tests", tests?.xRay, "xRay")}
-            {renderField("Siêu âm", "tests", tests?.ultrasound, "ultrasound")}
-            {renderField("MRI", "tests", tests?.mri, "mri")}
-            {renderField("Điện tâm đồ", "tests", tests?.ecg, "ecg")}
-          </tbody>
-        </table>
-
-        <h3 className="text-primary">Chi tiết chẩn đoán</h3>
-        <table className="table table-bordered">
-          <thead>
-            <tr>
-              <th>Chỉ số</th>
-              <th>Giá trị</th>
-              <th>Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {renderField("Tên bệnh", "diagnosisDetails", diagnosisDetails?.diseaseName, "diseaseName")}
-            {renderField("Mức độ nghiêm trọng", "diagnosisDetails", diagnosisDetails?.severity, "severity")}
-            {renderField("Kế hoạch điều trị", "diagnosisDetails", diagnosisDetails?.treatmentPlan, "treatmentPlan")}
-            {renderField("Lịch tái khám", "diagnosisDetails", diagnosisDetails?.followUpSchedule, "followUpSchedule")}
-            {renderField("Hướng dẫn đặc biệt", "diagnosisDetails", diagnosisDetails?.specialInstructions, "specialInstructions")}
-          </tbody>
-        </table>
-
+        {/* Tiền sử bệnh */}
         <h3 className="text-primary">Tiền sử bệnh</h3>
         <table className="table table-bordered">
           <thead>
@@ -245,10 +204,96 @@ const GeneralHealthKetchup = () => {
             </tr>
           </thead>
           <tbody>
-            {renderField("Tiền sử cá nhân", "medicalHistory", medicalHistory?.personal, "personal")}
-            {renderField("Tiền sử gia đình", "medicalHistory", medicalHistory?.family, "family")}
+            {renderField("Tiền sử cá nhân", "medicalHistory", appointment?.medicalHistory?.personal, "personal")}
+            {renderField("Tiền sử gia đình", "medicalHistory", appointment?.medicalHistory?.family, "family")}
           </tbody>
         </table>
+
+        {/* Kết quả xét nghiệm */}
+        <h3 className="text-primary">Kết quả xét nghiệm</h3>
+        <table className="table table-bordered">
+          <thead>
+            <tr>
+              <th>Chỉ số</th>
+              <th>Giá trị</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            {renderField("Xét nghiệm máu", "tests", tests?.[0]?.bloodTest, "bloodTest")}
+            {renderField("Xét nghiệm nước tiểu", "tests", tests?.[0]?.urineTest, "urineTest")}
+            {renderField("X-quang", "tests", tests?.[0]?.xRay, "xRay")}
+            {renderField("Siêu âm", "tests", tests?.[0]?.ultrasound, "ultrasound")}
+            {renderField("MRI", "tests", tests?.[0]?.mri, "mri")}
+            {renderField("Điện tâm đồ", "tests", tests?.[0]?.ecg, "ecg")}
+          </tbody>
+        </table>
+
+        {/* Các bác sĩ đã phụ trách */}
+        <h3 className="text-primary">Các bác sĩ đã phụ trách</h3>
+        {appointment?.doctorId && appointment.doctorId.length > 0 ? (
+          appointment.doctorId.map((doctor) => (
+            <div key={doctor._id} className="mb-3">
+              <h4
+                onClick={() => toggleDoctorExpansion(doctor._id)}
+                style={{ cursor: "pointer", color: "#007bff" }}
+              >
+                {doctor.username} {expandedDoctors[doctor._id] ? "↓" : "→"}
+              </h4>
+              {expandedDoctors[doctor._id] && (
+                <div className="ml-3">
+                  {/* Chi tiết chẩn đoán */}
+                  <h5>Chi tiết chẩn đoán</h5>
+                  <table className="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Chỉ số</th>
+                        <th>Giá trị</th>
+                        <th>Hành động</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {diagnosisDetails && diagnosisDetails.filter(dd => dd.doctorId._id === doctor._id).map((dd, index) => (
+                        <React.Fragment key={index}>
+                          {renderField("Tên bệnh", "diagnosisDetails", dd.diseaseName, "diseaseName")}
+                          {renderField("Mức độ nghiêm trọng", "diagnosisDetails", dd.severity, "severity")}
+                          {renderField("Kế hoạch điều trị", "diagnosisDetails", dd.treatmentPlan, "treatmentPlan")}
+                          {renderField("Lịch tái khám", "diagnosisDetails", dd.followUpSchedule, "followUpSchedule")}
+                          {renderField("Hướng dẫn đặc biệt", "diagnosisDetails", dd.specialInstructions, "specialInstructions")}
+                        </React.Fragment>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  {/* Đơn thuốc */}
+                  <h5>Đơn thuốc</h5>
+                  <table className="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Tên thuốc</th>
+                        <th>Đơn vị</th>
+                        <th>Số lượng</th>
+                        <th>Cách dùng</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {prescriptions && prescriptions.filter(p => p.doctorId._id === doctor._id).map((presc, index) => (
+                        <tr key={index}>
+                          <td>{presc.medicineName}</td>
+                          <td>{presc.unit}</td>
+                          <td>{presc.quantity}</td>
+                          <td>{presc.usage}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          ))
+        ) : (
+          <p>Chưa có bác sĩ phụ trách</p>
+        )}
       </div>
 
       <div className="d-flex justify-content-end mt-4">

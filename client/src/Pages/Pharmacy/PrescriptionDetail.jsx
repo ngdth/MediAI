@@ -5,18 +5,16 @@ import { Modal, Button } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 
 const PrescriptionsDetail = () => {
-    const {appointmentId } = useParams();
+    const { appointmentId } = useParams();
     const [appointment, setAppointment] = useState({});
     const [prescriptions, setPrescriptions] = useState([]);
     const [prices, setPrices] = useState({});
     const [services, setServices] = useState([]);
-    const [selectedServices, setSelectedServices] = useState([]);
     const [showConfirm, setShowConfirm] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
         fetchAppointmentDetails();
-        fetchAllServices();
     }, []);
 
     // Fetch appointment details for prescription
@@ -26,43 +24,17 @@ const PrescriptionsDetail = () => {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             setAppointment(response.data.data);
+            console.log(response.data.data);
             setPrescriptions(response.data.data.prescription); // Set prescription
+            setServices(response.data.data.service); // Set services
         } catch (error) {
             console.error("Error fetching appointment details:", error);
-        }
-    };
-
-    const fetchAllServices = async () => {
-        try {
-            const response = await axios.get("http://localhost:8080/service/active", {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-            });
-            setServices(response.data);
-        } catch (error) {
-            console.error("Error fetching services:", error);
         }
     };
 
     const handlePriceChange = (index, value) => {
         const updatedPrices = { ...prices, [index]: value };
         setPrices(updatedPrices);
-    };
-
-    //Hàm thêm dịch vụ
-    const addServiceRow = () => {
-        setSelectedServices([...selectedServices, { serviceId: "", name: "", department: "", price: 0 }]);
-    };
-
-    const handleServiceChange = (index, serviceId) => {
-        const selectedService = services.find((service) => service._id === serviceId);
-        const updatedSelectedServices = [...selectedServices];
-        updatedSelectedServices[index] = {
-            serviceId: selectedService._id,
-            name: selectedService.name,
-            department: selectedService.department,
-            price: selectedService.price,
-        };
-        setSelectedServices(updatedSelectedServices);
     };
 
     // Tính tổng tiền thuốc
@@ -76,10 +48,8 @@ const PrescriptionsDetail = () => {
 
     // Tính tổng tiền dịch vụ
     const totalService = useMemo(() => {
-        return selectedServices.reduce((total, service) => {
-            return total + (parseInt(service.price) || 0);
-        }, 0);
-    }, [selectedServices]);
+        return services.reduce((total, service) => total + (service.price || 0), 0);
+      }, [services]);
 
     // Tính thuế 10%
     const tax = useMemo(() => {
@@ -89,35 +59,32 @@ const PrescriptionsDetail = () => {
     // Tổng tiền cần trả
     const totalPayment = useMemo(() => {
         return totalMedicine + totalService + tax;
-    }, [totalMedicine, totalService, tax]);
-
-    // Xử lý xóa dịch vụ
-    const removeServiceRow = (index) => {
-        const updatedServices = selectedServices.filter((_, i) => i !== index);
-        setSelectedServices(updatedServices);
-    };
+      }, [totalMedicine, totalService, tax]);
 
     const handleCreateBill = async () => {
         try {
-            const testFees = selectedServices.map(service => ({
-                name: service.name,
-                price: service.price
-            }));
-    
             const medicineFees = prescriptions.map((prescription, index) => {
                 const price = parseInt(prices[index]) || 0;
                 const quantity = parseInt(prescription.quantity) || 0;
                 return {
                     name: prescription.medicineName,
                     quantity,
+                    unit: prescription.unit,
                     unitPrice: price,
-                    totalPrice: price * quantity
+                    totalPrice: price * quantity,
+                    usage: prescription.usage,
                 };
             });
-    
+
+            const testFees = services.map(service => ({
+                name: service.name,
+                department: service.department,
+                price: service.price,
+            }));
+
             const additionalFees = tax;
             const paymentMethod = "MOMO";
-    
+
             const response = await axios.post(
                 `http://localhost:8080/pharmacy/createBill`,
                 {
@@ -134,7 +101,7 @@ const PrescriptionsDetail = () => {
             console.log(response);
             if (response.status === 201) {
                 toast.success("Tạo hóa đơn thành công!");
-                setTimeout(() => navigate("/pharmacy/pending"), 10000);
+                setTimeout(() => navigate("/pharmacy/pending"), 6000);
                 // navigate("/pharmacy/pending");
             } else {
                 toast.error(response.data?.message || "Tạo hóa đơn thất bại!");
@@ -232,42 +199,19 @@ const PrescriptionsDetail = () => {
                         <th className="text-center">Tên dịch vụ</th>
                         <th className="text-center">Khoa</th>
                         <th className="text-center">Giá tiền</th>
-                        <th className="text-center">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {selectedServices.map((service, index) => (
+                    {services.map((service, index) => (
                         <tr key={index}>
                             <td className="text-center">{index + 1}</td>
-                            <td>
-                                <select
-                                    className="form-control"
-                                    value={service.serviceId}
-                                    onChange={(e) => handleServiceChange(index, e.target.value)}
-                                >
-                                    <option value="">Chọn dịch vụ</option>
-                                    {services.map((s) => (
-                                        <option key={s._id} value={s._id}>
-                                            {s.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </td>
+                            <td className="text-center">{service.name}</td>
                             <td className="text-center">{service.department}</td>
                             <td className="text-center">{service.price.toLocaleString()} VND</td>
-                            <td className="text-center">
-                                <button className="btn btn-danger" onClick={() => removeServiceRow(index)}>
-                                    Xóa
-                                </button>
-                            </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
-
-            <button className="btn btn-success" onClick={addServiceRow}>
-                + Thêm dịch vụ
-            </button>
 
             {/* Tổng tiền */}
             <div className="d-flex flex-column align-items-end mt-4">
@@ -275,7 +219,7 @@ const PrescriptionsDetail = () => {
                     <strong>Tổng tiền thuốc:</strong> {totalMedicine.toLocaleString()} VND
                 </div>
                 <div>
-                    <strong>Tổng tiền dịch vụ:</strong> {totalService.toLocaleString()} VND
+                    <strong>Tổng tiền dịch vụ:</strong>{totalService.toLocaleString()} VND
                 </div>
                 <div>
                     <strong>Thuế (10%):</strong> {tax.toLocaleString()} VND
@@ -311,7 +255,17 @@ const PrescriptionsDetail = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-            <ToastContainer position="top-right" autoClose={6000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+            <ToastContainer
+                position="top-right"
+                autoClose={6000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
         </div>
     );
 };
