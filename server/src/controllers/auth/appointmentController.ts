@@ -299,7 +299,7 @@ export const createResult = async (req: Request, res: Response, next: NextFuncti
 
 export const createPrescription = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } = req.params;
-    const { prescription } = req.body;
+    const { prescription, service } = req.body;
 
     try {
         const appointment = await Appointment.findById(id);
@@ -309,6 +309,7 @@ export const createPrescription = async (req: Request, res: Response, next: Next
         }
 
         appointment.prescription = prescription;
+        appointment.service = service;
         appointment.status = AppointmentStatus.PRESCRIPTION_CREATED;
 
         await appointment.save();

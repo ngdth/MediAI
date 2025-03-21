@@ -41,12 +41,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               <span>Quản Lý Nhà Thuốc</span>
             </Link>
           </li>
-          {/* <li>
+          <li>
             <Link to="/admin/services" className="menu-item">
               <FaClipboard className="menu-icon" />
-              <span>Service Management</span>
+              <span>Quản lí dịch vụ khám</span>
             </Link>
-          </li> */}
+          </li>
         </ul>
       </div>
     </>

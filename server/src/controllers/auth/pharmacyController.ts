@@ -3,6 +3,7 @@ import Appointment, { AppointmentStatus } from '../../models/Appointment';
 import { Request, Response, NextFunction } from 'express';
 import { calculateTotalAmount } from '../../utils/calc';
 import { sendEmail } from '../../config/email';
+import mongoose from 'mongoose';
 
 export const getDoneAppointments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -158,7 +159,16 @@ export const getBills = async (req: Request, res: Response, next: NextFunction):
 export const getBillId = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { billId } = req.params;
-        const bill = await Bill.findById(billId);
+        // Kiểm tra billId có phải ObjectId không
+        const isObjectId = mongoose.Types.ObjectId.isValid(billId);
+
+        // Tìm theo _id hoặc billId
+        const bill = await Bill.findOne({
+            $or: [
+                { _id: isObjectId ? billId : undefined },
+                { billId: billId }
+            ]
+        });
         if (!bill) {
             console.warn('Bill not found:', billId);
             res.status(404).json({ message: 'Bill not found' });
