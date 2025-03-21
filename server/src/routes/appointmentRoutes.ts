@@ -19,6 +19,7 @@ cancelAppointment,
 removeDoctorFromAppointment,
 assignToPharmacy, 
 updateAppointmentField,
+updateNurseFields,
 } from "../controllers/auth/appointmentController";
 const router = express.Router();
 // Appointment routes
@@ -35,6 +36,7 @@ router.post("/:id/createprescription", authenticateToken, createPrescription);
 router.put("/:id/remove-doctor", authenticateToken, authorizeRole(["doctor", "nurse"]), removeDoctorFromAppointment);
 router.put("/:id/assign-pharmacy", authenticateToken, authorizeRole(["doctor", "nurse"]), assignToPharmacy);
 router.put("/:id/update-field", authenticateToken, authorizeRole(["doctor", "nurse"]), updateAppointmentField);
+router.put("/:id/update-nurse-fields", authenticateToken, authorizeRole(["nurse"]), updateNurseFields);
 // router.post("/appointment", authenticateToken, authorizeRole(["doctor"]), createAppointment);
 // router.put("/appointment/:id", authenticateToken, authorizeRole(["nurse"]), updateAppointmentStatus);
 router.post("/book", authenticateToken, bookAppointment);
