@@ -34,6 +34,11 @@ interface IAppointment extends Document {
         quantity: string;
         usage: string;
     }[];
+    service?: {
+        name: string;
+        department: string;
+        price: number;
+    }[];
     vitals?: {
         pulse: string;
         bloodPressure: string;
@@ -85,6 +90,11 @@ const appointmentSchema = new Schema<IAppointment>(
             unit: { type: String },
             quantity: { type: String },
             usage: { type: String }
+        }],
+        service: [{
+            name: { type: String },
+            department: { type: String },
+            price: { type: Number }
         }],
         vitals: {
             pulse: { type: String },
