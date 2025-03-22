@@ -11,6 +11,7 @@ const PrescriptionsDetail = () => {
     const [prices, setPrices] = useState({});
     const [services, setServices] = useState([]);
     const [showConfirm, setShowConfirm] = useState(false);
+    const [diagnosisDetails, setDiagnosisDetails] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -23,10 +24,12 @@ const PrescriptionsDetail = () => {
             const response = await axios.get(`http://localhost:8080/appointment/${appointmentId}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
-            setAppointment(response.data.data);
-            console.log(response.data.data);
-            setPrescriptions(response.data.data.prescription); // Set prescription
-            setServices(response.data.data.service); // Set services
+            setAppointment(response.data.data.appointment);
+            console.log("response.data.data: ", response.data.data);
+            console.log("response.data.data.appointment :", response.data.data.appointment);
+            setDiagnosisDetails(response.data.data.diagnosisDetails);
+            setPrescriptions(response.data.data.prescriptions); // Set prescription
+            setServices(response.data.data.appointment.services || []); // Set services
         } catch (error) {
             console.error("Error fetching appointment details:", error);
         }
@@ -49,7 +52,7 @@ const PrescriptionsDetail = () => {
     // Tính tổng tiền dịch vụ
     const totalService = useMemo(() => {
         return services.reduce((total, service) => total + (service.price || 0), 0);
-      }, [services]);
+    }, [services]);
 
     // Tính thuế 10%
     const tax = useMemo(() => {
@@ -59,7 +62,14 @@ const PrescriptionsDetail = () => {
     // Tổng tiền cần trả
     const totalPayment = useMemo(() => {
         return totalMedicine + totalService + tax;
-      }, [totalMedicine, totalService, tax]);
+    }, [totalMedicine, totalService, tax]);
+
+    const isPriceValid = () => {
+        return prescriptions.every((_, index) => {
+            const price = parseInt(prices[index]);
+            return price && price > 0; // phải có giá trị và > 0
+        });
+    };
 
     const handleCreateBill = async () => {
         try {
@@ -76,7 +86,7 @@ const PrescriptionsDetail = () => {
                 };
             });
 
-            const testFees = services.map(service => ({
+            const testFees = services.map((service) => ({
                 name: service.name,
                 department: service.department,
                 price: service.price,
@@ -129,16 +139,39 @@ const PrescriptionsDetail = () => {
                 <p>
                     <strong>Triệu chứng:</strong> {appointment.symptoms}
                 </p>
-                <p>
-                    <strong>Chẩn đoán bệnh:</strong> {appointment.diagnosisDetails?.diseaseName}
-                </p>
-                <p>
-                    <strong>Mức độ nghiêm trọng:</strong> {appointment.diagnosisDetails?.severity}
-                </p>
-                <p>
-                    <strong>Phương án điều trị:</strong> {appointment.diagnosisDetails?.treatmentPlan}
-                </p>
             </div>
+
+            {/* Chẩn đoán của bác sĩ */}
+            <h3 className="mt-4">Kết quả khám bệnh</h3>
+            {Array.isArray(diagnosisDetails) && diagnosisDetails.length > 0 ? (
+                diagnosisDetails.map((diagnosis, index) => (
+                    <div key={index} className="mb-4">
+                        {diagnosisDetails.length > 1 && <h5 className="mt-4">Kết quả khám bệnh {index + 1}</h5>}
+                        <table className="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th>Chẩn đoán bệnh</th>
+                                    <td>{diagnosis.diseaseName || "Không có thông tin"}</td>
+                                </tr>
+                                <tr>
+                                    <th>Mức độ nghiêm trọng</th>
+                                    <td>{diagnosis.severity || "Không có thông tin"}</td>
+                                </tr>
+                                <tr>
+                                    <th>Phương án điều trị</th>
+                                    <td>{diagnosis.treatmentPlan || "Không có thông tin"}</td>
+                                </tr>
+                                <tr>
+                                    <th>Bác sĩ đưa kết quả</th>
+                                    <td>{diagnosis.doctorId?.username || "Không có thông tin"}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                ))
+            ) : (
+                <p>Không có thông tin chẩn đoán.</p>
+            )}
 
             {/* Đơn thuốc */}
             <h3 className="mt-4">Thông tin đơn thuốc</h3>
@@ -191,6 +224,9 @@ const PrescriptionsDetail = () => {
                     })}
                 </tbody>
             </table>
+            {!isPriceValid() && (
+                <p className="text-danger mt-2">Vui lòng nhập đầy đủ giá cho tất cả thuốc trước khi tạo hóa đơn.</p>
+            )}
             <h3 className="mt-4">Thông tin dịch vụ khám</h3>
             <table className="table table-bordered">
                 <thead>
@@ -219,7 +255,8 @@ const PrescriptionsDetail = () => {
                     <strong>Tổng tiền thuốc:</strong> {totalMedicine.toLocaleString()} VND
                 </div>
                 <div>
-                    <strong>Tổng tiền dịch vụ:</strong>{totalService.toLocaleString()} VND
+                    <strong>Tổng tiền dịch vụ:</strong>
+                    {totalService.toLocaleString()} VND
                 </div>
                 <div>
                     <strong>Thuế (10%):</strong> {tax.toLocaleString()} VND
@@ -231,7 +268,7 @@ const PrescriptionsDetail = () => {
 
             {/* Submit Button */}
             <div className="d-flex justify-content-end mt-4">
-                <button className="btn btn-primary" onClick={() => setShowConfirm(true)}>
+                <button className="btn btn-primary" onClick={() => setShowConfirm(true)} disabled={!isPriceValid()}>
                     Tạo hóa đơn
                 </button>
             </div>
