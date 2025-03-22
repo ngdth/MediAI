@@ -42,11 +42,11 @@ const DoctorDetailsSection = ({ data, onFavoriteToggle, favoriteStatus, onBookNo
                       }}
                     >
                       <FaHeart />
-                      {favoriteStatus ? "Added to Favorites" : "Add to Favorites"}
+                      {favoriteStatus ? "Đã thêm vào danh sách yêu thích" : "Thêm vào danh sách yêu thích"}
                     </button>
                     {/* ✅ Nút Book Doctor Now */}
                     <Button variant="primary" onClick={onBookNow}>
-                      Book Doctor Now
+                      Đặt lịch ngay
                     </Button>
                   </div>
                 </div>
