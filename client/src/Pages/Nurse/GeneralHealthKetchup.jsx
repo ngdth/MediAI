@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
 const GeneralHealthKetchup = () => {
-  const [appointmentData, setAppointmentData] = useState(null); // Khởi tạo là null để kiểm tra loading
+  const [appointmentData, setAppointmentData] = useState(null);
   const [editMode, setEditMode] = useState({});
   const [expandedDoctors, setExpandedDoctors] = useState({});
   const navigate = useNavigate();
@@ -20,8 +20,8 @@ const GeneralHealthKetchup = () => {
       const response = await axios.get(`http://localhost:8080/appointment/${appointmentId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      console.log("API Response:", response.data); // Log để kiểm tra dữ liệu
-      setAppointmentData(response.data.data); // Gán dữ liệu từ response.data.data
+      console.log("API Response:", response.data);
+      setAppointmentData(response.data.data);
     } catch (error) {
       console.error("Error fetching appointment data:", error);
     }
@@ -30,20 +30,39 @@ const GeneralHealthKetchup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(
-        `http://localhost:8080/appointment/${appointmentId}/createresult`,
-        {
-          vitals: appointmentData.vitals[0], // Lấy phần tử đầu tiên nếu là mảng
-          tests: appointmentData.tests[0],
-          diagnosisDetails: appointmentData.diagnosisDetails[0],
+      const vitalsData = appointmentData.vitals?.[0] || {};
+      const testsData = appointmentData.tests?.[0] || {};
+
+      const payload = {
+        vitals: {
+          pulse: vitalsData.pulse,
+          bloodPressure: vitalsData.bloodPressure,
+          temperature: vitalsData.temperature,
+          weight: vitalsData.weight,
+          height: vitalsData.height,
+          generalCondition: vitalsData.generalCondition,
         },
+        tests: {
+          bloodTest: testsData.bloodTest,
+          urineTest: testsData.urineTest,
+          xRay: testsData.xRay,
+          ultrasound: testsData.ultrasound,
+          mri: testsData.mri,
+          ecg: testsData.ecg,
+        },
+      };
+
+      await axios.put(
+        `http://localhost:8080/appointment/${appointmentId}/update-nurse-fields`,
+        payload,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      navigate("/appointments");
+
+      navigate("/nurse/pending");
     } catch (error) {
-      console.error("Error updating appointment data:", error);
+      console.error("Error updating nurse fields:", error);
     }
   };
 
@@ -60,10 +79,8 @@ const GeneralHealthKetchup = () => {
 
   const handleInputChange = async (field, value, subField = null) => {
     let updatedValue = value;
-    if (field === "gender") {
-      updatedValue = value === "Nam" ? "male" : value === "Nữ" ? "female" : value;
-    }
 
+    // Cập nhật state cục bộ
     if (subField) {
       setAppointmentData((prev) => ({
         ...prev,
@@ -76,52 +93,43 @@ const GeneralHealthKetchup = () => {
       }));
     }
 
+    // Gửi request cập nhật từng field
     try {
+      const payload = {};
+      if (field === "vitals") {
+        payload.vitals = { [subField]: updatedValue };
+      } else if (field === "tests") {
+        payload.tests = { [subField]: updatedValue };
+      }
+
       await axios.put(
-        `http://localhost:8080/appointment/${appointmentId}/update-field`,
-        { field, subField, value: updatedValue },
+        `http://localhost:8080/appointment/${appointmentId}/update-nurse-fields`,
+        payload,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      fetchAppointmentData();
+      fetchAppointmentData(); // Làm mới dữ liệu sau khi cập nhật
     } catch (error) {
       console.error("Error updating field:", error);
     }
   };
 
-  const renderField = (label, field, value, subField = null) => {
+  const renderEditableField = (label, field, value, subField = null) => {
     const isEditing = editMode[`${field}${subField || ""}`];
-    let displayValue = value;
-
-    if (field === "gender") {
-      displayValue = value === "male" ? "Nam" : value === "female" ? "Nữ" : value || "Chưa có dữ liệu";
-    } else {
-      displayValue = value ? (typeof value === "object" ? JSON.stringify(value) : value) : "Chưa có dữ liệu";
-    }
+    const displayValue = value ? (typeof value === "object" ? JSON.stringify(value) : value) : "Chưa có dữ liệu";
 
     return (
       <tr>
         <td>{label}</td>
         <td>
           {isEditing ? (
-            field === "gender" && !subField ? (
-              <select
-                value={displayValue}
-                onChange={(e) => handleInputChange(field, e.target.value)}
-                className="form-control"
-              >
-                <option value="Nam">Nam</option>
-                <option value="Nữ">Nữ</option>
-              </select>
-            ) : (
-              <input
-                type={typeof value === "number" ? "number" : "text"}
-                value={field === "gender" ? displayValue : value || ""}
-                onChange={(e) => handleInputChange(field, e.target.value, subField)}
-                className="form-control"
-              />
-            )
+            <input
+              type={typeof value === "number" ? "number" : "text"}
+              value={value || ""}
+              onChange={(e) => handleInputChange(field, e.target.value, subField)}
+              className="form-control"
+            />
           ) : (
             <span>{displayValue}</span>
           )}
@@ -138,8 +146,26 @@ const GeneralHealthKetchup = () => {
     );
   };
 
+  const renderReadOnlyField = (label, value) => {
+    let displayValue = value;
+    if (label === "Giới tính") {
+      displayValue = value === "male" ? "Nam" : value === "female" ? "Nữ" : value || "Chưa có dữ liệu";
+    } else if (label === "Ngày") {
+      displayValue = value ? new Date(value).toLocaleDateString("vi-VN") : "Chưa có dữ liệu";
+    } else {
+      displayValue = value || "Chưa có dữ liệu";
+    }
+
+    return (
+      <tr>
+        <td>{label}</td>
+        <td>{displayValue}</td>
+      </tr>
+    );
+  };
+
   if (!appointmentData) {
-    return <div>Loading...</div>; // Hiển thị loading khi dữ liệu chưa sẵn sàng
+    return <div>Loading...</div>;
   }
 
   const { appointment, prescriptions, vitals, tests, diagnosisDetails } = appointmentData;
@@ -149,31 +175,30 @@ const GeneralHealthKetchup = () => {
       <h2 className="text-center mt-4">Thông tin chi tiết lịch hẹn</h2>
 
       <div className="mb-4">
-        {/* Thông tin cơ bản */}
+        {/* Thông tin cơ bản - Chỉ đọc */}
         <h3 className="text-primary">Thông tin cơ bản</h3>
         <table className="table table-bordered">
           <thead>
             <tr>
               <th>Chỉ số</th>
               <th>Giá trị</th>
-              <th>Hành động</th>
             </tr>
           </thead>
           <tbody>
-            {renderField("Tên bệnh nhân", "patientName", appointment?.patientName)}
-            {renderField("Tuổi", "age", appointment?.age)}
-            {renderField("Giới tính", "gender", appointment?.gender)}
-            {renderField("Địa chỉ", "address", appointment?.address)}
-            {renderField("Email", "email", appointment?.email)}
-            {renderField("Số điện thoại", "phone", appointment?.phone)}
-            {renderField("Ngày", "date", appointment?.date ? new Date(appointment.date).toLocaleDateString("vi-VN") : "")}
-            {renderField("Giờ", "time", appointment?.time)}
-            {renderField("Triệu chứng", "symptoms", appointment?.symptoms)}
-            {renderField("Trạng thái", "status", appointment?.status)}
+            {renderReadOnlyField("Tên bệnh nhân", appointment?.patientName)}
+            {renderReadOnlyField("Tuổi", appointment?.age)}
+            {renderReadOnlyField("Giới tính", appointment?.gender)}
+            {renderReadOnlyField("Địa chỉ", appointment?.address)}
+            {renderReadOnlyField("Email", appointment?.email)}
+            {renderReadOnlyField("Số điện thoại", appointment?.phone)}
+            {renderReadOnlyField("Ngày", appointment?.date)}
+            {renderReadOnlyField("Giờ", appointment?.time)}
+            {renderReadOnlyField("Triệu chứng", appointment?.symptoms)}
+            {renderReadOnlyField("Trạng thái", appointment?.status)}
           </tbody>
         </table>
 
-        {/* Thông tin khám thể lực */}
+        {/* Thông tin khám thể lực - Có thể chỉnh sửa */}
         <h3 className="text-primary">Thông tin khám thể lực</h3>
         <table className="table table-bordered">
           <thead>
@@ -184,32 +209,31 @@ const GeneralHealthKetchup = () => {
             </tr>
           </thead>
           <tbody>
-            {renderField("Mạch (số nhịp/phút)", "vitals", vitals?.[0]?.pulse, "pulse")}
-            {renderField("Huyết áp (mmHg)", "vitals", vitals?.[0]?.bloodPressure, "bloodPressure")}
-            {renderField("Nhiệt độ cơ thể (°C)", "vitals", vitals?.[0]?.temperature, "temperature")}
-            {renderField("Cân nặng (kg)", "vitals", vitals?.[0]?.weight, "weight")}
-            {renderField("Chiều cao (cm)", "vitals", vitals?.[0]?.height, "height")}
-            {renderField("Tình trạng chung", "vitals", vitals?.[0]?.generalCondition, "generalCondition")}
+            {renderEditableField("Mạch (số nhịp/phút)", "vitals", vitals?.[0]?.pulse, "pulse")}
+            {renderEditableField("Huyết áp (mmHg)", "vitals", vitals?.[0]?.bloodPressure, "bloodPressure")}
+            {renderEditableField("Nhiệt độ cơ thể (°C)", "vitals", vitals?.[0]?.temperature, "temperature")}
+            {renderEditableField("Cân nặng (kg)", "vitals", vitals?.[0]?.weight, "weight")}
+            {renderEditableField("Chiều cao (cm)", "vitals", vitals?.[0]?.height, "height")}
+            {renderEditableField("Tình trạng chung", "vitals", vitals?.[0]?.generalCondition, "generalCondition")}
           </tbody>
         </table>
 
-        {/* Tiền sử bệnh */}
+        {/* Tiền sử bệnh - Chỉ đọc */}
         <h3 className="text-primary">Tiền sử bệnh</h3>
         <table className="table table-bordered">
           <thead>
             <tr>
               <th>Chỉ số</th>
               <th>Giá trị</th>
-              <th>Hành động</th>
             </tr>
           </thead>
           <tbody>
-            {renderField("Tiền sử cá nhân", "medicalHistory", appointment?.medicalHistory?.personal, "personal")}
-            {renderField("Tiền sử gia đình", "medicalHistory", appointment?.medicalHistory?.family, "family")}
+            {renderReadOnlyField("Tiền sử cá nhân", appointment?.medicalHistory?.personal)}
+            {renderReadOnlyField("Tiền sử gia đình", appointment?.medicalHistory?.family)}
           </tbody>
         </table>
 
-        {/* Kết quả xét nghiệm */}
+        {/* Kết quả xét nghiệm - Có thể chỉnh sửa */}
         <h3 className="text-primary">Kết quả xét nghiệm</h3>
         <table className="table table-bordered">
           <thead>
@@ -220,16 +244,16 @@ const GeneralHealthKetchup = () => {
             </tr>
           </thead>
           <tbody>
-            {renderField("Xét nghiệm máu", "tests", tests?.[0]?.bloodTest, "bloodTest")}
-            {renderField("Xét nghiệm nước tiểu", "tests", tests?.[0]?.urineTest, "urineTest")}
-            {renderField("X-quang", "tests", tests?.[0]?.xRay, "xRay")}
-            {renderField("Siêu âm", "tests", tests?.[0]?.ultrasound, "ultrasound")}
-            {renderField("MRI", "tests", tests?.[0]?.mri, "mri")}
-            {renderField("Điện tâm đồ", "tests", tests?.[0]?.ecg, "ecg")}
+            {renderEditableField("Xét nghiệm máu", "tests", tests?.[0]?.bloodTest, "bloodTest")}
+            {renderEditableField("Xét nghiệm nước tiểu", "tests", tests?.[0]?.urineTest, "urineTest")}
+            {renderEditableField("X-quang", "tests", tests?.[0]?.xRay, "xRay")}
+            {renderEditableField("Siêu âm", "tests", tests?.[0]?.ultrasound, "ultrasound")}
+            {renderEditableField("MRI", "tests", tests?.[0]?.mri, "mri")}
+            {renderEditableField("Điện tâm đồ", "tests", tests?.[0]?.ecg, "ecg")}
           </tbody>
         </table>
 
-        {/* Các bác sĩ đã phụ trách */}
+        {/* Các bác sĩ đã phụ trách - Chỉ đọc */}
         <h3 className="text-primary">Các bác sĩ đã phụ trách</h3>
         {appointment?.doctorId && appointment.doctorId.length > 0 ? (
           appointment.doctorId.map((doctor) => (
@@ -242,30 +266,30 @@ const GeneralHealthKetchup = () => {
               </h4>
               {expandedDoctors[doctor._id] && (
                 <div className="ml-3">
-                  {/* Chi tiết chẩn đoán */}
                   <h5>Chi tiết chẩn đoán</h5>
                   <table className="table table-bordered">
                     <thead>
                       <tr>
                         <th>Chỉ số</th>
                         <th>Giá trị</th>
-                        <th>Hành động</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {diagnosisDetails && diagnosisDetails.filter(dd => dd.doctorId._id === doctor._id).map((dd, index) => (
-                        <React.Fragment key={index}>
-                          {renderField("Tên bệnh", "diagnosisDetails", dd.diseaseName, "diseaseName")}
-                          {renderField("Mức độ nghiêm trọng", "diagnosisDetails", dd.severity, "severity")}
-                          {renderField("Kế hoạch điều trị", "diagnosisDetails", dd.treatmentPlan, "treatmentPlan")}
-                          {renderField("Lịch tái khám", "diagnosisDetails", dd.followUpSchedule, "followUpSchedule")}
-                          {renderField("Hướng dẫn đặc biệt", "diagnosisDetails", dd.specialInstructions, "specialInstructions")}
-                        </React.Fragment>
-                      ))}
+                      {diagnosisDetails &&
+                        diagnosisDetails
+                          .filter((dd) => dd.doctorId._id === doctor._id)
+                          .map((dd, index) => (
+                            <React.Fragment key={index}>
+                              {renderReadOnlyField("Tên bệnh", dd.diseaseName)}
+                              {renderReadOnlyField("Mức độ nghiêm trọng", dd.severity)}
+                              {renderReadOnlyField("Kế hoạch điều trị", dd.treatmentPlan)}
+                              {renderReadOnlyField("Lịch tái khám", dd.followUpSchedule)}
+                              {renderReadOnlyField("Hướng dẫn đặc biệt", dd.specialInstructions)}
+                            </React.Fragment>
+                          ))}
                     </tbody>
                   </table>
 
-                  {/* Đơn thuốc */}
                   <h5>Đơn thuốc</h5>
                   <table className="table table-bordered">
                     <thead>
@@ -277,14 +301,17 @@ const GeneralHealthKetchup = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {prescriptions && prescriptions.filter(p => p.doctorId._id === doctor._id).map((presc, index) => (
-                        <tr key={index}>
-                          <td>{presc.medicineName}</td>
-                          <td>{presc.unit}</td>
-                          <td>{presc.quantity}</td>
-                          <td>{presc.usage}</td>
-                        </tr>
-                      ))}
+                      {prescriptions &&
+                        prescriptions
+                          .filter((p) => p.doctorId._id === doctor._id)
+                          .map((presc, index) => (
+                            <tr key={index}>
+                              <td>{presc.medicineName}</td>
+                              <td>{presc.unit}</td>
+                              <td>{presc.quantity}</td>
+                              <td>{presc.usage}</td>
+                            </tr>
+                          ))}
                     </tbody>
                   </table>
                 </div>

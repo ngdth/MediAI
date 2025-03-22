@@ -88,11 +88,11 @@ const PharmacyManagement = () => {
 
     return (
         <div className="container mt-5" style={{ minHeight: "80vh", display: "flex", flexDirection: "column" }}>
-            <h2 className="text-center mb-4">Pharmacy Management</h2>
+            <h2 className="text-center mb-4">Quản lí nhà thuốc</h2>
 
             <div className="d-flex justify-content-end mb-3">
                 <button className="btn btn-primary" onClick={handleShowModal}>
-                    Add Pharmacy
+                    Thêm Nhà Thuốc
                 </button>
             </div>
 
@@ -102,9 +102,9 @@ const PharmacyManagement = () => {
                         <tr>
                             <th>Username</th>
                             <th>Email</th>
-                            <th>Pharmacy Name</th>
-                            <th>Location</th>
-                            <th>Actions</th>
+                            <th>Tên Nhà Thuốc</th>
+                            <th>Địa chỉ</th>
+                            <th>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -115,8 +115,8 @@ const PharmacyManagement = () => {
                                 <td>{pharmacy.pharmacyName}</td>
                                 <td>{pharmacy.location}</td>
                                 <td>
-                                    <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(pharmacy)}>Edit</button>
-                                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(pharmacy._id)}>Delete</button>
+                                    <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(pharmacy)}>Sửa</button>
+                                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(pharmacy._id)}>Xóa</button>
                                 </td>
                             </tr>
                         ))}
@@ -127,7 +127,7 @@ const PharmacyManagement = () => {
             {/* Modal thêm/sửa Pharmacy */}
             <Modal show={showModal} onHide={handleCloseModal} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>{editingPharmacy ? "Edit Pharmacy" : "Add Pharmacy"}</Modal.Title>
+                    <Modal.Title>{editingPharmacy ? "Chỉnh Sửa" : "Thêm Nhà Thuốc"}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <form onSubmit={handleSubmit}>
@@ -138,8 +138,8 @@ const PharmacyManagement = () => {
                         <input type="text" name="location" placeholder="Location" value={formData.location} onChange={handleChange} required className="form-control mb-2" />
 
                         <div className="text-end">
-                            <Button variant="secondary" onClick={handleCloseModal} className="me-2">Cancel</Button>
-                            <Button type="submit" variant="primary">{editingPharmacy ? "Update" : "Add"}</Button>
+                            <Button variant="secondary" onClick={handleCloseModal} className="me-2">Hủy</Button>
+                            <Button type="submit" variant="primary">{editingPharmacy ? "Cập nhật" : "Thêm"}</Button>
                         </div>
                     </form>
                 </Modal.Body>

@@ -7,33 +7,18 @@ const ManageResult = () => {
   const [appointment, setAppointment] = useState(null);
   const [doctorId, setDoctorId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [vitals, setVitals] = useState({
-    pulse: "",
-    bloodPressure: "",
-    temperature: "",
-    weight: "",
-    height: "",
-    generalCondition: "",
-  });
-  const [tests, setTests] = useState({
-    bloodTest: "",
-    urineTest: "",
-    xRay: "",
-    ultrasound: "",
-    mri: "",
-    ecg: "",
-  });
+  const [vitals, setVitals] = useState({});
+  const [tests, setTests] = useState({});
   const [diagnosisDetails, setDiagnosisDetails] = useState({
     diseaseName: "",
-    severity: "", // Sẽ được chọn từ dropdown
+    severity: "",
     treatmentPlan: "",
-    followUpSchedule: "", // Sẽ được chọn từ input date
+    followUpSchedule: "",
     specialInstructions: "",
   });
 
   const token = localStorage.getItem("token");
 
-  // Lấy doctorId từ thông tin người dùng hiện tại
   useEffect(() => {
     const fetchDoctorId = async () => {
       try {
@@ -50,14 +35,15 @@ const ManageResult = () => {
     fetchDoctorId();
   }, [token]);
 
-  // Lấy thông tin lịch hẹn
   const fetchAppointmentDetails = async () => {
     try {
       const response = await axios.get(`http://localhost:8080/appointment/${appointmentId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("Appointment details:", response.data);
-      setAppointment(response.data.data.appointment);
+      const data = response.data.data;
+      setAppointment(data.appointment);
+      setVitals(data.vitals[0] || {});
+      setTests(data.tests[0] || {});
       setLoading(false);
     } catch (error) {
       console.error("Error fetching appointment details:", error);
@@ -72,49 +58,27 @@ const ManageResult = () => {
   }, [appointmentId, doctorId]);
 
   const handleSubmit = async () => {
-    console.log("Token before sending request:", token);
-    console.log("Payload:", { vitals, tests, diagnosisDetails });
-  
-    if (!doctorId) {
-      alert("Không thể xác định bác sĩ. Vui lòng đăng nhập lại.");
-      return;
-    }
-  
-    // Kiểm tra dữ liệu trước khi gửi
     if (
-      !vitals.pulse ||
-      !vitals.bloodPressure ||
-      !vitals.temperature ||
-      !vitals.weight ||
-      !vitals.height ||
-      !vitals.generalCondition ||
-      !tests.bloodTest ||
-      !tests.urineTest ||
-      !tests.xRay ||
-      !tests.ultrasound ||
-      !tests.mri ||
-      !tests.ecg ||
       !diagnosisDetails.diseaseName ||
       !diagnosisDetails.severity ||
       !diagnosisDetails.treatmentPlan ||
       !diagnosisDetails.followUpSchedule ||
       !diagnosisDetails.specialInstructions
     ) {
-      alert("Vui lòng điền đầy đủ thông tin trước khi gửi.");
+      alert("Vui lòng điền đầy đủ thông tin chẩn đoán trước khi gửi.");
       return;
     }
-  
+
     try {
       const response = await axios.post(
         `http://localhost:8080/appointment/${appointmentId}/createresult`,
-        { vitals, tests, diagnosisDetails },
+        { diagnosisDetails },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert("Kết quả khám bệnh đã được tạo thành công!");
+      alert("Kết quả chẩn đoán đã được tạo thành công!");
     } catch (error) {
       console.error("Error creating result:", error);
-      const errorMessage = error.response?.data?.message || "Có lỗi xảy ra khi tạo kết quả khám bệnh.";
-      alert(errorMessage);
+      alert("Có lỗi xảy ra khi tạo kết quả chẩn đoán.");
     }
   };
 
@@ -138,7 +102,6 @@ const ManageResult = () => {
     <div className="container">
       <h2 className="text-center mb-4">Kết quả khám bệnh</h2>
 
-      {/* Thông tin bệnh nhân */}
       <div>
         <strong>Patient:</strong> {appointment.patientName}
         <p>
@@ -146,7 +109,7 @@ const ManageResult = () => {
         </p>
       </div>
 
-      {/* Thông tin khám bệnh (Bảng) */}
+      {/* Thông tin khám bệnh - Chỉ đọc */}
       <div className="mb-4">
         <h3 className="text-primary">Thông tin khám bệnh</h3>
         <table className="table table-bordered">
@@ -157,82 +120,17 @@ const ManageResult = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Mạch</td>
-              <td>
-                <input
-                  type="text"
-                  value={vitals.pulse}
-                  onChange={(e) => setVitals({ ...vitals, pulse: e.target.value })}
-                  placeholder="Mạch"
-                  className="form-control"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>Huyết áp</td>
-              <td>
-                <input
-                  type="text"
-                  value={vitals.bloodPressure}
-                  onChange={(e) => setVitals({ ...vitals, bloodPressure: e.target.value })}
-                  placeholder="Huyết áp"
-                  className="form-control"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>Nhiệt độ cơ thể</td>
-              <td>
-                <input
-                  type="text"
-                  value={vitals.temperature}
-                  onChange={(e) => setVitals({ ...vitals, temperature: e.target.value })}
-                  placeholder="Nhiệt độ cơ thể"
-                  className="form-control"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>Cân nặng</td>
-              <td>
-                <input
-                  type="text"
-                  value={vitals.weight}
-                  onChange={(e) => setVitals({ ...vitals, weight: e.target.value })}
-                  placeholder="Cân nặng"
-                  className="form-control"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>Chiều cao</td>
-              <td>
-                <input
-                  type="text"
-                  value={vitals.height}
-                  onChange={(e) => setVitals({ ...vitals, height: e.target.value })}
-                  placeholder="Chiều cao"
-                  className="form-control"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>Tình trạng chung</td>
-              <td>
-                <textarea
-                  value={vitals.generalCondition}
-                  onChange={(e) => setVitals({ ...vitals, generalCondition: e.target.value })}
-                  placeholder="Tình trạng chung"
-                  className="form-control"
-                />
-              </td>
-            </tr>
+            <tr><td>Mạch</td><td>{vitals.pulse || "Chưa có dữ liệu"}</td></tr>
+            <tr><td>Huyết áp</td><td>{vitals.bloodPressure || "Chưa có dữ liệu"}</td></tr>
+            <tr><td>Nhiệt độ cơ thể</td><td>{vitals.temperature || "Chưa có dữ liệu"}</td></tr>
+            <tr><td>Cân nặng</td><td>{vitals.weight || "Chưa có dữ liệu"}</td></tr>
+            <tr><td>Chiều cao</td><td>{vitals.height || "Chưa có dữ liệu"}</td></tr>
+            <tr><td>Tình trạng chung</td><td>{vitals.generalCondition || "Chưa có dữ liệu"}</td></tr>
           </tbody>
         </table>
       </div>
 
-      {/* Xét nghiệm (Bảng) */}
+      {/* Xét nghiệm - Chỉ đọc */}
       <div className="mb-4">
         <h3 className="text-primary">Xét nghiệm</h3>
         <table className="table table-bordered">
@@ -243,77 +141,17 @@ const ManageResult = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Xét nghiệm máu</td>
-              <td>
-                <textarea
-                  value={tests.bloodTest}
-                  onChange={(e) => setTests({ ...tests, bloodTest: e.target.value })}
-                  placeholder="Xét nghiệm máu"
-                  className="form-control"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>Xét nghiệm nước tiểu</td>
-              <td>
-                <textarea
-                  value={tests.urineTest}
-                  onChange={(e) => setTests({ ...tests, urineTest: e.target.value })}
-                  placeholder="Xét nghiệm nước tiểu"
-                  className="form-control"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>X-quang</td>
-              <td>
-                <textarea
-                  value={tests.xRay}
-                  onChange={(e) => setTests({ ...tests, xRay: e.target.value })}
-                  placeholder="X-quang"
-                  className="form-control"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>Siêu âm</td>
-              <td>
-                <textarea
-                  value={tests.ultrasound}
-                  onChange={(e) => setTests({ ...tests, ultrasound: e.target.value })}
-                  placeholder="Siêu âm"
-                  className="form-control"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>MRI</td>
-              <td>
-                <textarea
-                  value={tests.mri}
-                  onChange={(e) => setTests({ ...tests, mri: e.target.value })}
-                  placeholder="MRI"
-                  className="form-control"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>Điện tâm đồ</td>
-              <td>
-                <textarea
-                  value={tests.ecg}
-                  onChange={(e) => setTests({ ...tests, ecg: e.target.value })}
-                  placeholder="Điện tâm đồ"
-                  className="form-control"
-                />
-              </td>
-            </tr>
+            <tr><td>Xét nghiệm máu</td><td>{tests.bloodTest || "Chưa có dữ liệu"}</td></tr>
+            <tr><td>Xét nghiệm nước tiểu</td><td>{tests.urineTest || "Chưa có dữ liệu"}</td></tr>
+            <tr><td>X-quang</td><td>{tests.xRay || "Chưa có dữ liệu"}</td></tr>
+            <tr><td>Siêu âm</td><td>{tests.ultrasound || "Chưa có dữ liệu"}</td></tr>
+            <tr><td>MRI</td><td>{tests.mri || "Chưa có dữ liệu"}</td></tr>
+            <tr><td>Điện tâm đồ</td><td>{tests.ecg || "Chưa có dữ liệu"}</td></tr>
           </tbody>
         </table>
       </div>
 
-      {/* Chẩn đoán bệnh (Bảng) */}
+      {/* Chẩn đoán bệnh - Có thể chỉnh sửa */}
       <div className="mb-4">
         <h3 className="text-primary">Chẩn đoán bệnh</h3>
         <table className="table table-bordered">
@@ -401,7 +239,6 @@ const ManageResult = () => {
         </table>
       </div>
 
-      {/* Submit Button */}
       <div className="d-flex justify-content-end mt-4">
         <button className="btn btn-primary" onClick={handleSubmit}>
           Tạo kết quả khám bệnh

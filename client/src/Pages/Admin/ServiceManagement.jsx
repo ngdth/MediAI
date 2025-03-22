@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Modal, Button, Toast } from "react-bootstrap"; // ❌ Bỏ ToastContainer ở đây
-import { ToastContainer, toast } from 'react-toastify';
+import { Modal, Button, Form  } from "react-bootstrap";
+import { ToastContainer, toast } from "react-toastify";
 
 const ServiceManagement = () => {
     const [services, setServices] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [deleteServiceId, setDeleteServiceId] = useState(null);
-    
+
     const initialFormData = {
         name: "",
         description: "",
         department: "",
         price: 0,
-        status: "active"
+        status: "active",
     };
 
     const [formData, setFormData] = useState(initialFormData);
@@ -28,7 +28,7 @@ const ServiceManagement = () => {
     const fetchServices = async () => {
         try {
             const response = await axios.get("http://localhost:8080/service/getAll", {
-                headers: { Authorization: `Bearer ${token}` },  
+                headers: { Authorization: `Bearer ${token}` },
             });
             setServices(response.data);
         } catch (error) {
@@ -50,20 +50,24 @@ const ServiceManagement = () => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
-            [name]: name === "price" ? Number(value) : value,
+            [name]: value,
         });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const preparedData = {
+            ...formData,
+            price: Number(formData.price), // Convert tại đây
+        };
         try {
             if (editingService) {
-                await axios.put(`http://localhost:8080/service/update/${editingService._id}`, formData, {
+                await axios.put(`http://localhost:8080/service/update/${editingService._id}`, preparedData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 showToastMessage("Service updated successfully", "success");
             } else {
-                await axios.post("http://localhost:8080/service/create", formData, {
+                await axios.post("http://localhost:8080/service/create", preparedData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 showToastMessage("Service added successfully", "success");
@@ -105,15 +109,18 @@ const ServiceManagement = () => {
 
     return (
         <div className="container mt-5" style={{ minHeight: "80vh", display: "flex", flexDirection: "column" }}>
-            <h2 className="text-center mb-4">Service Management</h2>
+            <h2 className="text-center mb-4">Quản lí dịch vụ khám bệnh</h2>
 
             <div className="d-flex justify-content-end mb-3">
-                <button className="btn btn-primary" onClick={() => {
-                    setEditingService(null);
-                    setFormData(initialFormData);
-                    setShowModal(true);
-                }}>
-                    Add Service
+                <button
+                    className="btn btn-primary"
+                    onClick={() => {
+                        setEditingService(null);
+                        setFormData(initialFormData);
+                        setShowModal(true);
+                    }}
+                >
+                    Thêm dịch vụ
                 </button>
             </div>
 
@@ -122,12 +129,12 @@ const ServiceManagement = () => {
                 <table className="table table-bordered text-center">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Department</th>
-                            <th>Price</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>Tên dịch vụ</th>
+                            <th>Mô tả</th>
+                            <th>Khoa</th>
+                            <th>Giá</th>
+                            <th>Trạng Thái</th>
+                            <th>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -139,11 +146,18 @@ const ServiceManagement = () => {
                                 <td>{service.price} VND</td>
                                 <td>{service.status}</td>
                                 <td>
-                                    <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(service)}>Edit</button>
-                                    <button className="btn btn-danger btn-sm" onClick={() => {
-                                        setDeleteServiceId(service._id);
-                                        setConfirmDelete(true);
-                                    }}>Delete</button>
+                                    <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(service)}>
+                                        Chỉnh sửa
+                                    </button>
+                                    <button
+                                        className="btn btn-danger btn-sm"
+                                        onClick={() => {
+                                            setDeleteServiceId(service._id);
+                                            setConfirmDelete(true);
+                                        }}
+                                    >
+                                        Xóa
+                                    </button>
                                 </td>
                             </tr>
                         ))}
@@ -152,47 +166,58 @@ const ServiceManagement = () => {
             </div>
 
             {/* Modal xác nhận xóa */}
-            <Modal show={confirmDelete} onHide={() => setConfirmDelete(false)} centered>
+            <Modal className="modal-overlay" show={confirmDelete} onHide={() => setConfirmDelete(false)} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Confirm Delete</Modal.Title>
+                    <Modal.Title>XÁC NHẬN XÓA</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Are you sure you want to delete this service?</Modal.Body>
+                <Modal.Body>Bạn có chắc muốn xóa dịch vụ này?</Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setConfirmDelete(false)}>Cancel</Button>
-                    <Button variant="danger" onClick={handleDeleteConfirm}>Delete</Button>
+                    <Button variant="secondary" onClick={() => setConfirmDelete(false)}>
+                        Hủy
+                    </Button>
+                    <Button variant="danger" onClick={handleDeleteConfirm}>
+                        Xóa
+                    </Button>
                 </Modal.Footer>
             </Modal>
 
             {/* Modal thêm/sửa dịch vụ */}
-            <Modal show={showModal} onHide={handleCloseModal} centered>
+            <Modal className="modal-overlay" show={showModal} onHide={handleCloseModal} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>{editingService ? "Edit Service" : "Add Service"}</Modal.Title>
+                    <Modal.Title>{editingService ? "Chỉnh sửa dịch vụ" : "Thêm dịch vụ"}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <form onSubmit={handleSubmit}>
-                        <input type="text" name="name" placeholder="Service Name" value={formData.name} onChange={handleChange} required className="form-control mb-2" />
-                        <input type="text" name="description" placeholder="Description" value={formData.description} onChange={handleChange} required className="form-control mb-2" />
-                        <input type="text" name="department" placeholder="Department" value={formData.department} onChange={handleChange} required className="form-control mb-2" />
-                        <input type="number" name="price" placeholder="Price" value={formData.price} onChange={handleChange} required min="1" className="form-control mb-2" />
-                        <select name="status" value={formData.status} onChange={handleChange} required className="form-control mb-2">
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
-                        <Button type="submit" variant="primary">{editingService ? "Update" : "Add"}</Button>
-                    </form>
+                    <Form onSubmit={handleSubmit}>
+                        <Form.Group>
+                            <Form.Label className="d-block text-start">Tên dịch vụ</Form.Label>
+                            <Form.Control type="text" name="name" placeholder="Nhập tên dịch vụ" value={formData.name} onChange={handleChange} required />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label className="d-block text-start">Mô tả</Form.Label>
+                            <Form.Control type="text" name="description" placeholder="Nhập mô tả" value={formData.description} onChange={handleChange} required />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label className="d-block text-start">Khoa</Form.Label>
+                            <Form.Control type="text" name="department" placeholder="Nhập khoa" value={formData.department} onChange={handleChange} required />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label className="d-block text-start">Giá</Form.Label>
+                            <Form.Control type="number" name="price" placeholder="Nhập giá" value={formData.price} onChange={handleChange} required min="1" />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label className="d-block text-start">Trạng thái</Form.Label>
+                            <Form.Select name="status" value={formData.status} onChange={handleChange} required>
+                                <option value="active">Hoạt động</option>
+                                <option value="inactive">Ngừng hoạt động</option>
+                            </Form.Select>
+                        </Form.Group>
+                        <Button type="submit" variant="primary">
+                            {editingService ? "Cập nhật" : "Thêm mới"}
+                        </Button>
+                    </Form>
                 </Modal.Body>
             </Modal>
-            <ToastContainer
-                position="top-right"
-                autoClose={6000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-            />
+            <ToastContainer position="top-right" autoClose={6000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover/>
         </div>
     );
 };

@@ -166,13 +166,16 @@ const UserProfile = () => {
                 <Modal.Body>
                     <Form>
                         <Form.Group>
-                            <Form.Control type="password" name="oldPassword" value={passwordData.oldPassword} onChange={handlePasswordChange} placeholder="Mật khẩu cũ" />
+                            <Form.Label className="d-block text-start">Mật khẩu cũ</Form.Label>
+                            <Form.Control type="password" name="oldPassword" value={passwordData.oldPassword} onChange={handlePasswordChange} />
                         </Form.Group>
                         <Form.Group>
-                            <Form.Control type="password" name="newPassword" value={passwordData.newPassword} onChange={handlePasswordChange} placeholder="Mật khẩu mới" />
+                            <Form.Label className="d-block text-start">Mật khẩu mới</Form.Label>
+                            <Form.Control type="password" name="newPassword" value={passwordData.newPassword} onChange={handlePasswordChange} />
                         </Form.Group>
                         <Form.Group>
-                            <Form.Control type="password" name="confPassword" value={passwordData.confPassword} onChange={handlePasswordChange} placeholder="Xác nhận mật khẩu" />
+                            <Form.Label className="d-block text-start">Xác nhận mật khẩu mới</Form.Label>
+                            <Form.Control type="password" name="confPassword" value={passwordData.confPassword} onChange={handlePasswordChange}/>
                         </Form.Group>
                     </Form>
                 </Modal.Body>

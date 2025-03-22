@@ -182,7 +182,10 @@ export const updateAppointmentStatus = async (req: Request, res: Response, next:
     const { status } = req.body;
 
     try {
-        const appointment = await Appointment.findById(id);
+        const appointment = await Appointment.findById(id)
+            .populate('userId', 'email')
+            .populate('doctorId', 'username');
+
         if (!appointment) {
             res.status(404).json({ message: "Appointment not found" });
             return;
@@ -202,30 +205,40 @@ export const updateAppointmentStatus = async (req: Request, res: Response, next:
         await appointment.save();
 
         if (status === AppointmentStatus.ACCEPTED) {
-            if (!appointment.doctorId) {
+            if (!appointment.doctorId || appointment.doctorId.length === 0) {
                 res.status(400).json({ message: "Doctor must be assigned before confirming appointment." });
                 return;
             }
 
+            const userEmail = (appointment.userId as any)?.email;
+            if (!userEmail) {
+                res.status(400).json({ message: "User email not found" });
+                return;
+            }
+
+            const doctorName = (appointment.doctorId[0] as any)?.username || "Unknown Doctor";
+
             const emailData = {
                 patientName: appointment.patientName,
-                doctorName: (appointment.doctorId as any).username,
+                doctorName: doctorName,
                 date: appointment.date,
                 time: appointment.time,
             };
 
-            await sendEmail((appointment.userId as any).email, emailData, "appointment_assigned");
+            try {
+                await sendEmail(userEmail, emailData, "appointment_assigned");
+            } catch (emailError) {
+                console.error("Failed to send email:", emailError);
+                // Không làm crash API, chỉ ghi log lỗi email
+            }
         }
-        
+
         res.status(200).json({
             message: "Appointment status updated successfully",
             data: appointment,
         });
     } catch (error) {
-        res.status(500).json({
-            message: "Error updating appointment status",
-            error: error.message,
-        });
+        res.status(500).json({ message: "Error updating appointment status", error });
     }
 };
 
@@ -358,6 +371,63 @@ export const createResult = async (req: Request, res: Response, next: NextFuncti
             data: appointment,
         });
     } catch (error) {
+        next(error);
+    }
+};
+
+// Trong file appointmentController.js
+export const updateNurseFields = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const { vitals, tests } = req.body;
+
+        const appointment = await Appointment.findById(id);
+        if (!appointment) {
+            res.status(404).json({ message: "Appointment not found" });
+            return;
+        }
+
+        if (vitals) {
+            const existingVitals = await Vitals.findOne({ appointmentId: id });
+            if (existingVitals) {
+                await Vitals.updateOne({ appointmentId: id }, { $set: vitals });
+            } else {
+                const newVitals = new Vitals({
+                    appointmentId: id,
+                    userId: appointment.userId,
+                    ...vitals,
+                });
+                await newVitals.save();
+            }
+        }
+
+        if (tests) {
+            const existingTests = await Tests.findOne({ appointmentId: id });
+            if (existingTests) {
+                await Tests.updateOne({ appointmentId: id }, { $set: tests });
+            } else {
+                const newTests = new Tests({
+                    appointmentId: id,
+                    userId: appointment.userId,
+                    ...tests,
+                });
+                await newTests.save();
+            }
+        }
+
+        const updatedVitals = await Vitals.findOne({ appointmentId: id });
+        const updatedTests = await Tests.findOne({ appointmentId: id });
+
+        res.status(200).json({
+            message: "Nurse fields updated successfully",
+            data: {
+                appointment,
+                vitals: updatedVitals,
+                tests: updatedTests,
+            },
+        });
+    } catch (error) {
+        console.error("Error updating nurse fields:", error);
         next(error);
     }
 };

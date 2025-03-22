@@ -69,18 +69,12 @@ const ManagePrescriptionsRecord = () => {
     };
 
     const addServiceRow = () => {
-        setSelectedServices([...selectedServices, { serviceId: "", name: "", department: "", price: 0 }]);
+        setSelectedServices([...selectedServices, ""]); // serviceId
     };
 
     const handleServiceChange = (index, serviceId) => {
-        const selectedService = services.find((service) => service._id === serviceId) || {};
         const updatedSelectedServices = [...selectedServices];
-        updatedSelectedServices[index] = {
-            serviceId: selectedService._id || "",
-            name: selectedService.name || "",
-            department: selectedService.department || "",
-            price: selectedService.price || 0,
-        };
+        updatedSelectedServices[index] = serviceId;
         setSelectedServices(updatedSelectedServices);
     };
 
@@ -96,19 +90,25 @@ const ManagePrescriptionsRecord = () => {
                 quantity: prescription.quantity,
                 usage: prescription.usage
             }));
-            
-            const serviceUsed = selectedServices.map(service => ({
-                name: service.name,
-                department: service.department,
-                price: service.price
-            }));
 
+            // 1. Tạo đơn thuốc
             await axios.post(
                 `http://localhost:8080/appointment/${appointmentId}/createprescription`,
-                { prescription: prescriptionData, service: serviceUsed },
+                { prescription: prescriptionData },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            alert('Đơn thuốc đã được tạo!');
+
+            // 2. Cập nhật services cho Appointment
+            await axios.put(
+                `http://localhost:8080/appointment/${appointmentId}/update-field`,
+                {
+                    field: "services",
+                    value: selectedServices,
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            alert('Đơn thuốc và dịch vụ đã được lưu!');
             navigate('/doctor/manage-prescription-result');
         } catch (error) {
             console.error("Error creating prescription:", error);
@@ -212,32 +212,35 @@ const ManagePrescriptionsRecord = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {selectedServices.map((service, index) => (
-                        <tr key={index}>
-                            <td className="text-center">{index + 1}</td>
-                            <td>
-                                <select
-                                    className="form-control"
-                                    value={service.serviceId}
-                                    onChange={(e) => handleServiceChange(index, e.target.value)}
-                                >
-                                    <option value="">Chọn dịch vụ</option>
-                                    {services.map((s) => (
-                                        <option key={s._id} value={s._id}>
-                                            {s.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </td>
-                            <td className="text-center">{service.department || "Không có thông tin"}</td>
-                            <td className="text-center">{service.price.toLocaleString() || 0} VND</td>
-                            <td className="text-center">
-                                <button className="btn btn-danger" onClick={() => removeServiceRow(index)}>
-                                    Xóa
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
+                    {selectedServices.map((serviceId, index) => {
+                        const selectedService = services.find((s) => s._id === serviceId) || {};
+                        return (
+                            <tr key={index}>
+                                <td className="text-center">{index + 1}</td>
+                                <td>
+                                    <select
+                                        className="form-control"
+                                        value={serviceId}
+                                        onChange={(e) => handleServiceChange(index, e.target.value)}
+                                    >
+                                        <option value="">Chọn dịch vụ</option>
+                                        {services.map((s) => (
+                                            <option key={s._id} value={s._id}>
+                                                {s.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </td>
+                                <td className="text-center">{selectedService.department || "Không có thông tin"}</td>
+                                <td className="text-center">{selectedService.price ? selectedService.price.toLocaleString() : 0} VND</td>
+                                <td className="text-center">
+                                    <button className="btn btn-danger" onClick={() => removeServiceRow(index)}>
+                                        Xóa
+                                    </button>
+                                </td>
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </table>
             <button className="btn btn-success" onClick={addServiceRow}>
