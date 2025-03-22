@@ -164,9 +164,10 @@ const ServiceManagement = () => {
                     </tbody>
                 </table>
             </div>
+            {showModal && <div className="modal-overlay"></div>}
 
             {/* Modal xác nhận xóa */}
-            <Modal className="modal-overlay" show={confirmDelete} onHide={() => setConfirmDelete(false)} centered>
+            <Modal show={confirmDelete} onHide={() => setConfirmDelete(false)} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>XÁC NHẬN XÓA</Modal.Title>
                 </Modal.Header>
@@ -182,7 +183,7 @@ const ServiceManagement = () => {
             </Modal>
 
             {/* Modal thêm/sửa dịch vụ */}
-            <Modal className="modal-overlay" show={showModal} onHide={handleCloseModal} centered>
+            <Modal show={showModal} onHide={handleCloseModal} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>{editingService ? "Chỉnh sửa dịch vụ" : "Thêm dịch vụ"}</Modal.Title>
                 </Modal.Header>
