@@ -16,6 +16,9 @@ const ManageResult = () => {
     followUpSchedule: "",
     specialInstructions: "",
   });
+  const [expandedDoctors, setExpandedDoctors] = useState({});
+  const [allDiagnosisDetails, setAllDiagnosisDetails] = useState([]);
+  const [prescriptions, setPrescriptions] = useState([]);
 
   const token = localStorage.getItem("token");
 
@@ -25,7 +28,9 @@ const ManageResult = () => {
         const response = await axios.get("http://localhost:8080/user/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setDoctorId(response.data.id);
+        const id = response.data.id;
+        setDoctorId(id);
+        console.log("Current Doctor ID:", id);
       } catch (error) {
         console.error("Error fetching doctor ID:", error);
         setLoading(false);
@@ -44,6 +49,9 @@ const ManageResult = () => {
       setAppointment(data.appointment);
       setVitals(data.vitals[0] || {});
       setTests(data.tests[0] || {});
+      setAllDiagnosisDetails(data.diagnosisDetails || []); // Lấy chi tiết chẩn đoán
+      setPrescriptions(data.prescriptions || []); // Lấy đơn thuốc
+      console.log("Appointment Doctor IDs:", data.appointment.doctorId);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching appointment details:", error);
@@ -82,6 +90,33 @@ const ManageResult = () => {
     }
   };
 
+  const toggleDoctorExpansion = (doctorId) => {
+    setExpandedDoctors((prev) => ({
+      ...prev,
+      [doctorId]: !prev[doctorId],
+    }));
+  };
+
+  const renderReadOnlyField = (label, value) => {
+    let displayValue = value;
+    if (label === "Giới tính") {
+      displayValue = value === "male" ? "Nam" : value === "female" ? "Nữ" : value || "Chưa có dữ liệu";
+    } else if (label === "Ngày") {
+      displayValue = value ? new Date(value).toLocaleDateString("vi-VN") : "Chưa có dữ liệu";
+    } else if (label === "Lịch tái khám") {
+      displayValue = value ? new Date(value).toISOString().split("T")[0] : "Chưa có dữ liệu";
+    } else {
+      displayValue = value || "Chưa có dữ liệu";
+    }
+
+    return (
+      <tr>
+        <td>{label}</td>
+        <td>{displayValue}</td>
+      </tr>
+    );
+  };
+
   if (loading) {
     return (
       <div className="container">
@@ -97,6 +132,10 @@ const ManageResult = () => {
       </div>
     );
   }
+
+  const currentDoctorIndex = appointment.doctorId.findIndex((doctor) => doctor._id === doctorId);
+  console.log("Current Doctor Index:", currentDoctorIndex);
+  const previousDoctors = currentDoctorIndex > 0 ? appointment.doctorId.slice(0, currentDoctorIndex) : [];
 
   return (
     <div className="container">
@@ -149,6 +188,75 @@ const ManageResult = () => {
             <tr><td>Điện tâm đồ</td><td>{tests.ecg || "Chưa có dữ liệu"}</td></tr>
           </tbody>
         </table>
+      </div>
+
+      {/* Các bác sĩ đã phụ trách - Chỉ đọc */}
+      <div className="mb-4">
+        <h3 className="text-primary">Các bác sĩ đã phụ trách</h3>
+        {previousDoctors.length > 0 ? (
+          previousDoctors.map((doctor) => (
+            <div key={doctor._id} className="mb-3">
+              <h4
+                onClick={() => toggleDoctorExpansion(doctor._id)}
+                style={{ cursor: "pointer", color: "#007bff" }}
+              >
+                Bác sĩ: {doctor.username} {expandedDoctors[doctor._id] ? "↓" : "→"}
+              </h4>
+              {expandedDoctors[doctor._id] && (
+                <div className="ml-3">
+                  <h5>Chi tiết chẩn đoán</h5>
+                  <table className="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Chỉ số</th>
+                        <th>Giá trị</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {allDiagnosisDetails
+                        .filter((dd) => dd.doctorId?._id === doctor._id)
+                        .map((dd, index) => (
+                          <React.Fragment key={index}>
+                            {renderReadOnlyField("Tên bệnh", dd.diseaseName)}
+                            {renderReadOnlyField("Mức độ nghiêm trọng", dd.severity)}
+                            {renderReadOnlyField("Kế hoạch điều trị", dd.treatmentPlan)}
+                            {renderReadOnlyField("Lịch tái khám", dd.followUpSchedule)}
+                            {renderReadOnlyField("Hướng dẫn đặc biệt", dd.specialInstructions)}
+                          </React.Fragment>
+                        ))}
+                    </tbody>
+                  </table>
+
+                  <h5>Đơn thuốc</h5>
+                  <table className="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Tên thuốc</th>
+                        <th>Đơn vị</th>
+                        <th>Số lượng</th>
+                        <th>Cách dùng</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {prescriptions
+                        .filter((p) => p.doctorId?._id === doctor._id)
+                        .map((presc, index) => (
+                          <tr key={index}>
+                            <td>{presc.medicineName}</td>
+                            <td>{presc.unit}</td>
+                            <td>{presc.quantity}</td>
+                            <td>{presc.usage}</td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          ))
+        ) : (
+          <p>Không có bác sĩ trước đó phụ trách.</p>
+        )}
       </div>
 
       {/* Chẩn đoán bệnh - Có thể chỉnh sửa */}
