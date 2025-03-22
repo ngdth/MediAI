@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import AvailabilityScheduler from "./AvailabilityScheduler";
 import axios from "axios";
@@ -21,6 +21,50 @@ const BookingForm = ({ show, doctorId, onClose, onSubmit }) => {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const token = localStorage.getItem("token");
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.log("No token found, user not logged in.");
+          return;
+        }
+
+        const response = await axios.get("http://localhost:8080/user/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const user = response.data.user || response.data;
+
+        setFormData((prevData) => ({
+          ...prevData,
+          fullName: user.username || "",
+          email: user.email || "",
+          phone: user.phone || "",
+          address: user.address || "",
+          gender: user.gender === "Nam" ? "male" : user.gender === "Nữ" ? "female" : "other",
+          age: user.birthday ? calculateAge(new Date(user.birthday)) : "",
+        }));
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, [doctorId]); 
+
+  const calculateAge = (birthday) => {
+    const today = new Date();
+    let age = today.getFullYear() - birthday.getFullYear();
+    const monthDiff = today.getMonth() - birthday.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthday.getDate())) {
+      age--;
+    }
+    return age.toString();
+  };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -30,13 +74,12 @@ const BookingForm = ({ show, doctorId, onClose, onSubmit }) => {
       alert("Vui lòng chọn ngày và giờ khám!");
       return;
     }
-  
-    const token = localStorage.getItem("token");
+
     if (!token) {
       alert("Bạn chưa đăng nhập! Vui lòng đăng nhập để đặt lịch.");
       return;
     }
-  
+
     const appointmentData = {
       patientName: formData.fullName,
       age: formData.age,
@@ -49,13 +92,13 @@ const BookingForm = ({ show, doctorId, onClose, onSubmit }) => {
       symptoms: formData.symptoms,
       medicalHistory: formData?.medicalHistory,
       familyMedicalHistory: formData?.familyMedicalHistory,
-      doctorId: formData.doctorId
+      doctorId: formData.doctorId,
     };
-  
+
     try {
       const response = await axios.post(
         "http://localhost:8080/appointment/book",
-        appointmentData, // Dữ liệu gửi đi
+        appointmentData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -63,15 +106,15 @@ const BookingForm = ({ show, doctorId, onClose, onSubmit }) => {
           },
         }
       );
-  
+
       console.log("Đặt lịch thành công:", response.data);
       alert("Đặt lịch thành công!");
-      onClose(); // Đóng modal sau khi đặt lịch thành công
+      onClose();
     } catch (error) {
       console.error("Lỗi khi đặt lịch:", error.response?.data || error.message);
       alert("Có lỗi xảy ra, vui lòng thử lại!");
     }
-  };  
+  };
 
   return (
     <Modal show={show} onHide={onClose} centered dialogClassName="large-modal">
@@ -157,7 +200,6 @@ const BookingForm = ({ show, doctorId, onClose, onSubmit }) => {
 
             {/* Cột 2 - Thông tin khám bệnh */}
             <Col>
-              {/* Ngày khám */}
               <AvailabilityScheduler
                 doctorId={doctorId}
                 selectedDay={selectedDay}
@@ -208,11 +250,7 @@ const BookingForm = ({ show, doctorId, onClose, onSubmit }) => {
         <Button variant="secondary" onClick={onClose}>
           Hủy
         </Button>
-        <Button
-          variant="primary"
-          // onClick={() => onSubmit({ ...formData, selectedDay, selectedSlot })}
-          onClick={handleSubmit}
-        >
+        <Button variant="primary" onClick={handleSubmit}>
           Đặt lịch khám
         </Button>
       </Modal.Footer>
