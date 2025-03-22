@@ -28,7 +28,7 @@ export const createPayment = async (req: Request, res: Response): Promise<void> 
         }
 
         // 📌 Tìm hóa đơn dựa trên `billId`
-        const bill = await Bill.findOne({ billId });
+        const bill = await Bill.findById(billId);
 
         if (!bill) {
             console.log("❌ Không tìm thấy hóa đơn với billId:", billId);
@@ -39,7 +39,7 @@ export const createPayment = async (req: Request, res: Response): Promise<void> 
         const amount = bill.totalAmount; // Lấy tổng số tiền từ hóa đơn
         const orderInfo = 'Thanh toán qua MoMo';
         const partnerCode = 'MOMO';
-        const redirectUrl = 'http://localhost:3000/success';  // URL thành công (có thể thay đổi)
+        const redirectUrl = 'http://localhost:5173/success';  // URL thành công (có thể thay đổi)
         const ipnUrl = 'https://bf6d-123-19-56-67.ngrok-free.app/callback';  // Cập nhật lại ngrok nếu cần
         const requestType = "payWithMethod";
         const orderId = `${partnerCode}_${billId}_${Date.now()}`;
@@ -131,7 +131,7 @@ export const paymentCallback = async (req: Request, res: Response): Promise<void
 
             // 📌 Cập nhật trạng thái thanh toán của Bill
             const updatedBill = await Bill.findOneAndUpdate(
-                { billId },
+                { _id: billId },
                 { paymentStatus: "Completed", transId },
                 { new: true }
             );
@@ -170,8 +170,7 @@ export const paymentCallback = async (req: Request, res: Response): Promise<void
 
             // ✅ Trả về phản hồi thành công
             res.status(200).json({
-                message: "Payment processed successfully",
-                billId: updatedBill.billId,
+                billId: updatedBill._id,
                 paymentStatus: updatedBill.paymentStatus
             });
             return;
