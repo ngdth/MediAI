@@ -32,6 +32,7 @@ interface IAppointment extends Document {
         personal: string;
         family: string;
     };
+    services: string[]; // Array of used services
 }
 
 const appointmentSchema = new Schema<IAppointment>(
@@ -55,6 +56,7 @@ const appointmentSchema = new Schema<IAppointment>(
             personal: { type: String },
             family: { type: String },
         },
+        services: [{ type: Schema.Types.ObjectId, ref: 'service' }],
     },
     { timestamps: true }
 );
