@@ -563,7 +563,8 @@ export const getAppointmentById = async (req: Request, res: Response, next: Next
 
         const appointment = await Appointment.findById(id)
             .populate('userId', 'username email')
-            .populate('doctorId', 'username email');
+            .populate('doctorId', 'username email')
+            .populate('services');
 
         if (!appointment) {
             res.status(404).json({ message: "Appointment not found" });

@@ -111,6 +111,7 @@ const Header = ({ isTopBar, variant }) => {
     ? [
         { label: "Hồ sơ ", href: "/profile" },
         { label: "Danh sách yêu thích ", href: "/favorites" },
+        { label: "Thanh toán ", href: "/payment" },
         { label: "Đăng xuất", action: handleLogout },
       ]
     : [
