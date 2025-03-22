@@ -9,7 +9,7 @@ router.use(authenticateToken);
 router.get("/appointments/done", authorizeRole(["pharmacy"]), getDoneAppointments);
 
 // create bill
-router.post('/createBill',  authorizeRole(['pharmacy']), createBill);
+router.post('/createbill',  authorizeRole(['pharmacy']), createBill);
 
 // get all bills
 router.get('/',  authorizeRole(['admin', 'pharmacy', 'doctor']),getBills);
