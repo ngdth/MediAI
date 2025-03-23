@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import BookingSchedule from "./BookingSchedule";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
 
 const BookingForm = ({ show, doctorId, onClose }) => {
   const [formData, setFormData] = useState({
@@ -53,7 +54,7 @@ const BookingForm = ({ show, doctorId, onClose }) => {
     };
 
     fetchUserData();
-  }, [doctorId]); 
+  }, [doctorId]);
 
   const calculateAge = (birthday) => {
     const today = new Date();
@@ -70,13 +71,18 @@ const BookingForm = ({ show, doctorId, onClose }) => {
   };
 
   const handleSubmit = async () => {
-    if (!selectedDay || !selectedSlot) {
-      alert("Vui lòng chọn ngày và giờ khám!");
+    if (!token) {
+      toast.error("Bạn chưa đăng nhập! Vui lòng đăng nhập để đặt lịch.");
       return;
     }
 
-    if (!token) {
-      alert("Bạn chưa đăng nhập! Vui lòng đăng nhập để đặt lịch.");
+    if (!formData.fullName || !formData.age || !formData.gender || !formData.address || !formData.email || !formData.phone) {
+      toast.error("Vui lòng điền đầy đủ thông tin!");
+      return;
+    }
+
+    if (!selectedDay || !selectedSlot) {
+      toast.error("Vui lòng chọn ngày và giờ khám!");
       return;
     }
 
@@ -108,11 +114,11 @@ const BookingForm = ({ show, doctorId, onClose }) => {
       );
 
       console.log("Đặt lịch thành công:", response.data);
-      alert("Đặt lịch thành công!");
+      toast.success("Đặt lịch thành công!");
       onClose();
     } catch (error) {
       console.error("Lỗi khi đặt lịch:", error.response?.data || error.message);
-      alert("Có lỗi xảy ra, vui lòng thử lại!");
+      // toast.error("Có lỗi xảy ra, vui lòng thử lại!");
     }
   };
 
@@ -254,6 +260,8 @@ const BookingForm = ({ show, doctorId, onClose }) => {
           Đặt lịch khám
         </Button>
       </Modal.Footer>
+
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
     </Modal>
   );
 };
