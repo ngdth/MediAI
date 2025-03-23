@@ -96,7 +96,7 @@ const PrescriptionsDetail = () => {
             const paymentMethod = "MOMO";
 
             const response = await axios.post(
-                `http://localhost:8080/pharmacy/createBill`,
+                `http://localhost:8080/pharmacy/createbill`,
                 {
                     appointmentId: appointmentId,
                     testFees,

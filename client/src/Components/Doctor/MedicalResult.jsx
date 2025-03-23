@@ -49,7 +49,6 @@ const MedicalResult = () => {
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching waiting appointments:", error);
-                // Xóa alert để không hiển thị thông báo lỗi
                 setAppointments([]);
                 setLoading(false);
             }
@@ -73,8 +72,12 @@ const MedicalResult = () => {
         sortableAppointments.sort((a, b) => {
             const appointmentA = a.appointment;
             const appointmentB = b.appointment;
-            const diagnosisA = a.diagnosisDetails && a.diagnosisDetails.length > 0 ? a.diagnosisDetails[0] : {};
-            const diagnosisB = b.diagnosisDetails && b.diagnosisDetails.length > 0 ? b.diagnosisDetails[0] : {};
+            const diagnosisA = a.diagnosisDetails && a.diagnosisDetails.length > 0 
+                ? a.diagnosisDetails[a.diagnosisDetails.length - 1] 
+                : {};
+            const diagnosisB = b.diagnosisDetails && b.diagnosisDetails.length > 0 
+                ? b.diagnosisDetails[b.diagnosisDetails.length - 1] 
+                : {};
 
             if (sortConfig.key === "patientName") {
                 return sortConfig.direction === "asc"
@@ -189,7 +192,7 @@ const MedicalResult = () => {
                                 const appointment = item.appointment;
                                 const diagnosis =
                                     item.diagnosisDetails && item.diagnosisDetails.length > 0
-                                        ? item.diagnosisDetails[0]
+                                        ? item.diagnosisDetails[item.diagnosisDetails.length - 1]
                                         : null;
 
                                 return (

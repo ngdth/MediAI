@@ -109,7 +109,6 @@ export const getSchedulesByDoctor = async (req: Request, res: Response): Promise
 // get schedules by token
 export const getSchedulesByToken = async (req: Request, res: Response): Promise<void> => {
     try {
-
         const doctorId = req.user?.id; // 🔥 Lấy doctorId từ token
 
         if (!doctorId) {

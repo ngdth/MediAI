@@ -91,7 +91,7 @@ const DoctorsDetailsPage = () => {
   }
 
   if (!doctorDetails) {
-    return <p>Doctor not found</p>;
+    return <p>Không tìm thấy bác sĩ</p>;
   }
 
   const headingData = {
@@ -107,7 +107,7 @@ const DoctorsDetailsPage = () => {
   const doctorInfo = [
     {
       icon: <FaLocationDot />,
-      title: 'Address',
+      title: 'Địa chỉ',
       subtitle: doctorDetails.location,
       secIcon: <FaEnvelope />,
       secTitle: 'E-mail:',
@@ -115,7 +115,7 @@ const DoctorsDetailsPage = () => {
     },
     {
       icon: <FaCertificate />,
-      title: 'Specialization',
+      title: 'Chuyên khoa',
       subtitle: doctorDetails.specialization,
       secIcon: <FaGlobe />,
       secTitle: 'Website',
@@ -123,7 +123,7 @@ const DoctorsDetailsPage = () => {
     },
     {
       icon: <FaSuitcase />,
-      title: 'Experience',
+      title: 'Kinh nghiệm',
       subtitle: doctorDetails.experience,
     },
   ];

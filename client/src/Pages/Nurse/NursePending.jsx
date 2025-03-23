@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import RejectModal from "../../Components/Nurse/RejectModal";
+import axios from "axios";
 
 const NursePending = () => {
     const [appointments, setAppointments] = useState([]);
     const [doctors, setDoctors] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedDoctors, setSelectedDoctors] = useState({});
+    const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+    const [showRejectModal, setShowRejectModal] = useState(false);
+    const [rejectReason, setRejectReason] = useState("");
     const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
     const navigate = useNavigate();
 
@@ -47,7 +51,7 @@ const NursePending = () => {
 
     const updateAppointmentStatus = async (id, status) => {
         try {
-            await axios.put(`http://localhost:8080/appointment/${id}/status`, { status }, {
+            await axios.put(`http://localhost:8080/appointment/${id}/status`, { status, rejectReason }, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             fetchAppointments("Pending");
@@ -131,6 +135,34 @@ const NursePending = () => {
             ...prev,
             [appointmentId]: selectedDoctor,
         }));
+    };
+
+    const handleReject = (id) => {
+        setSelectedAppointmentId(id);
+        setShowRejectModal(true);
+    };
+
+    const handleConfirmReject = async () => {
+        if (!rejectReason.trim()) {
+            alert("Vui lòng nhập lý do từ chối.");
+            return;
+        }
+
+        if (!selectedAppointmentId) {
+            alert("Không tìm thấy cuộc hẹn để từ chối.");
+            return;
+        }
+
+        try {
+            await updateAppointmentStatus(selectedAppointmentId, "Rejected"); // Cập nhật trạng thái thành 'Rejected'
+            setShowRejectModal(false);
+            setRejectReason("");
+            setSelectedAppointmentId(null); // Reset state sau khi từ chối thành công
+            fetchAppointments("Pending"); // Refresh danh sách lịch hẹn
+        } catch (error) {
+            console.error("Lỗi khi từ chối cuộc hẹn:", error);
+            alert(error.response?.data?.message || "Có lỗi xảy ra khi từ chối lịch hẹn.");
+        }
     };
 
     return (
@@ -227,7 +259,7 @@ const NursePending = () => {
                                             </button>
                                             <button
                                                 className="btn btn-danger me-2"
-                                                onClick={() => updateAppointmentStatus(appointment._id, "Rejected")}
+                                                onClick={() => handleReject(appointment._id)}
                                             >
                                                 Từ chối
                                             </button>
@@ -249,6 +281,14 @@ const NursePending = () => {
                     </tbody>
                 </table>
             )}
+
+            <RejectModal
+                show={showRejectModal}
+                handleClose={() => setShowRejectModal(false)}
+                handleConfirm={handleConfirmReject}
+                rejectReason={rejectReason}
+                setRejectReason={setRejectReason}
+            />
         </div>
     );
 };

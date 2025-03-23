@@ -75,6 +75,23 @@ export const sendEmail = async (email: string, data: any, type: string) => {
             };
             break;
 
+        case "appointment_rejected":
+            mailOptions = {
+                from: `"AMMA" <${process.env.EMAIL_USER}>`,
+                to: email,
+                subject: "Lịch hẹn của bạn đã bị từ chối",
+                html: `
+                        <h2 style="color: red;">Lịch hẹn của bạn đã bị từ chối</h2>
+                        <p>Xin chào ${data.patientName},</p>
+                        <p>Chúng tôi rất tiếc phải thông báo rằng lịch hẹn của bạn vào ngày <strong>${new Date(data.date).toLocaleDateString('vi-VN')}</strong> lúc <strong>${data.time}</strong> đã bị từ chối.</p>
+                        <p><strong>Lý do từ chối:</strong> ${data.rejectReason}</p>
+                        <p>Nếu bạn cần hỗ trợ hoặc muốn đặt lại lịch hẹn, vui lòng liên hệ chúng tôi qua hotline: <strong>0236 3650 676</strong>.</p>
+                        <p>Chúng tôi xin lỗi vì sự bất tiện này.</p>
+                        <p><strong>Phòng khám Y Khoa AMMA</strong></p>
+                    `,
+            };
+            break;
+
         case "create_bill":
             mailOptions = {
                 from: `"AMMA" <${process.env.EMAIL_USER}>`,
@@ -95,19 +112,21 @@ export const sendEmail = async (email: string, data: any, type: string) => {
                     `,
             };
             break;
-            case "payment_success":
-                mailOptions = {
-                    from: `"AMMA" <${process.env.EMAIL_USER}>`,
-                    to: email,
-                    subject:
-                        `Thanh toán thành công hóa đơn khám bệnh - ${data.billId}`,
-                    html: `
+
+        case "payment_success":
+            mailOptions = {
+                from: `"AMMA" <${process.env.EMAIL_USER}>`,
+                to: email,
+                subject:
+                    `Thanh toán thành công hóa đơn khám bệnh - ${data.billId}`,
+                html: `
                     <h2>Thanh toán thanh công</h2>
                     <p>Xin chào ${data.patientName},</p>
                     <p>Bạn đã thanh toán thành công hóa đơn khám bệnh với mã hóa đơn: <strong>${data.billId}</strong>.</p>
                     <p><strong>Phí khám:</strong> ${data.totalAmount} VNĐ</p>`
-                };
+            };
             break;
+
         default:
             throw new Error("Invalid email type");
     }

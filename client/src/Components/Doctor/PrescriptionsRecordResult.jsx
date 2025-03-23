@@ -19,7 +19,6 @@ const PrescriptionsRecordResult = () => {
                 setAppointments(response.data.data || []);
             } catch (error) {
                 console.error('Error fetching prescription created appointments:', error);
-                // Xóa alert để không hiển thị thông báo lỗi
                 setAppointments([]);
             } finally {
                 setLoading(false);
@@ -38,7 +37,6 @@ const PrescriptionsRecordResult = () => {
             );
             alert(`Appointment status updated to Pending.`);
 
-            // Refresh the list after updating status
             const response = await axios.get('http://localhost:8080/appointment/prescription-created', {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
@@ -88,7 +86,10 @@ const PrescriptionsRecordResult = () => {
                     <tbody>
                         {appointments.map((item, index) => {
                             const appointment = item.appointment;
-                            const diagnosis = item.diagnosisDetails && item.diagnosisDetails.length > 0 ? item.diagnosisDetails[0] : null;
+                            const diagnosis =
+                                item.diagnosisDetails && item.diagnosisDetails.length > 0
+                                    ? item.diagnosisDetails[item.diagnosisDetails.length - 1]
+                                    : null;
                             const prescriptionList = item.prescriptions || [];
 
                             return (

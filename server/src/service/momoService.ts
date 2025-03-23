@@ -18,31 +18,31 @@ interface MomoResponse {
 // 🚀 Hàm tạo thanh toán
 export const createPayment = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { billId } = req.body;
+        const { _id } = req.body;
 
-        // 🔍 Kiểm tra `billId` hợp lệ
-        if (!billId) {
-            console.log("⚠️ Thiếu billId trong request!");
-            res.status(400).json({ message: "billId is required" });
+        // 🔍 Kiểm tra `_id` hợp lệ
+        if (!_id) {
+            console.log("⚠️ Thiếu _id trong request!");
+            res.status(400).json({ message: "_id is required" });
             return;
         }
 
-        // 📌 Tìm hóa đơn dựa trên `billId`
-        const bill = await Bill.findById(billId);
+        // 📌 Tìm hóa đơn dựa trên `_id`
+        const bill = await Bill.findById(_id);
 
         if (!bill) {
-            console.log("❌ Không tìm thấy hóa đơn với billId:", billId);
-            res.status(404).json({ message: "Bill not found for this billId." });
+            console.log("❌ Không tìm thấy hóa đơn với _id:", _id);
+            res.status(404).json({ message: "Bill not found for this _id." });
             return;
         }
 
         const amount = bill.totalAmount; // Lấy tổng số tiền từ hóa đơn
         const orderInfo = 'Thanh toán qua MoMo';
         const partnerCode = 'MOMO';
-        const redirectUrl = 'http://localhost:5173/success';  // URL thành công (có thể thay đổi)
+        const redirectUrl = 'http://localhost:5173/payment';  // URL thành công (có thể thay đổi)
         const ipnUrl = 'https://bf6d-123-19-56-67.ngrok-free.app/callback';  // Cập nhật lại ngrok nếu cần
         const requestType = "payWithMethod";
-        const orderId = `${partnerCode}_${billId}_${Date.now()}`;
+        const orderId = `${partnerCode}_${_id}_${Date.now()}`;
         const requestId = orderId;
         const extraData = '';
         const autoCapture = true;

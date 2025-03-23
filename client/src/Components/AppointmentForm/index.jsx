@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import axios from "axios"
+import axios from "axios";
 
-const hospitals = ["Phòng khám Y Khoa AMMA"];
 const specialties = ["Cấp cứu", "Chẩn đoán hình ảnh", "Chấn thương chỉnh hình", "Da liễu", "Hô hấp", "Nhãn khoa", "Nhi khoa", "Nội tiết", "Nội tổng quát", "Sản phụ", "Sơ sinh", "Tai Mũi Họng (hay ENT)", "Thận", "Thần kinh", "Tiết niệu", "Tim mạch", "Ung thư", "Cơ xương khớp", "Hậu môn trực tràng"];
 
 const AppointmentForm = () => {
@@ -15,7 +14,6 @@ const AppointmentForm = () => {
         address: '',
         dateOfBirth: null,
         gender: '',
-        hospital: '',
         specialty: '',
         additionalInfo: '',
         appointmentDate: null,
@@ -24,6 +22,40 @@ const AppointmentForm = () => {
 
     const [showPopup, setShowPopup] = useState(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    console.log("No token found, user not logged in.");
+                    return;
+                }
+
+                const response = await axios.get('http://localhost:8080/user/profile', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                const user = response.data.user || response.data;
+
+                setFormData((prevData) => ({
+                    ...prevData,
+                    fullName: user.username || '',
+                    email: user.email || '',
+                    phone: user.phone || '',
+                    address: user.address || '',
+                    dateOfBirth: user.birthday ? new Date(user.birthday) : null,
+                    gender: user.gender || '',
+                }));
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+            }
+        };
+
+        fetchUserData();
+    }, []);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -39,13 +71,11 @@ const AppointmentForm = () => {
 
     const today = new Date();
 
-    // ✅ Gửi API đặt lịch khám
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            const token = localStorage.getItem("token"); // ✅ Lấy token từ localStorage
-
+            const token = localStorage.getItem("token");
             if (!token) {
                 alert("Bạn cần đăng nhập trước khi đặt lịch.");
                 return;
@@ -66,7 +96,7 @@ const AppointmentForm = () => {
             if (response.status === 201) {
                 setShowPopup(true);
                 setTimeout(() => {
-                    navigate('/'); // ✅ Tự động về trang chủ sau 15s
+                    navigate('/');
                 }, 15000);
             }
         } catch (error) {
@@ -79,7 +109,6 @@ const AppointmentForm = () => {
         <div className="appointment-container">
             <div className="appointment-form">
                 <form onSubmit={handleSubmit}>
-
                     <h3>Thông tin bệnh nhân</h3>
                     <input className="form-control" name="fullName" value={formData.fullName} onChange={handleChange} placeholder="Họ và tên" required />
                     <input className="form-control" name="phone" value={formData.phone} onChange={handleChange} placeholder="Số điện thoại" required />
@@ -123,10 +152,6 @@ const AppointmentForm = () => {
                     </div>
 
                     <h3>Chọn chuyên khoa</h3>
-                    <select className="form-select" name="hospital" value={formData.hospital} onChange={handleChange} required>
-                        <option value="">Bệnh Viện hoặc Phòng Khám</option>
-                        {hospitals.map((hospital, idx) => <option key={idx}>{hospital}</option>)}
-                    </select>
                     <select className="form-select" name="specialty" value={formData.specialty} onChange={handleChange} required>
                         <option value="">Chuyên Khoa</option>
                         {specialties.map((specialty, idx) => <option key={idx}>{specialty}</option>)}
@@ -165,8 +190,7 @@ const AppointmentForm = () => {
                         <div className="checkmark">✔</div>
                         <h2>Đã đăng ký</h2>
                         <p>
-                            Cảm ơn bạn đã đăng ký cuộc hẹn tại <b>{formData.hospital || "Bệnh Viện hoặc Phòng Khám"}</b>
-                             vào <b>{formData.appointmentDate ? formData.appointmentDate.toLocaleDateString("vi-VN") : "Chưa chọn ngày"} {formData.appointmentTime}</b>.
+                            Cảm ơn bạn đã đăng ký cuộc hẹn vào <b>{formData.appointmentDate ? formData.appointmentDate.toLocaleDateString("vi-VN") : "Chưa chọn ngày"} {formData.appointmentTime}</b>.
                             Chúng tôi sẽ sớm liên lạc với bạn trong vòng 24 giờ để xác nhận lịch hẹn. Xin cảm ơn.
                         </p>
                         <button className="btn-home" onClick={() => navigate('/')}>Trở về trang chủ</button>
