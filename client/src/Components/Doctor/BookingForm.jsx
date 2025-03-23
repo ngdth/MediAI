@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
-import AvailabilityScheduler from "./AvailabilityScheduler";
+import BookingSchedule from "./BookingSchedule";
 import axios from "axios";
 
-const BookingForm = ({ show, doctorId, onClose, onSubmit }) => {
+const BookingForm = ({ show, doctorId, onClose }) => {
   const [formData, setFormData] = useState({
     fullName: "",
     age: "",
@@ -200,7 +200,7 @@ const BookingForm = ({ show, doctorId, onClose, onSubmit }) => {
 
             {/* Cột 2 - Thông tin khám bệnh */}
             <Col>
-              <AvailabilityScheduler
+              <BookingSchedule
                 doctorId={doctorId}
                 selectedDay={selectedDay}
                 setSelectedDay={setSelectedDay}

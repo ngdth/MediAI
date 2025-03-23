@@ -1,12 +1,6 @@
 import { useState, useEffect } from "react";
 
-export default function AvailabilityScheduler({ doctorId, selectedDay, setSelectedDay, selectedSlot, setSelectedSlot }) {
-  // const [currentWeekStart, setCurrentWeekStart] = useState(() => {
-  //   const today = new Date();
-  //   const day = today.getDay();
-  //   const diff = today.getDate() - day;
-  //   return new Date(today.setDate(diff));
-  // });
+export default function BookingSchedule({ doctorId, selectedDay, setSelectedDay, selectedSlot, setSelectedSlot }) {
 
   const [availabilityData, setAvailabilityData] = useState({});
   const token = localStorage.getItem("token");
@@ -103,7 +97,7 @@ export default function AvailabilityScheduler({ doctorId, selectedDay, setSelect
 
       <div className="day-schedule">
         <h2 className="schedule-title">
-          {selectedDayObj?.date.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
+          {selectedDayObj?.date.toLocaleDateString("en-CN", { weekday: "long", month: "long", day: "numeric" })}
         </h2>
 
         <div className="time-slots-container">

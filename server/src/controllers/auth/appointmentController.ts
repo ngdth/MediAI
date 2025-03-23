@@ -69,6 +69,24 @@ export const bookAppointment = async (req: Request, res: Response, next: NextFun
             return;
         }
 
+        const schedule = await Schedule.findOne({
+            doctorId,
+            availableSlots: {
+                $elemMatch: { date: new Date(date), time, isBooked: false },
+            },
+        });
+
+        if (!schedule) {
+            res.status(400).json({ message: "Không tìm thấy lịch khả dụng hoặc lịch đã được đặt trước." });
+            return;
+        }
+
+        await Schedule.updateOne(
+            { doctorId, "availableSlots.date": new Date(date), "availableSlots.time": time },
+            { $set: { "availableSlots.$[element].isBooked": true } },
+            { arrayFilters: [{ "element.date": new Date(date), "element.time": time }] }
+        );
+
         const newAppointment = new Appointment({
             userId,
             patientName,
@@ -179,7 +197,7 @@ export const updateAppointmentField = async (req: Request, res: Response, next: 
 // Cập nhật trạng thái lịch hẹn
 export const updateAppointmentStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status, rejectReason } = req.body;
 
     try {
         const appointment = await Appointment.findById(id)
@@ -230,6 +248,33 @@ export const updateAppointmentStatus = async (req: Request, res: Response, next:
             } catch (emailError) {
                 console.error("Failed to send email:", emailError);
                 // Không làm crash API, chỉ ghi log lỗi email
+            }
+        }
+
+        if (status === AppointmentStatus.REJECTED) {
+            if (!rejectReason) {
+                res.status(400).json({ message: "Reject reason is required when rejecting an appointment." });
+                return;
+            }
+
+            const userEmail = (appointment.userId as any)?.email;
+            if (!userEmail) {
+                res.status(400).json({ message: "User email not found" });
+                return;
+            }
+
+            const emailData = {
+                patientName: appointment.patientName,
+                doctorName: (appointment.doctorId as any)?.username || "Unknown Doctor",
+                date: appointment.date,
+                time: appointment.time,
+                rejectReason: rejectReason, // Gửi lý do từ chối vào email
+            };
+
+            try {
+                await sendEmail(userEmail, emailData, "appointment_rejected");
+            } catch (emailError) {
+                console.error("Failed to send rejection email:", emailError);
             }
         }
 
