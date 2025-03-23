@@ -117,7 +117,7 @@ const BookingForm = ({ show, doctorId, onClose }) => {
   };
 
   return (
-    <Modal show={show} onHide={onClose} centered dialogClassName="large-modal">
+    <Modal show={show} onHide={onClose} centered scrollable dialogClassName="large-modal">
       <Modal.Header closeButton>
         <Modal.Title>Đặt lịch khám</Modal.Title>
       </Modal.Header>
