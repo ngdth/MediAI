@@ -3,9 +3,11 @@ import { useEffect, useState } from "react"
 import TimeSlotGrid from "./TimeSlotGrid"
 import { generateDateRange, formatDate } from "../../utils/dateUtils"
 import axios from "axios"
+import { toast, ToastContainer } from "react-toastify"
 
 const AvailabilitySchedule = () => {
   const token = localStorage.getItem("token")
+  const [selectedSlots, setSelectedSlots] = useState({})
 
   const [currentWeekStart, setCurrentWeekStart] = useState(() => {
     const today = new Date()
@@ -14,9 +16,6 @@ const AvailabilitySchedule = () => {
     const diff = today.getDate() - dayOfWeek
     return new Date(today.setDate(diff))
   })
-
-  const [selectedSlots, setSelectedSlots] = useState({})
-  const [showToast, setShowToast] = useState(false)
 
   // Generate the dates for the current week view
   const dates = generateDateRange(currentWeekStart, 7)
@@ -93,10 +92,10 @@ const AvailabilitySchedule = () => {
       )
 
       console.log("Availability saved:", response.data)
-      setShowToast(true)
-      setTimeout(() => setShowToast(false), 3000)
+      toast.success("Chỉnh sửa lịch thành công!")
     } catch (error) {
       console.error("Failed to save availability:", error)
+      toast.error("Gặp lỗi khi chỉnh sửa lịch!")
     }
   }
 
@@ -124,11 +123,7 @@ const AvailabilitySchedule = () => {
         </button>
       </div>
 
-      {showToast && (
-        <div className="toast">
-          <p>Availability saved successfully!</p>
-        </div>
-      )}
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
     </div>
   );
 };
