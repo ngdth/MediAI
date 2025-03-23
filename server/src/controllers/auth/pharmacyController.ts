@@ -129,6 +129,7 @@ export const createBill = async (req: Request, res: Response, next: NextFunction
         const pharmacy = appointment.pharmacyId as { _id?: string };
         const pharmacyId = pharmacy?._id;
 
+
         // Tạo hóa đơn mới
         const newBill = new Bill({
             userId: userId,
@@ -169,10 +170,10 @@ export const createBill = async (req: Request, res: Response, next: NextFunction
         console.log("✅ Appointment status updated to BILL_CREATED");
 
         // Gửi email thông báo
-        // if (userEmail) {
-        //     await sendEmail(userEmail, newBill, "create_bill");
-        //     console.log("✅ Email sent to patient:", userEmail);
-        // }
+        if (userEmail) {
+            await sendEmail(userEmail, newBill, "create_bill");
+            console.log("✅ Email sent to patient:", userEmail);
+        }
 
         res.status(201).json({
             message: 'Bill created successfully',
