@@ -10,8 +10,29 @@ const ManagePrescriptionsRecord = () => {
     const [prescriptions, setPrescriptions] = useState([
         { medicineName: '', unit: '', quantity: '', usage: '' }
     ]);
+    const [doctorId, setDoctorId] = useState(null); // Thêm state cho doctorId
+    const [expandedDoctors, setExpandedDoctors] = useState({}); // Thêm state cho mở rộng bác sĩ
+    const [allPrescriptions, setAllPrescriptions] = useState([]); // Thêm state cho đơn thuốc từ API
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
+
+    // Lấy doctorId hiện tại
+    useEffect(() => {
+        const fetchDoctorId = async () => {
+            try {
+                const response = await axios.get("http://localhost:8080/user/me", {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const id = response.data.id;
+                setDoctorId(id);
+                console.log("Current Doctor ID:", id);
+            } catch (error) {
+                console.error("Error fetching doctor ID:", error);
+            }
+        };
+
+        fetchDoctorId();
+    }, [token]);
 
     const fetchAppointmentDetails = async () => {
         try {
@@ -28,13 +49,16 @@ const ManagePrescriptionsRecord = () => {
                     appointment: selectedAppointment.appointment || {},
                     diagnosisDetails: selectedAppointment.diagnosisDetails || []
                 });
+                setAllPrescriptions(selectedAppointment.prescriptions || []); // Lấy đơn thuốc từ API
             } else {
                 console.error("Appointment not found with ID:", appointmentId);
                 setAppointmentData({ appointment: {}, diagnosisDetails: [] });
+                setAllPrescriptions([]);
             }
         } catch (error) {
             console.error("Error fetching appointment details:", error);
             setAppointmentData({ appointment: {}, diagnosisDetails: [] });
+            setAllPrescriptions([]);
         }
     };
 
@@ -69,7 +93,7 @@ const ManagePrescriptionsRecord = () => {
     };
 
     const addServiceRow = () => {
-        setSelectedServices([...selectedServices, ""]); // serviceId
+        setSelectedServices([...selectedServices, ""]);
     };
 
     const handleServiceChange = (index, serviceId) => {
@@ -91,14 +115,12 @@ const ManagePrescriptionsRecord = () => {
                 usage: prescription.usage
             }));
 
-            // 1. Tạo đơn thuốc
             await axios.post(
                 `http://localhost:8080/appointment/${appointmentId}/createprescription`,
                 { prescription: prescriptionData },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            // 2. Cập nhật services cho Appointment
             await axios.put(
                 `http://localhost:8080/appointment/${appointmentId}/update-field`,
                 {
@@ -128,6 +150,32 @@ const ManagePrescriptionsRecord = () => {
         return diagnosis[field] || "Không có thông tin";
     };
 
+    const toggleDoctorExpansion = (doctorId) => {
+        setExpandedDoctors((prev) => ({
+            ...prev,
+            [doctorId]: !prev[doctorId],
+        }));
+    };
+
+    const renderReadOnlyField = (label, value) => {
+        let displayValue = value;
+        if (label === "Lịch tái khám") {
+            displayValue = value ? new Date(value).toISOString().split("T")[0] : "Không có thông tin";
+        } else {
+            displayValue = value || "Không có thông tin";
+        }
+        return (
+            <tr>
+                <td>{label}</td>
+                <td>{displayValue}</td>
+            </tr>
+        );
+    };
+
+    // Lọc danh sách bác sĩ: chỉ lấy từ đầu đến trước bác sĩ hiện tại
+    const currentDoctorIndex = appointmentData.appointment.doctorId?.findIndex((doctor) => doctor._id === doctorId) || -1;
+    const previousDoctors = currentDoctorIndex > 0 ? appointmentData.appointment.doctorId.slice(0, currentDoctorIndex) : [];
+
     return (
         <div className="container">
             <h2 className="text-center mt-4">Tạo đơn thuốc</h2>
@@ -139,6 +187,75 @@ const ManagePrescriptionsRecord = () => {
                 <p><strong>Chẩn đoán bệnh:</strong> {getDiagnosisDetail('diseaseName')}</p>
                 <p><strong>Mức độ nghiêm trọng:</strong> {getDiagnosisDetail('severity')}</p>
                 <p><strong>Phương án điều trị:</strong> {getDiagnosisDetail('treatmentPlan')}</p>
+            </div>
+
+            {/* Các bác sĩ đã phụ trách */}
+            <div className="mb-4">
+                <h3 className="text-primary">Các bác sĩ đã phụ trách</h3>
+                {previousDoctors.length > 0 ? (
+                    previousDoctors.map((doctor) => (
+                        <div key={doctor._id} className="mb-3">
+                            <h4
+                                onClick={() => toggleDoctorExpansion(doctor._id)}
+                                style={{ cursor: "pointer", color: "#007bff" }}
+                            >
+                                Bác sĩ: {doctor.username} {expandedDoctors[doctor._id] ? "↓" : "→"}
+                            </h4>
+                            {expandedDoctors[doctor._id] && (
+                                <div className="ml-3">
+                                    <h5>Chi tiết chẩn đoán</h5>
+                                    <table className="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Chỉ số</th>
+                                                <th>Giá trị</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {appointmentData.diagnosisDetails
+                                                .filter((dd) => dd.doctorId?._id === doctor._id)
+                                                .map((dd, index) => (
+                                                    <React.Fragment key={index}>
+                                                        {renderReadOnlyField("Tên bệnh", dd.diseaseName)}
+                                                        {renderReadOnlyField("Mức độ nghiêm trọng", dd.severity)}
+                                                        {renderReadOnlyField("Kế hoạch điều trị", dd.treatmentPlan)}
+                                                        {renderReadOnlyField("Lịch tái khám", dd.followUpSchedule)}
+                                                        {renderReadOnlyField("Hướng dẫn đặc biệt", dd.specialInstructions)}
+                                                    </React.Fragment>
+                                                ))}
+                                        </tbody>
+                                    </table>
+
+                                    <h5>Đơn thuốc</h5>
+                                    <table className="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Tên thuốc</th>
+                                                <th>Đơn vị</th>
+                                                <th>Số lượng</th>
+                                                <th>Cách dùng</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {allPrescriptions
+                                                .filter((p) => p.doctorId?._id === doctor._id)
+                                                .map((presc, index) => (
+                                                    <tr key={index}>
+                                                        <td>{presc.medicineName}</td>
+                                                        <td>{presc.unit}</td>
+                                                        <td>{presc.quantity}</td>
+                                                        <td>{presc.usage}</td>
+                                                    </tr>
+                                                ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </div>
+                    ))
+                ) : (
+                    <p>Không có bác sĩ trước đó phụ trách.</p>
+                )}
             </div>
 
             {/* Đơn thuốc */}
