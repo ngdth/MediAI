@@ -4,7 +4,7 @@ import TimeSlotGrid from "./TimeSlotGrid"
 import { generateDateRange, formatDate } from "../../utils/dateUtils"
 import axios from "axios"
 
-function AvailabilityCalendar() {
+const AvailabilitySchedule = () => {
   const token = localStorage.getItem("token")
 
   const [currentWeekStart, setCurrentWeekStart] = useState(() => {
@@ -130,7 +130,7 @@ function AvailabilityCalendar() {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default AvailabilityCalendar;
+export default AvailabilitySchedule;
