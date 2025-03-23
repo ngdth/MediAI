@@ -10,13 +10,12 @@ const ManagePrescriptionsRecord = () => {
     const [prescriptions, setPrescriptions] = useState([
         { medicineName: '', unit: '', quantity: '', usage: '' }
     ]);
-    const [doctorId, setDoctorId] = useState(null); // Thêm state cho doctorId
-    const [expandedDoctors, setExpandedDoctors] = useState({}); // Thêm state cho mở rộng bác sĩ
-    const [allPrescriptions, setAllPrescriptions] = useState([]); // Thêm state cho đơn thuốc từ API
+    const [doctorId, setDoctorId] = useState(null);
+    const [expandedDoctors, setExpandedDoctors] = useState({});
+    const [allPrescriptions, setAllPrescriptions] = useState([]);
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
 
-    // Lấy doctorId hiện tại
     useEffect(() => {
         const fetchDoctorId = async () => {
             try {
@@ -49,7 +48,7 @@ const ManagePrescriptionsRecord = () => {
                     appointment: selectedAppointment.appointment || {},
                     diagnosisDetails: selectedAppointment.diagnosisDetails || []
                 });
-                setAllPrescriptions(selectedAppointment.prescriptions || []); // Lấy đơn thuốc từ API
+                setAllPrescriptions(selectedAppointment.prescriptions || []);
             } else {
                 console.error("Appointment not found with ID:", appointmentId);
                 setAppointmentData({ appointment: {}, diagnosisDetails: [] });
@@ -145,7 +144,7 @@ const ManagePrescriptionsRecord = () => {
 
     const getDiagnosisDetail = (field) => {
         const diagnosis = Array.isArray(appointmentData.diagnosisDetails) && appointmentData.diagnosisDetails.length > 0
-            ? appointmentData.diagnosisDetails[0]
+            ? appointmentData.diagnosisDetails[appointmentData.diagnosisDetails.length - 1]
             : {};
         return diagnosis[field] || "Không có thông tin";
     };
@@ -172,7 +171,6 @@ const ManagePrescriptionsRecord = () => {
         );
     };
 
-    // Lọc danh sách bác sĩ: chỉ lấy từ đầu đến trước bác sĩ hiện tại
     const currentDoctorIndex = appointmentData.appointment.doctorId?.findIndex((doctor) => doctor._id === doctorId) || -1;
     const previousDoctors = currentDoctorIndex > 0 ? appointmentData.appointment.doctorId.slice(0, currentDoctorIndex) : [];
 
