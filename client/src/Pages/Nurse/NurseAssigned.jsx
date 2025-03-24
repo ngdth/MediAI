@@ -6,6 +6,8 @@ const NurseAssigned = () => {
   const [appointments, setAppointments] = useState([]);
   const [doctors, setDoctors] = useState({});
   const [loading, setLoading] = useState(true);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const navigate = useNavigate();
 
@@ -49,7 +51,7 @@ const NurseAssigned = () => {
     try {
       await axios.put(
         `http://localhost:8080/appointment/${id}/status`,
-        { status },
+        { status, rejectReason },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
@@ -124,6 +126,34 @@ const NurseAssigned = () => {
 
   const handleViewDetail = (appointmentId) => {
     navigate(`/nurse/general-health/${appointmentId}`);
+  };
+
+  const handleReject = (id) => {
+    setSelectedAppointmentId(id);
+    setShowRejectModal(true);
+  };
+
+  const handleConfirmReject = async () => {
+    if (!rejectReason.trim()) {
+      alert("Vui lòng nhập lý do từ chối.");
+      return;
+    }
+
+    if (!selectedAppointmentId) {
+      alert("Không tìm thấy cuộc hẹn để từ chối.");
+      return;
+    }
+
+    try {
+      await updateAppointmentStatus(selectedAppointmentId, "Rejected"); // Cập nhật trạng thái thành 'Rejected'
+      setShowRejectModal(false);
+      setRejectReason("");
+      setSelectedAppointmentId(null); // Reset state sau khi từ chối thành công
+      fetchAppointments("Pending"); // Refresh danh sách lịch hẹn
+    } catch (error) {
+      console.error("Lỗi khi từ chối cuộc hẹn:", error);
+      alert(error.response?.data?.message || "Có lỗi xảy ra khi từ chối lịch hẹn.");
+    }
   };
 
   return (
@@ -206,7 +236,7 @@ const NurseAssigned = () => {
                       </button>
                       <button
                         className="btn btn-danger"
-                        onClick={() => updateAppointmentStatus(appointment._id, "Rejected")}
+                        onClick={() => handleReject(appointment._id)}
                       >
                         Từ chối
                       </button>
@@ -228,6 +258,14 @@ const NurseAssigned = () => {
           </tbody>
         </table>
       )}
+
+      <RejectModal
+        show={showRejectModal}
+        handleClose={() => setShowRejectModal(false)}
+        handleConfirm={handleConfirmReject}
+        rejectReason={rejectReason}
+        setRejectReason={setRejectReason}
+      />
     </div>
   );
 };
