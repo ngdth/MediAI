@@ -9,6 +9,8 @@ const ServiceManagement = () => {
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [deleteServiceId, setDeleteServiceId] = useState(null);
 
+    const specialties = ["Cấp cứu", "Chẩn đoán hình ảnh", "Chấn thương chỉnh hình", "Da liễu", "Hô hấp", "Nhãn khoa", "Nhi khoa", "Nội tiết", "Nội tổng quát", "Sản phụ", "Sơ sinh", "Tai Mũi Họng (hay ENT)", "Thận", "Thần kinh", "Tiết niệu", "Tim mạch", "Ung thư", "Cơ xương khớp", "Hậu môn trực tràng"];
+
     const initialFormData = {
         name: "",
         description: "",
@@ -199,7 +201,14 @@ const ServiceManagement = () => {
                         </Form.Group>
                         <Form.Group>
                             <Form.Label className="d-block text-start">Khoa</Form.Label>
-                            <Form.Control type="text" name="department" placeholder="Nhập khoa" value={formData.department} onChange={handleChange} required />
+                            <Form.Select name="department" value={formData.department} onChange={handleChange} required>
+                                <option value="">Chọn chuyên khoa</option>
+                                {specialties.map((specialty, idx) => (
+                                    <option key={idx} value={specialty}>
+                                        {specialty}
+                                    </option>
+                                ))}
+                            </Form.Select>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label className="d-block text-start">Giá</Form.Label>
