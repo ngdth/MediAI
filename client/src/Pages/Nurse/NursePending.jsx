@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import RejectModal from "../../Components/Nurse/RejectModal";
-import axios from "axios";
 
 const NursePending = () => {
     const [appointments, setAppointments] = useState([]);

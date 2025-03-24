@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import RejectModal from "../Nurse/RejectModal";
 
 const ManageAppointment = () => {
     const [appointments, setAppointments] = useState([]);
     const [doctorId, setDoctorId] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [showRejectModal, setShowRejectModal] = useState(false);
+    const [rejectReason, setRejectReason] = useState("");
     const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
     const token = localStorage.getItem("token");
 
@@ -106,6 +109,34 @@ const ManageAppointment = () => {
         return sortableAppointments;
     }, [appointments, sortConfig]);
 
+    const handleReject = (id) => {
+        setSelectedAppointmentId(id);
+        setShowRejectModal(true);
+    };
+
+    const handleConfirmReject = async () => {
+        if (!rejectReason.trim()) {
+            alert("Vui lòng nhập lý do từ chối.");
+            return;
+        }
+
+        if (!selectedAppointmentId) {
+            alert("Không tìm thấy cuộc hẹn để từ chối.");
+            return;
+        }
+
+        try {
+            await updateAppointmentStatus(selectedAppointmentId, "Rejected"); // Cập nhật trạng thái thành 'Rejected'
+            setShowRejectModal(false);
+            setRejectReason("");
+            setSelectedAppointmentId(null); // Reset state sau khi từ chối thành công
+            fetchAppointments("Pending"); // Refresh danh sách lịch hẹn
+        } catch (error) {
+            console.error("Lỗi khi từ chối cuộc hẹn:", error);
+            alert(error.response?.data?.message || "Có lỗi xảy ra khi từ chối lịch hẹn.");
+        }
+    };
+
     return (
         <div className="container">
             <h2>Danh sách lịch hẹn</h2>
@@ -164,6 +195,12 @@ const ManageAppointment = () => {
                                             >
                                                 Tạo kết quả khám bệnh
                                             </Link>
+                                            <button
+                                                className="btn btn-danger me-2"
+                                                onClick={() => handleReject(appointment._id)}
+                                            >
+                                                Từ chối
+                                            </button>
                                         </td>
                                     </tr>
                                 );
@@ -176,6 +213,14 @@ const ManageAppointment = () => {
                     </tbody>
                 </table>
             )}
+
+            <RejectModal
+                show={showRejectModal}
+                handleClose={() => setShowRejectModal(false)}
+                handleConfirm={handleConfirmReject}
+                rejectReason={rejectReason}
+                setRejectReason={setRejectReason}
+            />
         </div>
     );
 };
