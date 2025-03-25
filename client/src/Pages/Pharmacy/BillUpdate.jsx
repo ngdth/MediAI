@@ -1,33 +1,40 @@
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Row, Col } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 
-const PrescriptionsDetail = () => {
-    const { appointmentId } = useParams();
+const BillUpdate = () => {
+    const { billId } = useParams();
+    const [bill, setBill] = useState({});
     const [appointment, setAppointment] = useState({});
     const [prescriptions, setPrescriptions] = useState([]);
     const [prices, setPrices] = useState({});
     const [services, setServices] = useState([]);
-    const [showConfirm, setShowConfirm] = useState(false);
     const [diagnosisDetails, setDiagnosisDetails] = useState([]);
+    // const [showConfirm, setShowConfirm] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchAppointmentDetails();
+        fetchBillDetails();
     }, []);
 
-    // Fetch appointment details for prescription
-    const fetchAppointmentDetails = async () => {
+    const fetchBillDetails = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/appointment/${appointmentId}`, {
+            const response = await axios.get(`http://localhost:8080/pharmacy/detail/${billId}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
-            setAppointment(response.data.data.appointment);
-            setDiagnosisDetails(response.data.data.diagnosisDetails);
-            setPrescriptions(response.data.data.prescriptions); // Set prescription
-            setServices(response.data.data.appointment.services || []); // Set services
+            setBill(response.data.bill);
+
+            console.log("response.data: ", response.data);
+            setAppointment(response.data.bill.appointmentId); // Set appointment
+            setDiagnosisDetails(response.data.diagnosisDetails); // Set diagnosis details
+            setPrescriptions(response.data.bill.medicineFees); // Set prescription
+            setServices(response.data.bill.testFees || []); // Set services
+            if (response.data.bill.medicineFees && response.data.bill.medicineFees.length > 0) {
+                const oldPrices = response.data.bill.medicineFees.map((med) => med.unitPrice);
+                setPrices(oldPrices);
+            }
         } catch (error) {
             console.error("Error fetching appointment details:", error);
         }
@@ -69,75 +76,88 @@ const PrescriptionsDetail = () => {
         });
     };
 
-    const handleCreateBill = async () => {
-        try {
-            const medicineFees = prescriptions.map((prescription, index) => {
-                const price = parseInt(prices[index]) || 0;
-                const quantity = parseInt(prescription.quantity) || 0;
-                return {
-                    name: prescription.medicineName,
-                    quantity,
-                    unit: prescription.unit,
-                    unitPrice: price,
-                    totalPrice: price * quantity,
-                    usage: prescription.usage,
-                };
-            });
+    // const handleCreateBill = async () => {
+    //     try {
+    //         const medicineFees = prescriptions.map((prescription, index) => {
+    //             const price = parseInt(prices[index]) || 0;
+    //             const quantity = parseInt(prescription.quantity) || 0;
+    //             return {
+    //                 name: prescription.medicineName,
+    //                 quantity,
+    //                 unit: prescription.unit,
+    //                 unitPrice: price,
+    //                 totalPrice: price * quantity,
+    //                 usage: prescription.usage,
+    //             };
+    //         });
 
-            const testFees = services.map((service) => ({
-                name: service.name,
-                department: service.department,
-                price: service.price,
-            }));
+    //         const testFees = services.map((service) => ({
+    //             name: service.name,
+    //             department: service.department,
+    //             price: service.price,
+    //         }));
 
-            const additionalFees = tax;
-            const paymentMethod = "MOMO";
+    //         const additionalFees = tax;
+    //         const paymentMethod = "MOMO";
 
-            const response = await axios.post(
-                `http://localhost:8080/pharmacy/createbill`,
-                {
-                    appointmentId: appointmentId,
-                    testFees,
-                    medicineFees,
-                    additionalFees,
-                    paymentMethod,
-                },
-                {
-                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-                }
-            );
-            console.log(response);
-            if (response.status === 201) {
-                toast.success("Tạo hóa đơn thành công!");
-                setTimeout(() => navigate("/pharmacy/pending"), 6000);
-                // navigate("/pharmacy/pending");
-            } else {
-                toast.error(response.data?.message || "Tạo hóa đơn thất bại!");
-            }
-        } catch (error) {
-            console.error("Error creating bill:", error);
-            console.log(error.response.data);
-            console.log(error);
-            toast.error("Có lỗi khi tạo hóa đơn!");
-        }
-    };
+    //         const response = await axios.post(
+    //             `http://localhost:8080/pharmacy/createbill`,
+    //             {
+    //                 appointmentId: appointmentId,
+    //                 testFees,
+    //                 medicineFees,
+    //                 additionalFees,
+    //                 paymentMethod,
+    //             },
+    //             {
+    //                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    //             }
+    //         );
+    //         console.log(response);
+    //         if (response.status === 201) {
+    //             toast.success("Tạo hóa đơn thành công!");
+    //             setTimeout(() => navigate("/pharmacy/pending"), 6000);
+    //             // navigate("/pharmacy/pending");
+    //         } else {
+    //             toast.error(response.data?.message || "Tạo hóa đơn thất bại!");
+    //         }
+    //     } catch (error) {
+    //         console.error("Error creating bill:", error);
+    //         console.log(error.response.data);
+    //         console.log(error);
+    //         toast.error("Có lỗi khi tạo hóa đơn!");
+    //     }
+    // };
 
     return (
         <div className="container">
-            <h2 className="text-center mt-4">Chi tiết đơn thuốc</h2>
+            <h2 className="text-center mt-4">Chi tiết hóa đơn</h2>
 
             {/* Hiển thị thông tin khám bệnh */}
-            <div className="patient-info">
-                <p>
-                    <strong>Họ và tên:</strong> {appointment.patientName}
-                </p>
-                <p>
-                    <strong>Ngày khám:</strong> {new Date(appointment.date).toLocaleDateString()}
-                </p>
-                <p>
-                    <strong>Triệu chứng:</strong> {appointment.symptoms}
-                </p>
-            </div>
+            <Row className="patient-info pt-5">
+                <Col>
+                    <p>
+                        <strong>Họ và tên người bệnh:</strong> {bill.patientName}
+                    </p>
+                    <p>
+                        <strong>Ngày khám:</strong> {new Date(appointment.date).toLocaleDateString()}
+                    </p>
+                    <p>
+                        <strong>Triệu chứng:</strong> {appointment.symptoms}
+                    </p>
+                </Col>
+                <Col>
+                    <p>
+                        <strong>Tuổi:</strong> {appointment.age}
+                    </p>
+                    <p>
+                        <strong>Giới tính:</strong> {appointment.gender}
+                    </p>
+                    <p>
+                        <strong>Địa chỉ</strong> {appointment.address}
+                    </p>
+                </Col>
+            </Row>
 
             {/* Chẩn đoán của bác sĩ */}
             <h3 className="mt-4">Kết quả khám bệnh</h3>
@@ -194,7 +214,7 @@ const PrescriptionsDetail = () => {
                         return (
                             <tr key={index}>
                                 <td className="text-center">{index + 1}</td>
-                                <td>{prescription.medicineName}</td>
+                                <td>{prescription.name}</td>
                                 <td>{prescription.unit}</td>
                                 <td className="text-center">{prescription.quantity}</td>
                                 <td>
@@ -222,9 +242,9 @@ const PrescriptionsDetail = () => {
                     })}
                 </tbody>
             </table>
-            {!isPriceValid() && (
+            {/* {!isPriceValid() && (
                 <p className="text-danger mt-2">Vui lòng nhập đầy đủ giá cho tất cả thuốc trước khi tạo hóa đơn.</p>
-            )}
+            )} */}
             <h3 className="mt-4">Thông tin dịch vụ khám</h3>
             <table className="table table-bordered">
                 <thead>
@@ -265,16 +285,16 @@ const PrescriptionsDetail = () => {
             </div>
 
             {/* Submit Button */}
-            <div className="d-flex justify-content-end mt-4">
+            {/* <div className="d-flex justify-content-end mt-4">
                 <button className="btn btn-primary" onClick={() => setShowConfirm(true)} disabled={!isPriceValid()}>
-                    Tạo hóa đơn
+                    chỉnh sửa hóa đơn
                 </button>
             </div>
             <Modal show={showConfirm} onHide={() => setShowConfirm(false)} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Xác nhận tạo hóa đơn</Modal.Title>
+                    <Modal.Title>Xác nhận chỉnh sửa hóa đơn</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Bạn có chắc chắn muốn tạo hóa đơn cho bệnh nhân này?</Modal.Body>
+                <Modal.Body>Bạn có chắc chắn muốn chỉnh sửa hóa đơn của bệnh nhân này?</Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowConfirm(false)}>
                         Hủy
@@ -289,7 +309,7 @@ const PrescriptionsDetail = () => {
                         Xác nhận
                     </Button>
                 </Modal.Footer>
-            </Modal>
+            </Modal> */}
             <ToastContainer
                 position="top-right"
                 autoClose={6000}
@@ -305,4 +325,4 @@ const PrescriptionsDetail = () => {
     );
 };
 
-export default PrescriptionsDetail;
+export default BillUpdate;

@@ -75,12 +75,12 @@ const AllBills = () => {
                                 <td className="text-center">{bill.paymentStatus}</td>
                                 {/* <td className="text-center">{appointment.time}</td> */}
                                 <td className="text-center">
-                                    {/* <Link to={`/pharmacy/bill/${bill._id}`} className="btn btn-primary">
+                                    <Link to={`/pharmacy/bill/${bill._id}`} className="btn btn-primary">
                                         Chi tiết
-                                    </Link> */}
-                                    <Button variant="primary">
+                                    </Link>
+                                    {/* <Button variant="primary">
                                         Chi tiết
-                                    </Button>
+                                    </Button> */}
                                 </td>
                             </tr>
                         ))
