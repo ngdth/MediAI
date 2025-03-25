@@ -62,7 +62,7 @@ import PharmacyeDashboard from "./Pages/Pharmacy/PharmacyDashboard";
 import PharmacyPending from "./Pages/Pharmacy/PharmacyPending";
 import PrescriptionDetail from "./Pages/Pharmacy/PrescriptionDetail";
 import AllBills from "./pages/Pharmacy/AllBills";
-// import BillUpdate from "./pages/Pharmacy/BillUpdate";
+import BillUpdate from "./pages/Pharmacy/BillUpdate";
 import PharmacyLayout from "./Components/Layout/PharmacyLayout";
 import "aos/dist/aos.css";
 import Aos from "aos";
@@ -157,7 +157,7 @@ function App() {
                     <Route path="pending" element={<PharmacyPending />} />
                     <Route path="bills" element={<AllBills />} />
                     <Route path="prescription/:appointmentId" element={<PrescriptionDetail />} />
-                    {/* <Route path="bill/:billId" element={<BillUpdate />} /> */}
+                    <Route path="bill/:billId" element={<BillUpdate />} />
                 </Route>
             </Routes>
             <ScrollUpButton />

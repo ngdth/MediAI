@@ -17,8 +17,8 @@ router.get('/',  authorizeRole(['admin', 'pharmacy', 'doctor']),getBills);
 // Route lấy tất cả hóa đơn của người dùng hiện tại (dựa trên token)
 router.get('/my-bills', getBillsByUser);
 
-// // Route lấy chi tiết hóa đơn theo ID 
-// router.get('/detail/:billId', getBillDetail);
+// Route lấy chi tiết hóa đơn theo ID 
+router.get('/detail/:billId', getBillDetail);
 
 // Route cập nhật trạng thái thanh toán hóa đơn
 router.patch('/:billId', authorizeRole(['pharmacy', 'admin']), updateBill);
