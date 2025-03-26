@@ -7,6 +7,7 @@ const ManageAppointment = () => {
     const [appointments, setAppointments] = useState([]);
     const [doctorId, setDoctorId] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
     const [showRejectModal, setShowRejectModal] = useState(false);
     const [rejectReason, setRejectReason] = useState("");
     const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -109,8 +110,31 @@ const ManageAppointment = () => {
         return sortableAppointments;
     }, [appointments, sortConfig]);
 
-    const handleReject = (id) => {
-        setSelectedAppointmentId(id);
+    const updateAppointmentStatus = async (id, status) => {
+        try {
+            await axios.put(`http://localhost:8080/appointment/${id}/status`, { status, rejectReason }, {
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            });
+            alert("Từ chối lịch hẹn thành công");
+        } catch (error) {
+            console.error("Error updating appointment status:", error);
+            alert(error.response?.data?.message || "Có lỗi xảy ra khi cập nhật trạng thái lịch hẹn.");
+        }
+    };
+
+    const handleReject = (appointment) => {
+        const appointmentDate = new Date(appointment.date);
+        const now = new Date();
+        const timeDiff = appointmentDate.getTime() - now.getTime();
+        const hoursDiff = timeDiff / (1000 * 60 * 60); // Chuyển chênh lệch thời gian sang giờ
+
+        if (hoursDiff < 24) {
+            alert("Lịch hẹn này còn dưới 24 giờ, bạn không thể từ chối.");
+            return;
+        }
+
+        // Nếu còn trên 24 giờ, hiển thị modal nhập lý do từ chối
+        setSelectedAppointmentId(appointment._id);
         setShowRejectModal(true);
     };
 
@@ -130,7 +154,6 @@ const ManageAppointment = () => {
             setShowRejectModal(false);
             setRejectReason("");
             setSelectedAppointmentId(null); // Reset state sau khi từ chối thành công
-            fetchAppointments("Pending"); // Refresh danh sách lịch hẹn
         } catch (error) {
             console.error("Lỗi khi từ chối cuộc hẹn:", error);
             alert(error.response?.data?.message || "Có lỗi xảy ra khi từ chối lịch hẹn.");
@@ -197,7 +220,7 @@ const ManageAppointment = () => {
                                             </Link>
                                             <button
                                                 className="btn btn-danger me-2"
-                                                onClick={() => handleReject(appointment._id)}
+                                                onClick={() => handleReject(appointment)}
                                             >
                                                 Từ chối
                                             </button>

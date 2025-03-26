@@ -7,6 +7,7 @@ const NurseAssigned = () => {
   const [appointments, setAppointments] = useState([]);
   const [doctors, setDoctors] = useState({});
   const [loading, setLoading] = useState(true);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
