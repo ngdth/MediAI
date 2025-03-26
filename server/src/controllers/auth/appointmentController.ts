@@ -311,6 +311,30 @@ export const assignDoctor = async (req: Request, res: Response): Promise<void> =
 
         await appointment.save();
 
+        const { date, time } = appointment;
+        if (!date || !time) {
+            res.status(400).json({ message: "Lịch hẹn không hợp lệ, thiếu ngày hoặc giờ" });
+            return;
+        }
+
+        const schedule = await Schedule.findOne({
+            doctorId,
+            availableSlots: {
+                $elemMatch: { date: new Date(date), time, isBooked: false },
+            },
+        });
+
+        if (!schedule) {
+            res.status(400).json({ message: "Không tìm thấy lịch khả dụng hoặc lịch đã được đặt trước." });
+            return;
+        }
+
+        await Schedule.updateOne(
+            { doctorId, "availableSlots.date": new Date(date), "availableSlots.time": time },
+            { $set: { "availableSlots.$[element].isBooked": true } },
+            { arrayFilters: [{ "element.date": new Date(date), "element.time": time }] }
+        );
+
         res.status(200).json({ message: "Đã chỉ định bác sĩ", data: appointment });
     } catch (error) {
         res.status(500).json({ message: "Lỗi khi gán bác sĩ", error });
