@@ -2,6 +2,7 @@ import Bill from '../../models/Bill';
 import Appointment, { AppointmentStatus } from '../../models/Appointment';
 import { Request, Response, NextFunction } from 'express';
 import { calculateTotalAmount } from '../../utils/calc';
+import DiagnosisDetails from '../../models/DiagnosisDetails';
 import { sendEmail } from '../../config/email';
 import mongoose from 'mongoose';
 
@@ -274,7 +275,20 @@ export const getBillDetail = async (req: Request, res: Response, next: NextFunct
         const userRole = req.user.role.toLowerCase(); // Chuyển thành chữ thường để so sánh nhất quán
 
         // Tìm hóa đơn theo ID
-        const bill = await Bill.findById(billId);
+        const bill = await Bill.findById(billId)
+            .select('-doctorId -doctorName')
+            .populate({
+                path: 'userId',
+                select: 'username email' // Lấy username & email patient
+            })
+            .populate({
+                path: 'appointmentId',
+                select: '-services -createdAt -updatedAt -__v -patientName -pharmacyId -status -phone -email',
+                populate: {
+                    path: 'doctorId',
+                    select: 'username email' // Lấy doctorId trong appointment
+                }
+            });
 
         if (!bill) {
             console.warn('Bill not found:', billId);
@@ -298,8 +312,11 @@ export const getBillDetail = async (req: Request, res: Response, next: NextFunct
             }
         }
 
-        console.log('Bill found:', bill);
-        res.status(200).json({ bill });
+        const diagnosisDetails = await DiagnosisDetails.find({ appointmentId: bill.appointmentId._id }).populate('doctorId', 'username');
+        console.log('Diagnosis details:', diagnosisDetails);
+
+        console.log('Bill found:', bill, diagnosisDetails);
+        res.status(200).json({ bill, diagnosisDetails });
     } catch (error) {
         console.error('Error fetching bill details:', error);
         res.status(500).json({ message: 'Internal server error', error: error });

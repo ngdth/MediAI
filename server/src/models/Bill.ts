@@ -33,9 +33,9 @@ interface IBill extends Document {
 
 const billSchema = new Schema<IBill>(
     {
-        userId: { type: String, ref: 'User'},
-        doctorId: { type: String, ref: 'User' },
-        pharmacyId: { type: String, ref: 'User' },
+        userId: { type: String, ref: 'user'},
+        doctorId: { type: String, ref: 'user' },
+        pharmacyId: { type: String, ref: 'user' },
         appointmentId: { type: String, ref: 'Appointment', required: true },
         dateIssued: { type: Date, default: Date.now },
         paymentStatus: { type: String, enum: ['Paid', 'Unpaid', 'Paying'], default: 'Unpaid' },

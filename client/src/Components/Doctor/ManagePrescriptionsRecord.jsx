@@ -7,6 +7,7 @@ const ManagePrescriptionsRecord = () => {
     const [appointmentData, setAppointmentData] = useState({ appointment: {}, diagnosisDetails: [] });
     const [services, setServices] = useState([]);
     const [selectedServices, setSelectedServices] = useState([]);
+    const [usedServices, setUsedServices] = useState([]);
     const [prescriptions, setPrescriptions] = useState([
         { medicineName: '', unit: '', quantity: '', usage: '' }
     ]);
@@ -49,6 +50,7 @@ const ManagePrescriptionsRecord = () => {
                     diagnosisDetails: selectedAppointment.diagnosisDetails || []
                 });
                 setAllPrescriptions(selectedAppointment.prescriptions || []);
+                setUsedServices(selectedAppointment.appointment.services || []);
             } else {
                 console.error("Appointment not found with ID:", appointmentId);
                 setAppointmentData({ appointment: {}, diagnosisDetails: [] });
@@ -120,11 +122,13 @@ const ManagePrescriptionsRecord = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
+            const updatedServices = usedServices.concat(selectedServices);
+
             await axios.put(
                 `http://localhost:8080/appointment/${appointmentId}/update-field`,
                 {
                     field: "services",
-                    value: selectedServices,
+                    value: updatedServices,
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
