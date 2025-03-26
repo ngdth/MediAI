@@ -1,4 +1,4 @@
-export function generateDateRange(startDate, days) {
+export function   generateDateRange(startDate, days) {
   return Array.from({ length: days }, (_, i) => {
     const date = new Date(startDate)
     date.setDate(date.getDate() + i)
@@ -7,14 +7,14 @@ export function generateDateRange(startDate, days) {
 }
 
 export function formatDate(date) {
-  return date.toLocaleDateString("en-US", {
+  return date.toLocaleDateString("en-CN", {
     month: "short",
     day: "numeric",
   })
 }
 
 export function getDayName(date) {
-  return date.toLocaleDateString("en-US", { weekday: "short" })
+  return date.toLocaleDateString("en-CN", { weekday: "short" })
 }
 
 export function formatTime(hour, minute) {
