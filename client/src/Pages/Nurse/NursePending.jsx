@@ -6,6 +6,7 @@ import RejectModal from "../../Components/Nurse/RejectModal";
 const NursePending = () => {
     const [appointments, setAppointments] = useState([]);
     const [doctors, setDoctors] = useState([]);
+    const [schedules, setSchedules] = useState({});
     const [loading, setLoading] = useState(true);
     const [selectedDoctors, setSelectedDoctors] = useState({});
     const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
@@ -15,50 +16,94 @@ const NursePending = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchAppointments("Pending");
-        fetchDoctors();
+        const loadData = async () => {
+            try {
+                const [appointmentsResponse, doctorsResponse] = await Promise.all([
+                    fetchAppointments("Pending"),
+                    fetchDoctors(),
+                ]);
+
+                console.log("Doctors after fetch:", doctorsResponse);
+                setDoctors(doctorsResponse);
+
+                await fetchAllSchedules(doctorsResponse);
+            } catch (error) {
+                console.error("Error loading initial data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadData();
     }, []);
 
     const fetchAppointments = async (status) => {
-        try {
-            const response = await axios.get(`http://localhost:8080/appointment?status=${status}`, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-            });
-            console.log("API response: ", response.data);
-            setAppointments(response.data.data || []);
-            setLoading(false);
-        } catch (error) {
-            console.error("Error fetching appointments:", error);
-            alert(error.response?.data?.message || "Có lỗi xảy ra khi lấy danh sách lịch hẹn.");
-            setAppointments([]);
-            setLoading(false);
-        }
+        const response = await axios.get(`http://localhost:8080/appointment?status=${status}`, {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        console.log("Appointments:", response.data.data);
+        setAppointments(response.data.data || []);
+        return response.data.data || [];
     };
 
     const fetchDoctors = async () => {
-        try {
-            const response = await axios.get("http://localhost:8080/user/doctors", {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-            });
-            console.log("Doctors response: ", response.data);
-            setDoctors(response.data || []);
-        } catch (error) {
-            console.error("Error fetching doctors:", error);
-            alert(error.response?.data?.message || "Có lỗi xảy ra khi lấy danh sách bác sĩ.");
-            setDoctors([]);
+        const response = await axios.get("http://localhost:8080/user/doctors", {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        console.log("Doctors:", response.data);
+        return response.data || [];
+    };
+
+    const fetchSchedulesByDoctor = async (doctorId) => {
+        const response = await axios.get(`http://localhost:8080/schedule/schedules/${doctorId}`, {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        console.log(`Schedules for doctor ${doctorId}:`, response.data);
+        return response.data || [];
+    };
+
+    const fetchAllSchedules = async (doctorsList) => {
+        const scheduleData = {};
+        for (const doctor of doctorsList) {
+            const doctorSchedules = await fetchSchedulesByDoctor(doctor._id);
+            scheduleData[doctor._id] = doctorSchedules;
         }
+        console.log("All schedules:", scheduleData);
+        setSchedules(scheduleData);
+    };
+
+    const getAvailableDoctors = (appointment) => {
+        const appointmentDate = new Date(appointment.date).toISOString().split("T")[0];
+        const appointmentTime = appointment.time;
+        const previousDoctorIds = (appointment.doctorId || []).map((d) => d._id || d);
+
+        console.log(`Checking availability for appointment: ${appointment.patientName} - ${appointmentDate} ${appointmentTime}`);
+
+        return doctors.filter((doctor) => {
+            const doctorSchedules = schedules[doctor._id] || [];
+            if (previousDoctorIds.includes(doctor._id)) {
+                console.log(`Doctor ${doctor.username} is excluded due to previous assignment`);
+                return false;
+            }
+
+            const hasAvailableSlot = doctorSchedules.some((schedule) =>
+                schedule.availableSlots.some((slot) => {
+                    const slotDate = new Date(slot.date).toISOString().split("T")[0];
+                    const isAvailable = slotDate === appointmentDate && slot.time === appointmentTime && !slot.isBooked;
+                    console.log(`Doctor ${doctor.username}: Slot ${slotDate} ${slot.time} - Available: ${isAvailable}`);
+                    return isAvailable;
+                })
+            );
+
+            console.log(`Doctor ${doctor.username} is ${hasAvailableSlot ? "available" : "not available"} for ${appointmentDate} ${appointmentTime}`);
+            return hasAvailableSlot;
+        });
     };
 
     const updateAppointmentStatus = async (id, status) => {
-        try {
-            await axios.put(`http://localhost:8080/appointment/${id}/status`, { status, rejectReason }, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-            });
-            fetchAppointments("Pending");
-        } catch (error) {
-            console.error("Error updating appointment status:", error);
-            alert(error.response?.data?.message || "Có lỗi xảy ra khi cập nhật trạng thái lịch hẹn.");
-        }
+        await axios.put(`http://localhost:8080/appointment/${id}/status`, { status, rejectReason }, {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        await fetchAppointments("Pending");
     };
 
     const assignDoctor = async (id) => {
@@ -67,16 +112,10 @@ const NursePending = () => {
             alert("Vui lòng chọn bác sĩ trước khi xác nhận.");
             return;
         }
-        try {
-            await axios.put(`http://localhost:8080/appointment/${id}/assign`, { doctorId: selectedDoctor._id }, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-            });
-            await updateAppointmentStatus(id, "Assigned");
-            fetchAppointments("Pending");
-        } catch (error) {
-            console.error("Error assigning doctor:", error);
-            alert(error.response?.data?.message || "Có lỗi xảy ra khi gán bác sĩ.");
-        }
+        await axios.put(`http://localhost:8080/appointment/${id}/assign`, { doctorId: selectedDoctor._id }, {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        await updateAppointmentStatus(id, "Assigned");
     };
 
     const handleSort = (key) => {
@@ -97,29 +136,16 @@ const NursePending = () => {
                     ? a.appointment.patientName.localeCompare(b.appointment.patientName)
                     : b.appointment.patientName.localeCompare(a.appointment.patientName);
             }
-
             if (sortConfig.key === "symptoms") {
                 return sortConfig.direction === "asc"
                     ? a.appointment.symptoms.localeCompare(b.appointment.symptoms)
                     : b.appointment.symptoms.localeCompare(a.appointment.symptoms);
             }
-
             if (sortConfig.key === "time") {
-                const aDateOnly = new Date(a.appointment.date).toISOString().split("T")[0];
-                const bDateOnly = new Date(b.appointment.date).toISOString().split("T")[0];
-                const aDateTime = new Date(`${aDateOnly}T${a.appointment.time}:00`);
-                const bDateTime = new Date(`${bDateOnly}T${b.appointment.time}:00`);
-
-                if (isNaN(aDateTime.getTime()) || isNaN(bDateTime.getTime())) {
-                    console.error("Invalid date format:", aDateTime, bDateTime);
-                    return 0;
-                }
-
-                return sortConfig.direction === "asc"
-                    ? aDateTime - bDateTime
-                    : bDateTime - aDateTime;
+                const aDateTime = new Date(`${new Date(a.appointment.date).toISOString().split("T")[0]}T${a.appointment.time}:00`);
+                const bDateTime = new Date(`${new Date(b.appointment.date).toISOString().split("T")[0]}T${b.appointment.time}:00`);
+                return sortConfig.direction === "asc" ? aDateTime - bDateTime : bDateTime - aDateTime;
             }
-
             return 0;
         });
         return sortableAppointments;
@@ -147,22 +173,14 @@ const NursePending = () => {
             alert("Vui lòng nhập lý do từ chối.");
             return;
         }
-
         if (!selectedAppointmentId) {
             alert("Không tìm thấy cuộc hẹn để từ chối.");
             return;
         }
-
-        try {
-            await updateAppointmentStatus(selectedAppointmentId, "Rejected"); // Cập nhật trạng thái thành 'Rejected'
-            setShowRejectModal(false);
-            setRejectReason("");
-            setSelectedAppointmentId(null); // Reset state sau khi từ chối thành công
-            fetchAppointments("Pending"); // Refresh danh sách lịch hẹn
-        } catch (error) {
-            console.error("Lỗi khi từ chối cuộc hẹn:", error);
-            alert(error.response?.data?.message || "Có lỗi xảy ra khi từ chối lịch hẹn.");
-        }
+        await updateAppointmentStatus(selectedAppointmentId, "Rejected");
+        setShowRejectModal(false);
+        setRejectReason("");
+        setSelectedAppointmentId(null);
     };
 
     return (
@@ -175,33 +193,21 @@ const NursePending = () => {
                     <thead>
                         <tr>
                             <th>
-                                <span
-                                    onClick={() => handleSort("patientName")}
-                                    style={{ cursor: "pointer" }}
-                                >
+                                <span onClick={() => handleSort("patientName")} style={{ cursor: "pointer" }}>
                                     Patient{" "}
-                                    {sortConfig.key === "patientName" &&
-                                        (sortConfig.direction === "asc" ? "↑" : "↓")}
+                                    {sortConfig.key === "patientName" && (sortConfig.direction === "asc" ? "↑" : "↓")}
                                 </span>
                             </th>
                             <th>
-                                <span
-                                    onClick={() => handleSort("time")}
-                                    style={{ cursor: "pointer" }}
-                                >
+                                <span onClick={() => handleSort("time")} style={{ cursor: "pointer" }}>
                                     Time{" "}
-                                    {sortConfig.key === "time" &&
-                                        (sortConfig.direction === "asc" ? "↑" : "↓")}
+                                    {sortConfig.key === "time" && (sortConfig.direction === "asc" ? "↑" : "↓")}
                                 </span>
                             </th>
                             <th>
-                                <span
-                                    onClick={() => handleSort("symptoms")}
-                                    style={{ cursor: "pointer" }}
-                                >
+                                <span onClick={() => handleSort("symptoms")} style={{ cursor: "pointer" }}>
                                     Symptoms{" "}
-                                    {sortConfig.key === "symptoms" &&
-                                        (sortConfig.direction === "asc" ? "↑" : "↓")}
+                                    {sortConfig.key === "symptoms" && (sortConfig.direction === "asc" ? "↑" : "↓")}
                                 </span>
                             </th>
                             <th>Doctor</th>
@@ -212,15 +218,7 @@ const NursePending = () => {
                         {sortedAppointments.length > 0 ? (
                             sortedAppointments.map((item) => {
                                 const appointment = item.appointment;
-                                const previousDoctorIds = (appointment.doctorId || []).map(doctor => doctor._id || doctor);
-                                console.log(`Appointment ${appointment._id} - Previous Doctor IDs:`, previousDoctorIds);
-                                console.log("All Doctors:", doctors);
-
-                                const availableDoctors = doctors.filter((doctor) => {
-                                    const isExcluded = previousDoctorIds.includes(doctor._id);
-                                    console.log(`Doctor ${doctor._id} (${doctor.username}) - Excluded: ${isExcluded}`);
-                                    return !isExcluded;
-                                });
+                                const availableDoctors = getAvailableDoctors(appointment);
 
                                 return (
                                     <tr key={appointment._id}>
