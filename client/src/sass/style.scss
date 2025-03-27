@@ -316,7 +316,7 @@
 
 .notification-panel {
   position: absolute;
-  top: 50px;
+  top: 70px;
   right: 0;
   width: 360px;
   border: 1px solid #ddd;
@@ -380,4 +380,16 @@
   background: none;
   border: none;
   padding: 0;
+}
+
+.notification-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.notification-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
