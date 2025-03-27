@@ -8,7 +8,6 @@ import User from '../../models/User';
 import mongoose from 'mongoose';
 import Schedule from '../../models/Schedule';
 import { sendEmail } from "../../config/email";
-import { error } from 'console';
 
 // Tạo lịch hẹn không có bác sĩ
 export const createAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
