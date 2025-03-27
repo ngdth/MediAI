@@ -73,26 +73,32 @@ const AppointmentForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         try {
             const token = localStorage.getItem("token");
             if (!token) {
                 alert("Bạn cần đăng nhập trước khi đặt lịch.");
                 return;
             }
-
-            const response = await axios.post(`http://localhost:8080/appointment/booknodoctor`, {
-                patientName: formData.fullName,
-                date: formData.appointmentDate.toISOString().split("T")[0],
-                time: formData.appointmentTime,
-                symptoms: formData.specialty
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
+    
+            const formattedDate = formData.appointmentDate.toLocaleDateString('en-CA');
+    
+            const response = await axios.post(
+                `http://localhost:8080/appointment/booknodoctor`,
+                {
+                    patientName: formData.fullName,
+                    date: formattedDate,
+                    time: formData.appointmentTime,
+                    symptoms: formData.specialty,
                 },
-            });
-
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+    
             if (response.status === 201) {
                 setShowPopup(true);
                 setTimeout(() => {
