@@ -1,6 +1,7 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
+import express from 'express' // Import express
 import app from './utils/app' // (server)
 import mongo from './config/mongo' // (database)
 import { PORT } from './constants/index'
@@ -36,6 +37,7 @@ const bootstrap = async () => {
   app.use('/blog', blogRoutes); // Use blog routes
   app.use('/service', serviceRouter); // Use service routes
   app.use('/payment', paymentRoutes); // Use payment routes
+  app.use("/uploads", express.static("public/uploads"));
   app.listen(PORT || 8080, () => {
     console.log(`✅ Server is listening on port: ${PORT || 8080}`)
   })
