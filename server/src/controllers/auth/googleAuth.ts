@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import User from "../../models/User"; 
+import User from "../../models/User";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import jwt from "jsonwebtoken";
@@ -13,11 +13,11 @@ passport.use(
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
-                
+
                 let user = await User.findOne({ googleId: profile.id });
 
                 if (!user) {
-                    
+
                     user = new User({
                         googleId: profile.id,
                         email: profile.emails?.[0].value,
@@ -34,11 +34,11 @@ passport.use(
 
                 // callback user
                 return done(null, user);
-            } catch (err : any) {
+            } catch (err: any) {
                 if (err.code === 11000 && err.keyPattern.email) {
                     console.log("User with this email already exists. Updating googleId...");
                     let user = await User.findOne({ email: profile.emails?.[0]?.value });
-            
+
                     if (user) {
                         user.googleId = profile.id;
                         await user.save();
@@ -63,7 +63,7 @@ export const loginWithGoogle = passport.authenticate("google", {
 //             return res.status(401).json({ message: "Google authentication failed" });
 //         }
 
-        
+
 //         const token = generateJwtToken(user);
 //         console.log("✅ Google login successful. Token generated:", token);
 
@@ -78,11 +78,11 @@ export const loginWithGoogle = passport.authenticate("google", {
 export const googleCallback = (req: Request, res: Response, next: NextFunction) => {
     passport.authenticate("google", { session: false }, (err, user, info) => {
         if (err || !user) {
-            return res.status(401).json({ message: "Google authentication failed", err  } );
+            return res.status(401).json({ message: "Google authentication failed", err });
         }
 
         const token = generateJwtToken(user);
-
+        console.log("✅ Google login successful. Token generated:", token);
         // Redirect về frontend kèm theo token
         res.redirect(`http://localhost:5173/login?token=${token}`);
     })(req, res, next);

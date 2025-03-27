@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../Doctor/Sidebar";
-import TopBar from "../Doctor/Topbar";
+// import TopBar from "../Doctor/Topbar";
 
 const DoctorLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -10,7 +10,7 @@ const DoctorLayout = () => {
     <div className={`admin-container ${isSidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
       <div className="admin-main">
-        <TopBar />
+        {/* <TopBar /> */}
         <div className="admin-content">
           <Outlet />
         </div>

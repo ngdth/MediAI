@@ -67,6 +67,8 @@ import PharmacyLayout from "./Components/Layout/PharmacyLayout";
 import "aos/dist/aos.css";
 import Aos from "aos";
 import { useEffect } from "react";
+import MedicalHistory from "./Components/Doctor/MedicalHistory";
+import MedicalHistoryDetail from "./Components/Doctor/MedicalHistoryDetail";
 
 function App() {
     Aos.init({
@@ -143,6 +145,8 @@ function App() {
                     <Route path="/doctor/manage-prescription/:appointmentId" element={<ManagePrescriptionsRecord />} />
                     <Route path="/doctor/manage-prescription-result" element={<PrescriptionsRecordResult />} />
                     <Route path="/doctor/calendar" element={<ScheduleManagement />} />
+                    <Route path="/doctor/medical-history" element={<MedicalHistory />} />
+                    <Route path="/doctor/medical-history-detail/:appointmentId" element={<MedicalHistoryDetail />} />
                     {/* <Route path="/doctor/appointment/assign/:appointmentId" element={<AssignDoctor />} /> */}
                 </Route>
                 <Route path="/nurse" element={<NurseLayout />}>

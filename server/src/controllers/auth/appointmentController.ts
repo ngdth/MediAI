@@ -8,6 +8,7 @@ import User from '../../models/User';
 import mongoose from 'mongoose';
 import Schedule from '../../models/Schedule';
 import { sendEmail } from "../../config/email";
+import { error } from 'console';
 
 // Tạo lịch hẹn không có bác sĩ
 export const createAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -630,10 +631,17 @@ export const getAppointmentById = async (req: Request, res: Response, next: Next
     try {
         const { id } = req.params;
 
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.log('Appointment ID:', id);
+            res.status(400).json({ message: "Invalid appointment ID" });
+            return;
+        }
+
         const appointment = await Appointment.findById(id)
             .populate('userId', 'username email')
             .populate('doctorId', 'username email')
             .populate('services');
+        console.log('Appointment:', appointment);
 
         if (!appointment) {
             res.status(404).json({ message: "Appointment not found" });
@@ -706,6 +714,8 @@ export const getUserAppointments = async (req: Request, res: Response, next: Nex
     try {
         const userId = req.user?.id;
         const userRole = req.user?.role;
+        console.log(`User ID: ${userId}`);
+        console.log(`User Role: ${userRole}`);
 
         if (!userId) {
             res.status(403).json({ message: 'Permission denied' });
@@ -714,16 +724,28 @@ export const getUserAppointments = async (req: Request, res: Response, next: Nex
 
         let filter = {};
 
-        if (userRole === 'nurse') {
-            filter = {};
+        // if (userRole === 'nurse') {
+        //     filter = {};
+        // } else {
+        //     filter = { userId };
+        // }
+
+        if (userRole === 'doctor') {
+            filter = { doctorId: userId, status: AppointmentStatus.DONE };
+            console.log(`Doctor's filter applied: ${JSON.stringify(filter)}`);
+        } else if (userRole === 'nurse') {
+            // Nurse có thể xem tất cả các trạng thái
         } else {
+            // Các user khác, lọc theo userId
             filter = { userId };
+            console.log(`User filter applied: ${JSON.stringify(filter)}`);
         }
 
         const appointments = await Appointment.find(filter)
             .populate('doctorId', 'username email')
             .populate('userId', 'username email')
             .sort({ date: -1, time: -1 });
+        console.log(`Appointments found: ${appointments.length}`);
 
         if (appointments.length === 0) {
             res.status(404).json({ message: 'Not found any appointment' });
@@ -744,6 +766,7 @@ export const getUserAppointments = async (req: Request, res: Response, next: Nex
                 diagnosisDetails,
             };
         }));
+        console.log('Appointments with details:', appointmentsWithDetails);
 
         res.status(200).json({
             message: 'Appointments retrieved successfully',
@@ -760,8 +783,12 @@ export const getDetailAppointment = async (req: Request, res: Response, next: Ne
         const userId = req.user?.id;
         const userRole = req.user?.role;
         const { id } = req.params;
+        console.log(`Requesting details for appointment ID: ${id}`);
+        console.log(`User ID: ${userId}`);
+        console.log(`User Role: ${userRole}`);
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.log(`Invalid appointment ID format: ${id}`);
             res.status(400).json({ message: 'Invalid appointment ID' });
             return;
         }
@@ -774,21 +801,46 @@ export const getDetailAppointment = async (req: Request, res: Response, next: Ne
         const appointment = await Appointment.findById(id)
             .populate('doctorId', 'username email')
             .populate('userId', 'username email');
+        console.log('Found appointment:', appointment);
 
         if (!appointment) {
+            console.log('No appointment found for ID:', id);
             res.status(404).json({ message: 'Not found any appointment' });
             return;
         }
 
-        if (userRole !== 'nurse' && appointment.userId.toString() !== userId) {
-            res.status(403).json({ message: 'Permission denied to get this appointment' });
-            return;
+        if (Array.isArray(appointment.doctorId) && appointment.doctorId.length > 0) {
+            // doctorId là mảng, lấy phần tử đầu tiên để so sánh
+            console.log('doctorId is an array, checking first element:', appointment.doctorId[0].toString());
+
+            const doctor = typeof appointment.doctorId[0] === 'object' && '_id' in appointment.doctorId[0]
+                ? appointment.doctorId[0] as { _id: mongoose.Types.ObjectId }
+                : { _id: new mongoose.Types.ObjectId(appointment.doctorId[0]) };
+
+            if (doctor._id.toString() !== userId && appointment.userId.toString() !== userId) {
+                console.log('Permission denied to get this appointment', id);
+                res.status(403).json({ message: 'Permission denied to get this appointment' });
+                return;
+            }
+        } else {
+            // Nếu doctorId không phải là mảng mà là ObjectId đơn lẻ
+            console.log('doctorId is not an array, checking doctorId:', appointment.doctorId.toString());
+
+            if (appointment.doctorId.toString() !== userId && appointment.userId.toString() !== userId) {
+                console.log('Permission denied to get this appointment', id);
+                res.status(403).json({ message: 'Permission denied to get this appointment' });
+                return;
+            }
         }
 
         const prescriptions = await Prescription.find({ appointmentId: id }).populate('doctorId', 'username');
         const vitals = await Vitals.find({ appointmentId: id });
         const tests = await Tests.find({ appointmentId: id });
         const diagnosisDetails = await DiagnosisDetails.find({ appointmentId: id }).populate('doctorId', 'username');
+        console.log('Prescriptions:', prescriptions);
+        console.log('Vitals:', vitals);
+        console.log('Tests:', tests);
+        console.log('Diagnosis Details:', diagnosisDetails);
 
         res.status(200).json({
             message: 'Appointment retrieved successfully',
