@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import { FaBell } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { Bell } from "lucide-react";
 
 const TopBar = ({ isSidebarOpen }) => {
   const [username, setUsername] = useState(localStorage.getItem("username"));
@@ -91,7 +91,7 @@ const TopBar = ({ isSidebarOpen }) => {
                             setShowNotifications((prev) => !prev);
                           }}
                         >
-                          <Bell size={20} />
+                          <FaBell size={20} style={{ fill: 'white' }} />
                         </button>
 
                         {/* Dropdown Thông Báo */}
@@ -160,9 +160,6 @@ const TopBar = ({ isSidebarOpen }) => {
           </div>
         </div>
       </div>
-
-      {/* Styles */}
-   
     </header>
   );
 };
