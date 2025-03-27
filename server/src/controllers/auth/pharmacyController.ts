@@ -2,28 +2,83 @@ import Bill from '../../models/Bill';
 import Appointment, { AppointmentStatus } from '../../models/Appointment';
 import { Request, Response, NextFunction } from 'express';
 import { calculateTotalAmount } from '../../utils/calc';
-import DiagnosisDetails from '../../models/DiagnosisDetails';
 import { sendEmail } from '../../config/email';
 import mongoose from 'mongoose';
 
+// export const getDoneAppointments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+//     console.log("Starting getDoneAppointments function");
+//     try {
+//         const pharmacyId = req.user?.id; // Lấy pharmacyId từ token (req.user đã được xác thực)
+//         console.log(`Extracted pharmacyId from token: ${pharmacyId}`);
+
+//         if (!pharmacyId) {
+//             console.log("Error: Pharmacy ID not found in token");
+//             res.status(400).json({ message: "Pharmacy ID not found in token" });
+//             return;
+//         }
+
+//         console.log(`Searching for appointments with status DONE and pharmacyId: ${pharmacyId}`);
+//         // Tìm tất cả các appointment có status "Done" và pharmacyId trùng với tài khoản nhà thuốc đang đăng nhập
+//         const appointments = await Appointment.find({
+//             status: AppointmentStatus.DONE,
+//             pharmacyId: pharmacyId  // Sử dụng pharmacyId từ token
+//         })
+//             .populate('userId', 'username email')  // Lấy thông tin bệnh nhân
+//             .populate('doctorId', 'username email')  // Lấy thông tin bác sĩ
+//             .populate('pharmacyId', 'name email');  // Lấy thông tin nhà thuốc
+
+//         console.log(`Found ${appointments.length} done appointments`);
+
+//         if (appointments.length === 0) {
+//             console.log("No done appointments found for this pharmacy");
+//             res.status(404).json({ message: "No done appointments found for this pharmacy" });
+//             return;
+//         }
+
+//         console.log("Successfully retrieved done appointments");
+//         res.status(200).json({
+//             message: "Done appointments retrieved successfully",
+//             data: appointments,
+//         });
+//     } catch (error) {
+//         console.error("Error fetching done appointments:", error);
+//         res.status(500).json({ message: "Error fetching done appointments", error });
+//     }
+//     console.log("Completed getDoneAppointments function");
+// };
 export const getDoneAppointments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     console.log("Starting getDoneAppointments function");
-    try {
-        const pharmacyId = req.user?.id; // Lấy pharmacyId từ token (req.user đã được xác thực)
-        console.log(`Extracted pharmacyId from token: ${pharmacyId}`);
 
-        if (!pharmacyId) {
-            console.log("Error: Pharmacy ID not found in token");
-            res.status(400).json({ message: "Pharmacy ID not found in token" });
+    try {
+        const userId = req.user?.id; // Lấy ID người dùng từ token (req.user đã được xác thực)
+        const userRole = req.user?.role; // Lấy role của người dùng (pharmacy hoặc doctor)
+        console.log(`Extracted userId from token: ${userId}`);
+        console.log(`User role: ${userRole}`);
+
+        if (!userId) {
+            console.log("Error: User ID not found in token");
+            res.status(400).json({ message: "User ID not found in token" });
             return;
         }
 
-        console.log(`Searching for appointments with status DONE and pharmacyId: ${pharmacyId}`);
-        // Tìm tất cả các appointment có status "Done" và pharmacyId trùng với tài khoản nhà thuốc đang đăng nhập
-        const appointments = await Appointment.find({
-            status: AppointmentStatus.DONE,
-            pharmacyId: pharmacyId  // Sử dụng pharmacyId từ token
-        })
+        // Xây dựng filter dựa trên vai trò của người dùng
+        let filter: Record<string, any> = { status: AppointmentStatus.DONE }; // Chỉ lọc các cuộc hẹn có status "DONE"
+        
+        // Nếu là bác sĩ, chỉ tìm các cuộc hẹn có doctorId là userId của bác sĩ
+        if (userRole === 'doctor') {
+            console.log("User is a doctor, filtering by doctorId");
+            filter = { ...filter, doctorId: userId }; // Lọc theo doctorId
+        }
+        // Nếu là nhà thuốc, tìm các cuộc hẹn có pharmacyId trùng với userId của pharmacy
+        else if (userRole === 'pharmacy') {
+            console.log("User is a pharmacy, filtering by pharmacyId");
+            filter = { ...filter, pharmacyId: userId }; // Lọc theo pharmacyId
+        }
+
+        console.log(`Searching for appointments with filter: ${JSON.stringify(filter)}`);
+
+        // Truy vấn cơ sở dữ liệu tìm các cuộc hẹn thỏa mãn filter
+        const appointments = await Appointment.find(filter)
             .populate('userId', 'username email')  // Lấy thông tin bệnh nhân
             .populate('doctorId', 'username email')  // Lấy thông tin bác sĩ
             .populate('pharmacyId', 'name email');  // Lấy thông tin nhà thuốc
@@ -31,12 +86,13 @@ export const getDoneAppointments = async (req: Request, res: Response, next: Nex
         console.log(`Found ${appointments.length} done appointments`);
 
         if (appointments.length === 0) {
-            console.log("No done appointments found for this pharmacy");
-            res.status(404).json({ message: "No done appointments found for this pharmacy" });
+            console.log("No done appointments found for this user");
+            res.status(404).json({ message: "No done appointments found for this user" });
             return;
         }
 
         console.log("Successfully retrieved done appointments");
+
         res.status(200).json({
             message: "Done appointments retrieved successfully",
             data: appointments,
@@ -45,8 +101,10 @@ export const getDoneAppointments = async (req: Request, res: Response, next: Nex
         console.error("Error fetching done appointments:", error);
         res.status(500).json({ message: "Error fetching done appointments", error });
     }
+
     console.log("Completed getDoneAppointments function");
 };
+
 
 export const createBill = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -275,20 +333,7 @@ export const getBillDetail = async (req: Request, res: Response, next: NextFunct
         const userRole = req.user.role.toLowerCase(); // Chuyển thành chữ thường để so sánh nhất quán
 
         // Tìm hóa đơn theo ID
-        const bill = await Bill.findById(billId)
-            .select('-doctorId -doctorName')
-            .populate({
-                path: 'userId',
-                select: 'username email' // Lấy username & email patient
-            })
-            .populate({
-                path: 'appointmentId',
-                select: '-services -createdAt -updatedAt -__v -patientName -pharmacyId -status -phone -email',
-                populate: {
-                    path: 'doctorId',
-                    select: 'username email' // Lấy doctorId trong appointment
-                }
-            });
+        const bill = await Bill.findById(billId);
 
         if (!bill) {
             console.warn('Bill not found:', billId);
@@ -312,11 +357,8 @@ export const getBillDetail = async (req: Request, res: Response, next: NextFunct
             }
         }
 
-        const diagnosisDetails = await DiagnosisDetails.find({ appointmentId: bill.appointmentId._id }).populate('doctorId', 'username');
-        console.log('Diagnosis details:', diagnosisDetails);
-
-        console.log('Bill found:', bill, diagnosisDetails);
-        res.status(200).json({ bill, diagnosisDetails });
+        console.log('Bill found:', bill);
+        res.status(200).json({ bill });
     } catch (error) {
         console.error('Error fetching bill details:', error);
         res.status(500).json({ message: 'Internal server error', error: error });
