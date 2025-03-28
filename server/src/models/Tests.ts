@@ -57,9 +57,13 @@ interface ITests extends Document {
     bloodTest: string;
     urineTest: string;
     xRay: string;
+    xRayImg: string[];
     ultrasound: string;
+    ultrasoundImg: string[];
     mri: string;
+    mriImg: string[];
     ecg: string;
+    ecgImg: string[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -67,13 +71,17 @@ interface ITests extends Document {
 const testsSchema = new Schema<ITests>(
     {
         appointmentId: { type: Schema.Types.String, ref: 'Appointment', required: true },
-        userId: { type: Schema.Types.String, ref: 'user', required: true },
+        userId: { type: Schema.Types.String, ref: 'User', required: true },
         bloodTest: { type: String },
         urineTest: { type: String },
         xRay: { type: String },
+        xRayImg: { type: [String], default: [] },
         ultrasound: { type: String },
+        ultrasoundImg: { type: [String], default: [] },
         mri: { type: String },
+        mriImg: { type: [String], default: [] },
         ecg: { type: String },
+        ecgImg: { type: [String], default: [] },
     },
     { timestamps: true }
 );
