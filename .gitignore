@@ -13,4 +13,4 @@ dist
 *.log
 *.pid
 
-upload
+client/public/uploads/
