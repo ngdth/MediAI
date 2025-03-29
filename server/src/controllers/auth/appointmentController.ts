@@ -287,6 +287,61 @@ export const updateAppointmentStatus = async (req: Request, res: Response, next:
     }
 };
 
+// Bác sĩ từ chối lịch hẹn
+export const doctorReject = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const { rejectReason } = req.body;
+
+    try {
+        const appointment = await Appointment.findById(id).populate('userId', 'email').populate('doctorId', 'username');
+
+        if (!appointment) {
+            res.status(404).json({ message: "Appointment not found" });
+            return;
+        }
+
+        const now = new Date();
+        const appointmentTime = new Date(appointment.date);
+        const timeDiff = appointmentTime.getTime() - now.getTime();
+        const isLessThan24Hours = timeDiff < 24 * 60 * 60 * 1000;
+
+        if (isLessThan24Hours) {
+            res.status(400).json({ message: "Cannot reject an appointment less than 24 hours before the scheduled time." });
+            return;
+        }
+
+        if (!rejectReason) {
+            res.status(400).json({ message: "Reject reason is required when rejecting an appointment." });
+            return;
+        }
+
+        appointment.status = AppointmentStatus.PENDING;
+        appointment.doctorId = [];
+        await appointment.save();
+
+        const userEmail = (appointment.userId as any)?.email;
+        if (userEmail) {
+            const emailData = {
+                patientName: appointment.patientName,
+                doctorName: (appointment.doctorId as any)?.username || "Unknown Doctor",
+                date: appointment.date,
+                time: appointment.time,
+                rejectReason: rejectReason,
+            };
+
+            try {
+                await sendEmail(userEmail, emailData, "appointment_rejected");
+            } catch (emailError) {
+                console.error("Failed to send rejection email:", emailError);
+            }
+        }
+
+        res.status(200).json({ message: "Appointment rejected successfully", data: appointment });
+    } catch (error) {
+        res.status(500).json({ message: "Error rejecting appointment", error });
+    }
+};
+
 // Gán bác sĩ cho lịch hẹn
 export const assignDoctor = async (req: Request, res: Response): Promise<void> => {
     try {

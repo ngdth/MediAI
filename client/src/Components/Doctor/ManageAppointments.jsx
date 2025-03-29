@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import RejectModal from "../Nurse/RejectModal";
+import { toast, ToastContainer } from "react-toastify";
 
 const ManageAppointment = () => {
     const [appointments, setAppointments] = useState([]);
@@ -110,18 +111,6 @@ const ManageAppointment = () => {
         return sortableAppointments;
     }, [appointments, sortConfig]);
 
-    const updateAppointmentStatus = async (id, status) => {
-        try {
-            await axios.put(`http://localhost:8080/appointment/${id}/status`, { status, rejectReason }, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-            });
-            alert("Từ chối lịch hẹn thành công");
-        } catch (error) {
-            console.error("Error updating appointment status:", error);
-            alert(error.response?.data?.message || "Có lỗi xảy ra khi cập nhật trạng thái lịch hẹn.");
-        }
-    };
-
     const handleReject = (appointment) => {
         const appointmentDate = new Date(appointment.date);
         const now = new Date();
@@ -150,13 +139,27 @@ const ManageAppointment = () => {
         }
 
         try {
-            await updateAppointmentStatus(selectedAppointmentId, "Rejected"); // Cập nhật trạng thái thành 'Rejected'
+            await axios.put(
+                `http://localhost:8080/appointment/${selectedAppointmentId}/reject`,
+                { rejectReason },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+
             setShowRejectModal(false);
             setRejectReason("");
-            setSelectedAppointmentId(null); // Reset state sau khi từ chối thành công
+            setSelectedAppointmentId(null);
+
+            // Cập nhật danh sách lịch hẹn sau khi từ chối thành công
+            setAppointments((prevAppointments) =>
+                prevAppointments.filter((appt) => appt._id !== selectedAppointmentId)
+            );
+
+            toast.success("Reject cuộc hẹn thành công!");
         } catch (error) {
             console.error("Lỗi khi từ chối cuộc hẹn:", error);
-            alert(error.response?.data?.message || "Có lỗi xảy ra khi từ chối lịch hẹn.");
+            toast.error(error.response?.data?.message || "Có lỗi xảy ra khi từ chối lịch hẹn.");
         }
     };
 
@@ -244,6 +247,8 @@ const ManageAppointment = () => {
                 rejectReason={rejectReason}
                 setRejectReason={setRejectReason}
             />
+
+            <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
         </div>
     );
 };
