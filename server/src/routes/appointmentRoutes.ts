@@ -20,6 +20,7 @@ removeDoctorFromAppointment,
 assignToPharmacy, 
 updateAppointmentField,
 updateNurseFields,
+doctorReject,
 } from "../controllers/auth/appointmentController";
 const router = express.Router();
 // Appointment routes
@@ -30,6 +31,7 @@ router.get("/pending",   authorizeRole(["doctor", "nurse"]), getPendingAppointme
 router.get("/waiting",   authorizeRole(["doctor", "nurse"]), getWaitingPrescriptionAppointments);
 router.get("/prescription-created",   authorizeRole(["doctor"]), getPrescriptionCreatedAppointments);
 router.put("/:id/status",   authorizeRole(["doctor", "nurse"]), updateAppointmentStatus);
+router.put("/:id/reject",   authorizeRole(["doctor", "nurse"]), doctorReject);
 router.put("/:id/assign",   authorizeRole(["doctor", "nurse"]), assignDoctor);
 router.put("/:id/diagnosis",   authorizeRole(["doctor", "nurse"]), addDiagnosisAndPrescription);
 router.get("/:id", getAppointmentById);
