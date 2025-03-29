@@ -37,7 +37,7 @@ function TimeSlotGrid({ dates, selectedSlots, onToggleTimeSlot }) {
           {dates.map((date, dateIndex) => (
             <div key={dateIndex} className="day-column">
               {timeSlots.map((slot, timeIndex) => {
-                const dateTimeKey = `${date.toISOString().split("T")[0]}-${slot.hour}-${slot.minute}`
+                const dateTimeKey = `${date.toLocaleDateString("en-CA")}-${slot.hour}-${slot.minute}`
                 const isSelected = selectedSlots[dateTimeKey]
 
                 return (

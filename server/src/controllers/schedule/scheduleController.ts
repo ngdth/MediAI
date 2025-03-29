@@ -15,6 +15,13 @@ export const upsertSchedule = async (req: Request, res: Response, next: NextFunc
         }
 
         availableSlots.sort((a, b) => {
+            const dateA = new Date(a.date).getTime();
+            const dateB = new Date(b.date).getTime();
+
+            if (dateA !== dateB) {
+                return dateA - dateB;
+            }
+
             const timeA = parseInt(a.time.replace(":", ""), 10);
             const timeB = parseInt(b.time.replace(":", ""), 10);
             return timeA - timeB;
