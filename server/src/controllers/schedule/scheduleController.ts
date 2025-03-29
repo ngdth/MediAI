@@ -14,6 +14,12 @@ export const upsertSchedule = async (req: Request, res: Response, next: NextFunc
             return;
         }
 
+        availableSlots.sort((a, b) => {
+            const timeA = parseInt(a.time.replace(":", ""), 10);
+            const timeB = parseInt(b.time.replace(":", ""), 10);
+            return timeA - timeB;
+        });
+
         // Tìm xem bác sĩ đã có lịch chưa
         const existingSchedule = await Schedule.findOne({ doctorId });
 
