@@ -7,14 +7,14 @@ export function   generateDateRange(startDate, days) {
 }
 
 export function formatDate(date) {
-  return date.toLocaleDateString("en-CN", {
+  return date.toLocaleDateString("en-CA", {
     month: "short",
     day: "numeric",
   })
 }
 
 export function getDayName(date) {
-  return date.toLocaleDateString("en-CN", { weekday: "short" })
+  return date.toLocaleDateString("en-CA", { weekday: "short" })
 }
 
 export function formatTime(hour, minute) {
