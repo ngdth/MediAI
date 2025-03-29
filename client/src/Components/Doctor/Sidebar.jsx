@@ -35,6 +35,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               <span>Quản lý đơn thuốc</span>
             </Link>
           </li>
+          <li>
+            <Link to="/doctor/medical-history" className="menu-item">
+              <FaPills className="menu-icon" />
+              <span>Lịch sử khám bệnh</span>
+            </Link>
+          </li>
         </ul>
       </div>
     </>

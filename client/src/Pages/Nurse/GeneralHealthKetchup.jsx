@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 
 const GeneralHealthKetchup = () => {
   const [appointmentData, setAppointmentData] = useState(null);
@@ -115,6 +116,36 @@ const GeneralHealthKetchup = () => {
     }
   };
 
+  const handleUploadImages = async (e, subField) => {
+    const files = e.target.files;
+    if (!files.length) return;
+  
+    const formData = new FormData();
+    for (let file of files) {
+      formData.append("testImages", file);
+    }
+  
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/test/upload/${appointmentId}/${subField}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("Upload ảnh thành công:", response.data);
+      toast.success("Upload ảnh thành công");
+      fetchAppointmentData();
+    } catch (error) {
+      toast.error("Upload ảnh thất bại");
+      console.log("Upload thất bại:", error);
+      console.error("Upload thất bại:", error);
+    }
+  };
+
   const renderEditableField = (label, field, value, subField = null) => {
     const isEditing = editMode[`${field}${subField || ""}`];
     const displayValue = value ? (typeof value === "object" ? JSON.stringify(value) : value) : "Chưa có dữ liệu";
@@ -141,6 +172,42 @@ const GeneralHealthKetchup = () => {
           >
             {isEditing ? "Lưu" : "Thay đổi"}
           </button>
+          {["xRay", "ultrasound", "mri", "ecg"].includes(subField) && (
+          <div>
+            <input
+              type="file"
+              accept="image/*"
+              multiple // Cho phép chọn nhiều ảnh
+              className="d-none"
+              id={`upload-${subField}`}
+              onChange={(e) => handleUploadImages(e, subField)}
+            />
+            <label htmlFor={`upload-${subField}`} className="btn btn-sm btn-success mt-2">
+              Thêm ảnh
+            </label>
+          </div>
+          )}
+        </td>
+        <td>
+          {["xRay", "ultrasound", "mri", "ecg"].includes(subField) ? (
+            <div>
+              {appointmentData && appointmentData.tests && appointmentData.tests[0] && appointmentData.tests[0][subField + "Img"] ? (
+                appointmentData.tests[0][subField + "Img"].length > 0 ? (
+                  <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                    {appointmentData.tests[0][subField + "Img"].map((imgPath, index) => (
+                      <img key={index} src={ imgPath} alt="Test image" style={{ width: '100px', height: '100px', margin: '5px' }} />
+                    ))}
+                  </div>
+                ) : (
+                  <span>Không có hình ảnh</span>
+                )
+              ) : (
+                <span>Không có hình ảnh</span>
+              )}
+            </div>
+          ) : (
+            <span></span>
+          )}
         </td>
       </tr>
     );
@@ -241,6 +308,7 @@ const GeneralHealthKetchup = () => {
               <th>Chỉ số</th>
               <th>Giá trị</th>
               <th>Hành động</th>
+              <th>Hình ảnh</th>
             </tr>
           </thead>
           <tbody>
@@ -328,6 +396,7 @@ const GeneralHealthKetchup = () => {
           Lưu toàn bộ
         </button>
       </div>
+      <ToastContainer position="top-right" autoClose={6000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
     </div>
   );
 };

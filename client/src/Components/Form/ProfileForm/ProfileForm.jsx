@@ -110,6 +110,7 @@ const ProfileForm = ({ user, setUser }) => {
                                 type="email"
                                 name="email"
                                 value={formData.email}
+                                readOnly 
                             />
                         </Form.Group>
                     </Col>

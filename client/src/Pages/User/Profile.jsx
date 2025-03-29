@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ProfileForm from "../../components/Form/ProfileForm/ProfileForm";
 import { ToastContainer, toast } from "react-toastify";
 import {Container,Col, Row, Button, Modal, Form } from "react-bootstrap";
+import { FaRegEdit } from "react-icons/fa";
 import axios from "axios";
 
 const UserProfile = () => {
@@ -12,6 +13,7 @@ const UserProfile = () => {
         newPassword: "",
         confPassword: "",
     });
+    const [hover, setHover] = useState(false);
 
     useEffect(() => {
         const fetchUserInfo = async () => {
@@ -70,6 +72,45 @@ const UserProfile = () => {
         }
     };
 
+
+    const handleImageChange = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // Hiển thị ảnh trước khi gửi request
+        const previewUrl = URL.createObjectURL(file);
+        setUser((prevUser) => ({ ...prevUser, imageUrl: previewUrl }));
+    
+        const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+        if (!allowedTypes.includes(file.type)) {
+            toast.error("Chỉ chấp nhận các định dạng ảnh JPG, JPEG, PNG");
+            return;
+        }
+    
+        if (file.size > 2 * 1024 * 1024) { // 2MB giới hạn
+            toast.error("Ảnh không được vượt quá 2MB");
+            return;
+        }
+    
+        const formData = new FormData();
+        formData.append("avatar", file);
+    
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.post("http://localhost:8080/user/update-avatar", formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+    
+            setUser((prevUser) => ({ ...prevUser, imageUrl: response.data.imageUrl }));
+            toast.success("Avatar updated successfully!");
+        } catch (error) {
+            toast.error("Failed to update avatar");
+        }
+    };
+
     return (
         <>
             <div className="cs_site_header_spacing_100"></div>
@@ -95,15 +136,24 @@ const UserProfile = () => {
                             <div className="card card-profile shadow">
                                 <div className="row justify-content-center">
                                     <Col lg={3} className="order-lg-2 d-flex justify-content-center">
-                                        <div className="card-profile-image pt-3 text-center">
-                                            <a href="#">
-                                                <img
-                                                    src={user?.imageUrl || "https://i.pinimg.com/736x/16/b2/e2/16b2e2579118bf6fba3b56523583117f.jpg"}
-                                                    style={{ marginTop: "-4rem" }}
-                                                    alt="User"
-                                                    className="circle-image"
-                                                />
-                                            </a>
+                                        <div className="card-profile-image-container"
+                                            onMouseEnter={() => setHover(true)}
+                                            onMouseLeave={() => setHover(false)}
+                                            onClick={() => document.getElementById("upload-avatar").click()}
+                                            style={{ cursor: "pointer" }}
+                                        >
+                                            <img
+                                                src={user?.imageUrl || "https://i.pinimg.com/736x/16/b2/e2/16b2e2579118bf6fba3b56523583117f.jpg"}
+                                                alt="User"
+                                                className="circle-image"
+                                                style={{ 
+                                                    // opacity: hover ? 0.6 : 1,  
+                                                    marginTop: "2rem",
+                                                    filter: hover? "brightness(0.5)": "brightness(1)",
+                                                }}
+                                            />
+                                            <input type="file" id="upload-avatar" accept="image/*" onChange={handleImageChange} style={{ display: "none", marginTop: "2rem" }} />
+                                            {hover && <FaRegEdit className="edit-icon" style={{ marginTop: "1rem", position: "absolute" }} />}
                                         </div>
                                     </Col>
                                 </div>

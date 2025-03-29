@@ -78,3 +78,28 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
+export const updateAvatar = async (req: Request, res: Response): Promise<void> => {
+    try {
+        if (!req.file) {
+            res.status(400).json({ message: "Không có file nào được tải lên." });
+            return;
+        }
+
+        const userId = req.user.id; // Lấy userId từ request
+        const user = await User.findById(userId); // Tìm user trong database
+
+        if (!user) {
+            res.status(404).json({ message: "User không tồn tại." });
+            return;
+        }
+
+        user.imageUrl = `/uploads/avatars/${req.file.filename}`; // Cập nhật avatar
+        await user.save(); // Lưu lại user
+
+        res.json({ imageUrl: user.imageUrl });
+    } catch (error) {
+        console.error("Lỗi khi cập nhật avatar:", error);
+        res.status(500).json({ message: "Có lỗi xảy ra khi cập nhật avatar." });
+    }
+};

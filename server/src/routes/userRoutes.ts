@@ -1,8 +1,9 @@
 import express from "express";
 import { registerUser, loginUser, verifyAccount, sendOTP, forgotPassword, deleteUnverifiedAcc,changePassword } from "../controllers/auth/authController";
-import { getUserProfile, getAllUsers, getUserById, updateProfile } from "../controllers/auth/authUser";
+import { getUserProfile, getAllUsers, getUserById, updateProfile, updateAvatar } from "../controllers/auth/authUser";
 import { authenticateToken, authorizeDoctor, authorizeRole } from "../middlewares/authMiddleware";
 import { getCurrentUser, addDoctorToFavorites, getAllDoctors, getDoctorById, getFavoriteDoctors, removeDoctorFromFavorites, searchDoctorByUsername } from "../controllers/doctor/doctorController";
+import upload from "../middlewares/imgUpload";
 
 const router = express.Router();
 
@@ -16,6 +17,8 @@ router.post("/login", loginUser);
 router.post("/verify", verifyAccount);
 
 router.get("/profile", authenticateToken, getUserProfile);
+
+router.post("/update-avatar", authenticateToken ,upload.single("avatar"), updateAvatar);
 
 router.get("/all", authenticateToken,authorizeRole([ "admin"]), getAllUsers);
 
