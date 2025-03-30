@@ -40,10 +40,10 @@ export const createPayment = async (req: Request, res: Response): Promise<void> 
         const orderInfo = 'Thanh toán qua MoMo';
         const partnerCode = 'MOMO';
         const redirectUrl = 'http://localhost:5173/payment';  // URL thành công (có thể thay đổi)
-        const ipnUrl = 'https://bf6d-123-19-56-67.ngrok-free.app/callback';  // Cập nhật lại ngrok nếu cần
+        const ipnUrl = 'https://bf6d-123-19-56-67.ngrok-free.app/payment/callback';  // Cập nhật lại ngrok nếu cần
         const requestType = "payWithMethod";
         const orderId = `${partnerCode}_${_id}_${Date.now()}`;
-        const requestId = orderId;
+        const requestId = `${_id}`;
         const extraData = '';
         const autoCapture = true;
         const lang = 'vi';
@@ -114,30 +114,32 @@ export const paymentCallback = async (req: Request, res: Response): Promise<void
             return;
         }
 
-        const { resultCode, billId, message, transId } = req.body;
+        const { resultCode, requestId } = req.body;
 
-        if (!resultCode || !billId) {
-            console.log("⚠️ Thiếu `resultCode` hoặc `billId` trong callback:", req.body);
-            res.status(400).json({
-                message: "Thiếu dữ liệu từ MoMo callback",
-                resultCode: resultCode || null,
-                billId: billId || null
-            });
-            return;
-        }
+        // if (!resultCode || !billId) {
+        //     console.log("⚠️ Thiếu `resultCode` hoặc `billId` trong callback:", req.body);
+        //     res.status(400).json({
+        //         message: "Thiếu dữ liệu từ MoMo callback",
+        //         resultCode: resultCode || null,
+        //         billId: billId || null
+        //     });
+        //     return;
+        // }
 
-        if (Number(resultCode) === 0) {  // ✅ Thanh toán thành công
-            console.log("✅ Payment successful for Bill ID:", billId);
+        if ((resultCode) === 0) {  // ✅ Thanh toán thành công
+            console.log("✅ Payment successful for Bill ID:", requestId);
 
             // 📌 Cập nhật trạng thái thanh toán của Bill
             const updatedBill = await Bill.findOneAndUpdate(
-                { _id: billId },
-                { paymentStatus: "Paid", transId },
+                { _id: requestId },
+                { paymentStatus: "Paid" },
                 { new: true }
             );
 
-            if (!updatedBill) {
-                console.log("❌ Không tìm thấy hóa đơn với billId:", billId);
+            if (updatedBill) {
+                console.log("Bill updated successfully:", updatedBill);
+            } else {
+                console.log("❌ Không tìm thấy hóa đơn với billId:", requestId);
                 res.status(404).json({ message: "Bill not found" });
                 return;
             }
