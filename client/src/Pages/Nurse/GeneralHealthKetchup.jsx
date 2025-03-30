@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import { HiOutlineDotsHorizontal } from "react-icons/hi";
+import { Modal, Button } from "react-bootstrap";
 
 const GeneralHealthKetchup = () => {
   const [appointmentData, setAppointmentData] = useState(null);
@@ -9,6 +11,11 @@ const GeneralHealthKetchup = () => {
   const [expandedDoctors, setExpandedDoctors] = useState({});
   const navigate = useNavigate();
   const { appointmentId } = useParams();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [selectedSubField, setSelectedSubField] = useState("");
+  const [selectedImageName, setSelectedImageName] = useState("");
+
+  const closeModal = () => setIsModalOpen(false);
 
   useEffect(() => {
     if (appointmentId) {
@@ -196,7 +203,16 @@ const GeneralHealthKetchup = () => {
                   appointmentData.tests[0][subField + "Img"].length > 0 ? (
                     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                       {appointmentData.tests[0][subField + "Img"].map((imgPath, index) => (
-                        <img key={index} src={ imgPath} alt="Test image" style={{ width: '100px', height: '100px', margin: '5px' }} />
+                        <div className="image-container" key={index}>
+                        <img src={imgPath} alt="Test image" style={{ width: '150px', height: '150px', margin: '5px' }} />
+                        <HiOutlineDotsHorizontal className="icon" 
+                          onClick={() => {
+                            // setSelectedSubField(subField);
+                            setSelectedImageName(getImgName(imgPath));
+                            setIsModalOpen(true);
+                          }}
+                        />
+                      </div>
                       ))}
                     </div>
                   ) : (
@@ -213,6 +229,24 @@ const GeneralHealthKetchup = () => {
         )}
       </tr>
     );
+  };
+
+  const getImgName = (path) => {
+    return path.split('/').pop();
+  };
+
+  const handleDeleteImage = async () => {
+    try {
+      await axios.delete(`http://localhost:8080/test/delete/${appointmentId}/${selectedImageName}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      await fetchAppointmentData(); // Làm mới dữ liệu sau khi xóa
+      setIsModalOpen(false);
+      toast.success("Xóa ảnh thành công");
+    } catch (error) {
+      console.error("Lỗi khi xóa ảnh:", error);
+      toast.error("Xóa ảnh thất bại");
+    }
   };
 
   const renderReadOnlyField = (label, value) => {
@@ -399,6 +433,17 @@ const GeneralHealthKetchup = () => {
         </button>
       </div>
       <ToastContainer position="top-right" autoClose={6000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+      {isModalOpen && <div className="modal-overlay"></div>}
+        <Modal show={isModalOpen} onHide={() => setIsModalOpen(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Xóa ảnh</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Bạn có chắc chắn muốn xóa ảnh này?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={handleDeleteImage}>Xóa</Button>
+          <Button variant="secondary" onClick={closeModal}>Hủy</Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

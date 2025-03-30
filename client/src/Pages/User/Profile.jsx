@@ -147,7 +147,6 @@ const UserProfile = () => {
                                                 alt="User"
                                                 className="circle-image"
                                                 style={{ 
-                                                    // opacity: hover ? 0.6 : 1,  
                                                     marginTop: "2rem",
                                                     filter: hover? "brightness(0.5)": "brightness(1)",
                                                 }}
