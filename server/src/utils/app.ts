@@ -15,7 +15,6 @@ const app = express()
 app.use(passport.initialize());
 app.use(bodyParser.json());
 
-
 app.use(cors({ origin: ORIGIN }))
 app.use(express.json()) // body parser
 app.use(express.urlencoded({ extended: false })) // url parser
