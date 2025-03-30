@@ -3,7 +3,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 
 const MedicalHistoryDetail = () => {
-    const { appointmentId } = useParams();  // Nhận appointmentId từ URL
+    const { appointmentId } = useParams(); // Nhận appointmentId từ URL
     const [appointment, setAppointment] = useState(null);
     const [loading, setLoading] = useState(true);
     const [vitals, setVitals] = useState({});
@@ -22,7 +22,7 @@ const MedicalHistoryDetail = () => {
                 });
 
                 const data = response.data.data;
-                console.log('Fetched appointment details:', data);
+                console.log("Fetched appointment details:", data);
 
                 setAppointment(data.appointment);
                 setVitals(data.vitals[0] || {});
@@ -78,12 +78,31 @@ const MedicalHistoryDetail = () => {
         );
     }
 
+    const renderImages = (imagePaths) => {
+        imagePaths = imagePaths || [];
+        if (imagePaths.length === 0) {
+            return <span>Không có hình ảnh</span>;
+        }
+        return imagePaths.map((path, index) => (
+            <img key={index} src={path} style={{ width: "100px", height: "100px", margin: "5px" }} alt="Test Image" />
+        ));
+    };
+
+    const testTypes = [
+        { label: "Xét nghiệm máu", detailKey: "bloodTest", imageKey: null },
+        { label: "Xét nghiệm nước tiểu", detailKey: "urineTest", imageKey: null },
+        { label: "X-quang", detailKey: "xRay", imageKey: "xRayImg" },
+        { label: "Siêu âm", detailKey: "ultrasound", imageKey: "ultrasoundImg" },
+        { label: "MRI", detailKey: "mri", imageKey: "mriImg" },
+        { label: "Điện tâm đồ", detailKey: "ecg", imageKey: "ecgImg" },
+    ];
+
     // Log dữ liệu để kiểm tra
-    console.log("Appointment Data:", appointment);
-    console.log("Vitals Data:", vitals);
+    // console.log("Appointment Data:", appointment);
+    // console.log("Vitals Data:", vitals);
     console.log("Tests Data:", tests);
-    console.log("Diagnosis Details:", diagnosisDetails);
-    console.log("Prescriptions:", prescriptions);
+    // console.log("Diagnosis Details:", diagnosisDetails);
+    // console.log("Prescriptions:", prescriptions);
 
     return (
         <div className="container">
@@ -125,15 +144,21 @@ const MedicalHistoryDetail = () => {
                         <tr>
                             <th>Xét nghiệm</th>
                             <th>Chi tiết</th>
+                            <th>Hình Ảnh</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {renderReadOnlyField("Xét nghiệm máu", tests.bloodTest)}
-                        {renderReadOnlyField("Xét nghiệm nước tiểu", tests.urineTest)}
-                        {renderReadOnlyField("X-quang", tests.xRay)}
-                        {renderReadOnlyField("Siêu âm", tests.ultrasound)}
-                        {renderReadOnlyField("MRI", tests.mri)}
-                        {renderReadOnlyField("Điện tâm đồ", tests.ecg)}
+                        {testTypes.map((type) => {
+                            const detail = tests[type.detailKey] || "Chưa có dữ liệu";
+                            const imagePaths = type.imageKey ? tests[type.imageKey] : [];
+                            return (
+                                <tr key={type.label}>
+                                    <td>{type.label}</td>
+                                    <td>{detail}</td>
+                                    <td>{renderImages(imagePaths)}</td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>
@@ -162,7 +187,9 @@ const MedicalHistoryDetail = () => {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="4" className="text-center">Không có đơn thuốc</td>
+                                <td colSpan="4" className="text-center">
+                                    Không có đơn thuốc
+                                </td>
                             </tr>
                         )}
                     </tbody>
@@ -192,7 +219,9 @@ const MedicalHistoryDetail = () => {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="2" className="text-center">Không có thông tin chẩn đoán</td>
+                                <td colSpan="2" className="text-center">
+                                    Không có thông tin chẩn đoán
+                                </td>
                             </tr>
                         )}
                     </tbody>
