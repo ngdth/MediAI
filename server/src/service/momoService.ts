@@ -132,7 +132,7 @@ export const paymentCallback = async (req: Request, res: Response): Promise<void
             // 📌 Cập nhật trạng thái thanh toán của Bill
             const updatedBill = await Bill.findOneAndUpdate(
                 { _id: billId },
-                { paymentStatus: "Completed", transId },
+                { paymentStatus: "Paid", transId },
                 { new: true }
             );
 
