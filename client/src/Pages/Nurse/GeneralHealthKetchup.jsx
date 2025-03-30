@@ -137,16 +137,16 @@ const GeneralHealthKetchup = () => {
         }
       );
       console.log("Upload ảnh thành công:", response.data);
-      toast.success("Upload ảnh thành công");
+      toast.success("Upload ảnh "+subField+ " thành công");
       fetchAppointmentData();
     } catch (error) {
-      toast.error("Upload ảnh thất bại");
+      toast.error('Upload ảnh ${subField} thất bại');
       console.log("Upload thất bại:", error);
       console.error("Upload thất bại:", error);
     }
   };
 
-  const renderEditableField = (label, field, value, subField = null) => {
+  const renderEditableField = (label, field, value, subField = null, showImageColumn = true) => {
     const isEditing = editMode[`${field}${subField || ""}`];
     const displayValue = value ? (typeof value === "object" ? JSON.stringify(value) : value) : "Chưa có dữ liệu";
 
@@ -188,27 +188,29 @@ const GeneralHealthKetchup = () => {
           </div>
           )}
         </td>
-        <td>
-          {["xRay", "ultrasound", "mri", "ecg"].includes(subField) ? (
-            <div>
-              {appointmentData && appointmentData.tests && appointmentData.tests[0] && appointmentData.tests[0][subField + "Img"] ? (
-                appointmentData.tests[0][subField + "Img"].length > 0 ? (
-                  <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                    {appointmentData.tests[0][subField + "Img"].map((imgPath, index) => (
-                      <img key={index} src={ imgPath} alt="Test image" style={{ width: '100px', height: '100px', margin: '5px' }} />
-                    ))}
-                  </div>
+        {showImageColumn && (
+          <td>
+            {["xRay", "ultrasound", "mri", "ecg"].includes(subField) ? (
+              <div>
+                {appointmentData && appointmentData.tests && appointmentData.tests[0] && appointmentData.tests[0][subField + "Img"] ? (
+                  appointmentData.tests[0][subField + "Img"].length > 0 ? (
+                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                      {appointmentData.tests[0][subField + "Img"].map((imgPath, index) => (
+                        <img key={index} src={ imgPath} alt="Test image" style={{ width: '100px', height: '100px', margin: '5px' }} />
+                      ))}
+                    </div>
+                  ) : (
+                    <span>Không có hình ảnh</span>
+                  )
                 ) : (
                   <span>Không có hình ảnh</span>
-                )
-              ) : (
-                <span>Không có hình ảnh</span>
-              )}
-            </div>
-          ) : (
-            <span></span>
-          )}
-        </td>
+                )}
+              </div>
+            ) : (
+              <span></span>
+            )}
+          </td>
+        )}
       </tr>
     );
   };
@@ -276,12 +278,12 @@ const GeneralHealthKetchup = () => {
             </tr>
           </thead>
           <tbody>
-            {renderEditableField("Mạch (số nhịp/phút)", "vitals", vitals?.[0]?.pulse, "pulse")}
-            {renderEditableField("Huyết áp (mmHg)", "vitals", vitals?.[0]?.bloodPressure, "bloodPressure")}
-            {renderEditableField("Nhiệt độ cơ thể (°C)", "vitals", vitals?.[0]?.temperature, "temperature")}
-            {renderEditableField("Cân nặng (kg)", "vitals", vitals?.[0]?.weight, "weight")}
-            {renderEditableField("Chiều cao (cm)", "vitals", vitals?.[0]?.height, "height")}
-            {renderEditableField("Tình trạng chung", "vitals", vitals?.[0]?.generalCondition, "generalCondition")}
+            {renderEditableField("Mạch (số nhịp/phút)", "vitals", vitals?.[0]?.pulse, "pulse", false)}
+            {renderEditableField("Huyết áp (mmHg)", "vitals", vitals?.[0]?.bloodPressure, "bloodPressure", false)}
+            {renderEditableField("Nhiệt độ cơ thể (°C)", "vitals", vitals?.[0]?.temperature, "temperature", false)}
+            {renderEditableField("Cân nặng (kg)", "vitals", vitals?.[0]?.weight, "weight", false)}
+            {renderEditableField("Chiều cao (cm)", "vitals", vitals?.[0]?.height, "height", false)}
+            {renderEditableField("Tình trạng chung", "vitals", vitals?.[0]?.generalCondition, "generalCondition", false)}
           </tbody>
         </table>
 
@@ -312,12 +314,12 @@ const GeneralHealthKetchup = () => {
             </tr>
           </thead>
           <tbody>
-            {renderEditableField("Xét nghiệm máu", "tests", tests?.[0]?.bloodTest, "bloodTest")}
-            {renderEditableField("Xét nghiệm nước tiểu", "tests", tests?.[0]?.urineTest, "urineTest")}
-            {renderEditableField("X-quang", "tests", tests?.[0]?.xRay, "xRay")}
-            {renderEditableField("Siêu âm", "tests", tests?.[0]?.ultrasound, "ultrasound")}
-            {renderEditableField("MRI", "tests", tests?.[0]?.mri, "mri")}
-            {renderEditableField("Điện tâm đồ", "tests", tests?.[0]?.ecg, "ecg")}
+            {renderEditableField("Xét nghiệm máu", "tests", tests?.[0]?.bloodTest, "bloodTest", false)}
+            {renderEditableField("Xét nghiệm nước tiểu", "tests", tests?.[0]?.urineTest, "urineTest", false)}
+            {renderEditableField("X-quang", "tests", tests?.[0]?.xRay, "xRay", true)}
+            {renderEditableField("Siêu âm", "tests", tests?.[0]?.ultrasound, "ultrasound", true)}
+            {renderEditableField("MRI", "tests", tests?.[0]?.mri, "mri", true)}
+            {renderEditableField("Điện tâm đồ", "tests", tests?.[0]?.ecg, "ecg", true)}
           </tbody>
         </table>
 

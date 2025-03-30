@@ -34,7 +34,6 @@ router.put("/:id/status",   authorizeRole(["doctor", "nurse"]), updateAppointmen
 router.put("/:id/reject",   authorizeRole(["doctor", "nurse"]), doctorReject);
 router.put("/:id/assign",   authorizeRole(["doctor", "nurse"]), assignDoctor);
 router.put("/:id/diagnosis",   authorizeRole(["doctor", "nurse"]), addDiagnosisAndPrescription);
-router.get("/:id", getAppointmentById);
 router.post("/:id/createresult",   createResult);
 router.post("/:id/createprescription",   createPrescription);
 router.put("/:id/remove-doctor",   authorizeRole(["doctor", "nurse"]), removeDoctorFromAppointment);
@@ -46,6 +45,7 @@ router.put("/:id/update-nurse-fields",   authorizeRole(["nurse"]), updateNurseFi
 router.post("/book",   bookAppointment);
 router.get("/history/:id",   getDetailAppointment );
 router.get("/history",   getUserAppointments);
+router.get("/:id", getAppointmentById);
 router.get("/", viewAllAppointments);
 router.delete("/:id/cancel",   cancelAppointment );
 export default router;
