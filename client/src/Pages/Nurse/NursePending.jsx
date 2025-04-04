@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import RejectModal from "../../Components/Nurse/RejectModal";
 
 const NursePending = () => {
@@ -13,6 +13,8 @@ const NursePending = () => {
     const [showRejectModal, setShowRejectModal] = useState(false);
     const [rejectReason, setRejectReason] = useState("");
     const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+    const [showPopup, setShowPopup] = useState(false);
+    const [countdown, setCountdown] = useState(10);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -35,6 +37,17 @@ const NursePending = () => {
         };
         loadData();
     }, []);
+
+    useEffect(() => {
+        if (showPopup && countdown > 0) {
+            const timer = setInterval(() => {
+                setCountdown((prev) => prev - 1);
+            }, 1000);
+            return () => clearInterval(timer);
+        } else if (countdown === 0) {
+            setShowPopup(false);
+        }
+    }, [showPopup, countdown]);
 
     const fetchAppointments = async (status) => {
         const response = await axios.get(`http://localhost:8080/appointment?status=${status}`, {
@@ -112,10 +125,17 @@ const NursePending = () => {
             alert("Vui lòng chọn bác sĩ trước khi xác nhận.");
             return;
         }
-        await axios.put(`http://localhost:8080/appointment/${id}/assign`, { doctorId: selectedDoctor._id }, {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        await updateAppointmentStatus(id, "Assigned");
+        try {
+            await axios.put(`http://localhost:8080/appointment/${id}/assign`, { doctorId: selectedDoctor._id }, {
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            });
+            await updateAppointmentStatus(id, "Assigned");
+            setShowPopup(true);
+            setCountdown(10);
+        } catch (error) {
+            console.error("Error assigning doctor:", error);
+            alert("Có lỗi xảy ra khi xác nhận lịch hẹn. Vui lòng thử lại.");
+        }
     };
 
     const handleSort = (key) => {
@@ -265,16 +285,8 @@ const NursePending = () => {
                                                 className="btn btn-primary"
                                                 onClick={() => handleViewDetail(appointment._id)}
                                             >
-                                                View Detail
+                                                Xem chi tiết
                                             </button>
-                                            {appointment.doctorId && appointment.doctorId.length > 0 && (
-                                                <button
-                                                    className="btn btn-warning"
-                                                    onClick={() => updateAppointmentStatus(appointment._id, "Prescription_created")}
-                                                >
-                                                    Send Back to Doctor
-                                                </button>
-                                            )}
                                         </td>
                                     </tr>
                                 );
@@ -295,6 +307,28 @@ const NursePending = () => {
                 rejectReason={rejectReason}
                 setRejectReason={setRejectReason}
             />
+
+            {showPopup && (
+                <div className="popup-overlay">
+                    <div className="popup-content">
+                        <span className="close-btn" onClick={() => setShowPopup(false)}>✖</span>
+                        <div className="checkmark">✔</div>
+                        <h2>Xác nhận thành công</h2>
+                        <p>
+                            Lịch hẹn đã được phân công thành công cho bác sĩ, hãy xác nhận một lần nữa tại trang{" "}
+                            <Link
+                                to="/nurse/assigned"
+                                onClick={() => setShowPopup(false)}
+                                style={{ fontWeight: "bold", textDecoration: "underline" }}
+                            >
+                                sau
+                            </Link>.
+                            <br />
+                            Popup sẽ đóng sau {countdown} giây.
+                        </p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

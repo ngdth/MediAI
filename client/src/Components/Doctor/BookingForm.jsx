@@ -4,7 +4,7 @@ import BookingSchedule from "./BookingSchedule";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 
-const BookingForm = ({ show, doctorId, onClose }) => {
+const BookingForm = ({ show, doctorId, onClose, onBookingSuccess }) => {
   const [formData, setFormData] = useState({
     fullName: "",
     age: "",
@@ -114,8 +114,7 @@ const BookingForm = ({ show, doctorId, onClose }) => {
       );
 
       console.log("Đặt lịch thành công:", response.data);
-      toast.success("Đặt lịch thành công!");
-      onClose();
+      onBookingSuccess(appointmentData);
     } catch (error) {
       console.error("Lỗi khi đặt lịch:", error.response?.data || error.message);
       // toast.error("Có lỗi xảy ra, vui lòng thử lại!");
