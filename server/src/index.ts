@@ -15,6 +15,7 @@ import pharmacyRoutes from './routes/pharmacyRoutes';
 import paymentRoutes from './routes/paymentRoutes';
 import testRoutes from './routes/testRoutes';
 import notificationRoutes from './routes/notificationRoutes'
+import uploadRoutes from './routes/uploadRoutes'; // Import upload routes
 
 const bootstrap = async () => {
   await mongo.connect()
@@ -39,6 +40,7 @@ const bootstrap = async () => {
   app.use('/payment', paymentRoutes); // Use payment routes
   app.use("/test", testRoutes); // Use test routes
   app.use('/notification', notificationRoutes);
+  app.use('/upload', uploadRoutes); // Use upload routes
   app.listen(PORT || 8080, () => {
     console.log(`✅ Server is listening on port: ${PORT || 8080}`)
   })

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import {useNavigate, useParams } from "react-router-dom";
 
 const ManageResult = () => {
   const { appointmentId } = useParams();
+  const navigate = useNavigate();
   const [appointment, setAppointment] = useState(null);
   const [doctorId, setDoctorId] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -84,6 +85,7 @@ const ManageResult = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       alert("Kết quả chẩn đoán đã được tạo thành công!");
+      navigate("/doctor/medical-result");
     } catch (error) {
       console.error("Error creating result:", error);
       alert("Có lỗi xảy ra khi tạo kết quả chẩn đoán.");
@@ -137,6 +139,16 @@ const ManageResult = () => {
   console.log("Current Doctor Index:", currentDoctorIndex);
   const previousDoctors = currentDoctorIndex > 0 ? appointment.doctorId.slice(0, currentDoctorIndex) : [];
 
+  const renderImages = (imagePaths) => {
+    imagePaths = imagePaths || [];
+    if (imagePaths.length === 0) {
+      return <span>Không có hình ảnh</span>;
+    }
+    return imagePaths.map((path, index) => (
+      <img key={index} src={path} style={{ width: '100px', height: '100px', margin: '5px' }} alt="Test Image" />
+    ));
+  };
+
   return (
     <div className="container">
       <h2 className="text-center mb-4">Kết quả khám bệnh</h2>
@@ -177,15 +189,16 @@ const ManageResult = () => {
             <tr>
               <th>Xét nghiệm</th>
               <th>Chi tiết</th>
+              <th>Hình Ảnh</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td>Xét nghiệm máu</td><td>{tests.bloodTest || "Chưa có dữ liệu"}</td></tr>
-            <tr><td>Xét nghiệm nước tiểu</td><td>{tests.urineTest || "Chưa có dữ liệu"}</td></tr>
-            <tr><td>X-quang</td><td>{tests.xRay || "Chưa có dữ liệu"}</td></tr>
-            <tr><td>Siêu âm</td><td>{tests.ultrasound || "Chưa có dữ liệu"}</td></tr>
-            <tr><td>MRI</td><td>{tests.mri || "Chưa có dữ liệu"}</td></tr>
-            <tr><td>Điện tâm đồ</td><td>{tests.ecg || "Chưa có dữ liệu"}</td></tr>
+            <tr><td>Xét nghiệm máu</td><td>{tests.bloodTest || "Chưa có dữ liệu"}</td><td>{renderImages([])}</td></tr>
+            <tr><td>Xét nghiệm nước tiểu</td><td>{tests.urineTest || "Chưa có dữ liệu"}</td><td>{renderImages([])}</td></tr>
+            <tr><td>X-quang</td><td>{tests.xRay || "Chưa có dữ liệu"}</td><td>{renderImages(tests.xRayImg)}</td></tr>
+            <tr><td>Siêu âm</td><td>{tests.ultrasound || "Chưa có dữ liệu"}</td><td>{renderImages(tests.ultrasoundImg)}</td></tr>
+            <tr><td>MRI</td><td>{tests.mri || "Chưa có dữ liệu"}</td><td>{renderImages(tests.mriImg)}</td></tr>
+            <tr><td>Điện tâm đồ</td><td>{tests.ecg || "Chưa có dữ liệu"}</td><td>{renderImages(tests.ecgImg)}</td></tr>
           </tbody>
         </table>
       </div>

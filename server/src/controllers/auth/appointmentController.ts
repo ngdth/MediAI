@@ -785,7 +785,7 @@ export const getUserAppointments = async (req: Request, res: Response, next: Nex
         // }
 
         if (userRole === 'doctor') {
-            filter = { doctorId: userId, status: AppointmentStatus.DONE };
+            filter = { doctorId: userId, status: { $in: [AppointmentStatus.ASSIGNED, AppointmentStatus.WAITINGPRESCRIPTION, AppointmentStatus.PRESCRIPTION_CREATED, AppointmentStatus.DONE, AppointmentStatus.BILL_CREATED] } };
             console.log(`Doctor's filter applied: ${JSON.stringify(filter)}`);
         } else if (userRole === 'nurse') {
             // Nurse có thể xem tất cả các trạng thái
