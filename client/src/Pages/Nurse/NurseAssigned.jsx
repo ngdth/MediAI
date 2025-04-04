@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import RejectModal from "../../Components/Nurse/RejectModal";
 
 const NurseAssigned = () => {
@@ -11,6 +11,8 @@ const NurseAssigned = () => {
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [showPopup, setShowPopup] = useState(false);
+  const [countdown, setCountdown] = useState(10);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,13 +20,27 @@ const NurseAssigned = () => {
     fetchDoctors();
   }, []);
 
+  useEffect(() => {
+    if (showPopup && countdown > 0) {
+      const timer = setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(timer);
+    } else if (countdown === 0) {
+      setShowPopup(false);
+    }
+  }, [showPopup, countdown]);
+
   const fetchAppointments = async (status) => {
     try {
-      const response = await axios.get(`http://localhost:8080/appointment?status=${status}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      const response = await axios.get(
+        `http://localhost:8080/appointment?status=${status}`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
       console.log("API response:", response.data);
-      setAppointments(response.data.data || []); // Đảm bảo luôn là mảng
+      setAppointments(response.data.data || []);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching appointments:", error);
@@ -58,9 +74,36 @@ const NurseAssigned = () => {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
+
+      if (status === "Accepted") {
+        const appointment = appointments.find((item) => item.appointment._id === id)?.appointment;
+        if (appointment) {
+          const doctorId = appointment.doctorId[0]; 
+          const message = `Bạn có lịch hẹn mới vào ${new Date(appointment.date).toLocaleDateString(
+            "vi-VN"
+          )} lúc ${appointment.time}`;
+
+          await axios.post(
+            "http://localhost:8080/notification",
+            {
+              userId: doctorId,
+              message,
+              type: "appointment",
+              relatedId: id,
+            },
+            {
+              headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            }
+          );
+        }
+        setShowPopup(true);
+        setCountdown(10);
+      }
+
       fetchAppointments("Assigned");
     } catch (error) {
       console.error("Lỗi khi cập nhật trạng thái:", error);
+      alert("Có lỗi xảy ra khi cập nhật trạng thái lịch hẹn. Vui lòng thử lại.");
     }
   };
 
@@ -109,7 +152,6 @@ const NurseAssigned = () => {
       }
 
       if (sortConfig.key === "doctor") {
-        // Lấy tên bác sĩ từ mảng doctorId
         const aDoctorNames = appointmentA.doctorId
           .map((doctor) => doctors[doctor._id] || "N/A")
           .join(", ");
@@ -147,11 +189,11 @@ const NurseAssigned = () => {
     }
 
     try {
-      await updateAppointmentStatus(selectedAppointmentId, "Rejected"); // Cập nhật trạng thái thành 'Rejected'
+      await updateAppointmentStatus(selectedAppointmentId, "Rejected");
       setShowRejectModal(false);
       setRejectReason("");
-      setSelectedAppointmentId(null); // Reset state sau khi từ chối thành công
-      fetchAppointments("Pending"); // Refresh danh sách lịch hẹn
+      setSelectedAppointmentId(null);
+      fetchAppointments("Assigned");
     } catch (error) {
       console.error("Lỗi khi từ chối cuộc hẹn:", error);
       alert(error.response?.data?.message || "Có lỗi xảy ra khi từ chối lịch hẹn.");
@@ -237,7 +279,7 @@ const NurseAssigned = () => {
                         Xác nhận
                       </button>
                       <button
-                        className="btn btn-danger"
+                        className="btn btn-danger me-2"
                         onClick={() => handleReject(appointment._id)}
                       >
                         Từ chối
@@ -246,7 +288,7 @@ const NurseAssigned = () => {
                         className="btn btn-primary"
                         onClick={() => handleViewDetail(appointment._id)}
                       >
-                        View Detail
+                        Xem chi tiết
                       </button>
                     </td>
                   </tr>
@@ -268,6 +310,28 @@ const NurseAssigned = () => {
         rejectReason={rejectReason}
         setRejectReason={setRejectReason}
       />
+
+      {showPopup && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <span className="close-btn" onClick={() => setShowPopup(false)}>✖</span>
+            <div className="checkmark">✔</div>
+            <h2>Xác nhận thành công</h2>
+            <p>
+              Lịch hẹn đã được chuyển đến cho bác sĩ, kiểm tra tất cả lịch hẹn tại trang{" "}
+              <Link
+                to="/nurse/list"
+                onClick={() => setShowPopup(false)}
+                style={{ fontWeight: "bold", textDecoration: "underline" }}
+              >
+                sau
+              </Link>.
+              <br />
+              Popup sẽ đóng sau {countdown} giây.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
