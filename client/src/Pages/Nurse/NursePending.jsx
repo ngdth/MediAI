@@ -287,6 +287,14 @@ const NursePending = () => {
                                             >
                                                 Xem chi tiết
                                             </button>
+                                            {appointment.doctorId && appointment.doctorId.length > 0 && (
+                                                <button
+                                                    className="btn btn-warning"
+                                                    onClick={() => updateAppointmentStatus(appointment._id, "Prescription_created")}
+                                                >
+                                                    Send Back to Doctor
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 );
