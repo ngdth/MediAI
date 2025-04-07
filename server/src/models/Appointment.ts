@@ -10,6 +10,7 @@ export enum AppointmentStatus {
     PRESCRIPTION_CREATED = 'Prescription_created',
     DONE = 'Done',
     BILL_CREATED = 'Bill_created',
+    CANCELED = 'Canceled',
 }
 
 interface IAppointment extends Document {
@@ -33,6 +34,7 @@ interface IAppointment extends Document {
         family: string;
     };
     services: string[]; // Array of used services
+    rejectReason?: string;
 }
 
 const appointmentSchema = new Schema<IAppointment>(
@@ -57,6 +59,7 @@ const appointmentSchema = new Schema<IAppointment>(
             family: { type: String },
         },
         services: [{ type: Schema.Types.ObjectId, ref: 'service' }],
+        rejectReason: { type: String },
     },
     { timestamps: true }
 );
