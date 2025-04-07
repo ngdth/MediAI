@@ -47,5 +47,5 @@ router.get("/history/:id",   getDetailAppointment );
 router.get("/history",   getUserAppointments);
 router.get("/:id", getAppointmentById);
 router.get("/", viewAllAppointments);
-router.delete("/:id/cancel",   cancelAppointment );
+router.put("/:id/cancel", cancelAppointment);
 export default router;

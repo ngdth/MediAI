@@ -911,12 +911,14 @@ export const getDetailAppointment = async (req: Request, res: Response, next: Ne
     }
 };
 
+
 // Hủy lịch hẹn
 export const cancelAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const userId = req.user?.id;
         const userRole = req.user?.role;
         const { id } = req.params;
+        const { rejectReason } = req.body;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
             res.status(400).json({ message: 'Invalid appointment ID' });
@@ -934,17 +936,55 @@ export const cancelAppointment = async (req: Request, res: Response, next: NextF
             return;
         }
 
-        if (userRole !== 'nurse' && appointment.status !== AppointmentStatus.PENDING) {
-            res.status(400).json({ message: 'You can only cancel appointments that are still pending' });
+        if (
+            userRole !== 'nurse' &&
+            ![AppointmentStatus.PENDING, AppointmentStatus.ASSIGNED].includes(appointment.status)
+        ) {
+            res.status(400).json({ message: 'You can only cancel appointments that are in Pending or Assigned status' });
             return;
         }
+
+        if (!rejectReason || rejectReason.trim() === '') {
+            res.status(400).json({ message: 'Reject reason is required' });
+            return;
+        }
+
+        const originalStatus = appointment.status;
 
         await Prescription.deleteMany({ appointmentId: id });
         await Vitals.deleteMany({ appointmentId: id });
         await Tests.deleteMany({ appointmentId: id });
         await DiagnosisDetails.deleteMany({ appointmentId: id });
 
-        await Appointment.findByIdAndDelete(id);
+        appointment.status = AppointmentStatus.CANCELED;
+        appointment.rejectReason = rejectReason;
+        await appointment.save();
+
+        if (originalStatus === AppointmentStatus.ASSIGNED) {
+            const doctorIds = appointment.doctorId;
+            const appointmentDate = new Date(appointment.date).toISOString().split('T')[0];
+            const appointmentTime = appointment.time;
+
+            for (const doctorId of doctorIds) {
+                const schedule = await Schedule.findOne({ doctorId });
+
+                if (schedule) {
+                    schedule.availableSlots = schedule.availableSlots.map((slot) => {
+                        const slotDate = new Date(slot.date).toISOString().split('T')[0];
+                        if (
+                            slotDate === appointmentDate &&
+                            slot.time === appointmentTime &&
+                            slot.isBooked === true
+                        ) {
+                            return { ...slot, isBooked: false };
+                        }
+                        return slot;
+                    });
+
+                    await schedule.save();
+                }
+            }
+        }
 
         res.status(200).json({
             message: 'Appointment cancelled successfully',
