@@ -24,6 +24,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             </Link>
           </li>
           <li>
+            <Link to="/admin/headofdepartments" className="menu-item">
+              <FaUserMd className="menu-icon" />
+              <span>Quản Lý Trưởng Khoa </span>
+            </Link>
+          </li>
+          <li>
             <Link to="/admin/doctors" className="menu-item">
               <FaUserMd className="menu-icon" />
               <span>Quản Lý Bác Sĩ </span>

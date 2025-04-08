@@ -1,10 +1,10 @@
 import express from 'express';
-import { upload } from '../utils/multer';
-import { getUsers, uploadCSV } from '../controllers/uploads/uploadCsvController';
+import { fileUpload } from '../utils/multer';
+import { getUsers, uploadFile,  } from '../controllers/uploads/uploadCsvController';
 
 const router = express.Router();
 
-router.post('/upload', upload.single('file'), uploadCSV);
+router.post('/upload', fileUpload.single('file'), uploadFile);
 
 router.get('/users', getUsers);
 
