@@ -47,6 +47,7 @@ import DoctorManagement from "./Pages/Admin/DoctorManagement";
 import NurseManagement from "./Pages/Admin/NurseManagement";
 import PharmacyManagement from "./Pages/Admin/PharmacyManagement";
 import ServiceManagement from './Pages/Admin/ServiceManagement';
+import HeadOfDepartmentManagement from "./pages/Admin/HeadOfDepartmentManagement";
 import ScheduleManagement from "./Pages/Doctor/ScheduleManagement";
 import ManageAppointments from "./Components/Doctor/ManageAppointments";
 import ManageResult from "./Components/Doctor/ManageResult";
@@ -134,6 +135,7 @@ function App() {
                 <Route path="/admin" element={<AdminLayout />}>
                     <Route path="/admin/users" element={<UserManagement />} />
                     <Route path="/admin/doctors" element={<DoctorManagement />} />
+                    <Route path="/admin/headofdepartments" element={<HeadOfDepartmentManagement />} />
                     <Route path="/admin/nurses" element={<NurseManagement />} />
                     <Route path="/admin/pharmacy" element={<PharmacyManagement />} />
                     <Route path="/admin/services" element={<ServiceManagement />} />
