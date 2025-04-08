@@ -14,13 +14,18 @@ export interface IUser extends Document {
   address: string;
   city: string;
   country: string;
-  role: "admin" | "user" | "doctor" | "nurse" | "pharmacy";
+  role: "admin" | "user" | "doctor" | "nurse" | "pharmacy" | "head of department";
   verified: boolean;
   active: boolean;
   favorites?: mongoose.Types.ObjectId[];
 }
 
 export interface IDoctor extends IUser {
+  specialization: string;
+  experience: number;
+}
+
+export interface IHeadOfDepartment extends IUser {
   specialization: string;
   experience: number;
 }
@@ -86,5 +91,14 @@ const PharmacySchema: Schema = new Schema(
 );
 
 export const Pharmacy = User.discriminator<IPharmacy>('pharmacy', PharmacySchema);
+
+const HeadOfDepartmentSchema: Schema = new Schema(
+  {
+    specialization: { type: String, required: true },
+    experience: { type: Number, default: 0 },
+  },
+);
+
+export const HeadOfDepartment = User.discriminator<IHeadOfDepartment>('head of department', HeadOfDepartmentSchema);
 
 export default User;
