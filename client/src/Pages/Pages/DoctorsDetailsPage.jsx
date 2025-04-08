@@ -24,6 +24,8 @@ const DoctorsDetailsPage = () => {
   const { doctorId } = useParams(); // Lấy id bác sĩ từ URL
   const [favoriteStatus, setFavoriteStatus] = useState(false); // Thêm khai báo trạng thái này
   const [showBookingForm, setShowBookingForm] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [bookingData, setBookingData] = useState(null);
 
   // Lấy token từ localStorage
   const token = localStorage.getItem("token");
@@ -104,6 +106,15 @@ const DoctorsDetailsPage = () => {
     sliderData: doctorDetails.team || [],
   };
 
+  const handleBookingSuccess = (data) => {
+    setBookingData(data);
+    setShowPopup(true);
+    setShowBookingForm(false);
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 15000);
+  };
+
   const doctorInfo = [
     {
       icon: <FaLocationDot />,
@@ -152,9 +163,27 @@ const DoctorsDetailsPage = () => {
         show={showBookingForm}
         doctorId={doctorId}
         onClose={() => setShowBookingForm(false)}
-        onSubmit={handleBookingSubmit}
+        onBookingSuccess={handleBookingSuccess}
       />
 
+      {showPopup && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <span className="close-btn" onClick={() => setShowPopup(false)}>✖</span>
+            <div className="checkmark">✔</div>
+            <h2>Đã đăng ký</h2>
+            <p>
+              Cảm ơn bạn đã đăng ký cuộc hẹn vào{" "}
+              <b>
+                {bookingData?.date ? new Date(bookingData.date).toLocaleDateString("vi-VN") : "Chưa chọn ngày"}{" "}
+                {bookingData?.time}
+              </b>.
+              Chúng tôi sẽ sớm liên lạc với bạn trong vòng 24 giờ để xác nhận lịch hẹn. Xin cảm ơn.
+            </p>
+            <button className="btn-home" onClick={() => setShowPopup(false)}>Đóng</button>
+          </div>
+        </div>
+      )}
       {/* <Section topSpaceLg="80" topSpaceMd="110">
         <BookingCalendar doctorId={doctorId} token={token} />
       </Section> */}

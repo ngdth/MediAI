@@ -122,3 +122,34 @@ body.modal-open {
         background: #29293d;
     }
 }
+
+.image-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 5px;
+  }
+  
+  .image-container img {
+    width: 150px;
+    height: 150px;
+    transition: filter 0.3s ease;
+  }
+  
+  .icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    font-size: 24px;
+    color: white;
+  }
+  
+  .image-container:hover img {
+    filter: brightness(0.5);
+  }
+  
+  .image-container:hover .icon {
+    display: block;
+  }
