@@ -10,14 +10,14 @@ const BlogsRight = ({ data }) => {
         <div className="cs_height_0 cs_height_lg_50" />
         <div className="cs_sidebar cs_style_1">
           {/* Search */}
-          <div className="cs_sidebar_widget cs_radius_15 cs_search">
+          {/* <div className="cs_sidebar_widget cs_radius_15 cs_search">
             <input type="text" placeholder={data.searchPlaceholder} />
             <span className="cs_search_icon cs_blue_bg cs_white_color">
               <i>
                 <FaMagnifyingGlass />
               </i>
             </span>
-          </div>
+          </div> */}
 
           {/* Service */}
           <div
