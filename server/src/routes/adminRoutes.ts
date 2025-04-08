@@ -1,6 +1,6 @@
 import express from "express";
 import { authenticateToken, authorizeRole } from "../middlewares/authMiddleware";
-import { createDoctorAccount, createNurseAccount, createPharmacy, deleteDoctorAccount, deleteNurseAccount, deletePharmacy, getAllNurses, getAllPharmacy, getAllUsers, setUserStatus, updateDoctorAccount, updateNurseAccount, updatePharmacy } from "../controllers/admin/adminController";
+import { createDoctorAccount, createHODAccount, createNurseAccount, createPharmacy, deleteDoctorAccount, deleteHOD, deleteNurseAccount, deletePharmacy, getAllNurses, getAllPharmacy, getAllUsers, setUserStatus, updateDoctorAccount, updateHOD, updateNurseAccount, updatePharmacy } from "../controllers/admin/adminController";
 
 const router = express.Router();
 
@@ -13,6 +13,12 @@ router.post("/doctors/create", authenticateToken, authorizeRole(["admin"]), crea
 router.put("/doctors/update/:doctorId", authenticateToken, authorizeRole(["admin"]), updateDoctorAccount);
 
 router.delete("/doctors/delete/:doctorId", authenticateToken, authorizeRole(["admin"]), deleteDoctorAccount);
+
+router.post("/hod/create", authenticateToken, authorizeRole(["admin"]), createHODAccount);
+
+router.put("/hod/update/:hodId", authenticateToken, authorizeRole(["admin"]), updateHOD);
+
+router.delete("/hod/delete/:hodId", authenticateToken, authorizeRole(["admin"]), deleteHOD);
 
 router.get("/nurses", authenticateToken, authorizeRole(["admin"]), getAllNurses);
 

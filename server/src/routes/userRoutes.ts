@@ -4,6 +4,7 @@ import { getUserProfile, getAllUsers, getUserById, updateProfile, updateAvatar }
 import { authenticateToken, authorizeDoctor, authorizeRole } from "../middlewares/authMiddleware";
 import { getCurrentUser, addDoctorToFavorites, getAllDoctors, getDoctorById, getFavoriteDoctors, removeDoctorFromFavorites, searchDoctorByUsername } from "../controllers/doctor/doctorController";
 import upload from "../middlewares/imgUpload";
+import { getAllHOD } from "../controllers/headOfDepartment/headOfDepartmentController";
 
 const router = express.Router();
 
@@ -35,6 +36,8 @@ router.post("/forgotPassword", forgotPassword);
 router.put("/updateProfile/:id", authenticateToken, updateProfile);
 
 router.get("/doctors", getAllDoctors);
+
+router.get("/hods", getAllHOD);
 
 router.get("/doctors/:doctorId", getDoctorById);
 
