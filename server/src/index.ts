@@ -1,6 +1,7 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
+import { Request, Response, NextFunction } from 'express';
 import app from './utils/app' // (server)
 import mongo from './config/mongo' // (database)
 import { PORT } from './constants/index'
@@ -17,6 +18,10 @@ import testRoutes from './routes/testRoutes';
 import notificationRoutes from './routes/notificationRoutes'
 import uploadRoutes from './routes/uploadRoutes'; // Import upload routes
 
+interface MulterError extends Error {
+  field?: string;
+  code?: string;
+}
 const bootstrap = async () => {
   await mongo.connect()
 
@@ -41,6 +46,13 @@ const bootstrap = async () => {
   app.use("/test", testRoutes); // Use test routes
   app.use('/notification', notificationRoutes);
   app.use('/upload', uploadRoutes); // Use upload routes
+  app.use((error: MulterError, req: Request, res: Response, next: NextFunction) => {
+    console.log('Trường bị từ chối ->', error);
+    if (error.field) {
+      console.log('Lỗi ở trường:', error.field);
+    }
+    res.status(400).json({ error: error.message });
+  });
   app.listen(PORT || 8080, () => {
     console.log(`✅ Server is listening on port: ${PORT || 8080}`)
   })

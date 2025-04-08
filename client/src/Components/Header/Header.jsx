@@ -73,7 +73,7 @@ const Header = ({ isTopBar, variant }) => {
         href: "/doctors",
         subItems: [
           { label: "Bác sĩ", href: "/doctors" },
-          { label: "Chi tiết bác sĩ", href: "/doctors/doctor-details" },
+          { label: "Danh sách yêu thích", href: "/favorites" },
         ],
       },
       {
@@ -110,7 +110,7 @@ const Header = ({ isTopBar, variant }) => {
   const accountMenu = username
     ? [
         { label: "Hồ sơ ", href: "/profile" },
-        { label: "Danh sách yêu thích ", href: "/favorites" },
+        // { label: "Danh sách yêu thích ", href: "/favorites" },
         { label: "Thanh toán ", href: "/payment" },
         { label: "Đăng xuất", action: handleLogout },
       ]
