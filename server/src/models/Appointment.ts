@@ -13,6 +13,14 @@ export enum AppointmentStatus {
     CANCELED = 'Canceled',
 }
 
+interface ITransferNote {
+    date: Date;
+    fromDoctorId: string;
+    toDoctorId: string;
+    note: string;
+    sharedData: boolean;
+}
+
 interface IAppointment extends Document {
     userId: string;
     patientName?: string;
@@ -35,7 +43,18 @@ interface IAppointment extends Document {
     };
     services: string[]; // Array of used services
     rejectReason?: string;
+    transferNotes?: ITransferNote[];
+    isContinuousCare?: boolean;
+    patientHistory?: string[]; // Lưu trữ ID của các lịch hẹn trước đó của bệnh nhân
 }
+
+const transferNoteSchema = new Schema<ITransferNote>({
+    date: { type: Date, default: Date.now },
+    fromDoctorId: { type: Schema.Types.String, ref: 'user', required: true },
+    toDoctorId: { type: Schema.Types.String, ref: 'user', required: true },
+    note: { type: String },
+    sharedData: { type: Boolean, default: true }
+});
 
 const appointmentSchema = new Schema<IAppointment>(
     {
@@ -60,6 +79,9 @@ const appointmentSchema = new Schema<IAppointment>(
         },
         services: [{ type: Schema.Types.ObjectId, ref: 'service' }],
         rejectReason: { type: String },
+        transferNotes: [transferNoteSchema],
+        isContinuousCare: { type: Boolean, default: false },
+        patientHistory: [{ type: Schema.Types.ObjectId, ref: 'Appointment' }]
     },
     { timestamps: true }
 );
