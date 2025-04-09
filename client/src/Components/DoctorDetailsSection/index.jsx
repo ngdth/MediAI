@@ -4,7 +4,7 @@ import { FaHeart } from "react-icons/fa6";
 const DoctorDetailsSection = ({ data, onFavoriteToggle, favoriteStatus, onBookNow }) => {
   // Kiểm tra nếu data không có hoặc có giá trị rỗng
   const image = data?.imageUrl;
-  const name = data?.username;
+  const name = data.firstName && data.lastName ? `${data.lastName} ${data.firstName}` : '';
   const subtitle = data?.subtitle || 'No subtitle available';
   const description = data?.description || [];
   const info = data?.info || [];
