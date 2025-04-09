@@ -42,7 +42,7 @@ const AppointmentForm = () => {
 
                 setFormData((prevData) => ({
                     ...prevData,
-                    fullName: user.username || '',
+                    fullName: user.firstName && user.lastName ? `${user.lastName} ${user.firstName}` : '',
                     email: user.email || '',
                     phone: user.phone || '',
                     address: user.address || '',
@@ -71,25 +71,44 @@ const AppointmentForm = () => {
 
     const today = new Date();
 
+    const calculateAge = (dateOfBirth) => {
+        if (!dateOfBirth) return 0;
+        const today = new Date();
+        const birthDate = new Date(dateOfBirth);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         try {
             const token = localStorage.getItem("token");
             if (!token) {
                 alert("Bạn cần đăng nhập trước khi đặt lịch.");
                 return;
             }
-    
+
             const formattedDate = formData.appointmentDate.toLocaleDateString('en-CA');
-    
+            const age = calculateAge(formData.dateOfBirth);
+            
             const response = await axios.post(
                 `http://localhost:8080/appointment/booknodoctor`,
                 {
                     patientName: formData.fullName,
+                    phone: formData.phone,
+                    email: formData.email,
+                    address: formData.address,
+                    gender: formData.gender,
+                    age: age,
                     date: formattedDate,
                     time: formData.appointmentTime,
                     symptoms: formData.specialty,
+
                 },
                 {
                     headers: {
@@ -98,7 +117,7 @@ const AppointmentForm = () => {
                     },
                 }
             );
-    
+
             if (response.status === 201) {
                 setShowPopup(true);
                 setTimeout(() => {
