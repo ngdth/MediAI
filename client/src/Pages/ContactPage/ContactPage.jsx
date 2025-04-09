@@ -23,7 +23,7 @@ const contactData = {
 
 const mapData = {
   mapSrc:
-    'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d158858.5851960224!2d-0.2664050245106056!3d51.52852620113951!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47d8a00baf21de75%3A0x52963a5addd52a99!2z4Kay4Kao4KeN4Kah4KaoLCDgpq_gp4HgppXgp43gpqTgprDgpr7gppzgp43gpq8!5e0!3m2!1sbn!2sbd!4v1723284219451!5m2!1sbn!2sbd',
+    'https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d1907.007862047606!2d108.26064446583678!3d15.96807791466579!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3142116949840599%3A0x365b35580f52e8d5!2zxJDhuqFpIGjhu41jIEZQVCDEkMOgIE7hurVuZw!5e1!3m2!1svi!2s!4v1744203818738!5m2!1svi!2s',
 };
 const ContactPage = () => {
   return (
@@ -52,3 +52,5 @@ const ContactPage = () => {
 };
 
 export default ContactPage;
+
+<iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d1907.007862047606!2d108.26064446583678!3d15.96807791466579!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3142116949840599%3A0x365b35580f52e8d5!2zxJDhuqFpIGjhu41jIEZQVCDEkMOgIE7hurVuZw!5e1!3m2!1svi!2s!4v1744203818738!5m2!1svi!2s" width="800" height="600" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
