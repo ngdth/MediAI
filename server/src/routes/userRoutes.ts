@@ -6,7 +6,6 @@ import { getCurrentUser, addDoctorToFavorites, getAllDoctors, getDoctorById, get
 import upload from "../middlewares/imgUpload";
 import { getAllHeadOfDepartments } from "../controllers/admin/adminController";
 
-
 const router = express.Router();
 
 // User routes
