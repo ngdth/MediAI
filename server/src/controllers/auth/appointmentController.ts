@@ -119,6 +119,11 @@ export const bookAppointment = async (req: Request, res: Response, next: NextFun
             return;
         }
 
+        res.status(201).json({
+            message: "Yêu cầu đặt lịch hẹn đã được gửi, vui lòng kiểm tra email để xác nhận.",
+            appointment: newAppointment,
+        });
+
         await sendEmail(user.email, {
             patientName,
             date,
@@ -126,11 +131,6 @@ export const bookAppointment = async (req: Request, res: Response, next: NextFun
             symptoms,
             doctorName: doctor.username,
         }, "appointment");
-
-        res.status(201).json({
-            message: "Yêu cầu đặt lịch hẹn đã được gửi, vui lòng kiểm tra email để xác nhận.",
-            appointment: newAppointment,
-        });
     } catch (error) {
         next(error);
     }
@@ -296,6 +296,8 @@ export const updateAppointmentStatus = async (req: Request, res: Response, next:
 export const doctorReject = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
     const { rejectReason } = req.body;
+    const doctorIdToRemove = req.user.id;
+    console.log("👉 doctorIdToRemove:", doctorIdToRemove);
 
     try {
         const appointment = await Appointment.findById(id).populate('userId', 'email').populate('doctorId', 'username');
@@ -305,23 +307,17 @@ export const doctorReject = async (req: Request, res: Response): Promise<void> =
             return;
         }
 
-        const now = new Date();
-        const appointmentTime = new Date(appointment.date);
-        const timeDiff = appointmentTime.getTime() - now.getTime();
-        const isLessThan24Hours = timeDiff < 24 * 60 * 60 * 1000;
-
-        if (isLessThan24Hours) {
-            res.status(400).json({ message: "Cannot reject an appointment less than 24 hours before the scheduled time." });
-            return;
-        }
-
         if (!rejectReason) {
             res.status(400).json({ message: "Reject reason is required when rejecting an appointment." });
             return;
         }
 
         appointment.status = AppointmentStatus.PENDING;
-        appointment.doctorId = [];
+        appointment.doctorId = appointment.doctorId
+            .filter((doc: any) => {
+                const id = typeof doc === 'string' ? doc : doc._id?.toString?.();
+                return id !== doctorIdToRemove.toString();
+            })
         await appointment.save();
 
         const userEmail = (appointment.userId as any)?.email;
