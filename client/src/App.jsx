@@ -26,7 +26,7 @@ import ErrorPage from "./Pages/Pages/ErrorPage";
 import ContactPage from "./Pages/ContactPage/ContactPage";
 import Appointments from "./Pages/Pages/Appointments";
 import AppointmentsHistory from "./Pages/Pages/AppointmentsHistory";
-import UpdateAppointment from "./Pages/Pages/UpdateAppointment";
+import ViewAppointmentDetail from "./Pages/Pages/ViewAppointmentDetail"
 import DoctorAppointments from "./Pages/Pages/DoctorAppointments";
 import AppointmentDetail from "./Pages/Pages/AppointmentDetail";
 import DiagnosisForm from "./Pages/Pages/DiagnosisForm";
@@ -101,7 +101,7 @@ function App() {
                     <Route path="/appointments" element={<Appointments />} />
                     <Route path="/BookingAppointments" element={<BookingAppointments />} />
                     <Route path="/appointmentshistory" element={<AppointmentsHistory />} />
-                    <Route path="/updateappointment/:appointmentId" element={<UpdateAppointment />} />
+                    <Route path="/ViewAppointmentDetail/:appointmentId" element={<ViewAppointmentDetail />} />
                     <Route path="/updatediagnosis/:diagnosisId" element={<UpdateDiagnosisPage />} />
                     <Route path="/updateprescription/:prescriptionId" element={<UpdatePrescriptionPage />} />
                     <Route path="/doctorappointments" element={<DoctorAppointments />} />

@@ -76,8 +76,8 @@ const AppointmentsHistory = () => {
     fetchAppointments();
   }, [userId, token]);
 
-  const handleUpdate = (id) => {
-    navigate(`/updateappointment/${id}`);
+  const handleView = (id) => {
+    navigate(`/ViewAppointmentDetail/${id}`);
   };
 
   const handleCancel = (id) => {
@@ -100,20 +100,20 @@ const AppointmentsHistory = () => {
         }
       );
 
-      console.log("Cancel appointment response:", response.data); // Thêm log để kiểm tra
+      console.log("Cancel appointment response:", response.data);
 
-      Swal.fire("Đã hủy!", `Cuộc hẹn ID ${selectedAppointmentId} đã bị hủy.`, "success");
+      Swal.fire("Đã hủy!", `Cuộc hẹn đã bị hủy.`, "success");
 
       const updatedAppointments = appointments.map((appointment) =>
         appointment.appointment._id === selectedAppointmentId
           ? {
-            ...appointment,
-            appointment: {
-              ...appointment.appointment,
-              status: "Canceled",
-              rejectReason,
-            },
-          }
+              ...appointment,
+              appointment: {
+                ...appointment.appointment,
+                status: "Canceled",
+                rejectReason,
+              },
+            }
           : appointment
       );
       setAppointments(updatedAppointments);
@@ -123,7 +123,11 @@ const AppointmentsHistory = () => {
       setSelectedAppointmentId(null);
     } catch (error) {
       console.error("Error canceling appointment:", error.response?.data || error.message);
-      Swal.fire("Lỗi!", error.response?.data?.message || "Không thể hủy cuộc hẹn. Vui lòng thử lại sau.", "error");
+      Swal.fire(
+        "Lỗi!",
+        error.response?.data?.message || "Không thể hủy cuộc hẹn. Vui lòng thử lại sau.",
+        "error"
+      );
     }
   };
 
@@ -165,6 +169,10 @@ const AppointmentsHistory = () => {
       }
       return "Không có bác sĩ";
     }
+  };
+
+  const canCancel = (status) => {
+    return status === "Pending" || status === "Assigned";
   };
 
   return (
@@ -222,18 +230,18 @@ const AppointmentsHistory = () => {
                             <td>
                               <button
                                 className="btn btn-primary btn-sm me-2"
-                                onClick={() => handleUpdate(appointment._id)}
-                                disabled={appointment.status === "Canceled" || appointment.status === "Completed"}
+                                onClick={() => handleView(appointment._id)}
                               >
-                                Update
+                                View
                               </button>
-                              <button
-                                className="btn btn-danger btn-sm"
-                                onClick={() => handleCancel(appointment._id)}
-                                disabled={appointment.status === "Canceled" || appointment.status === "Completed"}
-                              >
-                                Cancel
-                              </button>
+                              {canCancel(appointment.status) && (
+                                <button
+                                  className="btn btn-danger btn-sm"
+                                  onClick={() => handleCancel(appointment._id)}
+                                >
+                                  Cancel
+                                </button>
+                              )}
                             </td>
                           </tr>
                         );
