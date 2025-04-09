@@ -3,17 +3,18 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
+import { FaSearch } from "react-icons/fa";
 import { Modal, Button } from "react-bootstrap";
 
 const GeneralHealthKetchup = () => {
   const [appointmentData, setAppointmentData] = useState(null);
   const [editMode, setEditMode] = useState({});
   const [expandedDoctors, setExpandedDoctors] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImageName, setSelectedImageName] = useState("");
+  const [zoomedImage, setZoomedImage] = useState(null);
   const navigate = useNavigate();
   const { appointmentId } = useParams();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [selectedSubField, setSelectedSubField] = useState("");
-  const [selectedImageName, setSelectedImageName] = useState("");
 
   const closeModal = () => setIsModalOpen(false);
 
@@ -88,7 +89,6 @@ const GeneralHealthKetchup = () => {
   const handleInputChange = async (field, value, subField = null) => {
     let updatedValue = value;
 
-    // Cập nhật state cục bộ
     if (subField) {
       setAppointmentData((prev) => ({
         ...prev,
@@ -101,7 +101,6 @@ const GeneralHealthKetchup = () => {
       }));
     }
 
-    // Gửi request cập nhật từng field
     try {
       const payload = {};
       if (field === "vitals") {
@@ -117,7 +116,7 @@ const GeneralHealthKetchup = () => {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      fetchAppointmentData(); // Làm mới dữ liệu sau khi cập nhật
+      fetchAppointmentData();
     } catch (error) {
       console.error("Error updating field:", error);
     }
@@ -126,12 +125,12 @@ const GeneralHealthKetchup = () => {
   const handleUploadImages = async (e, subField) => {
     const files = e.target.files;
     if (!files.length) return;
-  
+
     const formData = new FormData();
     for (let file of files) {
       formData.append("testImages", file);
     }
-  
+
     try {
       const response = await axios.post(
         `http://localhost:8080/test/upload/${appointmentId}/${subField}`,
@@ -144,12 +143,11 @@ const GeneralHealthKetchup = () => {
         }
       );
       console.log("Upload ảnh thành công:", response.data);
-      toast.success("Upload ảnh "+subField+ " thành công");
+      toast.success("Upload ảnh " + subField + " thành công");
       e.target.value = null;
       fetchAppointmentData();
     } catch (error) {
-      toast.error('Upload ảnh ${subField} thất bại');
-      console.log("Upload thất bại:", error);
+      toast.error(`Upload ảnh ${subField} thất bại`);
       console.error("Upload thất bại:", error);
     }
   };
@@ -181,19 +179,19 @@ const GeneralHealthKetchup = () => {
             {isEditing ? "Lưu" : "Thay đổi"}
           </button>
           {["xRay", "ultrasound", "mri", "ecg"].includes(subField) && (
-          <div>
-            <input
-              type="file"
-              accept="image/*"
-              multiple // Cho phép chọn nhiều ảnh
-              className="d-none"
-              id={`upload-${subField}`}
-              onChange={(e) => handleUploadImages(e, subField)}
-            />
-            <label htmlFor={`upload-${subField}`} className="btn btn-sm btn-success mt-2">
-              Thêm ảnh
-            </label>
-          </div>
+            <div>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="d-none"
+                id={`upload-${subField}`}
+                onChange={(e) => handleUploadImages(e, subField)}
+              />
+              <label htmlFor={`upload-${subField}`} className="btn btn-sm btn-success mt-2">
+                Thêm ảnh
+              </label>
+            </div>
           )}
         </td>
         {showImageColumn && (
@@ -202,18 +200,28 @@ const GeneralHealthKetchup = () => {
               <div>
                 {appointmentData && appointmentData.tests && appointmentData.tests[0] && appointmentData.tests[0][subField + "Img"] ? (
                   appointmentData.tests[0][subField + "Img"].length > 0 ? (
-                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                    <div className="image-grid">
                       {appointmentData.tests[0][subField + "Img"].map((imgPath, index) => (
                         <div className="image-container" key={index}>
-                        <img src={imgPath} alt="Test image" style={{ width: '150px', height: '150px', margin: '5px' }} />
-                        <HiOutlineDotsHorizontal className="icon" 
-                          onClick={() => {
-                            // setSelectedSubField(subField);
-                            setSelectedImageName(getImgName(imgPath));
-                            setIsModalOpen(true);
-                          }}
-                        />
-                      </div>
+                          <img src={imgPath} alt="Test image" />
+                          <div className="image-actions">
+                            <div className="zoom-icon-wrapper">
+                              <FaSearch
+                                className="icon zoom-icon"
+                                onClick={() => setZoomedImage(imgPath)}
+                              />
+                            </div>
+                            <div className="dots-icon-wrapper">
+                              <HiOutlineDotsHorizontal
+                                className="icon"
+                                onClick={() => {
+                                  setSelectedImageName(getImgName(imgPath));
+                                  setIsModalOpen(true);
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
                       ))}
                     </div>
                   ) : (
@@ -241,7 +249,7 @@ const GeneralHealthKetchup = () => {
       await axios.delete(`http://localhost:8080/test/delete/${appointmentId}/${selectedImageName}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      await fetchAppointmentData(); // Làm mới dữ liệu sau khi xóa
+      await fetchAppointmentData();
       setIsModalOpen(false);
       toast.success("Xóa ảnh thành công");
     } catch (error) {
@@ -433,9 +441,30 @@ const GeneralHealthKetchup = () => {
           Lưu toàn bộ
         </button>
       </div>
-      <ToastContainer position="top-right" autoClose={6000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+
+      {zoomedImage && (
+        <div className="zoomed-image-overlay" onClick={() => setZoomedImage(null)}>
+          <img src={zoomedImage} alt="Zoomed image" className="zoomed-image" />
+          <button className="close-btn" onClick={() => setZoomedImage(null)}>
+            ✕
+          </button>
+        </div>
+      )}
+
+      <ToastContainer
+        position="top-right"
+        autoClose={6000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+
       {isModalOpen && <div className="modal-overlay"></div>}
-        <Modal show={isModalOpen} onHide={() => setIsModalOpen(false)} centered>
+      <Modal show={isModalOpen} onHide={() => setIsModalOpen(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Xóa ảnh</Modal.Title>
         </Modal.Header>
