@@ -359,8 +359,31 @@ export const assignDoctor = async (req: Request, res: Response): Promise<void> =
             return;
         }
 
-        if (!appointment.doctorId.includes(doctorId)) {
+        // Lưu thông tin chuyển giao nếu đây là bác sĩ mới
+        const isNewDoctor = !appointment.doctorId.includes(doctorId);
+        if (isNewDoctor) {
+            // Thêm bác sĩ mới vào mảng doctorId
             appointment.doctorId.push(doctorId);
+
+            // Thêm thông tin chuyển giao nếu đã có bác sĩ trước đó
+            if (appointment.doctorId.length > 1) {
+                // Khởi tạo mảng transferNotes nếu chưa có
+                if (!appointment.transferNotes) {
+                    appointment.transferNotes = [];
+                }
+
+                // Thêm ghi chú chuyển giao
+                appointment.transferNotes.push({
+                    date: new Date(),
+                    fromDoctorId: appointment.doctorId[appointment.doctorId.length - 2],
+                    toDoctorId: doctorId,
+                    note: "Chuyển tiếp từ bác sĩ trước",
+                    sharedData: true
+                });
+
+                // Đánh dấu đây là một phần của quá trình chăm sóc liên tục
+                appointment.isContinuousCare = true;
+            }
         }
         appointment.status = AppointmentStatus.ASSIGNED;
 
@@ -785,8 +808,17 @@ export const getUserAppointments = async (req: Request, res: Response, next: Nex
         // }
 
         if (userRole === 'doctor') {
-            filter = { doctorId: userId, status: { $in: [AppointmentStatus.ASSIGNED, AppointmentStatus.WAITINGPRESCRIPTION, AppointmentStatus.PRESCRIPTION_CREATED, AppointmentStatus.DONE, AppointmentStatus.BILL_CREATED] } };
-            console.log(`Doctor's filter applied: ${JSON.stringify(filter)}`);
+            // Lấy danh sách bệnh nhân mà bác sĩ đã từng khám
+            const doctorAppointments = await Appointment.find({
+                doctorId: userId,
+                status: { $in: [AppointmentStatus.ASSIGNED, AppointmentStatus.WAITINGPRESCRIPTION, AppointmentStatus.PRESCRIPTION_CREATED, AppointmentStatus.DONE, AppointmentStatus.BILL_CREATED] }
+            });
+
+            // Lấy danh sách userId của các bệnh nhân
+            const patientIds = doctorAppointments.map(app => app.userId);
+
+            // Lấy tất cả lịch sử khám bệnh của các bệnh nhân này
+            filter = { userId: { $in: patientIds } };
         } else if (userRole === 'nurse') {
             // Nurse có thể xem tất cả các trạng thái
         } else {
@@ -864,14 +896,18 @@ export const getDetailAppointment = async (req: Request, res: Response, next: Ne
         }
 
         if (Array.isArray(appointment.doctorId) && appointment.doctorId.length > 0) {
-            // doctorId là mảng, lấy phần tử đầu tiên để so sánh
-            console.log('doctorId is an array, checking first element:', appointment.doctorId[0].toString());
+            // Kiểm tra xem người dùng hiện tại có phải là một trong các bác sĩ được gán cho lịch hẹn không
+            const isDoctorAssigned = appointment.doctorId.some(doc => {
+                const docId = typeof doc === 'object' && '_id' in doc
+                    ? (doc as { _id: mongoose.Types.ObjectId })._id.toString()
+                    : doc.toString();
+                return docId === userId;
+            });
 
-            const doctor = typeof appointment.doctorId[0] === 'object' && '_id' in appointment.doctorId[0]
-                ? appointment.doctorId[0] as { _id: mongoose.Types.ObjectId }
-                : { _id: new mongoose.Types.ObjectId(appointment.doctorId[0]) };
+            console.log('Checking if user is assigned as doctor:', isDoctorAssigned);
 
-            if (doctor._id.toString() !== userId && appointment.userId.toString() !== userId) {
+            // Nếu người dùng không phải là bác sĩ được gán và cũng không phải là chủ sở hữu lịch hẹn
+            if (!isDoctorAssigned && appointment.userId.toString() !== userId) {
                 console.log('Permission denied to get this appointment', id);
                 res.status(403).json({ message: 'Permission denied to get this appointment' });
                 return;
