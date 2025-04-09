@@ -118,7 +118,7 @@ const ManageAppointment = () => {
         const hoursDiff = timeDiff / (1000 * 60 * 60); // Chuyển chênh lệch thời gian sang giờ
 
         if (hoursDiff < 24) {
-            alert("Lịch hẹn này còn dưới 24 giờ, bạn không thể từ chối.");
+            toast.error("Lịch hẹn này còn dưới 24 giờ, bạn không thể từ chối.");
             return;
         }
 
@@ -129,12 +129,12 @@ const ManageAppointment = () => {
 
     const handleConfirmReject = async () => {
         if (!rejectReason.trim()) {
-            alert("Vui lòng nhập lý do từ chối.");
+            toast.error("Vui lòng nhập lý do từ chối.");
             return;
         }
 
         if (!selectedAppointmentId) {
-            alert("Không tìm thấy cuộc hẹn để từ chối.");
+            toast.error("Không tìm thấy cuộc hẹn để từ chối.");
             return;
         }
 

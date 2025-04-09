@@ -259,8 +259,6 @@ const BookingForm = ({ show, doctorId, onClose, onBookingSuccess }) => {
           Đặt lịch khám
         </Button>
       </Modal.Footer>
-
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
     </Modal>
   );
 };
