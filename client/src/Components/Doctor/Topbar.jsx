@@ -85,8 +85,7 @@ const TopBar = ({ isSidebarOpen }) => {
     navigate("/login");
   };
 
-  const markNotificationAsRead = async (notificationId, e) => {
-    e.stopPropagation();
+  const markNotificationAsRead = async (notificationId) => {
     try {
       await axios.put(
         `http://localhost:8080/notification/${notificationId}/read`,
@@ -99,6 +98,14 @@ const TopBar = ({ isSidebarOpen }) => {
     } catch (error) {
       console.error("Error marking notification as read:", error);
     }
+  };
+
+  const handleNotificationClick = (notification) => {
+    markNotificationAsRead(notification._id);
+    if (notification.relatedId) {
+      navigate(`/doctor/appointments/manage-result/${notification.relatedId}`);
+    }
+    setShowNotifications(false);
   };
 
   const unreadNotifications = notifications.filter((notif) => !notif.isRead);
@@ -187,7 +194,8 @@ const TopBar = ({ isSidebarOpen }) => {
                                   <div
                                     key={notif._id}
                                     className="notification-item"
-                                    style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}
+                                    style={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer" }}
+                                    onClick={() => handleNotificationClick(notif)}
                                   >
                                     <div className="notification-text">
                                       <p>{notif.message}</p>
@@ -199,7 +207,10 @@ const TopBar = ({ isSidebarOpen }) => {
                                       <FaCheck
                                         size={16}
                                         style={{ cursor: "pointer", color: "green" }}
-                                        onClick={(e) => markNotificationAsRead(notif._id, e)}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          markNotificationAsRead(notif._id);
+                                        }}
                                       />
                                     )}
                                     <i
