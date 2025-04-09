@@ -13,7 +13,7 @@ import { sendEmail } from "../../config/email";
 export const createAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const userId = req.user?.id;
-        const { patientName, date, time, symptoms } = req.body;
+        const { patientName, phone, email, address, gender, age, date, time, symptoms } = req.body;
 
         if (!patientName || !date || !time || !symptoms) {
             res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin" });
@@ -23,6 +23,11 @@ export const createAppointment = async (req: Request, res: Response, next: NextF
         const newAppointment = new Appointment({
             userId,
             patientName,
+            phone,
+            email,
+            address,
+            gender,
+            age,
             date,
             time,
             symptoms,
