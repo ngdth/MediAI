@@ -277,12 +277,14 @@ const NursePending = () => {
                                             >
                                                 Xác nhận
                                             </button>
-                                            <button
-                                                className="btn btn-danger me-2"
-                                                onClick={() => handleReject(appointment._id)}
-                                            >
-                                                Từ chối
-                                            </button>
+                                            {(!appointment.doctorId || appointment.doctorId.length === 0) && (
+                                                <button
+                                                    className="btn btn-danger me-2"
+                                                    onClick={() => handleReject(appointment._id)}
+                                                >
+                                                    Từ chối
+                                                </button>
+                                            )}
                                             <button
                                                 className="btn btn-primary"
                                                 onClick={() => handleViewDetail(appointment._id)}
