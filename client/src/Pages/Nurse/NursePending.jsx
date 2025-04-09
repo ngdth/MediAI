@@ -258,7 +258,9 @@ const NursePending = () => {
                                                 {availableDoctors.length > 0 ? (
                                                     availableDoctors.map((doctor) => (
                                                         <option key={doctor._id} value={doctor._id}>
-                                                            {doctor.username} - {doctor.specialization || "N/A"}
+                                                            <div>
+                                                                {doctor.lastName} {doctor.firstName} - {doctor.specialization || "N/A"}
+                                                            </div>
                                                         </option>
                                                     ))
                                                 ) : (
