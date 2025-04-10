@@ -1,6 +1,7 @@
 import express from "express";
 import { authenticateToken, authorizeRole } from "../middlewares/authMiddleware";
-import { createDoctorAccount, createHODAccount, createNurseAccount, createPharmacy, deleteDoctorAccount, deleteHOD, deleteNurseAccount, deletePharmacy, getAllNurses, getAllPharmacy, getAllUsers, setUserStatus, updateDoctorAccount, updateHOD, updateNurseAccount, updatePharmacy } from "../controllers/admin/adminController";
+import { createDoctorAccount, createNurseAccount, createPharmacy, deleteDoctorAccount, deleteNurseAccount, deletePharmacy, getAllNurses, getAllPharmacy, getAllUsers, setUserStatus, updateDoctorAccount, updateNurseAccount, updatePharmacy } from "../controllers/admin/adminController";
+import { createHODAccount, deleteHOD, updateHOD } from "../controllers/headOfDepartment/headOfDepartmentController";
 
 const router = express.Router();
 

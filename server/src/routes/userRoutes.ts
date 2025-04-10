@@ -4,7 +4,7 @@ import { getUserProfile, getAllUsers, getUserById, updateProfile, updateAvatar }
 import { authenticateToken, authorizeDoctor, authorizeRole } from "../middlewares/authMiddleware";
 import { getCurrentUser, addDoctorToFavorites, getAllDoctors, getDoctorById, getFavoriteDoctors, removeDoctorFromFavorites, searchDoctorByUsername } from "../controllers/doctor/doctorController";
 import upload from "../middlewares/imgUpload";
-import { getAllHeadOfDepartments } from "../controllers/admin/adminController";
+import { getAllHOD, getHODById } from "../controllers/headOfDepartment/headOfDepartmentController";
 
 const router = express.Router();
 
@@ -37,7 +37,9 @@ router.put("/updateProfile/:id", authenticateToken, updateProfile);
 
 router.get("/doctors", getAllDoctors);
 
-router.get("/hods", getAllHeadOfDepartments);
+router.get("/hod/:headId", getHODById);
+
+router.get("/hods/", getAllHOD);
 
 router.get("/doctors/:doctorId", getDoctorById);
 

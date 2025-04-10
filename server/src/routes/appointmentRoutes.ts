@@ -28,17 +28,17 @@ router.use(authenticateToken)
 
 router.post("/booknodoctor",   createAppointment);
 router.get("/pending",   authorizeRole(["doctor", "nurse"]), getPendingAppointments);
-router.get("/waiting",   authorizeRole(["doctor", "nurse"]), getWaitingPrescriptionAppointments);
-router.get("/prescription-created",   authorizeRole(["doctor"]), getPrescriptionCreatedAppointments);
-router.put("/:id/status",   authorizeRole(["doctor", "nurse"]), updateAppointmentStatus);
-router.put("/:id/reject",   authorizeRole(["doctor", "nurse"]), doctorReject);
-router.put("/:id/assign",   authorizeRole(["doctor", "nurse"]), assignDoctor);
-router.put("/:id/diagnosis",   authorizeRole(["doctor", "nurse"]), addDiagnosisAndPrescription);
+router.get("/waiting",   authorizeRole(["doctor", "nurse", "head of department"]), getWaitingPrescriptionAppointments);
+router.get("/prescription-created",   authorizeRole(["doctor", "head of department"]), getPrescriptionCreatedAppointments);
+router.put("/:id/status",   authorizeRole(["doctor", "nurse", "head of department"]), updateAppointmentStatus);
+router.put("/:id/reject",   authorizeRole(["doctor", "nurse", "head of department"]), doctorReject);
+router.put("/:id/assign",   authorizeRole(["doctor", "nurse", "head of department"]), assignDoctor);
+router.put("/:id/diagnosis",   authorizeRole(["doctor", "nurse", "head of department"]), addDiagnosisAndPrescription);
 router.post("/:id/createresult",   createResult);
 router.post("/:id/createprescription",   createPrescription);
-router.put("/:id/remove-doctor",   authorizeRole(["doctor", "nurse"]), removeDoctorFromAppointment);
-router.put("/:id/assign-pharmacy",   authorizeRole(["doctor", "nurse"]), assignToPharmacy);
-router.put("/:id/update-field",   authorizeRole(["doctor", "nurse"]), updateAppointmentField);
+router.put("/:id/remove-doctor",   authorizeRole(["doctor", "nurse", "head of department"]), removeDoctorFromAppointment);
+router.put("/:id/assign-pharmacy",   authorizeRole(["doctor", "nurse", "head of department"]), assignToPharmacy);
+router.put("/:id/update-field",   authorizeRole(["doctor", "nurse", "head of department"]), updateAppointmentField);
 router.put("/:id/update-nurse-fields",   authorizeRole(["nurse"]), updateNurseFields);
 // router.post("/appointment",   authorizeRole(["doctor"]), createAppointment);
 // router.put("/appointment/:id",   authorizeRole(["nurse"]), updateAppointmentStatus);
