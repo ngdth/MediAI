@@ -13,7 +13,7 @@ function TimeSlotGrid({ dates, selectedSlots, onToggleTimeSlot }) {
       <div className="time-slot-grid">
         {/* Header row with dates */}
         <div className="grid-header">
-          <div className="time-label-header">Time</div>
+          <div className="time-label-header fw-bold">Thơi gian</div>
           {dates.map((date, index) => (
             <div key={index} className="date-header">
               <div className="day-name">{getDayName(date)}</div>
