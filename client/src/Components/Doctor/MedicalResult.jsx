@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 const MedicalResult = () => {
     const [appointments, setAppointments] = useState([]);
     const [doctorId, setDoctorId] = useState(null);
+    const [doctorRole, setDoctorRole] = useState(null);
     const [loading, setLoading] = useState(true);
     const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
     const token = localStorage.getItem("token");
@@ -16,6 +17,7 @@ const MedicalResult = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setDoctorId(response.data.id);
+                setDoctorRole(response.data.role);
             } catch (error) {
                 console.error("Error fetching doctor ID:", error);
                 setLoading(false);
@@ -49,6 +51,7 @@ const MedicalResult = () => {
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching waiting appointments:", error);
+                console.log("Error response:", error.response);
                 setAppointments([]);
                 setLoading(false);
             }
@@ -207,7 +210,9 @@ const MedicalResult = () => {
                                         <td>{diagnosis?.treatmentPlan || "Chưa có phương án"}</td>
                                         <td>
                                             <Link
-                                                to={`/doctor/manage-prescription/${appointment._id}`}
+                                                to={doctorRole === "head of department"
+                                                    ? `/hod/manage-prescription/${appointment._id}`
+                                                    : `/doctor/manage-prescription/${appointment._id}`}
                                                 className="btn btn-primary btn-sm"
                                             >
                                                 Tạo đơn thuốc

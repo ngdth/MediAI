@@ -12,6 +12,7 @@ const ManagePrescriptionsRecord = () => {
         { medicineName: '', unit: '', quantity: '', usage: '' }
     ]);
     const [doctorId, setDoctorId] = useState(null);
+    const [doctorRole, setdoctorRole] = useState(null);
     const [expandedDoctors, setExpandedDoctors] = useState({});
     const [allPrescriptions, setAllPrescriptions] = useState([]);
     const navigate = useNavigate();
@@ -25,6 +26,7 @@ const ManagePrescriptionsRecord = () => {
                 });
                 const id = response.data.id;
                 setDoctorId(id);
+                setdoctorRole(response.data.role);
                 console.log("Current Doctor ID:", id);
             } catch (error) {
                 console.error("Error fetching doctor ID:", error);
@@ -134,7 +136,11 @@ const ManagePrescriptionsRecord = () => {
             );
 
             alert('Đơn thuốc và dịch vụ đã được lưu!');
+            if (doctorRole === "doctor") {
             navigate('/doctor/manage-prescription-result');
+            } else if (doctorRole === "head of department") {
+                navigate('/hod/manage-prescription-result');
+            }
         } catch (error) {
             console.error("Error creating prescription:", error);
             alert('Có lỗi xảy ra khi tạo đơn thuốc.');

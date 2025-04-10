@@ -5,10 +5,13 @@ import { Link } from "react-router-dom";
 
 const MedicalHistory = () => {
     const [appointments, setAppointments] = useState([]);
+    const [doctorRole, setdoctorRole] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(true);
+    const token = localStorage.getItem('token');
 
     useEffect(() => {
+        fetchDoctorRole();
         fetchAppointments();
     }, []);
 
@@ -27,6 +30,18 @@ const MedicalHistory = () => {
             console.error('Error fetching appointments:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchDoctorRole = async () => {
+        try {
+            const response = await axios.get("http://localhost:8080/user/me", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setdoctorRole(response.data.role);
+            console.log("Doctor role:", response.data.role);
+        } catch (error) {
+            console.error("Error fetching doctor role:", error);
         }
     };
 
@@ -82,7 +97,7 @@ const MedicalHistory = () => {
                                 <td className="text-center">{appointment.status || "Không rõ"}</td>
                                 <td className="text-center">
                                     <Link 
-                                        to={`/doctor/medical-history-detail/${appointment._id}`} 
+                                        to={ doctorRole === "doctor" ? `/doctor/medical-history-detail/${appointment._id}` :`/hod/medical-history-detail/${appointment._id}`} 
                                         className="btn btn-primary"
                                     >
                                         Chi tiết
