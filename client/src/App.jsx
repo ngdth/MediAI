@@ -70,6 +70,7 @@ import Aos from "aos";
 import { useEffect } from "react";
 import MedicalHistory from "./Components/Doctor/MedicalHistory";
 import MedicalHistoryDetail from "./Components/Doctor/MedicalHistoryDetail";
+import FloatingMenu from './Components/FloatingMenu';
 
 function App() {
     Aos.init({
@@ -167,6 +168,7 @@ function App() {
                 </Route>
             </Routes>
             <ScrollUpButton />
+            <FloatingMenu />
         </>
     );
 }
