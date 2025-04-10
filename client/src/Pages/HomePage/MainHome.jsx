@@ -12,7 +12,6 @@ import MedicalTabSection from '../../Components/MedicalTabSection/index.jsx';
 import BlogSection from '../../Components/BlogsSection/index.jsx';
 import Section from '../../Components/Section/index.jsx';
 import ContactSection2 from '../../Components/ContactSection/ContactSection2.jsx';
-import FloatingMenu from '../../Components/FloatingMenu';
 
 const heroData = {
   primarySlider: [
@@ -715,7 +714,6 @@ const MainHome = () => {
 
       {/* End Contact Solution */}
       {/* Start Blog Section */}
-      <FloatingMenu />
       <Section
         topSpaceLg="70"
         topSpaceMd="110"
