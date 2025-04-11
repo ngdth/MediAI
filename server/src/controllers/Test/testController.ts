@@ -103,7 +103,7 @@ export const deleteTestImage = async (req: Request, res: Response): Promise<void
         }
 
         // Delete the physical file
-        const uploadsDir = path.join(__dirname, process.env.UPLOADS_DIR || '../../../../client/public/uploads/tests');
+        const uploadsDir = path.join(__dirname, process.env.UPLOADS_DIR_TESTS || '../../../../client/public/uploads/tests');
         const filePath = path.join(uploadsDir, imgName);
         
         // Kiểm tra xem file có tồn tại không
