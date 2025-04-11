@@ -46,7 +46,7 @@ const VideoSection = ({ data }) => {
               btnUrl={data.btnLink1}
             />
           </div>
-          <div className="cs_height_120 cs_height_lg_80" />
+          <div className="cs_height_120 cs_height_lg_50" />
         </div>
         <div className="cs_cta_shape position-absolute">
           <img

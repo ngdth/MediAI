@@ -193,8 +193,8 @@ const AppointmentsHistory = () => {
         <div className="container">
           <div className="cs_appointment_form_wrapper">
             <SectionHeading
-              SectionSubtitle="APPOINTMENT HISTORY"
-              SectionTitle="Your Past Appointments"
+              SectionSubtitle="LỊCH SỬ ĐẶT KHÁM"
+              // SectionTitle="Your Past Appointments"
               variant="text-center"
             />
             <div className="cs_height_40 cs_height_lg_35" />
@@ -207,10 +207,10 @@ const AppointmentsHistory = () => {
                 <table className="table">
                   <thead>
                     <tr>
-                      <th>Date</th>
-                      <th>Doctor</th>
-                      <th>Status</th>
-                      <th>Actions</th>
+                      <th>Ngày</th>
+                      <th>Bác sĩ</th>
+                      <th>Trạng thái</th>
+                      <th>hành động</th>
                     </tr>
                   </thead>
                   <tbody>
