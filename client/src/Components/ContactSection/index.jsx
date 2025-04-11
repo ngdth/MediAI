@@ -44,61 +44,82 @@ const ContactSection = ({ data, reverseOrder }) => {
                 />
 
                 <div className="cs_height_25 cs_height_lg_25" />
-                <form className="cs_contact_form row cs_gap_y_30">
+                <form className="cs_contact_form row cs_gap_y_20">
                   <div className="col-md-6">
+                    <label style={{ fontWeight: "bold" }}>Họ và tên</label>
                     <input
                       type="text"
                       className="cs_form_field"
-                      placeholder="Your name"
+                      placeholder="Nhập họ tên của bạn"
                     />
                   </div>
                   <div className="col-md-6">
+                    <label style={{ fontWeight: "bold" }}>Email</label>
                     <input
                       type="email"
                       className="cs_form_field"
-                      placeholder="Your email"
+                      placeholder="Nhập email của bạn"
                     />
                   </div>
                   <div className="col-md-6">
+                    <label style={{ fontWeight: "bold" }}>Chủ đề</label>
                     <input
                       type="text"
                       className="cs_form_field"
-                      placeholder="Your Subject"
+                      placeholder="Nhập chủ đề"
                     />
                   </div>
                   <div className="col-md-6">
+                    <label style={{ fontWeight: "bold" }}>Số điện thoại</label>
                     <input
                       type="text"
                       className="cs_form_field"
-                      placeholder="Your phone"
+                      placeholder="Nhập số điện thoại"
                     />
                   </div>
                   <div className="col-lg-12">
+                    <label style={{ fontWeight: "bold" }}>Nội dung</label>
                     <textarea
                       rows={5}
                       className="cs_form_field"
-                      placeholder="Your comments"
+                      placeholder="Nhập nội dung bạn muốn gửi"
                       defaultValue={""}
                     />
                   </div>
                   <div className="col-lg-12">
+                    <label htmlFor="captcha" style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
+                      Nhập OTP
+                    </label>
                     <input
                       type="text"
+                      id="captcha"
                       className="cs_form_field"
-                      placeholder="Type the below word"
+                      placeholder="Nhập từ bạn thấy bên dưới"
+                      style={{ height: "40px", fontSize: "14px", marginBottom: "10px" }}
                     />
-                    <input
-                      type="button"
-                      className="cs_form_field cs_code_input"
-                      defaultValue="5RLOpW"
-                    />
+                    <div>
+                      <input
+                        type="button"
+                        className="cs_form_field cs_code_input"
+                        defaultValue="5RLOpW"
+                        style={{
+                          height: "40px",
+                          fontSize: "14px",
+                          fontWeight: "bold",
+                          width: "120px",
+                          cursor: "pointer",
+                          backgroundColor: "#f2f2f2",
+                          border: "1px solid #ccc",
+                        }}
+                      />
+                    </div>
                   </div>
                   <div className="col-lg-12">
                     <button
                       type="submit"
                       className="cs_btn cs_style_1 cs_color_1"
                     >
-                      Send Request
+                      Gửi yêu cầu
                     </button>
                   </div>
                 </form>
@@ -113,61 +134,82 @@ const ContactSection = ({ data, reverseOrder }) => {
                 />
 
                 <div className="cs_height_25 cs_height_lg_25" />
-                <form className="cs_contact_form row cs_gap_y_30">
+                <form className="cs_contact_form row cs_gap_y_20">
                   <div className="col-md-6">
+                    <label style={{ fontWeight: "bold" }}>Họ và tên</label>
                     <input
                       type="text"
                       className="cs_form_field"
-                      placeholder="Your name"
+                      placeholder="Nhập họ tên của bạn"
                     />
                   </div>
                   <div className="col-md-6">
+                    <label style={{ fontWeight: "bold" }}>Email</label>
                     <input
                       type="email"
                       className="cs_form_field"
-                      placeholder="Your email"
+                      placeholder="Nhập email của bạn"
                     />
                   </div>
                   <div className="col-md-6">
+                    <label style={{ fontWeight: "bold" }}>Chủ đề</label>
                     <input
                       type="text"
                       className="cs_form_field"
-                      placeholder="Your Subject"
+                      placeholder="Nhập chủ đề"
                     />
                   </div>
                   <div className="col-md-6">
+                    <label style={{ fontWeight: "bold" }}>Số điện thoại</label>
                     <input
                       type="text"
                       className="cs_form_field"
-                      placeholder="Your phone"
+                      placeholder="Nhập số điện thoại"
                     />
                   </div>
                   <div className="col-lg-12">
+                    <label style={{ fontWeight: "bold" }}>Nội dung</label>
                     <textarea
                       rows={5}
                       className="cs_form_field"
-                      placeholder="Your comments"
+                      placeholder="Nhập nội dung bạn muốn gửi"
                       defaultValue={""}
                     />
                   </div>
                   <div className="col-lg-12">
+                    <label htmlFor="captcha" style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
+                      Nhập OTP
+                    </label>
                     <input
                       type="text"
+                      id="captcha"
                       className="cs_form_field"
-                      placeholder="Type the below word"
+                      placeholder="Nhập từ bạn thấy bên dưới"
+                      style={{ height: "40px", fontSize: "14px", marginBottom: "10px" }}
                     />
-                    <input
-                      type="button"
-                      className="cs_form_field cs_code_input"
-                      defaultValue="5RLOpW"
-                    />
+                    <div>
+                      <input
+                        type="button"
+                        className="cs_form_field cs_code_input"
+                        defaultValue="5RLOpW"
+                        style={{
+                          height: "40px",
+                          fontSize: "14px",
+                          fontWeight: "bold",
+                          width: "120px",
+                          cursor: "pointer",
+                          backgroundColor: "#f2f2f2",
+                          border: "1px solid #ccc",
+                        }}
+                      />
+                    </div>
                   </div>
                   <div className="col-lg-12">
                     <button
                       type="submit"
                       className="cs_btn cs_style_1 cs_color_1"
                     >
-                      Send Request
+                      Gửi yêu cầu
                     </button>
                   </div>
                 </form>

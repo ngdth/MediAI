@@ -39,7 +39,7 @@ const About = ({ data }) => {
                 </Link>
               </div>
               <div className="cs_about_thumb_2">
-                <img src="assets/img/about_img_2.jpg" alt="About Image" />
+                <img src="assets/img/about_img_2.png" alt="About Image" />
                 <img
                   src="assets/img/icons/about_shape_1.png"
                   alt="Shape Image"
