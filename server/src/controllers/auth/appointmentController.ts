@@ -69,7 +69,7 @@ export const bookAppointment = async (req: Request, res: Response, next: NextFun
         }
 
         const doctor = await User.findById(doctorId);
-        if (!doctor || doctor.role !== "doctor") {
+        if (!doctor || (doctor.role !== "doctor" && doctor.role !== "head of department")) {
             res.status(404).json({ message: "Bác sĩ không tồn tại" });
             return;
         }

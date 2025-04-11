@@ -11,11 +11,17 @@ const DoctorsPage = () => {
   useEffect(() => {
     const fetchAllDoctors = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/user/doctors");
-        // Đảm bảo response luôn là một mảng
-        const doctorsArray = Array.isArray(response.data) ? response.data : [response.data];
-        console.log("All Doctors API Response:", response.data);
-        setDoctors(doctorsArray);
+        const [doctorRes, hodRes] = await Promise.all([
+          axios.get("http://localhost:8080/user/doctors"),
+          axios.get("http://localhost:8080/user/hods")
+        ]);
+
+        const doctorArray = Array.isArray(doctorRes.data) ? doctorRes.data : [doctorRes.data];
+        const hodArray = Array.isArray(hodRes.data) ? hodRes.data : [hodRes.data];
+
+        const combinedDoctors = [...doctorArray, ...hodArray];
+        console.log("Combined Doctors & HODs:", combinedDoctors);
+        setDoctors(combinedDoctors);
       } catch (error) {
         console.error("Error fetching all doctors:", error.response?.data || error);
         setDoctors([]);

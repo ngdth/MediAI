@@ -27,6 +27,7 @@ const HeadOfDepartmentManagement = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setDoctors(response.data);
+            console.log("HODs fetched successfully:", response.data);
         } catch (error) {
             console.error("Error fetching doctors:", error);
         }

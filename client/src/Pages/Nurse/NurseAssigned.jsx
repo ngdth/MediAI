@@ -51,16 +51,23 @@ const NurseAssigned = () => {
 
   const fetchDoctors = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/user/doctors", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      const [doctorRes, hodRes] = await Promise.all([
+        axios.get("http://localhost:8080/user/doctors", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }),
+        axios.get("http://localhost:8080/user/hods", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }),
+      ]);
+  
       const doctorMap = {};
-      response.data.forEach((doctor) => {
-        doctorMap[doctor._id] = doctor.username;
+      [...doctorRes.data, ...hodRes.data].forEach((user) => {
+        doctorMap[user._id] = user.username;
       });
+  
       setDoctors(doctorMap);
     } catch (error) {
-      console.error("Error fetching doctors:", error);
+      console.error("Error fetching doctors and HODs:", error);
       setDoctors({});
     }
   };

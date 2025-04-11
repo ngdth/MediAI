@@ -117,7 +117,7 @@ const BookingForm = ({ show, doctorId, onClose, onBookingSuccess }) => {
       onBookingSuccess(appointmentData);
     } catch (error) {
       console.error("Lỗi khi đặt lịch:", error.response?.data || error.message);
-      // toast.error("Có lỗi xảy ra, vui lòng thử lại!");
+      toast.error("Có lỗi xảy ra, vui lòng thử lại!");
     }
   };
 

@@ -70,7 +70,7 @@ const LoginForm = ({ onLogin }) => {
             }else if (data.user.role === "pharmacy") {
                 navigate("/pharmacy");
             } else if (data.user.role === "head of department") {
-                navigate("/headofdepartment");
+                navigate("/hod");
             } else {navigate("/");}
         } catch (err) {
             setError(err.message);

@@ -52,15 +52,11 @@ const PrescriptionsDetail = () => {
         return services.reduce((total, service) => total + (service.price || 0), 0);
     }, [services]);
 
-    // Tính thuế 10%
-    const tax = useMemo(() => {
-        return (totalMedicine + totalService) * 0.1;
-    }, [totalMedicine, totalService]);
 
     // Tổng tiền cần trả
     const totalPayment = useMemo(() => {
-        return totalMedicine + totalService + tax;
-    }, [totalMedicine, totalService, tax]);
+        return totalMedicine + totalService;
+    }, [totalMedicine, totalService]);
 
     const isPriceValid = () => {
         return prescriptions.every((_, index) => {
@@ -255,9 +251,6 @@ const PrescriptionsDetail = () => {
                 <div>
                     <strong>Tổng tiền dịch vụ:</strong>
                     {totalService.toLocaleString()} VND
-                </div>
-                <div>
-                    <strong>Thuế (10%):</strong> {tax.toLocaleString()} VND
                 </div>
                 <div className="h4 mt-4">
                     <strong>TỔNG:</strong> {totalPayment.toLocaleString()} VND

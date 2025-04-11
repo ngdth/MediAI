@@ -7,6 +7,7 @@ import { toast, ToastContainer } from "react-toastify";
 const ManageAppointment = () => {
     const [appointments, setAppointments] = useState([]);
     const [doctorId, setDoctorId] = useState(null);
+    const [doctorRole, setDoctorRole] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
     const [showRejectModal, setShowRejectModal] = useState(false);
@@ -21,6 +22,7 @@ const ManageAppointment = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setDoctorId(response.data.id);
+                setDoctorRole(response.data.role);
             } catch (error) {
                 console.error("Error fetching doctor ID:", error);
                 alert(error.response?.data?.message || "Có lỗi xảy ra khi lấy thông tin bác sĩ.");
@@ -165,9 +167,9 @@ const ManageAppointment = () => {
 
     return (
         <div className="container">
-            <h2>Danh sách lịch hẹn</h2>
+            <h2 className="text-center">Danh sách lịch hẹn</h2>
             {loading ? (
-                <p>Loading...</p>
+                <p>Đang tải...</p>
             ) : (
                 <table className="table table-bordered text-center">
                     <thead>
@@ -177,7 +179,7 @@ const ManageAppointment = () => {
                                     onClick={() => handleSort("patientName")}
                                     style={{ cursor: "pointer" }}
                                 >
-                                    Patient Name{" "}
+                                    Tên bệnh nhân{" "}
                                     {sortConfig.key === "patientName" &&
                                         (sortConfig.direction === "asc" ? "↑" : "↓")}
                                 </span>
@@ -187,7 +189,7 @@ const ManageAppointment = () => {
                                     onClick={() => handleSort("symptoms")}
                                     style={{ cursor: "pointer" }}
                                 >
-                                    Symptoms{" "}
+                                    Triệu chứng{" "}
                                     {sortConfig.key === "symptoms" &&
                                         (sortConfig.direction === "asc" ? "↑" : "↓")}
                                 </span>
@@ -197,12 +199,12 @@ const ManageAppointment = () => {
                                     onClick={() => handleSort("date")}
                                     style={{ cursor: "pointer" }}
                                 >
-                                    Date{" "}
+                                    Ngày hẹn{" "}
                                     {sortConfig.key === "date" &&
                                         (sortConfig.direction === "asc" ? "↑" : "↓")}
                                 </span>
                             </th>
-                            <th>Action</th>
+                            <th>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -216,7 +218,9 @@ const ManageAppointment = () => {
                                         <td>{new Date(appointment.date).toLocaleDateString()}</td>
                                         <td>
                                             <Link
-                                                to={`/doctor/appointments/manage-result/${appointment._id}`}
+                                                to={doctorRole === "head of department"
+                                                    ? `/hod/appointments/manage-result/${appointment._id}`
+                                                    : `/doctor/appointments/manage-result/${appointment._id}`}
                                                 className="btn btn-primary"
                                             >
                                                 Tạo kết quả khám bệnh

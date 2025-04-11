@@ -34,16 +34,30 @@ const DoctorsDetailsPage = () => {
     const fetchDoctorDetails = async () => {
       try {
         const response = await axios.get(`http://localhost:8080/user/doctors/${doctorId}`, {
-          headers: { Authorization: `Bearer ${token}` }, // Thêm token vào header
+          headers: { Authorization: `Bearer ${token}` },
         });
-        setDoctorDetails(response.data); // Lưu thông tin bác sĩ vào state
+        setDoctorDetails(response.data);
       } catch (error) {
-        console.error("Error fetching doctor details:", error.response?.data || error);
+        // Nếu lỗi là 404 thì thử gọi API HOD
+        if (error.response?.status === 404) {
+          try {
+            const hodResponse = await axios.get(`http://localhost:8080/user/hod/${doctorId}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            setDoctorDetails(hodResponse.data);
+          } catch (hodError) {
+            console.error("Không tìm thấy bác sĩ hoặc trưởng khoa:", hodError.response?.data || hodError);
+            setDoctorDetails(null);
+          }
+        } else {
+          console.error("Lỗi khi fetch doctor:", error.response?.data || error);
+          setDoctorDetails(null);
+        }
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchDoctorDetails();
   }, [doctorId, token]);
 
