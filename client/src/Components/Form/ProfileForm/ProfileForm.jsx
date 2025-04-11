@@ -94,7 +94,7 @@ const ProfileForm = ({ user, setUser }) => {
                 <Row className="mb-3">
                     <Col md={6}>
                         <Form.Group>
-                            <Form.Label>Tên đăng nhập</Form.Label>
+                            <Form.Label>Họ và tên</Form.Label>
                             <Form.Control
                                 type="text"
                                 name="username"
@@ -111,31 +111,6 @@ const ProfileForm = ({ user, setUser }) => {
                                 name="email"
                                 value={formData.email}
                                 readOnly 
-                            />
-                        </Form.Group>
-                    </Col>
-                </Row>
-
-                <Row className="mb-3">
-                    <Col md={6}>
-                        <Form.Group>
-                            <Form.Label>Họ</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="lastName"
-                                value={formData.lastName}
-                                onChange={handleChange}
-                            />
-                        </Form.Group>
-                    </Col>
-                    <Col md={6}>
-                        <Form.Group>
-                            <Form.Label>Tên</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="firstName"
-                                value={formData.firstName}
-                                onChange={handleChange}
                             />
                         </Form.Group>
                     </Col>

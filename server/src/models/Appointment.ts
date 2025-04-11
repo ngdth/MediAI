@@ -1,4 +1,3 @@
-// src/models/appointment.ts
 import { Schema, model, Document } from 'mongoose';
 
 export enum AppointmentStatus {
@@ -22,6 +21,7 @@ interface ITransferNote {
 }
 
 interface IAppointment extends Document {
+    _id: string;
     userId: string;
     patientName?: string;
     age?: number;
@@ -41,11 +41,11 @@ interface IAppointment extends Document {
         personal: string;
         family: string;
     };
-    services: string[]; // Array of used services
+    services: string[];
     rejectReason?: string;
     transferNotes?: ITransferNote[];
     isContinuousCare?: boolean;
-    patientHistory?: string[]; // Lưu trữ ID của các lịch hẹn trước đó của bệnh nhân
+    patientHistory?: string[];
 }
 
 const transferNoteSchema = new Schema<ITransferNote>({
@@ -58,6 +58,7 @@ const transferNoteSchema = new Schema<ITransferNote>({
 
 const appointmentSchema = new Schema<IAppointment>(
     {
+        _id: { type: String }, // Bỏ required: true
         userId: { type: Schema.Types.String, ref: 'user', required: true },
         patientName: { type: String },
         age: { type: Number },
@@ -81,10 +82,30 @@ const appointmentSchema = new Schema<IAppointment>(
         rejectReason: { type: String },
         transferNotes: [transferNoteSchema],
         isContinuousCare: { type: Boolean, default: false },
-        patientHistory: [{ type: Schema.Types.ObjectId, ref: 'Appointment' }]
+        patientHistory: [{ type: String, ref: 'Appointment' }],
     },
-    { timestamps: true }
+    { timestamps: true, _id: false }
 );
+
+// Middleware để sinh _id trước khi lưu
+appointmentSchema.pre('save', async function (next) {
+    if (this.isNew) {
+        const appointmentDate = new Date(this.date);
+        const day = String(appointmentDate.getDate()).padStart(2, '0');
+        const month = String(appointmentDate.getMonth() + 1).padStart(2, '0');
+        const year = appointmentDate.getFullYear();
+        const datePrefix = `${day}${month}${year}`; // Ví dụ: 12042025
+
+        // Đếm số lượng appointment trong ngày đó để tạo STT
+        const count = await Appointment.countDocuments({
+            _id: { $regex: `^${datePrefix}_` },
+        });
+
+        const sequenceNumber = String(count + 1).padStart(3, '0'); // Ví dụ: 001, 002
+        this._id = `${datePrefix}_${sequenceNumber}`; // Ví dụ: 12042025_001
+    }
+    next();
+});
 
 const Appointment = model<IAppointment>('Appointment', appointmentSchema);
 

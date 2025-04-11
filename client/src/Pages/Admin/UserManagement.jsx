@@ -39,10 +39,10 @@ const UserManagement = () => {
                 <table className="table table-bordered text-center">
                     <thead>
                         <tr>
-                            <th>Username</th>
+                            <th>Họ và tên</th>
                             <th>Email</th>
                             <th>Trạng thái </th>
-                            <th>Hoạt động </th>
+                            <th>Thao tác </th>
                         </tr>
                     </thead>
                     <tbody>

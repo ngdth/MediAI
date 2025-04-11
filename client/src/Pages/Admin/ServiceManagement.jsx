@@ -192,15 +192,15 @@ const ServiceManagement = () => {
                 <Modal.Body>
                     <Form onSubmit={handleSubmit}>
                         <Form.Group>
-                            <Form.Label className="d-block text-start">Tên dịch vụ</Form.Label>
+                            <Form.Label className="d-block text-start fw-bold">Tên dịch vụ</Form.Label>
                             <Form.Control type="text" name="name" placeholder="Nhập tên dịch vụ" value={formData.name} onChange={handleChange} required />
                         </Form.Group>
                         <Form.Group>
-                            <Form.Label className="d-block text-start">Mô tả</Form.Label>
+                            <Form.Label className="d-block text-start fw-bold">Mô tả</Form.Label>
                             <Form.Control type="text" name="description" placeholder="Nhập mô tả" value={formData.description} onChange={handleChange} required />
                         </Form.Group>
                         <Form.Group>
-                            <Form.Label className="d-block text-start">Khoa</Form.Label>
+                            <Form.Label className="d-block text-start fw-bold">Khoa</Form.Label>
                             <Form.Select name="department" value={formData.department} onChange={handleChange} required>
                                 <option value="">Chọn chuyên khoa</option>
                                 {specialties.map((specialty, idx) => (
@@ -211,11 +211,11 @@ const ServiceManagement = () => {
                             </Form.Select>
                         </Form.Group>
                         <Form.Group>
-                            <Form.Label className="d-block text-start">Giá</Form.Label>
+                            <Form.Label className="d-block text-start fw-bold">Giá</Form.Label>
                             <Form.Control type="number" name="price" placeholder="Nhập giá" value={formData.price} onChange={handleChange} required min="1" />
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label className="d-block text-start">Trạng thái</Form.Label>
+                            <Form.Label className="d-block text-start fw-bold">Trạng thái</Form.Label>
                             <Form.Select name="status" value={formData.status} onChange={handleChange} required>
                                 <option value="active">Hoạt động</option>
                                 <option value="inactive">Ngừng hoạt động</option>

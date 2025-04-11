@@ -32,6 +32,7 @@ const GeneralHealthKetchup = () => {
       console.log("API Response:", response.data);
       setAppointmentData(response.data.data);
     } catch (error) {
+      console.log("Error fetching appointment data:", error);
       console.error("Error fetching appointment data:", error);
     }
   };

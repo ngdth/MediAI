@@ -158,7 +158,7 @@ const UserProfile = () => {
                                 </div>
     
                                 <div className="card-body pt-0 pt-md-4 text-center">
-                                    <h3>{user?.lastName && user?.firstName ? `${user?.lastName} ${user?.firstName}` : ""}</h3>
+                                    <h3>{user?.username ? `${user?.username}` : ''}</h3>
                                     <div className="h5 font-weight-300">
                                         <i className="ni location_pin mr-2"></i>
                                         {user?.city && user?.country ? `${user?.city}, ${user?.country}` : "Đà Nẵng, Việt Nam"}
