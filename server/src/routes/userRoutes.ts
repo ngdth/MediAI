@@ -39,7 +39,7 @@ router.get("/doctors", getAllDoctors);
 
 router.get("/hod/:headId", getHODById);
 
-router.get("/hods/", getAllHOD);
+router.get("/hods", getAllHOD);
 
 router.get("/doctors/:doctorId", getDoctorById);
 
