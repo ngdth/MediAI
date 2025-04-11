@@ -143,14 +143,9 @@ const HeadOfDepartmentManagement = () => {
                 <Modal.Body>
                     <div className="modal-form-container">
                         <form onSubmit={handleSubmit}>
-                            <div className="form-title mb-3" >
-                                <h4 style={{ fontWeight: 'bold' }}>
-                                    {editingDoctor ? "Chỉnh sửa thông tin" : "Thông tin trưởng Khoa "}
-                                </h4>
-                            </div>
                             <div className="form-group mb-3">
                                 <label htmlFor="username" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Họ tên </label>
-                                <input type="text" name="username" id="username" placeholder="Username" value={formData.username} onChange={handleChange} required className="form-control" />
+                                <input type="text" name="username" id="username" placeholder="Họ tên " value={formData.username} onChange={handleChange} required className="form-control" />
                             </div>
                             <div className="form-group mb-3">
                                 <label htmlFor="email" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Email</label>

@@ -68,16 +68,18 @@ const RegisterForm = ({ onRegistering }) => {
 
                     <Form onSubmit={handleSubmit}>
                         <Form.Group className="mb-2">
+                            <Form.Label>Họ và tên</Form.Label>
                             <Form.Control
                                 type="username"
                                 name="username"
-                                placeholder="Username"
+                                placeholder="Họ và tên"
                                 value={formData.username}
                                 onChange={handleChange}
                                 required
                             />
                         </Form.Group>
                         <Form.Group className="mb-2">
+                            <Form.Label>Email</Form.Label>
                             <Form.Control
                                 type="email"
                                 name="email"
@@ -89,10 +91,11 @@ const RegisterForm = ({ onRegistering }) => {
                         </Form.Group>
 
                         <Form.Group className="mb-2">
+                            <Form.Label>Mật khẩu</Form.Label>
                             <Form.Control
                                 type="password"
                                 name="password"
-                                placeholder="Password"
+                                placeholder="Mật khẩu"
                                 value={formData.password}
                                 onChange={handleChange}
                                 required
@@ -100,16 +103,18 @@ const RegisterForm = ({ onRegistering }) => {
                         </Form.Group>
 
                         <Form.Group className="mb-2">
+                            <Form.Label>Xác nhận mật khẩu</Form.Label>
                             <Form.Control
                                 type="password"
                                 name="confirmedPassword"
-                                placeholder="Confirm Password"
+                                placeholder="Xác nhận mật khẩu"
                                 value={formData.confirmedPassword}
                                 onChange={handleChange}
                                 required
                             />
                         </Form.Group>
                         <Form.Group className="mb-2">
+                            <Form.Label>Số điện thoại</Form.Label>
                             <Form.Control
                                 type="tel"
                                 name="phone"
@@ -120,6 +125,7 @@ const RegisterForm = ({ onRegistering }) => {
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
+                            <Form.Label>Giới tính</Form.Label>
                             <Form.Select name="gender" value={formData.gender} onChange={handleChange}>
                                 <option value="">Chọn giới tính</option>
                                 <option value="Nam">Nam</option>
@@ -138,9 +144,9 @@ const RegisterForm = ({ onRegistering }) => {
                         </div>
 
                         <p className="text-muted text-center mt-2 small">
-                            Have an account?{" "}
+                            Đã có tài khoản?{" "}
                             <Link className="text-decoration-underline text-primary " to="/login">
-                                Log In
+                                Đăng nhập
                             </Link>
                         </p>
                     </Form>

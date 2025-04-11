@@ -135,20 +135,15 @@ const DoctorManagement = () => {
             <Modal show={showModal} onHide={handleCloseModal} centered>
                 <Modal.Header closeButton>
                     <Modal.Title style={{ fontWeight: 'bold', width: '100%' }}>
-                        {editingDoctor ? "Chỉnh sửa bác sĩ " : "Thêm bác sĩ "}
+                        {editingDoctor ? "Cập nhật thông tin " : "Thêm bác sĩ "}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div className="modal-form-container">
                         <form onSubmit={handleSubmit}>
-                            <div className="form-title mb-3" >
-                                <h4 style={{ fontWeight: 'bold' }}>
-                                    {editingDoctor ? "Edit Doctor Details" : "Thông tin bác sĩ "}
-                                </h4>
-                            </div>
                             <div className="form-group mb-3">
                                 <label htmlFor="username" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Họ tên </label>
-                                <input type="text" name="username" id="username" placeholder="Username" value={formData.username} onChange={handleChange} required className="form-control" />
+                                <input type="text" name="username" id="username" placeholder="Họ tên" value={formData.username} onChange={handleChange} required className="form-control" />
                             </div>
                             <div className="form-group mb-3">
                                 <label htmlFor="email" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Email</label>
@@ -156,20 +151,20 @@ const DoctorManagement = () => {
                             </div>
                             <div className="form-group mb-3">
                                 <label htmlFor="password" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Mật khẩu</label>
-                                <input type="password" name="password" id="password" placeholder="Password" value={formData.password} onChange={handleChange} required={!editingDoctor} className="form-control" />
+                                <input type="password" name="password" id="password" placeholder="Mật khẩu" value={formData.password} onChange={handleChange} required={!editingDoctor} className="form-control" />
                             </div>
                             <div className="form-group mb-3">
                                 <label htmlFor="specialization" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Chuyên khoa </label>
-                                <input type="text" name="specialization" id="specialization" placeholder="Specialization" value={formData.specialization} onChange={handleChange} required className="form-control" />
+                                <input type="text" name="specialization" id="specialization" placeholder="Chuyên khoa" value={formData.specialization} onChange={handleChange} required className="form-control" />
                             </div>
                             <div className="form-group mb-3">
                                 <label htmlFor="experience" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Kinh nghiệm </label>
-                                <input type="number" name="experience" id="experience" placeholder="Experience" value={formData.experience} onChange={handleChange} required className="form-control" />
+                                <input type="number" name="experience" id="experience" value={formData.experience} onChange={handleChange} required className="form-control" />
                             </div>
 
                             <div className="text-end">
                                 <Button variant="secondary" onClick={handleCloseModal} className="me-2">Hủy </Button>
-                                <Button type="submit" variant="primary">{editingDoctor ? "Update" : "Tạo"}</Button>
+                                <Button type="submit" variant="primary">{editingDoctor ? "Cập nhật" : "Tạo"}</Button>
                             </div>
                         </form>
                     </div>
