@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Form } from "react-bootstrap";
 
 const HeadOfDepartmentManagement = () => {
     const [doctors, setDoctors] = useState([]);
@@ -16,6 +16,8 @@ const HeadOfDepartmentManagement = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);  // Add this state for delete confirmation
     const [doctorToDelete, setDoctorToDelete] = useState(null);  // Track doctor to be deleted
     const token = localStorage.getItem("token");
+    const specialties = ["Chẩn đoán hình ảnh", "Chấn thương chỉnh hình", "Da liễu", "Hô hấp", "Nhãn khoa", "Nhi khoa", "Nội tiết", "Nội tổng quát", "Sản phụ", "Sơ sinh", "Tai Mũi Họng (hay ENT)", "Thận", "Thần kinh", "Tiết niệu", "Tim mạch", "Ung thư", "Cơ xương khớp", "Hậu môn trực tràng"];
+
 
     useEffect(() => {
         fetchHODs();
@@ -141,35 +143,42 @@ const HeadOfDepartmentManagement = () => {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <div className="modal-form-container">
-                        <form onSubmit={handleSubmit}>
-                            <div className="form-group mb-3">
-                                <label htmlFor="username" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Họ tên </label>
-                                <input type="text" name="username" id="username" placeholder="Họ tên " value={formData.username} onChange={handleChange} required className="form-control" />
-                            </div>
-                            <div className="form-group mb-3">
-                                <label htmlFor="email" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Email</label>
-                                <input type="email" name="email" id="email" placeholder="Email" value={formData.email} onChange={handleChange} required className="form-control" />
-                            </div>
-                            <div className="form-group mb-3">
-                                <label htmlFor="password" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Mật khẩu</label>
-                                <input type="password" name="password" id="password" placeholder="Mật khẩu" value={formData.password} onChange={handleChange} required={!editingDoctor} className="form-control" />
-                            </div>
-                            <div className="form-group mb-3">
-                                <label htmlFor="specialization" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Chuyên khoa </label>
-                                <input type="text" name="specialization" id="specialization" placeholder="Chuyên khoa" value={formData.specialization} onChange={handleChange} required className="form-control" />
-                            </div>
-                            <div className="form-group mb-3">
-                                <label htmlFor="experience" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Kinh nghiệm </label>
-                                <input type="number" name="experience" id="experience" placeholder="Kinh Nghiệm" value={formData.experience} onChange={handleChange} required className="form-control" />
-                            </div>
+                    <Form onSubmit={handleSubmit}>
+                        <Form.Group className="mb-3" controlId="username">
+                            <Form.Label className="d-block text-start fw-bold">Họ tên</Form.Label>
+                            <Form.Control type="text" name="username" placeholder="Họ tên" value={formData.username} onChange={handleChange} required />
+                        </Form.Group>
 
-                            <div className="text-end">
-                                <Button variant="secondary" onClick={handleCloseModal} className="me-2">Hủy </Button>
-                                <Button type="submit" variant="primary">{editingDoctor ? "Cập nhật" : "Tạo"}</Button>
-                            </div>
-                        </form>
-                    </div>
+                        <Form.Group className="mb-3" controlId="email">
+                            <Form.Label className="d-block text-start fw-bold">Email</Form.Label>
+                            <Form.Control type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" controlId="password">
+                            <Form.Label className="d-block text-start fw-bold">Mật khẩu</Form.Label>
+                            <Form.Control type="password" name="password" placeholder="Mật khẩu" value={formData.password} onChange={handleChange} required={!editingDoctor} />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" controlId="specialization">
+                            <Form.Label className="d-block text-start fw-bold">Chuyên khoa</Form.Label>
+                            <Form.Select name="specialization"  value={formData.specialization} onChange={handleChange} required >
+                                <option value="">Chọn chuyên khoa</option>
+                                {specialties.map((spec, idx) => (
+                                    <option key={idx} value={spec}>{spec}</option>
+                                ))}
+                            </Form.Select>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" controlId="experience">
+                            <Form.Label className="d-block text-start fw-bold">Kinh nghiệm</Form.Label>
+                            <Form.Control type="number" name="experience" placeholder="Kinh nghiệm (năm)" value={formData.experience} onChange={handleChange} required min={0} />
+                        </Form.Group>
+
+                        <div className="text-end">
+                            <Button variant="secondary" onClick={handleCloseModal} className="me-2">Hủy</Button>
+                            <Button type="submit" variant="primary">{editingDoctor ? "Cập nhật" : "Tạo"}</Button>
+                        </div>
+                    </Form>
                 </Modal.Body>
             </Modal>
             <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
