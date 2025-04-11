@@ -100,7 +100,7 @@ const PharmacyManagement = () => {
                 <table className="table table-bordered text-center">
                     <thead>
                         <tr>
-                            <th>Username</th>
+                            <th>Tên</th>
                             <th>Email</th>
                             <th>Tên Nhà Thuốc</th>
                             <th>Địa chỉ</th>
@@ -131,12 +131,27 @@ const PharmacyManagement = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <form onSubmit={handleSubmit}>
-                        <input type="text" name="username" placeholder="Username" value={formData.username} onChange={handleChange} required className="form-control mb-2" />
-                        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required className="form-control mb-2" />
-                        <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required={!editingPharmacy} className="form-control mb-2" />
-                        <input type="text" name="pharmacyName" placeholder="Pharmacy Name" value={formData.pharmacyName} onChange={handleChange} required className="form-control mb-2" />
-                        <input type="text" name="location" placeholder="Location" value={formData.location} onChange={handleChange} required className="form-control mb-2" />
-
+                        <div className="form-group mb-3">
+                            <label htmlFor="username" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Họ tên </label>
+                            <input type="text" name="username" placeholder="Họ tên" value={formData.username} onChange={handleChange} required className="form-control mb-2" />
+                        </div>
+                        <div className="form-group mb-3">
+                            <label htmlFor="email" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Email </label>
+                            <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required className="form-control mb-2" />
+                        </div>
+                        <div className="form-group mb-3">
+                            <label htmlFor="password" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Mật khẩu </label>
+                            <input type="password" name="password" placeholder="Mật khẩu" value={formData.password} onChange={handleChange} required={!editingPharmacy} className="form-control mb-2" />
+                        </div>
+                        <div className="form-group mb-3">
+                            <label htmlFor="pharmacyName" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Tên Nhà Thuốc </label>
+                            <input type="text" name="pharmacyName" placeholder="Tên Nhà Thuốc" value={formData.pharmacyName} onChange={handleChange} required className="form-control mb-2" />
+                        </div>
+                        <div className="form-group mb-3">
+                            <label htmlFor="location" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Địa chỉ </label>
+                            <input type="text" name="location" placeholder="Địa chỉ" value={formData.location} onChange={handleChange} required className="form-control mb-2" />
+                        </div>
+                    
                         <div className="text-end">
                             <Button variant="secondary" onClick={handleCloseModal} className="me-2">Hủy</Button>
                             <Button type="submit" variant="primary">{editingPharmacy ? "Cập nhật" : "Thêm"}</Button>

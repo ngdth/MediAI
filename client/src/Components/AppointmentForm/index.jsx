@@ -42,7 +42,7 @@ const AppointmentForm = () => {
 
                 setFormData((prevData) => ({
                     ...prevData,
-                    fullName: user.firstName && user.lastName ? `${user.lastName} ${user.firstName}` : '',
+                    fullName: user.username ? `${user.username}` : '',
                     email: user.email || '',
                     phone: user.phone || '',
                     address: user.address || '',
