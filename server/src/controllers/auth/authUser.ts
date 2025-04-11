@@ -1,4 +1,6 @@
 import { Request, Response } from "express";
+import fs from "fs";
+import path from "path";
 import User from "../../models/User";
 
 // API: View user profile
@@ -79,6 +81,7 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
     }
 };
 
+// API: Update user avatar
 export const updateAvatar = async (req: Request, res: Response): Promise<void> => {
     try {
         if (!req.file) {
@@ -86,16 +89,28 @@ export const updateAvatar = async (req: Request, res: Response): Promise<void> =
             return;
         }
 
-        const userId = req.user.id; // Lấy userId từ request
-        const user = await User.findById(userId); // Tìm user trong database
+        const userId = req.user.id;
+        const user = await User.findById(userId);
 
         if (!user) {
             res.status(404).json({ message: "User không tồn tại." });
             return;
         }
 
-        user.imageUrl = `/uploads/avatars/${req.file.filename}`; // Cập nhật avatar
-        await user.save(); // Lưu lại user
+        // Delete the physical file
+        const uploadsDir = path.join(__dirname, process.env.UPLOADS_DIR_AVATARS || '../../../../client/public');
+        
+        // Nếu user đã có avatar cũ thì xóa ảnh cũ
+        if (user.imageUrl) {
+            const oldAvatarPath = path.join(uploadsDir, user.imageUrl);
+            if (fs.existsSync(oldAvatarPath)) {
+                fs.unlinkSync(oldAvatarPath);
+            }
+        }
+
+        // Lưu avatar mới
+        user.imageUrl = `/uploads/avatars/${req.file.filename}`;
+        await user.save();
 
         res.json({ imageUrl: user.imageUrl });
     } catch (error) {
