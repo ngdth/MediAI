@@ -103,7 +103,7 @@ const AvailabilitySchedule = () => {
     <div className="calendar-card">
       <div className="calendar-header">
         <button className="nav-button" onClick={handlePreviousWeek}>
-          ← Previous
+          ← Trước
         </button>
 
         <h2 className="date-range">
@@ -111,7 +111,7 @@ const AvailabilitySchedule = () => {
         </h2>
 
         <button className="nav-button" onClick={handleNextWeek}>
-          Next →
+          Sau →
         </button>
       </div>
 
@@ -119,7 +119,7 @@ const AvailabilitySchedule = () => {
 
       <div className="save-container">
         <button onClick={handleSave} className="save-button">
-          Save Availability
+          Lưu lịch
         </button>
       </div>
 

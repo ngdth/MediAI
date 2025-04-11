@@ -7,6 +7,7 @@ const ManageResult = () => {
   const navigate = useNavigate();
   const [appointment, setAppointment] = useState(null);
   const [doctorId, setDoctorId] = useState(null);
+  const [doctorRole, setDoctorRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const [vitals, setVitals] = useState({});
   const [tests, setTests] = useState({});
@@ -31,6 +32,7 @@ const ManageResult = () => {
         });
         const id = response.data.id;
         setDoctorId(id);
+        setDoctorRole(response.data.role);
         console.log("Current Doctor ID:", id);
       } catch (error) {
         console.error("Error fetching doctor ID:", error);
@@ -85,7 +87,11 @@ const ManageResult = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       alert("Kết quả chẩn đoán đã được tạo thành công!");
+      if(doctorRole === "doctor") {
       navigate("/doctor/medical-result");
+      } else { 
+        navigate("/hod/medical-result");
+      }
     } catch (error) {
       console.error("Error creating result:", error);
       alert("Có lỗi xảy ra khi tạo kết quả chẩn đoán.");

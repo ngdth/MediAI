@@ -71,6 +71,7 @@ import { useEffect } from "react";
 import MedicalHistory from "./Components/Doctor/MedicalHistory";
 import MedicalHistoryDetail from "./Components/Doctor/MedicalHistoryDetail";
 import FloatingMenu from './Components/FloatingMenu';
+import HODLayout from "./components/Layout/HODLayout";
 
 function App() {
     Aos.init({
@@ -151,6 +152,16 @@ function App() {
                     <Route path="/doctor/medical-history" element={<MedicalHistory />} />
                     <Route path="/doctor/medical-history-detail/:appointmentId" element={<MedicalHistoryDetail />} />
                     {/* <Route path="/doctor/appointment/assign/:appointmentId" element={<AssignDoctor />} /> */}
+                </Route>
+                <Route path="/hod" element={<HODLayout />}>
+                    <Route path="/hod/calendar" element={<ScheduleManagement />} />
+                    <Route path="/hod" element={<ManageAppointments />} />
+                    <Route path="/hod/medical-result" element={<MedicalResult />} />
+                    <Route path="/hod/appointments/manage-result/:appointmentId" element={<ManageResult />} />
+                    <Route path="/hod/manage-prescription-result" element={<PrescriptionsRecordResult />} />
+                    <Route path="/hod/manage-prescription/:appointmentId" element={<ManagePrescriptionsRecord />} />
+                    <Route path="/hod/medical-history" element={<MedicalHistory />} />
+                    <Route path="/hod/medical-history-detail/:appointmentId" element={<MedicalHistoryDetail />} />
                 </Route>
                 <Route path="/nurse" element={<NurseLayout />}>
                     <Route path="dashboard" element={<NurseDashboard />} />
