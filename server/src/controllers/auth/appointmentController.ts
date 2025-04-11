@@ -9,6 +9,11 @@ import mongoose from 'mongoose';
 import Schedule from '../../models/Schedule';
 import { sendEmail } from "../../config/email";
 
+const isValidAppointmentId = (id: string): boolean => {
+    const idRegex = /^\d{8}_\d{3}$/;
+    return idRegex.test(id);
+};
+
 // Tạo lịch hẹn không có bác sĩ
 export const createAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -712,7 +717,7 @@ export const getAppointmentById = async (req: Request, res: Response, next: Next
     try {
         const { id } = req.params;
 
-        if (!mongoose.Types.ObjectId.isValid(id)) {
+        if (!isValidAppointmentId(id)) {
             console.log('Appointment ID:', id);
             res.status(400).json({ message: "Invalid appointment ID" });
             return;
@@ -877,7 +882,7 @@ export const getDetailAppointment = async (req: Request, res: Response, next: Ne
         console.log(`User ID: ${userId}`);
         console.log(`User Role: ${userRole}`);
 
-        if (!mongoose.Types.ObjectId.isValid(id)) {
+        if (!isValidAppointmentId(id)) {
             console.log(`Invalid appointment ID format: ${id}`);
             res.status(400).json({ message: 'Invalid appointment ID' });
             return;
@@ -960,7 +965,7 @@ export const cancelAppointment = async (req: Request, res: Response, next: NextF
         const { id } = req.params;
         const { rejectReason } = req.body;
 
-        if (!mongoose.Types.ObjectId.isValid(id)) {
+        if (!isValidAppointmentId(id)) {
             res.status(400).json({ message: 'Invalid appointment ID' });
             return;
         }
@@ -1039,7 +1044,7 @@ export const removeDoctorFromAppointment = async (req: Request, res: Response, n
     try {
         const { id } = req.params;
 
-        if (!mongoose.Types.ObjectId.isValid(id)) {
+        if (!isValidAppointmentId(id)) {
             res.status(400).json({ message: 'Invalid appointment ID' });
             return;
         }
@@ -1071,7 +1076,7 @@ export const assignToPharmacy = async (req: Request, res: Response, next: NextFu
         const { id } = req.params;
         const { pharmacyId } = req.body;
 
-        if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(pharmacyId)) {
+        if (!isValidAppointmentId(id) || !mongoose.Types.ObjectId.isValid(pharmacyId)) {
             res.status(400).json({ message: "Invalid appointment ID or pharmacy ID" });
             return;
         }

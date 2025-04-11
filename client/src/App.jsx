@@ -84,6 +84,14 @@ function App() {
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [pathname]);
+
+    const shouldShowFloatingMenu = !(
+        pathname.startsWith("/admin") ||
+        pathname.startsWith("/doctor") ||
+        pathname.startsWith("/nurse") ||
+        pathname.startsWith("/pharmacy")
+    );
+
     return (
         <>
             <Routes>
@@ -179,7 +187,7 @@ function App() {
                 </Route>
             </Routes>
             <ScrollUpButton />
-            <FloatingMenu />
+            {shouldShowFloatingMenu && <FloatingMenu />}
         </>
     );
 }
