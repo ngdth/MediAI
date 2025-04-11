@@ -86,7 +86,7 @@ const PrescriptionsDetail = () => {
                 price: service.price,
             }));
 
-            const additionalFees = tax;
+            const additionalFees = 0;
             const paymentMethod = "MOMO";
 
             const response = await axios.post(
@@ -105,8 +105,7 @@ const PrescriptionsDetail = () => {
             console.log(response);
             if (response.status === 201) {
                 toast.success("Tạo hóa đơn thành công!");
-                setTimeout(() => navigate("/pharmacy/pending"), 6000);
-                // navigate("/pharmacy/pending");
+                navigate(`/pharmacy/bill/${response.data.billId}`); // Redirect to bill detail page
             } else {
                 toast.error(response.data?.message || "Tạo hóa đơn thất bại!");
             }

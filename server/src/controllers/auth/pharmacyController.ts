@@ -229,16 +229,18 @@ export const createBill = async (req: Request, res: Response, next: NextFunction
         await Appointment.findByIdAndUpdate(appointmentId, { status: AppointmentStatus.BILL_CREATED });
         console.log("✅ Appointment status updated to BILL_CREATED");
 
+        
+        res.status(201).json({
+            message: 'Bill created successfully',
+            bill: savedBill,
+            billId: savedBill._id
+        });
+        
         // Gửi email thông báo
         if (userEmail) {
             await sendEmail(userEmail, newBill, "create_bill");
             console.log("✅ Email sent to patient:", userEmail);
         }
-
-        res.status(201).json({
-            message: 'Bill created successfully',
-            bill: savedBill
-        });
     } catch (error) {
         console.error("❌ Error creating bill:", error);
         next(error);
