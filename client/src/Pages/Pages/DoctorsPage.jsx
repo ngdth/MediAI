@@ -16,8 +16,8 @@ const DoctorsPage = () => {
           axios.get("http://localhost:8080/user/hods")
         ]);
 
-        const doctorArray = Array.isArray(doctorRes.data) ? doctorRes.data : [doctorRes.data];
-        const hodArray = Array.isArray(hodRes.data) ? hodRes.data : [hodRes.data];
+        const doctorArray = Array.isArray(doctorRes.data) ? doctorRes.data : [];
+        const hodArray = Array.isArray(hodRes.data) ? hodRes.data : [];
 
         const combinedDoctors = [...doctorArray, ...hodArray];
         console.log("Combined Doctors & HODs:", combinedDoctors);
@@ -42,14 +42,14 @@ const DoctorsPage = () => {
     title: 'Meet Our Specialist This<br> Doctor Meeting',
     doctorsData: doctors.map((doctor) => ({
       name: doctor.username,
-      specialty: doctor.specialization,
+      specialization: doctor.specialization,
       imageUrl: doctor.imageUrl,
       profileLink: `/doctors/${doctor._id}`,
       iconUrl: 'https://www.facebook.com/',
       iconUrl2: 'https://www.pinterest.com/',
       iconUrl3: 'https://www.twitter.com/',
     })),
-  }; 
+  };
 
   return (
     <>
