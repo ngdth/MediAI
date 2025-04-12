@@ -39,18 +39,43 @@ const DoctorsPage = () => {
     title: 'Our Doctors',
   };
 
-  const appointmentSectionData = {
-    subtitle: 'OUR TEAM MEMBER',
-    title: 'Meet Our Specialist This<br> Doctor Meeting',
-    doctorsData: doctors.map((doctor) => ({
+  // const appointmentSectionData = {
+  //   subtitle: 'OUR TEAM MEMBER',
+  //   title: 'Meet Our Specialist This<br> Doctor Meeting',
+  //   doctorsData: doctors.map((doctor) => ({
+  //     name: doctor.username,
+  //     specialization: doctor.specialization,
+  //     imageUrl: doctor.imageUrl,
+  //     profileLink: `/doctors/${doctor._id}`,
+  //     iconUrl: 'https://www.facebook.com/',
+  //     iconUrl2: 'https://www.pinterest.com/',
+  //     iconUrl3: 'https://www.twitter.com/',
+  //   })),
+  // };
+
+  const groupedDoctors = doctors.reduce((groups, doctor) => {
+    const specialization = doctor.specialization || "Other";
+    if (!groups[specialization]) {
+      groups[specialization] = [];
+    }
+    groups[specialization].push({
       name: doctor.username,
+      phone: doctor.phone,
+      email: doctor.email,
       specialization: doctor.specialization,
       imageUrl: doctor.imageUrl,
       profileLink: `/doctors/${doctor._id}`,
       iconUrl: 'https://www.facebook.com/',
       iconUrl2: 'https://www.pinterest.com/',
       iconUrl3: 'https://www.twitter.com/',
-    })),
+    });
+    return groups;
+  }, {});
+
+  const appointmentSectionData = {
+    subtitle: 'OUR TEAM MEMBER',
+    title: 'Meet Our Specialist This<br> Doctor Meeting',
+    groupedDoctors,
   };
 
   return (
