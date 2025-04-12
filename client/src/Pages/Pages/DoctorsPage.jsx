@@ -10,24 +10,26 @@ const DoctorsPage = () => {
 
   useEffect(() => {
     const fetchAllDoctors = async () => {
+      let doctorArray = [];
+      let hodArray = [];
+
       try {
-        const [doctorRes, hodRes] = await Promise.all([
-          axios.get("http://localhost:8080/user/doctors"),
-          axios.get("http://localhost:8080/user/hods")
-        ]);
-
-        const doctorArray = Array.isArray(doctorRes.data) ? doctorRes.data : [];
-        const hodArray = Array.isArray(hodRes.data) ? hodRes.data : [];
-
-        const combinedDoctors = [...doctorArray, ...hodArray];
-        console.log("Combined Doctors & HODs:", combinedDoctors);
-        setDoctors(combinedDoctors);
+        const doctorRes = await axios.get("http://localhost:8080/user/doctors");
+        doctorArray = Array.isArray(doctorRes.data) ? doctorRes.data : (doctorRes.data ? [doctorRes.data] : []);
       } catch (error) {
-        console.error("Error fetching all doctors:", error.response?.data || error);
-        setDoctors([]);
-      } finally {
-        setLoading(false);
+        console.error("Error fetching doctors:", error.response?.data || error);
       }
+
+      try {
+        const hodRes = await axios.get("http://localhost:8080/user/hods");
+        hodArray = Array.isArray(hodRes.data) ? hodRes.data : (hodRes.data ? [hodRes.data] : []);
+      } catch (error) {
+        console.error("Error fetching hods:", error.response?.data || error);
+      }
+
+      const combinedDoctors = [...doctorArray, ...hodArray];
+      setDoctors(combinedDoctors);
+      setLoading(false);
     };
 
     fetchAllDoctors();
