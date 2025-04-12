@@ -221,7 +221,7 @@ const NurseAssigned = () => {
                   onClick={() => handleSort("patientName")}
                   style={{ cursor: "pointer" }}
                 >
-                  Patient{" "}
+                  Tên bệnh nhân{" "}
                   {sortConfig.key === "patientName" &&
                     (sortConfig.direction === "asc" ? "↑" : "↓")}
                 </span>
@@ -231,7 +231,7 @@ const NurseAssigned = () => {
                   onClick={() => handleSort("time")}
                   style={{ cursor: "pointer" }}
                 >
-                  Time{" "}
+                  Thời gian khám{" "}
                   {sortConfig.key === "time" &&
                     (sortConfig.direction === "asc" ? "↑" : "↓")}
                 </span>
@@ -241,7 +241,7 @@ const NurseAssigned = () => {
                   onClick={() => handleSort("symptoms")}
                   style={{ cursor: "pointer" }}
                 >
-                  Symptoms{" "}
+                  Triệu chứng{" "}
                   {sortConfig.key === "symptoms" &&
                     (sortConfig.direction === "asc" ? "↑" : "↓")}
                 </span>
@@ -251,12 +251,12 @@ const NurseAssigned = () => {
                   onClick={() => handleSort("doctor")}
                   style={{ cursor: "pointer" }}
                 >
-                  Doctor{" "}
+                  Bác sĩ{" "}
                   {sortConfig.key === "doctor" &&
                     (sortConfig.direction === "asc" ? "↑" : "↓")}
                 </span>
               </th>
-              <th>Action</th>
+              <th>Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -277,7 +277,7 @@ const NurseAssigned = () => {
                       {appointment.time || "N/A"}
                     </td>
                     <td>{appointment.symptoms || "N/A"}</td>
-                    <td>{doctorNames || "No doctor assigned"}</td>
+                    <td>{doctorNames || "Chưa gán bác sĩ nào"}</td>
                     <td>
                       <button
                         className="btn btn-success me-2"

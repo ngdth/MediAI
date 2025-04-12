@@ -205,33 +205,33 @@ const NursePending = () => {
 
     return (
         <div className="assigned">
-            <h2>Pending Appointments</h2>
+            <h2>Lịch hẹn chờ phân công</h2>
             {loading ? (
-                <p>Loading...</p>
+                <p>Đang tải...</p>
             ) : (
                 <table className="table">
                     <thead>
                         <tr>
                             <th>
                                 <span onClick={() => handleSort("patientName")} style={{ cursor: "pointer" }}>
-                                    Patient{" "}
+                                    Tên bệnh nhân{" "}
                                     {sortConfig.key === "patientName" && (sortConfig.direction === "asc" ? "↑" : "↓")}
                                 </span>
                             </th>
                             <th>
                                 <span onClick={() => handleSort("time")} style={{ cursor: "pointer" }}>
-                                    Time{" "}
+                                    Thời gian khám{" "}
                                     {sortConfig.key === "time" && (sortConfig.direction === "asc" ? "↑" : "↓")}
                                 </span>
                             </th>
                             <th>
                                 <span onClick={() => handleSort("symptoms")} style={{ cursor: "pointer" }}>
-                                    Symptoms{" "}
+                                    Triệu chứng{" "}
                                     {sortConfig.key === "symptoms" && (sortConfig.direction === "asc" ? "↑" : "↓")}
                                 </span>
                             </th>
-                            <th>Doctor</th>
-                            <th>Action</th>
+                            <th>Bác sĩ</th>
+                            <th>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
