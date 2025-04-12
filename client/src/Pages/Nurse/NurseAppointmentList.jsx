@@ -93,9 +93,9 @@ const NurseAppointmentList = () => {
 
   return (
     <div className="pending">
-      <h2>All Appointments</h2>
+      <h2>Tất cả lịch hẹn</h2>
       {loading ? (
-        <p>Loading...</p>
+        <p>Đang tải...</p>
       ) : (
         <table className="table">
           <thead>
@@ -105,7 +105,7 @@ const NurseAppointmentList = () => {
                   onClick={() => handleSort("patientName")}
                   style={{ cursor: "pointer" }}
                 >
-                  Patient{" "}
+                  Tên bệnh nhân{" "}
                   {sortConfig.key === "patientName" &&
                     (sortConfig.direction === "asc" ? "↑" : "↓")}
                 </span>
@@ -115,7 +115,7 @@ const NurseAppointmentList = () => {
                   onClick={() => handleSort("time")}
                   style={{ cursor: "pointer" }}
                 >
-                  Time{" "}
+                  Thời gian khám{" "}
                   {sortConfig.key === "time" &&
                     (sortConfig.direction === "asc" ? "↑" : "↓")}
                 </span>
@@ -125,7 +125,7 @@ const NurseAppointmentList = () => {
                   onClick={() => handleSort("status")}
                   style={{ cursor: "pointer" }}
                 >
-                  Status{" "}
+                  Trạng thái{" "}
                   {sortConfig.key === "status" &&
                     (sortConfig.direction === "asc" ? "↑" : "↓")}
                 </span>
@@ -135,12 +135,12 @@ const NurseAppointmentList = () => {
                   onClick={() => handleSort("doctor")}
                   style={{ cursor: "pointer" }}
                 >
-                  Doctor{" "}
+                  Bác sĩ{" "}
                   {sortConfig.key === "doctor" &&
                     (sortConfig.direction === "asc" ? "↑" : "↓")}
                 </span>
               </th>
-              <th>Action</th>
+              <th>Thao Tác</th>
             </tr>
           </thead>
           <tbody>
@@ -165,7 +165,7 @@ const NurseAppointmentList = () => {
                         className="btn btn-primary"
                         onClick={() => handleViewDetail(appointment._id)}
                       >
-                        View Detail
+                        Chi tết
                       </button>
                     </td>
                   </tr>
@@ -173,7 +173,7 @@ const NurseAppointmentList = () => {
               })
             ) : (
               <tr key="no-appointments">
-                <td colSpan="5">No appointments available.</td>
+                <td colSpan="5">Không có lịch hẹn nào.</td>
               </tr>
             )}
           </tbody>
