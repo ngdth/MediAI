@@ -29,6 +29,7 @@ body.modal-open {
 .nurse-content {
     flex: 5;
     padding: 20px;
+    padding-top: 130px; // Chừa khoảng trống cho topbar
     background: #f4f4f4;
     overflow-y: auto;
     transition: margin-left 0.3s ease-in-out;

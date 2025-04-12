@@ -278,7 +278,7 @@ const GeneralHealthKetchup = () => {
   };
 
   if (!appointmentData) {
-    return <div>Loading...</div>;
+    return <div>Đang tải...</div>;
   }
 
   const { appointment, prescriptions, vitals, tests, diagnosisDetails } = appointmentData;
