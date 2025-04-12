@@ -21,6 +21,7 @@ assignToPharmacy,
 updateAppointmentField,
 updateNurseFields,
 doctorReject,
+viewAppointmentsBySpecialization,
 } from "../controllers/auth/appointmentController";
 const router = express.Router();
 // Appointment routes
@@ -47,5 +48,6 @@ router.get("/history/:id",   getDetailAppointment );
 router.get("/history",   getUserAppointments);
 router.get("/:id", getAppointmentById);
 router.get("/", viewAllAppointments);
+router.get("/hod/specialization", viewAppointmentsBySpecialization)
 router.put("/:id/cancel", cancelAppointment);
 export default router;
