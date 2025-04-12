@@ -93,7 +93,14 @@ const DoctorsPage = () => {
         bottomSpaceLg="80"
         bottomSpaceMd="120"
       >
-        <AppointmentSection data={appointmentSectionData} />
+        {/* <AppointmentSection data={appointmentSectionData} /> */}
+        {loading ? (
+          <p className="text-center">Loading...</p>
+        ) : doctors.length === 0 ? (
+          <p className="text-center fw-bold">No doctors or HODs available.</p>
+        ) : (
+          <AppointmentSection data={appointmentSectionData} />
+        )}
       </Section>
     </>
   );
