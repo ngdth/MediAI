@@ -12,6 +12,7 @@ import {
   FaLocationDot,
   FaSuitcase,
   FaHeart,
+  FaPhone,
 } from 'react-icons/fa6';
 import Section from '../../Components/Section';
 import { ToastContainer, toast } from "react-toastify";
@@ -131,17 +132,17 @@ const DoctorsDetailsPage = () => {
 
   const doctorInfo = [
     {
-      icon: <FaLocationDot />,
-      title: 'Địa chỉ',
-      subtitle: doctorDetails.location,
+      icon: <FaCertificate />,
+      title: 'Chuyên khoa',
+      subtitle: doctorDetails.specialization,
       secIcon: <FaEnvelope />,
       secTitle: 'E-mail:',
       secSubtitle: doctorDetails.email,
     },
     {
-      icon: <FaCertificate />,
-      title: 'Chuyên khoa',
-      subtitle: doctorDetails.specialization,
+      icon: <FaPhone />,
+      title: 'Số điện thoại',
+      subtitle: doctorDetails.phone,
       secIcon: <FaGlobe />,
       secTitle: 'Website',
       secSubtitle: doctorDetails.website,
