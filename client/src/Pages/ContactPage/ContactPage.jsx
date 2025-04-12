@@ -9,15 +9,15 @@ const headingData = {
 };
 
 const contactData = {
-  sectionSubtitle: 'CONTACT US',
-  SectionTitle: 'Meet Our Specialist This <br />Doctor Meet',
+  // sectionSubtitle: 'LIÊN HỆ VỚI CHÚNG TÔI',
+  SectionTitle: 'LIÊN HỆ VỚI CHÚNG TÔI',
   teethShapeImg: 'assets/img/icons/hero_shape_3.png',
-  contactImg: 'assets/img/contact_2.png',
+  contactImg: 'assets/img/contact_2.jpg',
   iconBox: {
     style: 'cs_style_4',
     icon: 'assets/img/icons/call_icon_1.png',
-    title: 'Emergency Call',
-    subtitle: '24/7 – Support and easy',
+    title: 'Cuộc gọi khẩn cấp',
+    subtitle: 'Hỗ trợ 24/7 – Tận tâm và nhanh chóng',
   },
 };
 

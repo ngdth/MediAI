@@ -11,6 +11,8 @@ import { HiMiniMagnifyingGlass } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
+
+
 const Header = ({ isTopBar, variant }) => {
   const [isShowMobileMenu, setIsShowMobileMenu] = useState(false);
   const [openMobileSubmenuIndex, setOpenMobileSubmenuIndex] = useState([]);
@@ -56,16 +58,10 @@ const Header = ({ isTopBar, variant }) => {
   };
 
   const menu = {
-    // email: "demo@example.com",
-    // location: "15/K, Dhaka London City, LOT",
-    // logoUrl: "/assets/img/logo.png",
-    // logoLink: "/",
-
     navItems: [
       {
         label: "Trang chủ",
         href: "/",
-
       },
       { label: "Về chúng tôi", href: "/about" },
       {
@@ -85,26 +81,16 @@ const Header = ({ isTopBar, variant }) => {
         ],
       },
       {
-        label: "Pages",
+        label: "Lịch hẹn",
         href: "/",
         subItems: [
-          { label: "Appointments", href: "/appointments" },
-          { label: "BookingAppointments", href: "/BookingAppointments"},
-          { label: "Doctors", href: "/doctors" },
-          { label: "Doctor Details", href: "/doctors/doctor-details" },
-          { label: "Timetable", href: "/timetable" },
-          { label: "Portfolio", href: "/portfolio" },
-          { label: "Appointments History", href: "/appointmentshistory" },
-          { label: "Doctor Appointments", href: "/doctorappointments" },
-          { label: "Diagnosis Management", href: "/diagnosismanagement" },
-          { label: "Prescription Management", href: "/prescriptionmanagement" },
-          
+          { label: "Lịch sử khám bệnh", href: "/appointmentshistory" },
         ],
       },
       { label: "Liên hệ", href: "/contact" },
     ],
     btnUrl: "/contact",
-    btnText: "Contact Now",
+    btnText: "Liên hệ ngay ",
   };
 
   const accountMenu = username
@@ -193,10 +179,14 @@ const Header = ({ isTopBar, variant }) => {
           <div className="container">
             <div className="cs_main_header_in">
               <div className="cs_main_header_left ps-5 pt-2">
-                <Link className="cs_site_branding h1 bold" to={menu.logoLink}>
-                  {/* <img src={menu.logoUrl} alt="Logo" /> */}
-                  AMMA
-                </Link>
+              <Link className="cs_site_branding" to={menu.logoLink}>
+  <img
+    src="/assets/img/logo.png"
+    alt="Logo"
+    style={{ height: "120px",objectFit: "contain" }}
+  />
+</Link>
+
               </div>
               <div className="cs_main_header_right">
                 <div className="cs_nav cs_primary_color">
