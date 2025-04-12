@@ -4,7 +4,7 @@ import Prescription from '../../models/Prescription';
 import Vitals from '../../models/Vitals';
 import Tests from '../../models/Tests';
 import DiagnosisDetails from '../../models/DiagnosisDetails';
-import User from '../../models/User';
+import User, { IDoctor } from '../../models/User';
 import mongoose from 'mongoose';
 import Schedule from '../../models/Schedule';
 import { sendEmail } from "../../config/email";
@@ -788,6 +788,56 @@ export const viewAllAppointments = async (req: Request, res: Response, next: Nex
 
         res.status(200).json({
             message: 'Appointments retrieved successfully',
+            data: appointmentsWithDetails,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const viewAppointmentsBySpecialization = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const doctorId = req.user?.id;
+
+        if (!doctorId) {
+            res.status(401).json({ message: 'Unauthorized: Doctor ID not found in token.' });
+            return;
+        }
+
+        const doctor = await User.findById(doctorId) as IDoctor | null;
+        if (!doctor || !doctor.specialization) {
+            res.status(404).json({ message: 'Doctor or specialization not found.' });
+            return;
+        }
+
+        const specialization = doctor.specialization;
+
+        // Tìm danh sách tất cả bác sĩ thuộc chuyên khoa này
+        const doctorsInSpecialty = await User.find({ specialization }, '_id');
+        const doctorIds = doctorsInSpecialty.map((doc) => doc._id);
+
+        // Lọc lịch hẹn theo danh sách doctorId
+        const appointments = await Appointment.find({ doctorId: { $in: doctorIds } })
+            .populate('userId', 'username email')
+            .populate('doctorId', 'username email specialization');
+
+        const appointmentsWithDetails = await Promise.all(appointments.map(async (appointment) => {
+            const prescriptions = await Prescription.find({ appointmentId: appointment._id }).populate('doctorId', 'username');
+            const vitals = await Vitals.find({ appointmentId: appointment._id });
+            const tests = await Tests.find({ appointmentId: appointment._id });
+            const diagnosisDetails = await DiagnosisDetails.find({ appointmentId: appointment._id }).populate('doctorId', 'username');
+
+            return {
+                appointment,
+                prescriptions,
+                vitals,
+                tests,
+                diagnosisDetails,
+            };
+        }));
+
+        res.status(200).json({
+            message: 'Appointments by specialization retrieved successfully',
             data: appointmentsWithDetails,
         });
     } catch (error) {
