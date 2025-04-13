@@ -114,6 +114,7 @@ export const bookAppointment = async (req: Request, res: Response, next: NextFun
             },
             status: AppointmentStatus.ASSIGNED,
             doctorId: [doctorId],
+            isDoctorAssignedByPatient: true,
         });
 
         await newAppointment.save();
@@ -316,13 +317,18 @@ export const doctorReject = async (req: Request, res: Response): Promise<void> =
             return;
         }
 
-        appointment.status = AppointmentStatus.PENDING;
-        appointment.doctorId = appointment.doctorId
-            .filter((doc: any) => {
-                const id = typeof doc === 'string' ? doc : doc._id?.toString?.();
-                return id !== doctorIdToRemove.toString();
-            })
-            .map((doc: any) => typeof doc === 'string' ? doc : doc._id.toString());
+        if (appointment.isDoctorAssignedByPatient === true) {
+            appointment.status = AppointmentStatus.REJECTED;
+        } else {
+            appointment.status = AppointmentStatus.PENDING;
+            appointment.doctorId = appointment.doctorId
+                .filter((doc: any) => {
+                    const id = typeof doc === 'string' ? doc : doc._id?.toString?.();
+                    return id !== doctorIdToRemove.toString();
+                })
+                .map((doc: any) => typeof doc === 'string' ? doc : doc._id.toString());
+        }
+
         await appointment.save();
 
         res.status(200).json({

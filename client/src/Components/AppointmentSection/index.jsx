@@ -19,7 +19,7 @@ const AppointmentSection = ({ data }) => {
 
         <div className="cs_height_50 cs_height_lg_50" />
         {/* <div className="cs_doctors_grid cs_style_1"> */}
-        {Object.entries(data.groupedDoctors).map(([specialization, doctors], groupIndex) => (
+        {data?.groupedDoctors && Object.entries(data.groupedDoctors).map(([specialization, doctors], groupIndex) => (
           <div key={groupIndex} className="mb-5">
             <h2 className="text-2xl font-bold mb-4">{specialization}</h2>
             <div className="cs_doctors_grid cs_style_1">
