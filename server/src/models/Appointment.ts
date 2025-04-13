@@ -45,6 +45,7 @@ interface IAppointment extends Document {
     rejectReason?: string;
     transferNotes?: ITransferNote[];
     isContinuousCare?: boolean;
+    isDoctorAssignedByPatient?: boolean;
     patientHistory?: string[];
 }
 
@@ -82,6 +83,7 @@ const appointmentSchema = new Schema<IAppointment>(
         rejectReason: { type: String },
         transferNotes: [transferNoteSchema],
         isContinuousCare: { type: Boolean, default: false },
+        isDoctorAssignedByPatient: { type: Boolean, default: false },
         patientHistory: [{ type: String, ref: 'Appointment' }],
     },
     { timestamps: true, _id: false }
