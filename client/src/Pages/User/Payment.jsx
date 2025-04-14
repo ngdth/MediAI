@@ -86,6 +86,11 @@ export default function Payment() {
     return (
         <>
             <Section
+                topSpaceMd="100"
+            >
+            </Section>
+
+            <Section
                 className="cs_page_heading cs_bg_filed cs_center"
                 backgroundImage="/assets/img/page_heading_bg.jpg"
             >

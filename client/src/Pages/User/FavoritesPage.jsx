@@ -59,14 +59,14 @@ const FavoritesPage = () => {
             await axios.delete(`http://localhost:8080/user/favorites/delete/${doctorId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-    
+
             setFavorites(favorites.filter((doctor) => doctor._id !== doctorId));
             alert("Doctor has been removed from favorites.");
         } catch (error) {
             console.error("Error removing favorite doctor:", error.response?.data || error);
             alert("Failed to remove doctor.");
         }
-    };    
+    };
 
     if (favorites.length === 0) {
         return (
@@ -86,6 +86,11 @@ const FavoritesPage = () => {
 
     return (
         <>
+            <Section
+                topSpaceMd="100"
+            >
+            </Section>
+
             <Section
                 className="cs_page_heading cs_bg_filed cs_center"
                 backgroundImage="/assets/img/page_heading_bg.jpg"

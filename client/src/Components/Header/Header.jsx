@@ -179,14 +179,13 @@ const Header = ({ isTopBar, variant }) => {
           <div className="container">
             <div className="cs_main_header_in">
               <div className="cs_main_header_left ps-5 pt-2">
-              <Link className="cs_site_branding" to={menu.logoLink}>
-  <img
-    src="/assets/img/logo.png"
-    alt="Logo"
-    style={{ height: "120px",objectFit: "contain" }}
-  />
-</Link>
-
+                <Link className="cs_site_branding" to={menu.logoLink}>
+                  <img
+                    src="/assets/img/logo.png"
+                    alt="Logo"
+                    style={{ height: "120px", objectFit: "contain" }}
+                  />
+                </Link>
               </div>
               <div className="cs_main_header_right">
                 <div className="cs_nav cs_primary_color">

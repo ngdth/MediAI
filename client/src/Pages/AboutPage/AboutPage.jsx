@@ -11,17 +11,14 @@ const headingData = {
 };
 
 const aboutData = {
-  
   sectionSubtitle: 'OUR ABOUT US',
   sectionTitle: 'Giới thiệu chung',
   aboutText:
     'Phòng khám Đa khoa AMMA được thành lập từ năm [năm thành lập], với sứ mệnh chăm sóc sức khỏe toàn diện cho cộng đồng bằng y đức, chuyên môn và sự tận tâm. Trải qua hơn 20 năm hoạt động, AMMA đã trở thành địa chỉ tin cậy của hàng ngàn bệnh nhân, với đội ngũ y bác sĩ giỏi chuyên môn, giàu kinh nghiệm cùng hệ thống cơ sở vật chất hiện đại. Chúng tôi cung cấp dịch vụ khám chữa bệnh đa dạng như nội khoa, nhi khoa, sản phụ khoa, tai mũi họng, da liễu và chẩn đoán hình ảnh – đảm bảo phục vụ người bệnh một cách nhanh chóng, chính xác và hiệu quả.',
   service:
     'AMMA luôn đặt sức khỏe và sự hài lòng của người bệnh lên hàng đầu. Với triết lý hoạt động dựa trên các giá trị cốt lõi: tận tâm – chuyên nghiệp – uy tín – hiện đại, chúng tôi cam kết mang lại dịch vụ y tế chất lượng cao, quy trình minh bạch và trải nghiệm thăm khám thoải mái, an toàn cho mỗi khách hàng. Không ngừng đổi mới và ứng dụng công nghệ, AMMA hướng đến việc trở thành phòng khám đa khoa hàng đầu được người dân tin tưởng lựa chọn trong hành trình chăm sóc sức khỏe lâu dài.',
-  
   experienceYears: '26+',
   experienceTitle: 'Experience',
-  
   iconboxes: [],
   sectionImgUrl: 'assets/img/about_section_img_1.png',
   headImgUrl: 'assets/img/about_img_7.jpg',
@@ -119,6 +116,11 @@ const AboutPage = () => {
     <div className="about-page-area">
       {/* Các section hiện tại giữ nguyên */}
       <Section
+        topSpaceMd="100"
+      >
+      </Section>
+
+      <Section
         className={'cs_page_heading cs_bg_filed cs_center'}
         backgroundImage="/assets/img/aboutus.jpg"
       >
@@ -136,7 +138,7 @@ const AboutPage = () => {
       <Section bottomSpaceLg="80" bottomSpaceMd="120" className="cs_counter_area_2">
         <CounterSection2 data={counterData} />
       </Section>
-      
+
       {/* <Section topSpaceLg="70" topSpaceMd="110" bottomSpaceLg="80" bottomSpaceMd="0">
         <TeamSection hr={true} variant={'cs_pagination cs_style_2'} data={teamData} />
       </Section> */}
