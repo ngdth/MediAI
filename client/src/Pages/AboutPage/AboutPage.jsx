@@ -7,11 +7,11 @@ import Section from '../../Components/Section';
 import TeamSection from '../../Components/TeamSection';
 
 const headingData = {
-  title: 'About Page',
+  title: 'VỀ CHÚNG TÔI',
 };
 
 const aboutData = {
-  sectionSubtitle: 'OUR ABOUT US',
+  sectionSubtitle: 'VỀ CHÚNG TÔI',
   sectionTitle: 'Giới thiệu chung',
   aboutText:
     'Phòng khám Đa khoa AMMA được thành lập từ năm [năm thành lập], với sứ mệnh chăm sóc sức khỏe toàn diện cho cộng đồng bằng y đức, chuyên môn và sự tận tâm. Trải qua hơn 20 năm hoạt động, AMMA đã trở thành địa chỉ tin cậy của hàng ngàn bệnh nhân, với đội ngũ y bác sĩ giỏi chuyên môn, giàu kinh nghiệm cùng hệ thống cơ sở vật chất hiện đại. Chúng tôi cung cấp dịch vụ khám chữa bệnh đa dạng như nội khoa, nhi khoa, sản phụ khoa, tai mũi họng, da liễu và chẩn đoán hình ảnh – đảm bảo phục vụ người bệnh một cách nhanh chóng, chính xác và hiệu quả.',
@@ -122,7 +122,7 @@ const AboutPage = () => {
 
       <Section
         className={'cs_page_heading cs_bg_filed cs_center'}
-        backgroundImage="/assets/img/banner_aboutus.jpg"
+        backgroundImage="/assets/img/banner-doctors.png"
       >
         <PageHeading data={headingData} />
       </Section>
