@@ -8,7 +8,7 @@ import Section from "../../Components/Section";
 
 const AppointmentsHistory = () => {
   const headingData = {
-    title: "Appointment History",
+    title: "Lịch Sử Khám",
   };
 
   const [appointments, setAppointments] = useState([]);
@@ -184,7 +184,7 @@ const AppointmentsHistory = () => {
 
       <Section
         className="cs_page_heading cs_bg_filed cs_center"
-        backgroundImage="/assets/img/page_heading_bg.jpg"
+        backgroundImage="/assets/img/banner-doctors.png"
       >
         <PageHeading data={headingData} />
       </Section>

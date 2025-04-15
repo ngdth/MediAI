@@ -11,10 +11,10 @@ const PageHeading = ({ data }) => {
   }, []);
   return (
     <div className="container">
-      <h1 className="cs_page_title">{data?.title}</h1>
+      <h1 className="cs_page_title" style={{color:"#03609e"}}>{data?.title}</h1>
       <ol className="breadcrumb text-capitalize">
         <li className="breadcrumb-item">
-          <Link to="/">Home</Link>
+          <Link style={{color:"#03609e"}} to="/">Trang chủ</Link>
         </li>
         {urlSegments.map((segment, index) => (
           <li key={index} className="breadcrumb-item">

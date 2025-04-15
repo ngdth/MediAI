@@ -36,7 +36,7 @@ const DoctorsPage = () => {
   }, []);
 
   const headingData = {
-    title: 'Our Doctors',
+    title: 'CÁC BÁC SĨ',
   };
 
   // const appointmentSectionData = {
@@ -73,8 +73,8 @@ const DoctorsPage = () => {
   }, {});
 
   const appointmentSectionData = {
-    subtitle: 'OUR TEAM MEMBER',
-    title: 'Meet Our Specialist This<br> Doctor Meeting',
+    subtitle: 'CÁC THÀNH VIÊN CỦA CHÚNG TÔI',
+    title: 'Hãy gặp các chuyên gia của <br> chúng tôi',
     groupedDoctors,
   };
 
