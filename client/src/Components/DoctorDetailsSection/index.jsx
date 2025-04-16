@@ -4,7 +4,7 @@ import { FaHeart } from "react-icons/fa6";
 const DoctorDetailsSection = ({ data, onFavoriteToggle, favoriteStatus, onBookNow }) => {
   // Kiểm tra nếu data không có hoặc có giá trị rỗng
   const image = data?.imageUrl;
-  const name = data.firstName && data.lastName ? `${data.lastName} ${data.firstName}` : '';
+  const name = data?.username || '';
   const subtitle = data?.subtitle || 'No subtitle available';
   const description = data?.description || [];
   const info = data?.info || [];
@@ -63,27 +63,27 @@ const DoctorDetailsSection = ({ data, onFavoriteToggle, favoriteStatus, onBookNo
                   <div className="cs_doctor_info_row" key={index}>
                     <div className="cs_doctor_info_col">
                       <div className="cs_iconbox cs_style_10">
-                        <div className="cs_iconbox_icon">
+                        <div className="cs_iconbox_icon mt-1">
                           <i>{info.icon}</i>
                         </div>
                         <div className="cs_iconbox_text">
-                          <h3 className="cs_iconbox_title">{info.title}</h3>
-                          <p className="cs_iconbox_subtitle mb-0">
+                          <p className="cs_iconbox_title">{info.title}</p>
+                          <h3 className="cs_iconbox_subtitle mb-0">
                             {info.subtitle}
-                          </p>
+                          </h3>
                         </div>
                       </div>
                     </div>
                     <div className="cs_doctor_info_col">
                       <div className="cs_iconbox cs_style_10">
-                        <div className="cs_iconbox_icon">
+                        <div className="cs_iconbox_icon mt-1">
                           <i>{info.secIcon}</i>
                         </div>
                         <div className="cs_iconbox_text">
-                          <h3 className="cs_iconbox_title">{info.secTitle}</h3>
-                          <p className="cs_iconbox_subtitle mb-0">
+                          <p className="cs_iconbox_title">{info.secTitle}</p>
+                          <h3 className="cs_iconbox_subtitle mb-0">
                             {info.secSubtitle}
-                          </p>
+                          </h3>
                         </div>
                       </div>
                     </div>
