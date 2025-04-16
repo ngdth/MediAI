@@ -57,7 +57,9 @@ export default function Payment() {
                     Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    _id: bill._id
+                    _id: bill._id,
+                    redirectUrl: "http://localhost:5173/payment",
+                    requestType: "payWithMethod"
                 })
             });
 
