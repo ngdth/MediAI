@@ -5,12 +5,12 @@ import BlogsSection1 from '../../Components/BlogsSection/BlogsSection1';
 import Section from '../../Components/Section';
 
 const headingData = {
-  title: 'Blog Page',
+  title: 'BÀI VIẾT',
 };
 
 const blogsSectionData = {
   sectionSubtitle: 'OUR LARGEST BLOG',
-  sectionTitle: 'Latest Posts &amp; Articles',
+  sectionTitle: 'Các Bài Đăng &amp; Bài Viết Mới Nhất',
 
   blogsData: [
     {
@@ -101,7 +101,7 @@ const BlogsPage = () => {
 
       <Section
         className={'cs_page_heading cs_bg_filed cs_center'}
-        backgroundImage="/assets/img/blog.jpg"
+        backgroundImage="/assets/img/banner-doctors.png"
       >
         <PageHeading data={headingData} />
       </Section>

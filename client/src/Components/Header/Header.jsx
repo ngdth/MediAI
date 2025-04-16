@@ -243,7 +243,7 @@ const Header = ({ isTopBar, variant }) => {
                     ))}
                     {/* Hiển thị username nếu đã đăng nhập */}
                     <li className="menu-item-has-children">
-                      <Link to="/">{username || "Account"}</Link>
+                      <Link className={username ? "text-primary" : ""} to="/">{username || "Tài khoản"}</Link>
                       <ul>
                         {accountMenu.map((subItem, subIndex) => (
                           <li key={subIndex}>

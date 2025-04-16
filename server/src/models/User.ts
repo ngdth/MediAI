@@ -42,7 +42,7 @@ export interface IPharmacy extends IUser {
 
 const UserSchema: Schema = new Schema(
   {
-    username: { type: String, required: true, unique: true },
+    username: { type: String, required: true},
     email: { type: String, required: true, unique: true },
     password: { type: String },
     imageUrl: { type: String, default: "" },
