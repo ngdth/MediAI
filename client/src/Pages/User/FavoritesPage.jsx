@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
 import axios from "axios";
 import PageHeading from "../../Components/PageHeading";
 import SectionHeading from "../../Components/SectionHeading";
 import Section from "../../Components/Section";
+import { toast, ToastContainer } from "react-toastify";
 
 const FavoritesPage = () => {
     const headingData = {
@@ -25,25 +25,7 @@ const FavoritesPage = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            console.log(response.data);
-            if (response.data && Array.isArray(response.data.favorites)) {
-                // Gọi API lấy thông tin chi tiết của từng bác sĩ
-                const doctorDetails = await Promise.all(
-                    response.data.favorites.map(async (doctorId) => {
-                        try {
-                            const doctorResponse = await axios.get(`http://localhost:8080/user/doctors/${doctorId}`);
-                            return doctorResponse.data; // Trả về dữ liệu bác sĩ
-                        } catch (error) {
-                            console.error(`Error fetching doctor ${doctorId}:`, error);
-                            return null;
-                        }
-                    })
-                );
-
-                setFavorites(doctorDetails.filter((doctor) => doctor !== null)); // Lọc bỏ null
-            } else {
-                setFavorites([]);
-            }
+            setFavorites(response.data.favorites);
         } catch (error) {
             console.error("Error fetching favorite doctors:", error.response?.data || error);
             setFavorites([]);
@@ -61,10 +43,10 @@ const FavoritesPage = () => {
             });
 
             setFavorites(favorites.filter((doctor) => doctor._id !== doctorId));
-            alert("Doctor has been removed from favorites.");
+            toast.success("Doctor has been removed from favorites.");
         } catch (error) {
             console.error("Error removing favorite doctor:", error.response?.data || error);
-            alert("Failed to remove doctor.");
+            toast.error("Failed to remove doctor.");
         }
     };
 
@@ -133,6 +115,8 @@ const FavoritesPage = () => {
                     </div>
                 </div>
             </Section>
+
+            <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
         </>
     );
 };

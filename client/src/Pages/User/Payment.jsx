@@ -26,9 +26,6 @@ export default function Payment() {
                         "Content-Type": "application/json"
                     },
                 })
-                if (!response.ok) {
-                    throw new Error("Failed to fetch bills")
-                }
                 const data = await response.json()
                 console.log("API response:", data);
                 setBills(data.bills || [])
@@ -40,7 +37,7 @@ export default function Payment() {
         }
 
         fetchBills()
-    }, [])
+    }, [token])
 
     const filteredBills = filter === "all" ? bills : bills.filter((bill) => bill.status === filter)
 
