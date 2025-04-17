@@ -273,58 +273,30 @@ export const getBills = async (req: Request, res: Response, next: NextFunction):
         next(err)
     }
 }
-// get bill by id
+
 export const getBillsByUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        // Lấy thông tin user từ token (đã được xác thực qua middleware)
-        const userId = req.user._id || req.user.id;
-        const userRole = req.user.role;
-        console.log(`✅ Extracted userId: ${userId}, userRole: ${userRole}`);
-
+        const userId = req.user.id;
         if (!userId) {
-            res.status(401).json({ message: "Unauthorized: User ID not found in token" });
+            res.status(401).json({ message: "User ID not found" });
             return;
         }
 
-        let bills;
-
-        // Phân quyền truy cập dựa trên vai trò người dùng
-        if (userRole === 'user') {
-            // Bệnh nhân chỉ xem được hóa đơn của mình
-            bills = await Bill.find({ userId: userId });
-        } else if (userRole === 'doctor') {
-            // Bác sĩ xem được hóa đơn của các cuộc hẹn mà họ phụ trách
-            const appointments = await Appointment.find({ doctorId: userId });
-            console.log(`✅ Found ${appointments.length} appointments for doctor with ID: ${userId}`);
-            if (!appointments.length) {
-                res.status(404).json({ message: "No appointments found for this doctor" });
-                return;
-            }
-            const appointmentIds = appointments.map(app => app._id);
-            console.log(`✅ Extracted appointment IDs: ${appointmentIds}`);
-            bills = await Bill.find({ appointmentId: { $in: appointmentIds } });
-        } else if (userRole === 'admin' || userRole === 'pharmacy') {
-            // Admin và nhà thuốc có thể xem tất cả hóa đơn
-            bills = await Bill.find();
-        } else {
-            res.status(403).json({ message: "Forbidden: Insufficient permissions" });
-            return;
-        }
+        const bills = await Bill.find({ userId });
 
         if (!bills || bills.length === 0) {
             res.status(404).json({ message: "No bills found" });
             return;
         }
 
-        console.log(`Found ${bills.length} bills for user with role ${userRole}`);
         res.status(200).json({
             message: "Bills retrieved successfully",
             count: bills.length,
             bills
         });
     } catch (error) {
-        console.error('Error fetching bills:', error);
-        res.status(500).json({ message: "Internal server error", error: error });
+        console.error("Error fetching bills:", error);
+        res.status(500).json({ message: "Internal server error", error });
     }
 };
 
