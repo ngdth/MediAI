@@ -80,12 +80,12 @@ const ResetPassForm = () => {
         <Container>
             <Row className="justify-content-center">
                 <Col md={12}>
-                    <h2 className="text-center mb-3">Reset Password</h2>
+                    <h2 className="text-center mb-3">Đặt Lại Mật Khẩu</h2>
                     {error && <Alert variant="danger">{error}</Alert>}
                     <Form onSubmit={handleSubmit}>
                         <p className="text-muted">
-                            You've entered <strong>{resetEmail || "your email"}</strong> as the email for your account.
-                            Please check your email for OTP.
+                            Bạn đã nhập <strong>{resetEmail || "email của bạn"}</strong> là email đã được đăng kí cho tài khoản của bạn.
+                            Hãy kiểm tra email của bạn.
                         </p>
 
                         {/* OTP nhập và nút gửi lại */}
@@ -95,7 +95,7 @@ const ResetPassForm = () => {
                                 name="otp"
                                 value={formData.otp}
                                 onChange={handleChange}
-                                placeholder="Enter OTP"
+                                placeholder="Nhập mã OTP"
                                 required
                             />
                         </Form.Group>
@@ -105,7 +105,7 @@ const ResetPassForm = () => {
                             <Form.Control
                                 type="password"
                                 name="password"
-                                placeholder="New Password"
+                                placeholder="Mật Khẩu Mới"
                                 value={formData.password}
                                 onChange={handleChange}
                                 required
@@ -116,7 +116,7 @@ const ResetPassForm = () => {
                             <Form.Control
                                 type="password"
                                 name="confirmedPassword"
-                                placeholder="Confirm Password"
+                                placeholder="Xác Nhận Mật Khẩu"
                                 value={formData.confirmedPassword}
                                 onChange={handleChange}
                                 required
@@ -124,7 +124,7 @@ const ResetPassForm = () => {
                         </Form.Group>
 
                         <Button variant="primary" className="w-100 mb-2" type="submit" disabled={loading}>
-                            {loading ? "Resetting..." : "Reset Password"}
+                            {loading ? "Đang Đặt Lại" : "Đặt Lại Mật Khẩu"}
                         </Button>
                         <Button
                             variant="link"
@@ -132,12 +132,12 @@ const ResetPassForm = () => {
                             onClick={handleResendOTP}
                             disabled={resendTimer > 0}
                         >
-                            {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : "Re-send OTP"}
+                            {resendTimer > 0 ? `Gửi Lại Mã Trong ${resendTimer}s` : "Gửi lại OTP"}
                         </Button>
                     </Form>
 
                     <div className="text-center mt-2 text-muted">
-                        <Link to="/login">Back to Login</Link>
+                        <Link to="/login">Trở Về Trang Đăng Nhập</Link>
                     </div>
                 </Col>
             </Row>
