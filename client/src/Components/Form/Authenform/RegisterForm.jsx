@@ -147,6 +147,10 @@ const RegisterForm = ({ onRegistering }) => {
                             Đã có tài khoản?{" "}
                             <Link className="text-decoration-underline text-primary " to="/login">
                                 Đăng nhập
+                            </Link>{" "}
+                            |{" "}
+                            <Link className="text-decoration-underline text-primary " to="/">
+                                Trang Chủ
                             </Link>
                         </p>
                     </Form>

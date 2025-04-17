@@ -136,8 +136,11 @@ const ResetPassForm = () => {
                         </Button>
                     </Form>
 
-                    <div className="text-center mt-2 text-muted">
-                        <Link to="/login">Trở Về Trang Đăng Nhập</Link>
+                    <div className="text-center mt-3 text-muted">
+                    Trở Về
+                        <Link to="/login"> Trang Đăng Nhập</Link>{" "}
+                        |{" "}
+                        <Link to="/">Trang Chủ</Link>
                     </div>
                 </Col>
             </Row>

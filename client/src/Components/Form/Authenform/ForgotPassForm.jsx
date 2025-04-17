@@ -57,7 +57,10 @@ const ForgotPassForm = () => {
                         </Button>
                     </Form>
                     <div className="text-center mt-3 text-muted">
-                        <Link to="/login">Trở Về Đăng Nhập</Link>
+                    Trở Về
+                        <Link to="/login"> Trang Đăng Nhập</Link>{" "}
+                        |{" "}
+                        <Link to="/">Trang Chủ</Link>
                     </div>
                 </Col>
             </Row>
