@@ -8,7 +8,7 @@ function RegisterPage() {
     };
 
     return (
-        <Container className="d-flex align-items-center justify-content-center bg-white p-3">
+        <Container className="d-flex align-items-center justify-content-center bg-white p-3 pt-5" >
             <Row className="w-100 justify-content-around my-5">
                 <Col md={6} className="text-center">
                     <Image
