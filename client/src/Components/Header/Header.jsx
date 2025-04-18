@@ -77,7 +77,6 @@ const Header = ({ isTopBar, variant }) => {
         href: "/blog",
         subItems: [
           { label: "Blog List", href: "/blog" },
-          { label: "Blog Details", href: "/blog/blog-details" },
         ],
       },
       {

@@ -1,6 +1,6 @@
 import express from "express";
 import { registerUser, loginUser, verifyAccount, sendOTP, forgotPassword, deleteUnverifiedAcc,changePassword } from "../controllers/auth/authController";
-import { getUserProfile, getAllUsers, getUserById, updateProfile, updateAvatar } from "../controllers/auth/authUser";
+import { getUserProfile, getAllUsers, getUserById, updateProfile, updateAvatar, getUserByIdForUser } from "../controllers/auth/authUser";
 import { authenticateToken, authorizeDoctor, authorizeRole } from "../middlewares/authMiddleware";
 import { getCurrentUser, addDoctorToFavorites, getAllDoctors, getDoctorById, getFavoriteDoctors, removeDoctorFromFavorites, searchDoctorByUsername } from "../controllers/doctor/doctorController";
 import upload from "../middlewares/imgUpload";
@@ -24,6 +24,8 @@ router.post("/update-avatar", authenticateToken ,upload.single("avatar"), update
 router.get("/all", authenticateToken,authorizeRole([ "admin"]), getAllUsers);
 
 router.get("/users/:id", authenticateToken, authorizeRole([ "admin"]), getUserById);
+
+router.get("/user/:id", authenticateToken, getUserByIdForUser);
 
 router.post("/sendotp", sendOTP);
 
