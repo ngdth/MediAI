@@ -36,16 +36,16 @@ const ForgotPassForm = () => {
         <Container>
             <Row className="justify-content-center">
                 <Col md={12}>
-                    <h2 className="text-center mb-3">Forgot Password</h2>
+                    <h2 className="text-center mb-3">Quên Mật Khẩu</h2>
                     {error && <Alert variant="danger">{error}</Alert>}
                     <Form onSubmit={handleSubmit}>
                         <Form.Group controlId="formBasicEmail" className="pb-3">
                             <Form.Label>
-                                Please enter the email address you'd like your password reset
+                                Hãy nhập địa chỉ email của bạn để nhận mã xác thực đặt lại mật khẩu.
                             </Form.Label>
                             <Form.Control
                                 type="email"
-                                placeholder="Enter email"
+                                placeholder="Nhập địa chỉ email của bạn"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
@@ -53,11 +53,14 @@ const ForgotPassForm = () => {
                             />
                         </Form.Group>
                         <Button variant="primary" className="w-100 mb-2" type="submit" disabled={loading}>
-                            {loading ? "Sending OTP..." : "Send OTP"}
+                            {loading ? "Đang gửi..." : "Gửi mã OTP"}
                         </Button>
                     </Form>
                     <div className="text-center mt-3 text-muted">
-                        <Link to="/login">Back to Login</Link>
+                    Trở Về
+                        <Link to="/login"> Trang Đăng Nhập</Link>{" "}
+                        |{" "}
+                        <Link to="/">Trang Chủ</Link>
                     </div>
                 </Col>
             </Row>

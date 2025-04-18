@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Modal, Button, Form } from "react-bootstrap";
+import ImportDataButton from "../../Components/UploadFile";
 
 const DoctorManagement = () => {
     const [doctors, setDoctors] = useState([]);
@@ -103,6 +104,7 @@ const DoctorManagement = () => {
                 <button className="btn btn-primary" onClick={handleShowModal}>
                     Tạo tài khoản bác sĩ
                 </button>
+                <ImportDataButton/>
             </div>
 
             <div className="table-responsive">

@@ -1,167 +1,131 @@
 import { Request, Response } from 'express';
-import { Blog } from '../../models/Blog';
+import Blog from '../../models/Blog';
 import { JwtPayload } from '../../middlewares/authMiddleware';
-import { Comment, IComment } from '../../models/Comment';
+import mongoose, { Types } from 'mongoose';
 
-/**
- * @desc Thêm bình luận vào blog
- */
-export const commentBlog = async (req: Request, res: Response): Promise<void> => {
-    const { content } = req.body;
+// Utility function
+const getUserId = (req: Request): Types.ObjectId =>
+    new Types.ObjectId((req.user as JwtPayload).id);
 
-    if (!req.user) {
-        res.status(401).json({ message: 'Unauthorized' });
-    }
-
+// Thêm comment mới
+export const addComment = async (req: Request, res: Response) => {
     try {
-        const blog = await Blog.findById(req.params.blogId);
-        if (!blog) {
-            res.status(404).json({ message: 'Blog not found' });
-            return;
-        }
+        const blog = await Blog.findByIdAndUpdate(
+            req.params.blogId,
+            {
+                $push: {
+                    comments: {
+                        user: getUserId(req),
+                        content: req.body.content,
+                        likes: [],
+                        unlikes: [],
+                        replies: []
+                    }
+                }
+            },
+            { new: true, runValidators: true }
+        ).populate('comments.user', 'username avatar');
 
-        // Tạo bình luận mới
-        const newComment = new Comment({
-            user: req.user.id, // từ req.user, sau khi xác thực JWT
-            content,
-            likes: [],
-            unlikes: [],
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        });
-
-        // Push bình luận vào blog
-        blog.comments.push(newComment);
-
-        // Lưu lại blog
-        await blog.save();
-
-        res.status(201).json({ message: 'Comment added', comment: newComment });
+        res.status(201).json(blog?.comments.slice(-1)[0]);
     } catch (error) {
-        res.status(500).json({ message: 'Error adding comment', error });
+        res.status(500).json({ message: 'Lỗi thêm comment', error });
     }
 };
 
-/**
- * @desc Trả lời bình luận
- */
-export const replyComment = async (req: Request, res: Response): Promise<void> => {
-    const { content } = req.body;
-
-    if (!req.user) {
-        res.status(401).json({ message: 'Unauthorized' });
-    }
-
+// Thêm reply
+export const addReply = async (req: Request, res: Response) => {
     try {
-        const blog = await Blog.findById(req.params.blogId);
-        if (!blog) {
-            res.status(404).json({ message: 'Blog not found' });
-            return;
-        }
+        const blog = await Blog.findOneAndUpdate(
+            {
+                _id: req.params.blogId,
+                'comments._id': req.params.commentId
+            },
+            {
+                $push: {
+                    'comments.$.replies': {
+                        user: getUserId(req),
+                        content: req.body.content,
+                        likes: [],
+                        unlikes: []
+                    }
+                }
+            },
+            { new: true }
+        );
 
-        const parentComment = blog.comments.find((comment: IComment) => comment._id.toString() === req.params.commentId);
-        if (!parentComment) {
-            res.status(404).json({ message: 'Parent comment not found' });
-            return;
-        }
+        const reply = blog?.comments
+            .id(req.params.commentId)
+            ?.replies.slice(-1)[0];
 
-        // Tạo comment trả lời (reply)
-        const newReply = new Comment({
-            user: req.user.id,
-            content,
-            parentComment: parentComment._id,
-            likes: [],
-            unlikes: [],
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        });
-
-        // Push reply vào blog
-        blog.comments.push(newReply);
-
-        // Lưu lại blog
-        await blog.save();
-
-        res.status(201).json({ message: 'Reply added', reply: newReply });
+        res.status(201).json(reply);
     } catch (error) {
-        res.status(500).json({ message: 'Error adding reply', error });
+        res.status(500).json({ message: 'Lỗi thêm reply', error });
     }
 };
 
-/**
- * @desc Thích bình luận
- */
-export const likeComment = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) {
-        res.status(401).json({ message: 'Unauthorized' });
-        return;
-    }
-
+// Xử lý like/unlike
+const handleReaction = async (
+    req: Request,
+    res: Response,
+    field: 'likes' | 'unlikes'
+) => {
     try {
-        const blog = await Blog.findById(req.params.blogId);
-        if (!blog) {
-            res.status(404).json({ message: 'Blog not found' });
-            return;
-        }
+        const userId = getUserId(req);
+        const update = {
+            $addToSet: { [`comments.$.${field}`]: userId },
+            $pull: {
+                [`comments.$.${field === 'likes' ? 'unlikes' : 'likes'}`]: userId
+            }
+        };
 
-        const comment = blog.comments.find((comment: IComment) => comment._id.toString() === req.params.commentId);
-        if (!comment) {
-            res.status(404).json({ message: 'Comment not found' });
-            return;
-        }
+        const blog = await Blog.findOneAndUpdate(
+            {
+                _id: req.params.blogId,
+                'comments._id': req.params.commentId
+            },
+            update,
+            { new: true }
+        );
 
-        // Thêm user vào likes nếu chưa thích
-        if (!comment.likes.includes(req.user.id)) {
-            comment.likes.push(req.user.id);
-        }
-
-        // Nếu đã dislike thì bỏ dislike đi
-        comment.unlikes = comment.unlikes.filter(id => id.toString() !== req.user.id);
-
-        // Lưu lại blog
-        await blog.save();
-
-        res.json({ message: 'Liked comment', blog });
+        res.json(blog?.comments.id(req.params.commentId));
     } catch (error) {
-        res.status(500).json({ message: 'Error liking comment', error });
+        res.status(500).json({ message: 'Lỗi xử lý reaction', error });
     }
 };
 
-/**
- * @desc Bỏ thích bình luận (Unlike)
- */
-export const unlikeComment = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) {
-        res.status(401).json({ message: 'Unauthorized' });
-        return;
-    }
+export const likeComment = (req: Request, res: Response) =>
+    handleReaction(req, res, 'likes');
 
+export const unlikeComment = (req: Request, res: Response) =>
+    handleReaction(req, res, 'unlikes');
+
+export const reportComment = async (req: Request, res: Response): Promise<void> => {
     try {
-        const blog = await Blog.findById(req.params.blogId);
+        const { reason } = req.body;
+        const blog = await Blog.findOneAndUpdate(
+            {
+                _id: req.params.blogId,
+                'comments._id': req.params.commentId
+            },
+            {
+                $push: {
+                    'comments.$.reported': {
+                        user: getUserId(req),
+                        reason,
+                        createdAt: new Date()
+                    }
+                }
+            },
+            { new: true }
+        );
+
         if (!blog) {
-            res.status(404).json({ message: 'Blog not found' });
+            res.status(404).json({ message: 'Blog hoặc comment không tồn tại' });
             return;
         }
 
-        const comment = blog.comments.find((comment: IComment) => comment._id.toString() === req.params.commentId);
-        if (!comment) {
-            res.status(404).json({ message: 'Comment not found' });
-            return;
-        }
-
-        // Thêm user vào unlikes nếu chưa bỏ thích
-        if (!comment.unlikes.includes(req.user.id)) {
-            comment.unlikes.push(req.user.id);
-        }
-
-        // Nếu đã thích thì bỏ like đi
-        comment.likes = comment.likes.filter(id => id.toString() !== req.user.id);
-
-        // Lưu lại blog
-        await blog.save();
-
-        res.json({ message: 'Unliked comment', blog });
+        res.json({ message: 'Đã báo cáo comment thành công' });
     } catch (error) {
-        res.status(500).json({ message: 'Error unliking comment', error });
+        res.status(500).json({ message: 'Lỗi khi báo cáo comment', error });
     }
 };

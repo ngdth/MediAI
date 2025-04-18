@@ -5,7 +5,7 @@ import ResettPassForm from "../../Components/Form/Authenform/ResetPassForm";
 function ResetPassPage() {
 
     return (
-        <Container fluid className="my-5">
+        <Container fluid className="my-5 pt-5">
             <Row className="align-items-center d-flex justify-content-around">
                 <Col md={4}>
                     <Card className="shadow-lg" style={{ backgroundColor: "#F6F8FA", borderRadius: "10px" }}>

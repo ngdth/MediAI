@@ -34,7 +34,7 @@ const UserManagement = () => {
 
     return (
         <div className="container mt-5" style={{ minHeight: "80vh", display: "flex", flexDirection: "column" }}>
-            <h2 className="text-center mb-4">Quán Lý Người Dùng </h2>
+            <h2 className="text-center mb-4">Quản Lý Người Dùng </h2>
             <div className="table-responsive">
                 <table className="table table-bordered text-center">
                     <thead>

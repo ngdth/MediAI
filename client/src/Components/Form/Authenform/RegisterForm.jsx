@@ -139,7 +139,7 @@ const RegisterForm = ({ onRegistering }) => {
                                 style={{ border: "none", outline: "none" }}
                                 disabled={loading}
                             >
-                                {loading ? "Sending OPT..." : "Create new account"}
+                                {loading ? "Đang Gửi Mã OPT..." : "Tạo Tài Khoản"}
                             </Button>
                         </div>
 
@@ -147,6 +147,10 @@ const RegisterForm = ({ onRegistering }) => {
                             Đã có tài khoản?{" "}
                             <Link className="text-decoration-underline text-primary " to="/login">
                                 Đăng nhập
+                            </Link>{" "}
+                            |{" "}
+                            <Link className="text-decoration-underline text-primary " to="/">
+                                Trang Chủ
                             </Link>
                         </p>
                     </Form>

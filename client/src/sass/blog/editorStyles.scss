@@ -1,0 +1,198 @@
+/* EditorStyles.css */
+.wysiwyg-editor {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    margin-bottom: 20px;
+}
+
+.editor-toolbar {
+    background-color: #f5f5f5;
+    padding: 8px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.editor-toolbar button {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.editor-toolbar button:hover {
+    background-color: #f0f0f0;
+}
+
+.editor-toolbar .separator {
+    color: #ccc;
+    margin: 0 5px;
+    align-self: center;
+}
+
+.editor-content {
+    min-height: 300px;
+    padding: 15px;
+    overflow-y: auto;
+    line-height: 1.5;
+    background-color: white;
+    white-space: pre-wrap;
+    /* Giữ nguyên xuống dòng */
+    word-break: break-word;
+}
+
+.html-view {
+    width: 100%;
+    min-height: 300px;
+    padding: 15px;
+    font-family: monospace;
+    border: none;
+    resize: vertical;
+}
+
+.editor-content:focus,
+.html-view:focus {
+    outline: none;
+}
+
+.editor-toolbar-group {
+    display: flex;
+    gap: 5px;
+    margin-right: 10px;
+}
+
+.container-fluid-create {
+    padding-top: 8%;
+    padding-bottom: 2%;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+    opacity: 1;
+    transition: opacity 0.15s linear;
+}
+
+/* Modal Dialog */
+.modal-dialog {
+    position: relative;
+    width: auto;
+    margin: 0.5rem;
+    max-width: 500px;
+}
+
+/* Modal Content */
+.modal-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 0.3rem;
+    outline: 0;
+}
+
+/* Modal Header */
+.modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+    border-top-left-radius: 0.3rem;
+    border-top-right-radius: 0.3rem;
+}
+
+.modal-header h5 {
+    margin-bottom: 0;
+    line-height: 1.5;
+    font-size: 1.25rem;
+}
+
+/* Close Button */
+.modal-header button.close {
+    padding: 0;
+    background-color: transparent;
+    border: 0;
+    margin-left: auto;
+    opacity: 0.5;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #000;
+    text-shadow: 0 1px 0 #fff;
+}
+
+.modal-header button.close:hover {
+    opacity: 0.75;
+}
+
+/* Modal Body */
+.modal-body {
+    position: relative;
+    flex: 1 1 auto;
+    padding: 1rem;
+}
+
+/* Modal Footer */
+.modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 5rem;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    user-select: none;
+    gap: 1rem;
+    // border: 1px solid transparent;
+    padding: 25px 25px ;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    transition: all 0.15s ease-in-out;
+}
+
+.btn-secondary {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn:not(:disabled):not(.disabled) {
+    cursor: pointer;
+}
+
+.ml-1 {
+    margin-left: 0.25rem !important;
+    padding: 5px;
+}
