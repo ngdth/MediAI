@@ -17,6 +17,7 @@
     "axios": "^1.8.3",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.8",
+    "dompurify": "^3.2.5",
     "font-awesome": "^4.7.0",
     "medilo-react": "file:",
     "moment": "^2.30.1",

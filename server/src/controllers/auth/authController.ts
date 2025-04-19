@@ -22,19 +22,10 @@ export const registerUser: RequestHandler = async (req: Request, res: Response):
             return;
         }
 
-        const existingUsername = await User.findOne({ username: username.trim() });
-        if (existingUsername) {
-            res.status(400).json({ message: "Username already exists" });
-            return;
-        }
-
-
         const hashedPassword = await bcrypt.hash(password, 10);
-
 
         const verificationCode = generateVerificationCode();
         TEMP_CODE_STORAGE.set(normalizedEmail, verificationCode);
-
 
         try {
             await sendEmail(normalizedEmail, { code: verificationCode }, "register");
@@ -43,7 +34,6 @@ export const registerUser: RequestHandler = async (req: Request, res: Response):
             res.status(500).json({ message: "Failed to send verification email" });
             return;
         }
-
 
         const newUser = new User({
             email: normalizedEmail,

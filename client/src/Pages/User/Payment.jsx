@@ -7,7 +7,7 @@ import PageHeading from "../../Components/PageHeading"
 
 export default function Payment() {
     const headingData = {
-        title: "Payment",
+        title: "Thanh Toán",
     }
 
     const [bills, setBills] = useState([])
@@ -26,9 +26,6 @@ export default function Payment() {
                         "Content-Type": "application/json"
                     },
                 })
-                if (!response.ok) {
-                    throw new Error("Failed to fetch bills")
-                }
                 const data = await response.json()
                 console.log("API response:", data);
                 setBills(data.bills || [])
@@ -40,7 +37,7 @@ export default function Payment() {
         }
 
         fetchBills()
-    }, [])
+    }, [token])
 
     const filteredBills = filter === "all" ? bills : bills.filter((bill) => bill.status === filter)
 
@@ -57,7 +54,9 @@ export default function Payment() {
                     Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    _id: bill._id
+                    _id: bill._id,
+                    redirectUrl: "http://localhost:5173/payment",
+                    requestType: "payWithMethod"
                 })
             });
 
@@ -92,7 +91,7 @@ export default function Payment() {
 
             <Section
                 className="cs_page_heading cs_bg_filed cs_center"
-                backgroundImage="/assets/img/page_heading_bg.jpg"
+                backgroundImage="/assets/img/banner-doctors.png"
             >
                 <PageHeading data={headingData} />
             </Section>

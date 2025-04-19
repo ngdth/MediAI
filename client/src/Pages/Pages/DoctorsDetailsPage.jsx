@@ -112,7 +112,7 @@ const DoctorsDetailsPage = () => {
   }
 
   const headingData = {
-    title: doctorDetails.name || "Doctor Details",
+    title: doctorDetails.name || "Chi Tiết Bác Sĩ",
   };
 
   const teamData = {
@@ -165,7 +165,7 @@ const DoctorsDetailsPage = () => {
 
       <Section
         className={'cs_page_heading cs_bg_filed cs_center'}
-        backgroundImage="/assets/img/page_heading_bg.jpg"
+        backgroundImage="/assets/img/banner-doctors.png"
       >
         <PageHeading data={headingData} />
       </Section>

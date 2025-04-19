@@ -36,7 +36,7 @@ const DoctorsPage = () => {
   }, []);
 
   const headingData = {
-    title: 'Our Doctors',
+    title: 'CÁC BÁC SĨ',
   };
 
   // const appointmentSectionData = {

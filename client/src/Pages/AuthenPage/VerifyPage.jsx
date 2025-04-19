@@ -23,7 +23,7 @@ function VerifyPage() {
     };
 
     return (
-        <Container className="d-flex align-items-center justify-content-center min-vh-100">
+        <Container className="d-flex align-items-center justify-content-center min-vh-100 pt-5">
             <Row className=" justify-content-center">
                 <Col md={8}>
                     <Card className="shadow-lg text-center p-5" style={{ backgroundColor: "#F6F8FA", borderRadius: "10px"}}>
@@ -33,7 +33,7 @@ function VerifyPage() {
                                 alt="Email Verification"
                                 className="w-25 mx-auto mb-3"
                             />
-                            <h2 className="mb-4" style={{ fontSize: "38px" }}>Verify your account</h2>
+                            <h2 className="mb-4" style={{ fontSize: "38px" }}>Xác thực tài khoản</h2>
                             <VerifyForm />
                             <span
                                 onClick={handleChangeEmail}
@@ -42,7 +42,7 @@ function VerifyPage() {
                                 onMouseEnter={(e) => (e.target.style.textDecoration = "underline")}
                                 onMouseLeave={(e) => (e.target.style.textDecoration = "none")}
                             >
-                                Use another email
+                                Dùng email khác?
                             </span>
                         </Card.Body>
                     </Card>

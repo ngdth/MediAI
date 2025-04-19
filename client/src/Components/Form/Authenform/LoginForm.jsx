@@ -134,6 +134,10 @@ const LoginForm = ({ onLogin }) => {
                     Bạn chưa có tài khoản?{" "}
                     <Link to="/register" className="link-primary text-decoration-underline">
                         Đăng ký
+                    </Link>{" "}
+                    |{" "}
+                    <Link to="/" className="link-primary text-decoration-underline">
+                        Trang Chủ
                     </Link>
                 </p>
             </div>

@@ -71,6 +71,38 @@ const BillUpdate = () => {
         });
     };
 
+    const handleQRCode = async () => {
+        try {
+            const response = await fetch("http://localhost:8080/payment/create-payment", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    _id: bill._id,
+                    redirectUrl: "http://localhost:5173/pharmacy/bills",
+                    requestType: "captureWallet"
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to create payment");
+            }
+
+            const result = await response.json();
+            console.log("Payment API response:", result);
+
+            if (result.payUrl) {
+                window.location.href = "result.payUrl";
+            } else {
+                toast.success("Thanh toán thành công!");
+            }
+        } catch (error) {
+            console.error("Payment error:", error);
+            toast.error("Có lỗi xảy ra khi thanh toán!");
+        }
+    };
+
     // const handleCreateBill = async () => {
     //     try {
     //         const medicineFees = prescriptions.map((prescription, index) => {
@@ -274,6 +306,16 @@ const BillUpdate = () => {
                 <div className="h4 mt-4">
                     <strong>TỔNG:</strong> {totalPayment.toLocaleString()} VND
                 </div>
+            </div>
+
+            <div className="d-flex justify-content-end mt-4">
+                <Button
+                    variant="success"
+                    onClick={handleQRCode}
+                    disabled={!isPriceValid()}
+                >
+                    Thanh toán QR Code (MoMo)
+                </Button>
             </div>
 
             {/* Submit Button */}

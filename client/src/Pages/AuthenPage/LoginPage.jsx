@@ -11,7 +11,7 @@ function LoginPage() {
     };
 
     return (
-        <Container fluid className="my-5">
+        <Container fluid className="my-5" style={{padding: "100px"}}>
             <Row className="align-items-center d-flex justify-content-around">
                 <Col md={5} className="text-center">
                     <Image

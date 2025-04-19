@@ -75,12 +75,6 @@ const HeroSection = ({ data }) => {
                         </div>
                         <div className="cs_hero_btns">
                           <Button
-                            btnText={items.btnText1}
-                            variant={"cs_btn cs_style_1 cs_color_1"}
-                            btnIcons={<FaAnglesRight />}
-                            btnUrl={items.link}
-                          />
-                          <Button
                             btnText={items.btnText2}
                             variant={"cs_btn cs_style_1 cs_color_2"}
                             btnIcons={<FaAnglesRight />}

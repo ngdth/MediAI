@@ -72,8 +72,7 @@ const VerifyForm = () => {
     return (
         <>
             <p className="text-muted">
-                You've entered <strong>{unverifiedEmail || "your email"}</strong> as the email for your account. Please
-                check your email for OTP.
+                Bạn đã nhập <strong>{unverifiedEmail || "your email"}</strong> để làm email cho tài khoản của bạn. Vui lòng kiểm tra email của bạn!
             </p>
             {message && <Alert variant="danger">{message}</Alert>}
             <Form>
@@ -82,16 +81,16 @@ const VerifyForm = () => {
                         type="text"
                         value={otp}
                         onChange={(e) => setOtp(e.target.value)}
-                        placeholder="Enter OTP"
+                        placeholder="Nhập mã OTP"
                         className="text-center flex-grow-1"
                     />
                     <Button variant="link" className="ms-2" onClick={handleResendOTP} disabled={resendTimer > 0}>
-                        {resendTimer > 0 ? `Resend in ${resendTimer}s` : "Re-send OTP"}
+                        {resendTimer > 0 ? `Gửi lại sau ${resendTimer}s` : "Gửi lại mã OTP"}
                     </Button>
                 </Form.Group>
 
                 <Button variant="primary" className="w-100 mb-2" onClick={handleVerify} disabled={loading}>
-                    {loading ? "Verifying..." : "Verify your email"}
+                    {loading ? "Đang xác thực" : "Xác thực email"}
                 </Button>
             </Form>
         </>

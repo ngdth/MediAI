@@ -7,7 +7,7 @@ import Section from '../../Components/Section';
 import TeamSection from '../../Components/TeamSection';
 
 const headingData = {
-  title: 'About Page',
+  title: 'VỀ CHÚNG TÔI',
 };
 
 const aboutData = {
@@ -122,7 +122,7 @@ const AboutPage = () => {
 
       <Section
         className={'cs_page_heading cs_bg_filed cs_center'}
-        backgroundImage="/assets/img/banner_aboutus.jpg"
+        backgroundImage="/assets/img/banner-doctors.png"
       >
         <PageHeading data={headingData} />
       </Section>
