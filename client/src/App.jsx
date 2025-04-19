@@ -72,6 +72,7 @@ import MedicalHistory from "./Components/Doctor/MedicalHistory";
 import MedicalHistoryDetail from "./Components/Doctor/MedicalHistoryDetail";
 import FloatingMenu from './Components/FloatingMenu';
 import HODLayout from "./components/Layout/HODLayout";
+import DoctorAppointmentList from "./Pages/Doctor/HeadOfDepartment/DoctorAppointmentList";
 import BlogCreatePage from "./Components/BlogsSection/BlogCreatePage";
 import EditBlogPage from "./Components/BlogsSection/EditBlogPage";
 
@@ -174,6 +175,8 @@ function App() {
                     <Route path="/hod/manage-prescription/:appointmentId" element={<ManagePrescriptionsRecord />} />
                     <Route path="/hod/medical-history" element={<MedicalHistory />} />
                     <Route path="/hod/medical-history-detail/:appointmentId" element={<MedicalHistoryDetail />} />
+                    <Route path="/hod/specialization" element={<DoctorAppointmentList />} />
+                    <Route path="general-health/:appointmentId" element={<GeneralHealthKetchup />} />
                 </Route>
                 <Route path="/nurse" element={<NurseLayout />}>
                     <Route path="dashboard" element={<NurseDashboard />} />
