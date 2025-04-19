@@ -5,7 +5,7 @@ const DoctorDetailsSection = ({ data, onFavoriteToggle, favoriteStatus, onBookNo
   // Kiểm tra nếu data không có hoặc có giá trị rỗng
   const image = data?.imageUrl;
   const name = data?.username || '';
-  const subtitle = data?.subtitle || 'No subtitle available';
+  const subtitle = data?.bio || 'No subtitle available';
   const description = data?.description || [];
   const info = data?.info || [];
   const progressBars = data?.progressBars || [];
@@ -44,7 +44,6 @@ const DoctorDetailsSection = ({ data, onFavoriteToggle, favoriteStatus, onBookNo
                       <FaHeart />
                       {favoriteStatus ? "Đã thêm vào danh sách yêu thích" : "Thêm vào danh sách yêu thích"}
                     </button>
-                    {/* ✅ Nút Book Doctor Now */}
                     <Button variant="primary" onClick={onBookNow}>
                       Đặt lịch ngay
                     </Button>

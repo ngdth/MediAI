@@ -49,7 +49,7 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
 export const updateProfile = async (req: Request, res: Response): Promise<void> => {
     try {
         const userId = req.user.id; // Lấy user id từ request
-        const { username, email, firstName, lastName, birthday, gender, address, city, country, phone } = req.body;
+        const { username, email, firstName, lastName, birthday, gender, phone, address, city, country, bio } = req.body;
 
         // Cập nhật thông tin người dùng
         const updatedUser = await User.findByIdAndUpdate(
@@ -61,10 +61,11 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
                 lastName,
                 birthday,
                 gender,
+                phone,
                 address,
                 city,
                 country,
-                phone,
+                bio
             },
             { new: true } // Trả về user sau khi cập nhật
         );
