@@ -73,7 +73,7 @@ const TopBar = (isSidebarOpen) => {
                     </ul> */}
                         <ul>
                           <li>
-                            <Link to="/profile">Profile</Link>
+                            <Link to="/admin/profile">Profile</Link>
                           </li>
                           <li>
                             <Link

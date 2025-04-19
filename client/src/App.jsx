@@ -75,6 +75,7 @@ import HODLayout from "./components/Layout/HODLayout";
 import DoctorAppointmentList from "./Pages/Doctor/HeadOfDepartment/DoctorAppointmentList";
 import BlogCreatePage from "./Components/BlogsSection/BlogCreatePage";
 import EditBlogPage from "./Components/BlogsSection/EditBlogPage";
+import StaffProfile from "./pages/Pages/StaffProfile";
 
 function App() {
     Aos.init({
@@ -154,6 +155,7 @@ function App() {
                     <Route path="/admin/nurses" element={<NurseManagement />} />
                     <Route path="/admin/pharmacy" element={<PharmacyManagement />} />
                     <Route path="/admin/services" element={<ServiceManagement />} />
+                    <Route path="profile" element={<StaffProfile />} />
                 </Route>
                 <Route path="/doctor" element={<DoctorLayout />}>
                     <Route path="/doctor" element={<ManageAppointments />} />
@@ -164,6 +166,7 @@ function App() {
                     <Route path="/doctor/calendar" element={<ScheduleManagement />} />
                     <Route path="/doctor/medical-history" element={<MedicalHistory />} />
                     <Route path="/doctor/medical-history-detail/:appointmentId" element={<MedicalHistoryDetail />} />
+                    <Route path="/doctor/profile" element={<StaffProfile />} />
                     {/* <Route path="/doctor/appointment/assign/:appointmentId" element={<AssignDoctor />} /> */}
                 </Route>
                 <Route path="/hod" element={<HODLayout />}>
@@ -176,6 +179,7 @@ function App() {
                     <Route path="/hod/medical-history" element={<MedicalHistory />} />
                     <Route path="/hod/medical-history-detail/:appointmentId" element={<MedicalHistoryDetail />} />
                     <Route path="/hod/specialization" element={<DoctorAppointmentList />} />
+                    <Route path="/hod/profile" element={<StaffProfile />} />
                     <Route path="general-health/:appointmentId" element={<GeneralHealthKetchup />} />
                 </Route>
                 <Route path="/nurse" element={<NurseLayout />}>
@@ -184,6 +188,7 @@ function App() {
                     <Route path="assigned" element={<NurseAssigned />} />
                     <Route path="list" element={<NurseAppointmentList />} />
                     <Route path="general-health/:appointmentId" element={<GeneralHealthKetchup />} />
+                    <Route path="profile" element={<StaffProfile />} />
                 </Route>
                 <Route path="/pharmacy" element={<PharmacyLayout />}>
                     <Route path="dashboard" element={<PharmacyeDashboard />} />
@@ -191,6 +196,7 @@ function App() {
                     <Route path="bills" element={<AllBills />} />
                     <Route path="prescription/:appointmentId" element={<PrescriptionDetail />} />
                     <Route path="bill/:billId" element={<BillUpdate />} />
+                    <Route path="profile" element={<StaffProfile />} />
                 </Route>
             </Routes>
             <ScrollUpButton />
