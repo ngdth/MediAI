@@ -59,7 +59,7 @@ const FavoritesPage = () => {
                 <PageHeading data={headingData} />
                 <SectionHeading
                     SectionSubtitle="FAVORITES"
-                    SectionTitle="No Favorite Doctors Found"
+                    SectionTitle="Không tìm thấy bác sĩ yêu thích"
                     variant="text-center"
                 />
             </Section>
@@ -83,15 +83,15 @@ const FavoritesPage = () => {
             <Section topSpaceLg="70" topSpaceMd="110" bottomSpaceLg="80" bottomSpaceMd="120" className="cs_appointment">
                 <div className="container">
                     <div className="cs_appointment_form_wrapper">
-                        <SectionHeading SectionSubtitle="FAVORITES" SectionTitle="Your Favorite Doctors" variant="text-center" />
+                        <SectionHeading  SectionTitle  ="Danh sách bác sĩ yêu thích"     variant="text-center" />
                         <div className="cs_height_40 cs_height_lg_35" />
                         <div className="favorites-table">
                             <table className="table table-bordered text-center">
                                 <thead>
                                     <tr>
-                                        <th>Doctor</th>
-                                        <th>Specialization</th>
-                                        <th>Action</th>
+                                        <th>Bác sĩ </th>
+                                        <th>Chuyên khoa </th>
+                                        <th>Hoạt động </th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -101,10 +101,10 @@ const FavoritesPage = () => {
                                             <td>{doctor.specialization}</td>
                                             <td>
                                                 <button className="btn btn-primary btn-sm me-2" onClick={() => handleViewDetail(doctor._id)}>
-                                                    View Detail
+                                                   Xem chi tiết
                                                 </button>
-                                                <button className="btn btn-danger btn-sm" onClick={() => handleRemove(doctor._id)}>
-                                                    Remove
+                                                <button className="btn btn-danger btn-se" onClick={() => handleRemove(doctor._id)}>
+                                                   Xóa
                                                 </button>
                                             </td>
                                         </tr>

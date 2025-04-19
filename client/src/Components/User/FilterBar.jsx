@@ -8,19 +8,19 @@ export default function FilterBar({ activeFilter, onFilterChange }) {
           className={`filter-button ${activeFilter === "all" ? "active" : ""}`}
           onClick={() => onFilterChange("all")}
         >
-          All Bills
+         Tất cả hóa đơn
         </button>
         <button
           className={`filter-button ${activeFilter === "unpaid" ? "active" : ""}`}
           onClick={() => onFilterChange("unpaid")}
         >
-          Unpaid
+          Đã thanh toán 
         </button>
         <button
           className={`filter-button ${activeFilter === "paid" ? "active" : ""}`}
           onClick={() => onFilterChange("paid")}
         >
-          Paid
+         Chưa thanh toán 
         </button>
       </div>
     </div>

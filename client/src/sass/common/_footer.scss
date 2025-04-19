@@ -1,9 +1,6 @@
-/*--------------------------------------------------------------
-  8. Footer
-----------------------------------------------------------------*/
 .cs_footer {
   padding-top: 1px;
-  margin-top: 25px;
+  // margin-top: 25px;
 
   .cs_social_btns.cs_style_1 {
     margin-top: 50px;
@@ -23,7 +20,7 @@
 }
 
 .cs_footer_highlight_col {
-  padding: 60px 35px;
+  padding: 20px 35px;
   margin-top: -26px;
   border-radius: 5px 5px 0 0;
   @media (max-width: 1199px) {
@@ -32,9 +29,9 @@
 }
 
 .cs_footer_logo {
-  // padding-bottom: 30px;
-  // margin-bottom: 25px;
-  // border-bottom: 1px solid #fff;
+  max-width: 150px; /* Set max width for the logo to make it smaller */
+  width: 100%;
+  object-fit: contain; /* Ensure it scales appropriately */
 }
 
 .cs_footer_contact {
@@ -97,19 +94,19 @@
 
 .cs_footer_row {
   display: flex;
-  gap: 80px;
+  gap: 20px; /* Reduced gap for even distribution */
   @media (max-width: 1400px) {
-    gap: 40px;
+    gap: 20px;
   }
   @media (max-width: 1199px) {
-    gap: 40px 25px;
+    gap: 20px 15px; /* More compact layout */
   }
   @media (max-width: 991px) {
     flex-wrap: wrap;
-    gap: 0px 0px;
+    gap: 0;
   }
   @media (max-width: 767px) {
-    gap: 50px 0px;
+    gap: 50px 0;
     padding-bottom: 70px;
   }
 
