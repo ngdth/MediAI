@@ -105,7 +105,7 @@ const UserProfile = () => {
             });
     
             setUser((prevUser) => ({ ...prevUser, imageUrl: response.data.imageUrl }));
-            toast.success("Avatar updated successfully!");
+            toast.success("Tải lên ảnh đại diện thành công!");
         } catch (error) {
             toast.error("Failed to update avatar");
         }
