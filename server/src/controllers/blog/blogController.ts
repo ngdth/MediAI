@@ -229,8 +229,8 @@ export const getBlogById = async (req: Request, res: Response): Promise<void> =>
         const blog = await Blog.findById(req.params.blogId)
             .populate({ path: 'author', model: 'user', select: 'username' })
             .slice('comments', [skip, limit])
-            .populate({ path: 'comments.user', model: 'user', select: 'username' })
-            .populate({ path: 'comments.replies.user', model: 'user', select: 'username' });
+            .populate({ path: 'comments.user', model: 'user', select: 'username imageUrl' })
+            .populate({ path: 'comments.replies.user', model: 'user', select: 'username imageUrl' });
         if (!blog) {
             res.status(404).json({ message: 'Không tìm thấy blog' });
             return; // Kết thúc hàm tại đây

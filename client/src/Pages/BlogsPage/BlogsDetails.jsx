@@ -81,7 +81,7 @@ const BlogsDetails = () => {
         .slice(0, 3) // Giới hạn 3 bài viết
         .map(post => ({
           imgSrc: processImagePath(post.media?.[0]?.url) || '/assets/img/post_details_1.jpeg',
-          date: new Date(post.createdAt).toLocaleDateString('vi-VN', {
+          date: new Date(post.createdAt).toLocaleDateString('en-US', {
             day: 'numeric', month: 'numeric', year: 'numeric'
           }),
           title: post.title,
@@ -117,67 +117,170 @@ const BlogsDetails = () => {
   }, [blogId]);
 
   // Xử lý thêm bình luận
-  // const handleAddComment = async (commentText) => {
-  //   try {
-  //     const token = localStorage.getItem('token');
-  //     await axios.post(
-  //       `http://localhost:8080/blog/${blogId}/comments`,
-  //       { text: commentText },
-  //       { headers: { Authorization: `Bearer ${token}` } }
-  //     );
-  //     // Cập nhật lại dữ liệu blog sau khi thêm bình luận
-  //     fetchBlogDetails();
-  //   } catch (error) {
-  //     console.error('Error adding comment:', error);
-  //     throw error;
-  //   }
-  // };
+  const handleAddComment = async (commentText) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        `http://localhost:8080/blog/${blogId}/comments`,
+        { content: commentText }, // Sử dụng 'content' thay vì 'text'
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const currentUser = JSON.parse(localStorage.getItem('user')) || {};
 
-  // Xử lý trả lời bình luận
-  // const handleReplyComment = async (commentId, replyText) => {
-  //   try {
-  //     const token = localStorage.getItem('token');
-  //     await axios.post(
-  //       `http://localhost:8080/blog/${blogId}/comments/${commentId}/reply`,
-  //       { text: replyText },
-  //       { headers: { Authorization: `Bearer ${token}` } }
-  //     );
-  //     fetchBlogDetails();
-  //   } catch (error) {
-  //     console.error('Error replying to comment:', error);
-  //     throw error;
-  //   }
-  // };
+      const newComment = {
+        ...response.data,
+        user: {
+          ...response.data.user,
+          avatar: response.data.user?.avatar || currentUser.avatar,
+          username: response.data.user?.username || currentUser.username || 'Tôi'
+        }
+      };
+
+      // fetchBlogDetails();
+      setBlog(prev => ({
+        ...prev,
+        comments: [...prev.comments, newComment]
+      }));
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      throw error;
+    }
+  };
+
 
   // Xử lý thích bình luận
-  // const handleLikeComment = async (commentId) => {
-  //   try {
-  //     const token = localStorage.getItem('token');
-  //     await axios.post(
-  //       `http://localhost:8080/blog/${blogId}/comments/${commentId}/like`,
-  //       {},
-  //       { headers: { Authorization: `Bearer ${token}` } }
-  //     );
-  //     fetchBlogDetails();
-  //   } catch (error) {
-  //     console.error('Error liking comment:', error);
-  //   }
-  // };
+  const handleLikeComment = async (commentId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(
+        `http://localhost:8080/blog/${blogId}/comments/${commentId}/like`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      // fetchBlogDetails();
+      updateCommentState(response.data.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error liking comment:', error);
+    }
+  };
 
   // Xử lý bỏ thích bình luận
-  // const handleUnlikeComment = async (commentId) => {
-  //   try {
-  //     const token = localStorage.getItem('token');
-  //     await axios.post(
-  //       `http://localhost:8080/blog/${blogId}/comments/${commentId}/unlike`,
-  //       {},
-  //       { headers: { Authorization: `Bearer ${token}` } }
-  //     );
-  //     fetchBlogDetails();
-  //   } catch (error) {
-  //     console.error('Error unliking comment:', error);
-  //   }
-  // };
+  const handleUnlikeComment = async (commentId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(
+        `http://localhost:8080/blog/${blogId}/comments/${commentId}/unlike`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      // fetchBlogDetails();
+      updateCommentState(response.data.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error unliking comment:', error);
+    }
+  };
+
+  // Xử lý trả lời bình luận
+  const handleReplyComment = async (commentId, replyText) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        `http://localhost:8080/blog/${blogId}/comments/${commentId}/replies`,
+        { content: replyText },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      // fetchBlogDetails();
+      setBlog(prev => {
+        const newComments = prev.comments.map(comment => {
+          if (comment._id === commentId) {
+            return {
+              ...comment,
+              replies: [...comment.replies, response.data]
+            };
+          }
+          return comment;
+        });
+        return { ...prev, comments: newComments };
+      });
+    } catch (error) {
+      console.error('Error replying to comment:', error);
+      throw error;
+    }
+  };
+
+  const updateCommentState = (updatedComment) => {
+    setBlog(prev => {
+      const newComments = prev.comments.map(comment => {
+        if (comment._id === updatedComment._id) {
+          return {
+            ...updatedComment,
+            user: comment.user,
+            replies: updatedComment.replies?.map((updatedReply, index) => {
+              // Giữ lại user data cho mỗi reply
+              const oldReply = comment.replies[index];
+              return oldReply ? {
+                ...updatedReply,
+                user: oldReply.user // Giữ lại user data từ reply cũ
+              } : updatedReply;
+            }) || [],
+            likes: updatedComment.likes,
+            unlikes: updatedComment.unlikes,
+          };
+        }
+        return comment;
+      }
+      );
+      return { ...prev, comments: newComments };
+    });
+  };
+
+  const handleLikeReply = async (commentId, replyId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(
+        `http://localhost:8080/blog/${blogId}/comments/${commentId}/replies/${replyId}/like`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      updateReplyState(commentId, replyId, response.data.data);
+    } catch (error) {
+      console.error('Error liking reply:', error);
+    }
+  };
+
+  const handleUnlikeReply = async (commentId, replyId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(
+        `http://localhost:8080/blog/${blogId}/comments/${commentId}/replies/${replyId}/unlike`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      updateReplyState(commentId, replyId, response.data.data);
+    } catch (error) {
+      console.error('Error unliking reply:', error);
+    }
+  };
+
+  // Hàm cập nhật state cho reply
+  const updateReplyState = (commentId, replyId, updatedReply) => {
+    setBlog(prev => ({
+      ...prev,
+      comments: prev.comments.map(comment => {
+        if (comment._id === commentId) {
+          return {
+            ...comment,
+            replies: comment.replies.map(reply =>
+              reply._id === replyId ? { ...reply, ...updatedReply } : reply
+            )
+          };
+        }
+        return comment;
+      })
+    }));
+  };
 
   // Định dạng dữ liệu cho BlogsLeft
   const formatLeftSideData = () => {
@@ -188,7 +291,7 @@ const BlogsDetails = () => {
       imageSrc: processImagePath(blog.media?.[0]?.url) || '/assets/img/post_details_1.jpeg',
       imageAlt: blog.title,
       text: blog.specialization || 'GENERAL',
-      secText: new Date(blog.createdAt).toLocaleDateString('vi-VN', {
+      secText: new Date(blog.createdAt).toLocaleDateString('en-US', {
         day: 'numeric', month: 'numeric', year: 'numeric'
       }),
       thirdSecTitle: blog.title,
@@ -220,28 +323,30 @@ const BlogsDetails = () => {
       commentTitle: `Bình luận (${blog.comments?.length || 0})`,
       comments: blog.comments?.map(comment => ({
         id: comment._id,
-        avatarSrc: comment.user?.avatar || '/assets/img/avatar_2.png',
+        avatarSrc: comment.user?.avatar || comment.user?.imageUrl || '/assets/img/avatar_2.png',
         avatarAlt: 'Avatar',
         name: comment.user?.username || 'Anonymous',
-        text: comment.text,
-        date: new Date(comment.createdAt).toLocaleDateString('en-US', {
-          day: 'numeric', month: 'numeric', year: 'numeric'
+        text: comment.content,
+        date: new Date(comment.createdAt).toLocaleDateString('vi-VN', {
+          day: 'numeric', month: 'numeric', year: 'numeric',
         }),
         time: new Date(comment.createdAt).toLocaleTimeString('en-US', {
-          hour: '2-digit', minute: '2-digit'
+          hour: '2-digit', minute: '2-digit',
         }),
-        replay: 'Reply',
+        replay: 'Trả lời',
         link: '/',
         likes: comment.likes?.length || 0,
         unlikes: comment.unlikes?.length || 0,
         replies: comment.replies?.map(reply => ({
           id: reply._id,
-          avatarSrc: reply.user?.avatar || '/assets/img/avatar_3.png',
+          avatarSrc: reply.user?.imageUrl || '/assets/img/avatar_3.png',
           avatarAlt: 'Avatar',
           name: reply.user?.username || 'Anonymous',
-          text: reply.text,
-          date: new Date(reply.createdAt).toLocaleDateString('en-US', {
-            month: 'long', day: 'numeric', year: 'numeric'
+          text: reply.content,
+          likes: reply.likes?.length || 0,
+          unlikes: reply.unlikes?.length || 0,
+          date: new Date(reply.createdAt).toLocaleDateString('vi-VN', {
+            day: 'numeric', month: 'numeric', year: 'numeric'
           }),
           time: new Date(reply.createdAt).toLocaleTimeString('en-US', {
             hour: '2-digit', minute: '2-digit'
@@ -263,6 +368,7 @@ const BlogsDetails = () => {
         subtitle: 'Khám phá những thông tin mới nhất về chăm sóc sức khỏe',
         link: '/blog',
       },
+      commentCount: blog?.comments?.length || 0,
       recentPosts: recentPosts,
       categories: specializations,
     };
@@ -321,11 +427,14 @@ const BlogsDetails = () => {
                   key={blogId}
                   data={leftSideData}
                   blogId={blogId}
-                  // onAddComment={handleAddComment}
-                  // onReplyComment={handleReplyComment}
-                  // onLikeComment={handleLikeComment}
-                  // onUnlikeComment={handleUnlikeComment}
+                  setBlog={setBlog}
+                  onAddComment={handleAddComment}
+                  onReplyComment={handleReplyComment}
+                  onLikeComment={handleLikeComment}
+                  onUnlikeComment={handleUnlikeComment}
                   onRefresh={fetchBlogDetails}
+                  onLikeReply={handleLikeReply}
+                  onUnlikeReply={handleUnlikeReply}
                 />
               </div>
               <div className="col-lg-4">

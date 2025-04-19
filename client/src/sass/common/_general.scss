@@ -60,7 +60,7 @@
   margin-left: -15px;
   margin-right: -15px;
 
-  > * {
+  >* {
     padding-left: 15px;
     padding-right: 15px;
   }
@@ -833,6 +833,7 @@ label {
       @media (max-width: 1400px) {
         width: 45%;
       }
+
       @media (max-width: 1199px) {
         width: 50%;
       }
@@ -1095,18 +1096,14 @@ label {
 
     .cs_play_btn_text {
       background-repeat: no-repeat;
-      background-image: -webkit-gradient(
-        linear,
-        left top,
-        right top,
-        color-stop(0, currentColor),
-        to(currentColor)
-      );
-      background-image: linear-gradient(
-        90deg,
-        currentColor 0,
-        currentColor 100%
-      );
+      background-image: -webkit-gradient(linear,
+          left top,
+          right top,
+          color-stop(0, currentColor),
+          to(currentColor));
+      background-image: linear-gradient(90deg,
+          currentColor 0,
+          currentColor 100%);
       transition: background-size 0.42s cubic-bezier(0.49, 0.49, 0.08, 1),
         color 0.27s ease-out;
       background-position: 100% calc(100% - 0px);
@@ -1147,6 +1144,7 @@ label {
     .cs_about_thumb {
       margin: 0 0 0 -125px;
       padding-bottom: 0;
+
       @media (max-width: 991px) {
         margin-left: 0;
       }
@@ -1198,6 +1196,7 @@ label {
       display: flex;
       gap: 25px;
       margin-bottom: 45px;
+
       @media (max-width: 470px) {
         flex-direction: column;
       }
@@ -1230,6 +1229,7 @@ label {
       flex-wrap: wrap;
       gap: 20px 75px;
       margin-top: 50px;
+
       @media (max-width: 470p) {
         gap: 20px 30px;
       }
@@ -1682,6 +1682,7 @@ label {
 .cs_page_heading {
   height: 610px;
   padding: 130px 0 50px;
+
   @media (max-width: 991px) {
     height: 420px;
   }
@@ -1698,6 +1699,7 @@ label {
   .cs_page_title {
     font-size:50px;
     margin-bottom: 12px;
+
     @media (max-width: 991px) {
       font-size: 48px;
     }
@@ -1737,12 +1739,15 @@ label {
     border-radius: 5px;
   }
 }
+
 .cs_tab {
   display: block;
+
   &.active {
     display: none;
   }
 }
+
 .cs_tab_links.cs_style_3 {
   display: flex;
   flex-wrap: wrap;
@@ -1751,6 +1756,7 @@ label {
   gap: 10px 10px;
   margin-top: 25px;
   color: var(--heading-color);
+
   li {
     &.active {
       a {
@@ -1758,6 +1764,7 @@ label {
         background-color: var(--accent-color);
       }
     }
+
     a {
       padding: 4px 12px;
     }
@@ -1785,6 +1792,7 @@ i {
   color: var(--accent-color);
   box-shadow: 0px 1px 5px 1px rgba(0, 0, 0, 0.2);
   border-radius: 50%;
+
   &:hover {
     background-color: var(--accent-color);
     color: var(--white);
@@ -1794,12 +1802,61 @@ i {
 .cs_scrollup.cs_scrollup_show {
   bottom: 30px;
 }
+
 .rr--off .rr--svg {
   fill: transparent;
 }
+
 .rr--on .rr--svg {
   fill: var(--rr--stroke-on-color, currentColor);
 }
+
 .rr--group {
   pointer-events: none;
+}
+
+.cs_btn.cs_style_12 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  font-size: 17px;
+  font-weight: 500;
+  // padding: 11px 28px;
+  line-height: 1.6em;
+  gap: 8px;
+  line-height: 1.6em;
+  border-radius: 1.6em;
+
+  i {
+    font-size: 15px;
+  }
+
+  &.cs_color_1 {
+    background-color: var(--accent-color);
+    color: #fff;
+
+    &:hover {
+      background-color: var(--blue-color);
+    }
+  }
+
+  &.cs_color_2 {
+    background-color: var(--blue-color);
+    color: #fff;
+
+    &:hover {
+      background-color: var(--accent-color);
+    }
+  }
+
+  &.cs_color_3 {
+    background-color: #fff;
+    color: var(--blue-color);
+
+    &:hover {
+      background-color: var(--accent-color);
+      color: #fff;
+    }
+  }
 }

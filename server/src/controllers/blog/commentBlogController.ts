@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import Blog from '../../models/Blog';
 import { JwtPayload } from '../../middlewares/authMiddleware';
 import mongoose, { Types } from 'mongoose';
@@ -8,7 +8,7 @@ const getUserId = (req: Request): Types.ObjectId =>
     new Types.ObjectId((req.user as JwtPayload).id);
 
 // Thêm comment mới
-export const addComment = async (req: Request, res: Response) => {
+export const addComment = async (req: Request, res: Response): Promise<void> => {
     try {
         const blog = await Blog.findByIdAndUpdate(
             req.params.blogId,
@@ -24,16 +24,22 @@ export const addComment = async (req: Request, res: Response) => {
                 }
             },
             { new: true, runValidators: true }
-        ).populate('comments.user', 'username avatar');
+        ).populate({
+            path: 'comments.user',
+            select: 'username imageUrl', // Sửa 'avatar' -> 'imageUrl'
+            model: 'user'
+        });
 
         res.status(201).json(blog?.comments.slice(-1)[0]);
+        return;
     } catch (error) {
         res.status(500).json({ message: 'Lỗi thêm comment', error });
+        return;
     }
 };
 
 // Thêm reply
-export const addReply = async (req: Request, res: Response) => {
+export const addReply = async (req: Request, res: Response): Promise<void> => {
     try {
         const blog = await Blog.findOneAndUpdate(
             {
@@ -51,15 +57,21 @@ export const addReply = async (req: Request, res: Response) => {
                 }
             },
             { new: true }
-        );
+        ).populate({
+            path: 'comments.replies.user',
+            select: 'username imageUrl',
+            model: 'user'
+        });
 
         const reply = blog?.comments
             .id(req.params.commentId)
             ?.replies.slice(-1)[0];
 
         res.status(201).json(reply);
+        return;
     } catch (error) {
         res.status(500).json({ message: 'Lỗi thêm reply', error });
+        return;
     }
 };
 
@@ -67,37 +79,96 @@ export const addReply = async (req: Request, res: Response) => {
 const handleReaction = async (
     req: Request,
     res: Response,
-    field: 'likes' | 'unlikes'
-) => {
+    next: NextFunction,
+    field: 'likes' | 'unlikes',
+    isReply: boolean = false
+): Promise<void> => {
     try {
         const userId = getUserId(req);
-        const update = {
-            $addToSet: { [`comments.$.${field}`]: userId },
-            $pull: {
-                [`comments.$.${field === 'likes' ? 'unlikes' : 'likes'}`]: userId
-            }
+        const { blogId, commentId, replyId } = req.params;
+
+        // Validate ObjectIds
+        if (!mongoose.Types.ObjectId.isValid(blogId) ||
+            !mongoose.Types.ObjectId.isValid(commentId) ||
+            (isReply && !mongoose.Types.ObjectId.isValid(replyId))) {
+            res.status(400).json({ message: 'ID không hợp lệ' });
+            return;
+        }
+
+        // 1. Cấu hình path và arrayFilters động
+        const basePath = isReply
+            ? 'comments.$[comment].replies.$[reply]'
+            : 'comments.$[comment]';
+
+        // Check if the user has already reacted
+        const blog = await Blog.findById(blogId);
+        const target = isReply
+            ? blog?.comments.id(commentId)?.replies.id(replyId)
+            : blog?.comments.id(commentId);
+
+        if (!target) {
+            res.status(404).json({ message: 'Không tìm thấy đối tượng' });
+            return;
+        }
+
+        const hasReacted = target[field].includes(userId);
+        const oppositeField = field === 'likes' ? 'unlikes' : 'likes';
+
+        const arrayFilters: any[] = [{ 'comment._id': commentId }];
+        if (isReply) arrayFilters.push({ 'reply._id': replyId });
+
+        const updateOperation = {
+            [hasReacted ? '$pull' : '$addToSet']: { [`${basePath}.${field}`]: userId },
+            ...(!hasReacted && {
+                $pull: { [`${basePath}.${oppositeField}`]: userId }
+            })
         };
 
-        const blog = await Blog.findOneAndUpdate(
+        // Thực hiện update
+        const updatedBlog = await Blog.findOneAndUpdate(
+            { _id: blogId },
+            updateOperation,
             {
-                _id: req.params.blogId,
-                'comments._id': req.params.commentId
-            },
-            update,
-            { new: true }
-        );
+                new: true,
+                arrayFilters,
+                session: await mongoose.startSession() // Sử dụng transaction
+            }
+        ).populate({
+            path: 'comments.user comments.replies.user',
+            select: 'username imageUrl',
+            model: 'user'
+        });
 
-        res.json(blog?.comments.id(req.params.commentId));
+        // Xử lý kết quả
+        const updatedTarget = isReply
+            ? updatedBlog?.comments.id(commentId)?.replies.id(replyId)
+            : updatedBlog?.comments.id(commentId);
+
+        if (!updatedTarget) {
+            res.status(404).json({ message: 'Không tìm thấy đối tượng' });
+            return;
+        }
+
+        res.status(200).json({
+            success: true,
+            data: updatedTarget
+        });
     } catch (error) {
         res.status(500).json({ message: 'Lỗi xử lý reaction', error });
     }
 };
 
-export const likeComment = (req: Request, res: Response) =>
-    handleReaction(req, res, 'likes');
+export const likeComment = (req: Request, res: Response, next: NextFunction) =>
+    handleReaction(req, res, next, 'likes');
 
-export const unlikeComment = (req: Request, res: Response) =>
-    handleReaction(req, res, 'unlikes');
+export const unlikeComment = (req: Request, res: Response, next: NextFunction) =>
+    handleReaction(req, res, next, 'unlikes');
+
+export const likeReply = (req: Request, res: Response, next: NextFunction) =>
+    handleReaction(req, res, next, 'likes', true);
+
+export const unlikeReply = (req: Request, res: Response, next: NextFunction) =>
+    handleReaction(req, res, next, 'unlikes', true);
 
 export const reportComment = async (req: Request, res: Response): Promise<void> => {
     try {
