@@ -21,8 +21,8 @@ export const sendEmail = async (email: string, data: any, type: string) => {
             mailOptions = {
                 from: `"AMMA" <${process.env.EMAIL_USER}>`,
                 to: email,
-                subject: "Verification Code",
-                text: `Your verification code is: ${data.code}`,
+                subject: "Mã xác minh",
+                text: `Mã xác minh của bạn là: ${data.code}`,
             };
             break;
 

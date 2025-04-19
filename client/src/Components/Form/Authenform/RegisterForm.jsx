@@ -139,7 +139,7 @@ const RegisterForm = ({ onRegistering }) => {
                                 style={{ border: "none", outline: "none" }}
                                 disabled={loading}
                             >
-                                {loading ? "Sending OPT..." : "Create new account"}
+                                {loading ? "Sending OPT..." : "Đăng ký"}
                             </Button>
                         </div>
 

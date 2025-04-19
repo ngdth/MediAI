@@ -16,7 +16,7 @@ const contactData = {
   iconBox: {
     style: 'cs_style_4',
     icon: 'assets/img/icons/call_icon_1.png',
-    title: 'Cuộc gọi khẩn cấp',
+    title: 'Cuộc gọi khẩn cấp  0967 392 294',
     subtitle: 'Hỗ trợ 24/7 – Tận tâm và nhanh chóng',
   },
 };

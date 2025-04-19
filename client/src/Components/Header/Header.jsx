@@ -130,7 +130,7 @@ const Header = ({ isTopBar, variant }) => {
         {isTopBar && (
           <div className="cs_top_header cs_blue_bg cs_white_color">
             <div className="container">
-              <div className="cs_top_header_in">
+              {/* <div className="cs_top_header_in">
                 <div className="cs_top_header_left">
                   <ul className="cs_header_contact_list cs_mp_0">
                     <li>
@@ -171,7 +171,7 @@ const Header = ({ isTopBar, variant }) => {
                     </Link>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         )}
@@ -243,7 +243,7 @@ const Header = ({ isTopBar, variant }) => {
                     ))}
                     {/* Hiển thị username nếu đã đăng nhập */}
                     <li className="menu-item-has-children">
-                      <Link to="/">{username || "Account"}</Link>
+                      <Link to="/">{username || "Tài khoản"}</Link>
                       <ul>
                         {accountMenu.map((subItem, subIndex) => (
                           <li key={subIndex}>

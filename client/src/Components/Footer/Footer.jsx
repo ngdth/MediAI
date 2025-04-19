@@ -16,11 +16,11 @@ const data = {
   contact: [
     {
       icon: 'fa-regular fa-clock',
-      text: 'Open Hours of Government: <br /> Mon - Fri: 8.00 am. - 6.00 pm.',
+      text: 'Giờ làm việc: <br /> Thứ Hai - Thứ Sáu: 8.00 sáng - 6.00 chiều.',
     },
     {
       icon: 'fa-solid fa-location-dot',
-      text: '13/A, Miranda Halim City.',
+      text: 'Khu đô thị FPT City,',
     },
     {
       icon: 'fa-solid fa-phone',
@@ -83,32 +83,23 @@ const Footer = () => {
     backgroundImage: '/assets/img/footer_bg.jpg',
     logo: '/assets/img/footer_logo.png',
     contactText:
-      'Open Hours of Government: <br /> Mon - Fri: 8.00 am. - 6.00 pm.',
-    contactText2: '13/A, Miranda Halim City.',
+      'Giờ làm việc: <br /> Thứ hai - Thứ sáu: 8.00 sáng. - 6.00 tối.',
+    contactText2: 'Khu đô thị FPT City, Ngũ Hành Sơn, Đà Nẵng.',
     contactText3: '099 695 695 35',
     facebookHref: '/',
     pinterestHref: '/',
     twitterHref: '/',
     instagramHref: '/',
     widgets: [
+     
       {
-        title: 'Service',
+        title: 'Liên kết nhanh',
         links: [
-          { href: '/service/service-details', text: 'Plastic Surgery' },
-          { href: '/service/service-details', text: 'Pharmacology' },
-          { href: '/service/service-details', text: 'Dental Care' },
-          { href: '/service/service-details', text: 'Dental Care' },
-          { href: '/service/service-details', text: 'Orthopedic' },
-        ],
-      },
-      {
-        title: 'Quick Link',
-        links: [
-          { href: '/', text: 'Home' },
-          { href: '/about', text: 'About Us' },
-          { href: '/service', text: 'Our Services' },
-          { href: '/portfolio', text: 'Our Portfolio' },
-          { href: '/contact', text: 'Contact' },
+          { href: '/', text: 'Trang chủ' },
+          { href: '/about', text: 'Về chúng tôi' },
+          { href: '/doctors', text: 'Bác sĩ' },
+          { href: '/portfolio', text: 'Blog' },
+          { href: '/contact', text: 'Liên hệ' },
         ],
       },
     ],

@@ -73,8 +73,8 @@ const DoctorsPage = () => {
   }, {});
 
   const appointmentSectionData = {
-    subtitle: 'OUR TEAM MEMBER',
-    title: 'Meet Our Specialist This<br> Doctor Meeting',
+    subtitle: 'TẤT CẢ CÁC BÁC SĨ',
+    // title: 'Meet Our Specialist This<br> Doctor Meeting',
     groupedDoctors,
   };
 

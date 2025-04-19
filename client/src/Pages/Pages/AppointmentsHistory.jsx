@@ -237,14 +237,14 @@ const AppointmentsHistory = () => {
                                 className="btn btn-primary btn-sm me-2"
                                 onClick={() => handleView(appointment._id)}
                               >
-                                View
+                                Xem
                               </button>
                               {canCancel(appointment.status) && (
                                 <button
                                   className="btn btn-danger btn-sm"
                                   onClick={() => handleCancel(appointment._id)}
                                 >
-                                  Cancel
+                                  Hủy
                                 </button>
                               )}
                             </td>

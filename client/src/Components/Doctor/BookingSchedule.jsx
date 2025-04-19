@@ -48,7 +48,7 @@ export default function BookingSchedule({ doctorId, selectedDay, setSelectedDay,
 
   const getDaysOfWeek = () => {
     const days = [];
-    const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const dayNames = ["CN", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "thứ 6", "Thứ 7"];
     const today = new Date(); // Lấy ngày hiện tại
 
     for (let i = 0; i < 7; i++) {

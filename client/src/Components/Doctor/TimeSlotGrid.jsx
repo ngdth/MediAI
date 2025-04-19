@@ -13,7 +13,7 @@ function TimeSlotGrid({ dates, selectedSlots, onToggleTimeSlot }) {
       <div className="time-slot-grid">
         {/* Header row with dates */}
         <div className="grid-header">
-          <div className="time-label-header fw-bold">Thơi gian</div>
+          <div className="time-label-header fw-bold">Thời gian</div>
           {dates.map((date, index) => (
             <div key={index} className="date-header">
               <div className="day-name">{getDayName(date)}</div>
@@ -49,7 +49,7 @@ function TimeSlotGrid({ dates, selectedSlots, onToggleTimeSlot }) {
                     role="button"
                     tabIndex={0}
                   >
-                    {isSelected && <span className="available-text">Available</span>}
+                    {isSelected && <span className="available-text">Đã chọn</span>}
                   </div>
                 )
               })}

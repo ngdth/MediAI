@@ -88,7 +88,7 @@ const LoginForm = ({ onLogin }) => {
 
             <div className="d-flex flex-row align-items-center justify-content-center">
                 <button className="btn btn-outline-danger d-flex align-items-center" type="button" onClick={handleGoogleLogin}>
-                    <FaGoogle className="me-2" /> Sign in with Google
+                    <FaGoogle className="me-2" /> Đăng nhập với Google
                 </button>
             </div>
 
