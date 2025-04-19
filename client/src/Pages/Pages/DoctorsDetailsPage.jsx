@@ -178,7 +178,7 @@ const DoctorsDetailsPage = () => {
           onBookNow={() => setShowBookingForm(true)}
         />
       </Section>
-      {/* ✅ Popup BookingForm */}
+
       <BookingForm
         show={showBookingForm}
         doctorId={doctorId}
@@ -204,9 +204,6 @@ const DoctorsDetailsPage = () => {
           </div>
         </div>
       )}
-      {/* <Section topSpaceLg="80" topSpaceMd="110">
-        <BookingCalendar doctorId={doctorId} token={token} />
-      </Section> */}
 
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
     </>

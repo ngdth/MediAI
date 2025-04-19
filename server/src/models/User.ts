@@ -9,11 +9,12 @@ export interface IUser extends Document {
   imageUrl?: string;
   googleId?: string;
   birthday: Date;
-  phone: string;
   gender: 'Nam' | 'Nữ';
+  phone: string;
   address: string;
   city: string;
   country: string;
+  bio: string;
   role: "admin" | "user" | "doctor" | "nurse" | "pharmacy" | "head of department";
   verified: boolean;
   active: boolean;
@@ -54,11 +55,12 @@ const UserSchema: Schema = new Schema(
     firstName: { type: String },
     lastName: { type: String },
     birthday: { type: Date },
-    phone: { type: String },
     gender: { type: String, enum: ['Nam', 'Nữ'] },
+    phone: { type: String },
     address: { type: String },
     city: { type: String },
     country: { type: String },
+    bio: { type: String },
   },
   { timestamps: true, discriminatorKey: 'role' }
 );
