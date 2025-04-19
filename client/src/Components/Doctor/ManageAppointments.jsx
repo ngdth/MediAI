@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import RejectModal from "../Nurse/RejectModal";
+import { FaSearch } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 
 const ManageAppointment = () => {
@@ -13,6 +14,8 @@ const ManageAppointment = () => {
     const [showRejectModal, setShowRejectModal] = useState(false);
     const [rejectReason, setRejectReason] = useState("");
     const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+    const [filteredAppointments, setFilteredAppointments] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
     const token = localStorage.getItem("token");
 
     useEffect(() => {
@@ -54,17 +57,44 @@ const ManageAppointment = () => {
                 });
 
                 setAppointments(filteredAppointments);
+                setFilteredAppointments(filteredAppointments);
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching appointments:", error);
                 alert(error.response?.data?.message || "Có lỗi xảy ra khi lấy danh sách lịch hẹn.");
                 setAppointments([]);
+                setFilteredAppointments([]);
                 setLoading(false);
             }
         };
 
         fetchAppointments();
     }, [doctorId, token]);
+
+    const handleSearch = (e) => {
+        const term = e.target.value.toLowerCase();
+        setSearchTerm(term);
+
+        if (!term) {
+            setFilteredAppointments(appointments);
+            return;
+        }
+
+        const filtered = appointments.filter((item) => {
+            const appointment = item.appointment;
+
+            const idMatch = appointment._id?.toLowerCase().includes(term);
+            const patientMatch = appointment.patientName?.toLowerCase().includes(term);
+            const symptomsMatch = appointment.symptoms?.toLowerCase().includes(term);
+            const timeMatch = `${new Date(appointment.date)
+                .toLocaleDateString("vi-VN")
+                .toLowerCase()} ${appointment.time?.toLowerCase()}`.includes(term);
+
+            return idMatch || patientMatch || symptomsMatch || timeMatch;
+        });
+
+        setFilteredAppointments(filtered);
+    };
 
     const handleSort = (key) => {
         let direction = "asc";
@@ -82,6 +112,12 @@ const ManageAppointment = () => {
             const appointmentA = a.appointment;
             const appointmentB = b.appointment;
 
+            if (sortConfig.key === "id") {
+                return sortConfig.direction === "asc"
+                    ? appointmentA._id.localeCompare(appointmentB._id)
+                    : appointmentB._id.localeCompare(appointmentA._id);
+            }
+
             if (sortConfig.key === "patientName") {
                 return sortConfig.direction === "asc"
                     ? appointmentA.patientName.localeCompare(appointmentB.patientName)
@@ -94,24 +130,26 @@ const ManageAppointment = () => {
                     : appointmentB.symptoms.localeCompare(appointmentA.symptoms);
             }
 
-            if (sortConfig.key === "date") {
-                const aDate = new Date(appointmentA.date);
-                const bDate = new Date(appointmentB.date);
+            if (sortConfig.key === "time") {
+                const aDateOnly = new Date(appointmentA.date).toISOString().split("T")[0];
+                const bDateOnly = new Date(appointmentB.date).toISOString().split("T")[0];
+                const aDateTime = new Date(`${aDateOnly}T${appointmentA.time}:00`);
+                const bDateTime = new Date(`${bDateOnly}T${appointmentB.time}:00`);
 
-                if (isNaN(aDate.getTime()) || isNaN(bDate.getTime())) {
-                    console.error("Invalid date format:", aDate, bDate);
+                if (isNaN(aDateTime.getTime()) || isNaN(bDateTime.getTime())) {
+                    console.error("Invalid date format:", aDateTime, bDateTime);
                     return 0;
                 }
 
                 return sortConfig.direction === "asc"
-                    ? aDate - bDate
-                    : bDate - aDate;
+                    ? aDateTime - bDateTime
+                    : bDateTime - aDateTime;
             }
 
             return 0;
         });
         return sortableAppointments;
-    }, [appointments, sortConfig]);
+    }, [filteredAppointments, sortConfig]);
 
     const handleReject = (appointment) => {
         const appointmentDate = new Date(appointment.date);
@@ -155,7 +193,10 @@ const ManageAppointment = () => {
 
             // Cập nhật danh sách lịch hẹn sau khi từ chối thành công
             setAppointments((prevAppointments) =>
-                prevAppointments.filter((appt) => appt._id !== selectedAppointmentId)
+                prevAppointments.filter((appt) => appt.appointment._id !== selectedAppointmentId)
+            );
+            setFilteredAppointments((prevFiltered) =>
+                prevFiltered.filter((appt) => appt.appointment._id !== selectedAppointmentId)
             );
 
             toast.success("Reject cuộc hẹn thành công!");
@@ -167,13 +208,36 @@ const ManageAppointment = () => {
 
     return (
         <div className="container">
-            <h2 className="text-center">Danh sách lịch hẹn</h2>
+            <h2>Danh sách lịch hẹn</h2>
+
+            <div className="search-bar">
+                <div className="search-container">
+                    <input
+                        type="text"
+                        placeholder="Tìm kiếm theo ID, bệnh nhân, triệu chứng, hoặc thời gian..."
+                        value={searchTerm}
+                        onChange={handleSearch}
+                    />
+                    <FaSearch className="search-icon" />
+                </div>
+            </div>
+
             {loading ? (
                 <p>Đang tải...</p>
             ) : (
                 <table className="table table-bordered text-center">
                     <thead>
                         <tr>
+                        <th>
+                                <span
+                                    onClick={() => handleSort("id")}
+                                    style={{ cursor: "pointer" }}
+                                >
+                                    ID{" "}
+                                    {sortConfig.key === "id" &&
+                                        (sortConfig.direction === "asc" ? "↑" : "↓")}
+                                </span>
+                            </th>
                             <th>
                                 <span
                                     onClick={() => handleSort("patientName")}
@@ -196,11 +260,11 @@ const ManageAppointment = () => {
                             </th>
                             <th>
                                 <span
-                                    onClick={() => handleSort("date")}
+                                    onClick={() => handleSort("time")}
                                     style={{ cursor: "pointer" }}
                                 >
                                     Ngày hẹn{" "}
-                                    {sortConfig.key === "date" &&
+                                    {sortConfig.key === "time" &&
                                         (sortConfig.direction === "asc" ? "↑" : "↓")}
                                 </span>
                             </th>
@@ -213,9 +277,13 @@ const ManageAppointment = () => {
                                 const appointment = item.appointment;
                                 return (
                                     <tr key={appointment._id}>
+                                        <td>{appointment._id}</td>
                                         <td>{appointment.patientName || "N/A"}</td>
                                         <td>{appointment.symptoms || "N/A"}</td>
-                                        <td>{new Date(appointment.date).toLocaleDateString()}</td>
+                                        <td>
+                                            {new Date(appointment.date).toLocaleDateString("vi-VN")}{" "}
+                                            {appointment.time || "N/A"}
+                                        </td>
                                         <td>
                                             <Link
                                                 to={doctorRole === "head of department"

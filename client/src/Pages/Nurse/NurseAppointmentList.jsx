@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { FaSearch } from "react-icons/fa";
 
 const NurseAppointmentList = () => {
   const [appointments, setAppointments] = useState([]);
+  const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [searchTerm, setSearchTerm] = useState("");
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,11 +23,41 @@ const NurseAppointmentList = () => {
       });
       console.log("Appointments data:", response.data);
       setAppointments(response.data.data);
+      setFilteredAppointments(response.data.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching appointments:", error);
       setLoading(false);
     }
+  };
+
+  const handleSearch = (e) => {
+    const term = e.target.value.toLowerCase();
+    setSearchTerm(term);
+
+    if (!term) {
+      setFilteredAppointments(appointments);
+      return;
+    }
+
+    const filtered = appointments.filter((item) => {
+      const appointment = item.appointment;
+
+      const patientMatch = appointment.patientName?.toLowerCase().includes(term);
+      const doctorMatch = appointment.doctorId
+        .map((doctor) => doctor.username.toLowerCase())
+        .join(", ")
+        .includes(term);
+      const statusMatch = appointment.status?.toLowerCase().includes(term);
+      const timeMatch = `${new Date(appointment.date)
+        .toLocaleDateString("vi-VN")
+        .toLowerCase()} ${appointment.time.toLowerCase()}`.includes(term);
+      const idMatch = appointment._id?.toLowerCase().includes(term);
+
+      return patientMatch || doctorMatch || statusMatch || timeMatch || idMatch;
+    });
+
+    setFilteredAppointments(filtered);
   };
 
   const handleSort = (key) => {
@@ -35,12 +69,18 @@ const NurseAppointmentList = () => {
   };
 
   const sortedAppointments = React.useMemo(() => {
-    const sortableAppointments = [...appointments];
+    const sortableAppointments = [...filteredAppointments];
     if (!sortConfig.key) return sortableAppointments;
 
     sortableAppointments.sort((a, b) => {
       const appointmentA = a.appointment;
       const appointmentB = b.appointment;
+
+      if (sortConfig.key === "id") {
+        return sortConfig.direction === "asc"
+          ? appointmentA._id.localeCompare(appointmentB._id)
+          : appointmentB._id.localeCompare(appointmentA._id);
+      }
 
       if (sortConfig.key === "patientName") {
         return sortConfig.direction === "asc"
@@ -85,7 +125,7 @@ const NurseAppointmentList = () => {
       return 0;
     });
     return sortableAppointments;
-  }, [appointments, sortConfig]);
+  }, [filteredAppointments, sortConfig]);
 
   const handleViewDetail = (appointmentId) => {
     navigate(`/nurse/general-health/${appointmentId}`);
@@ -94,12 +134,35 @@ const NurseAppointmentList = () => {
   return (
     <div className="pending">
       <h2>Tất cả lịch hẹn</h2>
+
+      <div className="search-bar">
+        <div className="search-container">
+          <input
+            type="text"
+            placeholder="Search by ID, patient, doctor, status, or time..."
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+          <FaSearch className="search-icon" />
+        </div>
+      </div>
+
       {loading ? (
         <p>Đang tải...</p>
       ) : (
         <table className="table">
           <thead>
             <tr>
+              <th>
+                <span
+                  onClick={() => handleSort("id")}
+                  style={{ cursor: "pointer" }}
+                >
+                  ID{" "}
+                  {sortConfig.key === "id" &&
+                    (sortConfig.direction === "asc" ? "↑" : "↓")}
+                </span>
+              </th>
               <th>
                 <span
                   onClick={() => handleSort("patientName")}
@@ -153,6 +216,7 @@ const NurseAppointmentList = () => {
 
                 return (
                   <tr key={appointment._id}>
+                    <td>{appointment._id}</td>
                     <td>{appointment.patientName}</td>
                     <td>
                       {new Date(appointment.date).toLocaleDateString("vi-VN")}{" "}
