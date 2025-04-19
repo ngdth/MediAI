@@ -174,9 +174,9 @@ hr {
   background-color: #f0f4f6;
 }
 
-.cs_accent_bg {
-  background-color: var(--accent-color);
-}
+// .cs_accent_bg {
+//   background-color: var(--accent-color);
+// }
 
 label {
   display: inline-block;
@@ -1696,7 +1696,7 @@ label {
   }
 
   .cs_page_title {
-    font-size: 66px;
+    font-size:50px;
     margin-bottom: 12px;
     @media (max-width: 991px) {
       font-size: 48px;

@@ -16,9 +16,9 @@ import ContactSection2 from '../../Components/ContactSection/ContactSection2.jsx
 const heroData = {
   primarySlider: [
     {
-      bgImageUrl: 'assets/img/background.jpg',
+      bgImageUrl: 'assets/img/background.png',
       contactTitle: 'VÌ SỨC KHỎE GIA ĐÌNH BẠN',
-      contact: 'Liên hệ : (+84) 123 456 789',
+      contact: 'Liên hệ : (+84) 967 392 294',
       link2: '/contact'
     },
     {
@@ -106,29 +106,29 @@ const sectionData = {
   services: [
     {
       iconUrl: '/assets/img/icons/service_icon_9.png',
-      title: 'Đăng nhập vào hệ thống',
+      title: '1. Đăng nhập vào hệ thống',
     },
     {
       iconUrl: '/assets/img/icons/service_icon_10.png',
-      title: 'Chọn bác sĩ',
+      title: '2. Chọn bác sĩ phù hợp',
       
     },
     {
       iconUrl: '/assets/img/icons/service_icon_11.png',
-      title: 'Truy cập trang đặt lịch',
+      title: '3. Truy cập trang đặt lịch',
       
     },
     {
       iconUrl: '/assets/img/icons/service_icon_12.png',
-      title: 'Chọn ngày giờ khám',
+      title: '4. Chọn ngày giờ khám',
     },
     {
       iconUrl: '/assets/img/icons/service_icon_13.png',
-      title: 'Nhập thông tin cá nhân',
+      title: '5. Nhập thông tin cá nhân',
     },
     {
       iconUrl: '/assets/img/icons/service_icon_14.png',
-      title: 'Xác nhận & hoàn tất',
+      title: '6. Xác nhận & hoàn tất',
     },
   ],
 };

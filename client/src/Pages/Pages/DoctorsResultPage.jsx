@@ -11,7 +11,7 @@ const DoctorsResultPage = () => {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const keyword = queryParams.get("keyword") || "";
-    const title = keyword ? `Search Results for "${keyword}"` : "Doctor not found";
+    const title = keyword ? `Kết quả tìm kiếm cho  "${keyword}"` : "Doctor not found";
 
     useEffect(() => {
         const fetchDoctors = async () => {
@@ -33,12 +33,12 @@ const DoctorsResultPage = () => {
     }, [keyword]);
 
     const headingData = {
-        title: doctors.length === 0 ? 'No doctors found for "' + keyword + '"' : title,
+        title: doctors.length === 0 ? 'Không tìm thấy bác sĩ "' + keyword + '"' : title,
     };
 
     const appointmentSectionData = {
-        subtitle: "OUR TEAM MEMBER",
-        title: "Meet Our Specialist This<br> Doctor Meeting",
+        subtitle: "KẾT QUẢ TÌM KIẾM",
+        // title: "Meet Our Specialist This<br> Doctor Meeting",
         doctorsData: doctors.map((doctor) => ({
             username: doctor.username,
             specialization: doctor.specialization,
@@ -59,7 +59,7 @@ const DoctorsResultPage = () => {
 
             <Section
                 className={'cs_page_heading cs_bg_filed cs_center'}
-                backgroundImage="/assets/img/page_heading_bg.jpg"
+                backgroundImage="/assets/img/background.jpg"
             >
                 <PageHeading data={headingData} />
             </Section>
