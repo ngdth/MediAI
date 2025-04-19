@@ -53,11 +53,14 @@ const ForgotPassForm = () => {
                             />
                         </Form.Group>
                         <Button variant="primary" className="w-100 mb-2" type="submit" disabled={loading}>
-                            {loading ? "Đang gửi OTP..." : "Gửi OTP"}
+                            {loading ? "Đang gửi..." : "Gửi mã OTP"}
                         </Button>
                     </Form>
                     <div className="text-center mt-3 text-muted">
-                        <Link to="/login">Trở về đăng nhập</Link>
+                    Trở Về
+                        <Link to="/login"> Trang Đăng Nhập</Link>{" "}
+                        |{" "}
+                        <Link to="/">Trang Chủ</Link>
                     </div>
                 </Col>
             </Row>

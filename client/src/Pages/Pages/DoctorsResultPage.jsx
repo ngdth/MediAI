@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import PageHeading from "../../Components/PageHeading";
-import AppointmentSection from "../../Components/AppointmentSection";
+import AppointmentSection2 from "../../Components/AppointmentSection2";
 import Section from "../../Components/Section";
 import { useLocation } from "react-router-dom";
 
@@ -40,9 +40,9 @@ const DoctorsResultPage = () => {
         subtitle: "OUR TEAM MEMBER",
         title: "Meet Our Specialist This<br> Doctor Meeting",
         doctorsData: doctors.map((doctor) => ({
-            name: doctor.username,
-            specialty: doctor.specialization,
-            imageUrl: doctor.image,
+            username: doctor.username,
+            specialization: doctor.specialization,
+            imageUrl: doctor.imageUrl,
             profileLink: `/doctors/${doctor._id}`,
             iconUrl: "https://www.facebook.com/",
             iconUrl2: "https://www.pinterest.com/",
@@ -65,7 +65,7 @@ const DoctorsResultPage = () => {
                 bottomSpaceLg="80"
                 bottomSpaceMd="120"
             >
-                <AppointmentSection data={appointmentSectionData} />
+                <AppointmentSection2 data={appointmentSectionData} />
             </Section>
         </>
     );

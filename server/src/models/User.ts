@@ -42,7 +42,7 @@ export interface IPharmacy extends IUser {
 
 const UserSchema: Schema = new Schema(
   {
-    username: { type: String, required: true, unique: true },
+    username: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String },
     imageUrl: { type: String, default: "" },
@@ -51,14 +51,14 @@ const UserSchema: Schema = new Schema(
     verified: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
     favorites: [{ type: mongoose.Types.ObjectId, ref: "user" }],
-    firstName: { type: String},
-    lastName: { type: String},
-    birthday: { type: Date},
-    phone: { type: String},
-    gender: { type: String, enum: ['Nam', 'Nữ']  },
-    address: { type: String},
-    city: { type: String},
-    country: { type: String},
+    firstName: { type: String },
+    lastName: { type: String },
+    birthday: { type: Date },
+    phone: { type: String },
+    gender: { type: String, enum: ['Nam', 'Nữ'] },
+    address: { type: String },
+    city: { type: String },
+    country: { type: String },
   },
   { timestamps: true, discriminatorKey: 'role' }
 );

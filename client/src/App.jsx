@@ -73,6 +73,8 @@ import MedicalHistoryDetail from "./Components/Doctor/MedicalHistoryDetail";
 import FloatingMenu from './Components/FloatingMenu';
 import HODLayout from "./components/Layout/HODLayout";
 import DoctorAppointmentList from "./Pages/Doctor/HeadOfDepartment/DoctorAppointmentList";
+import BlogCreatePage from "./Components/BlogsSection/BlogCreatePage";
+import EditBlogPage from "./Components/BlogsSection/EditBlogPage";
 
 function App() {
     Aos.init({
@@ -108,7 +110,9 @@ function App() {
                     <Route path="/service" element={<ServicePage />} />
                     <Route path="/service/:serviceId" element={<ServiceDetails />} />
                     <Route path="/blog" element={<BlogsPage />} />
+                    <Route path="/blog/create" element={<BlogCreatePage />} />
                     <Route path="/blog/:blogId" element={<BlogsDetails />} />
+                    <Route path="/blog/edit/:blogId" element={<EditBlogPage />} />
                     <Route path="/appointments" element={<Appointments />} />
                     <Route path="/BookingAppointments" element={<BookingAppointments />} />
                     <Route path="/appointmentshistory" element={<AppointmentsHistory />} />

@@ -115,17 +115,16 @@ const UserProfile = () => {
         <>
             <div className="cs_site_header_spacing_100"></div>
             <Container fluid className="p-0">
-                <Row className="header pb-8 pt-5 pt-lg-8 align-items-center"
+                <Row className="header pb-8 pt-5 pt-lg-8 align-items-center cs_blue_bg"
                     style={{
                         minHeight: "250px",
-                        backgroundImage: "url(/assets/img/profilePage_bg.jpg)",
                         backgroundSize: "cover",
                         backgroundPosition: "center 35%",
                     }}
                 >
                     <Col md={12} className="text-center">
-                        <h1 className="display-4 text-white " style={{ marginTop: "-7rem"}}>
-                            Xin chào {user?.firstName || user?.username || "Null"}
+                        <h1 className="display-4 fw-bold text-white" style={{ marginTop: "-7rem"}}>
+                            Xin chào {user?.username || "Null"}
                         </h1>
                     </Col>
                 </Row>

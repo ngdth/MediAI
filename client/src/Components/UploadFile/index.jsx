@@ -1,8 +1,6 @@
 import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import { Modal, Button, Alert, ProgressBar } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faFileAlt, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import '../../sass/shortcode/_importfile.scss';
 
 const ImportDataButton = () => {
@@ -101,16 +99,16 @@ const ImportDataButton = () => {
             });
             return;
         }
-    
+
         setIsUploading(true);
         setUploadProgress({});
-    
+
         try {
             const uploadPromises = selectedFiles.map(async (file) => {
                 const formData = new FormData();
                 formData.append('file', file);
-    
-                const response = await axios.post('/upload/upload', formData, {
+
+                const response = await axios.post('http://localhost:8080/upload/upload', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     },
@@ -124,24 +122,24 @@ const ImportDataButton = () => {
                         }));
                     }
                 });
-                
+
                 return response.data;
             });
-    
+
             const results = await Promise.all(uploadPromises);
-            
+
             setUploadStatus({
                 type: 'success',
                 message: `Nhập dữ liệu thành công - ${selectedFiles.length} file`
             });
-    
+
             // Tự động đóng modal sau khi upload thành công
             setTimeout(() => {
                 handleCloseModal();
-            }, 2000);
+            }, 1000);
         } catch (error) {
             console.error('Upload error:', error);
-    
+
             // Xử lý các loại lỗi khác nhau
             if (error.response) {
                 // Lỗi từ server
@@ -178,7 +176,7 @@ const ImportDataButton = () => {
             setIsUploading(false);
         }
     };
-    
+
 
     const handleClickDropzone = () => {
         fileInputRef.current.click();
@@ -191,12 +189,12 @@ const ImportDataButton = () => {
     return (
         <>
             <button className="btn btn-success" onClick={handleImportData}>
-                Import Data
+                Nhập dữ liệu
             </button>
 
             <Modal show={showModal} onHide={handleCloseModal} centered size="lg">
                 <Modal.Header closeButton>
-                    <Modal.Title>Import Data</Modal.Title>
+                    <Modal.Title>Nhập dữ liệu</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div
@@ -208,10 +206,12 @@ const ImportDataButton = () => {
                         onClick={handleClickDropzone}
                     >
                         <div className="upload-icon">
-                            <FontAwesomeIcon icon={faPlus} />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-plus" viewBox="0 0 16 16">
+                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                            </svg>
                         </div>
-                        <h4>Drag and drop here</h4>
-                        <p>No size limit</p>
+                        <h4>Bỏ file vào đây</h4>
+                        <p>không giới hạn kích cỡ</p>
                         <input
                             type="file"
                             ref={fileInputRef}
@@ -224,12 +224,14 @@ const ImportDataButton = () => {
 
                     {selectedFiles.length > 0 && (
                         <div className="uploaded-files mt-4">
-                            <h5>Uploaded files</h5>
+                            <h5>Tệp đã tải lên</h5>
                             <div className="file-list">
                                 {selectedFiles.map((file, index) => (
                                     <div key={index} className="file-item">
                                         <div className="file-info">
-                                            <FontAwesomeIcon icon={faFileAlt} className="file-icon" />
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-file-earmark" viewBox="0 0 16 16">
+                                                <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z" />
+                                            </svg>
                                             <div>
                                                 <p className="file-name">{file.name}</p>
                                                 <p className="file-size">{(file.size / 1024).toFixed(2)} KB</p>
@@ -245,13 +247,13 @@ const ImportDataButton = () => {
                                             </div>
                                         ) : (
                                             uploadProgress[file.name] === 100 ? (
-                                                <FontAwesomeIcon icon={faCheck} className="status-icon success" />
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" className="bi bi-check-lg" viewBox="0 0 16 16">
+                                                    <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z" />
+                                                </svg>
                                             ) : (
-                                                <FontAwesomeIcon
-                                                    icon={faTimes}
-                                                    className="status-icon remove"
-                                                    onClick={() => removeFile(index)}
-                                                />
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-x" viewBox="0 0 16 16" onClick={() => removeFile(index)}>
+                                                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                                </svg>
                                             )
                                         )}
                                     </div>
@@ -275,7 +277,7 @@ const ImportDataButton = () => {
                         onClick={handleSave}
                         disabled={selectedFiles.length === 0 || isUploading}
                     >
-                        {isUploading ? 'Đang xử lý...' : 'Save'}
+                        {isUploading ? 'Đang xử lý...' : 'Lưu'}
                     </Button>
                 </Modal.Footer>
             </Modal>

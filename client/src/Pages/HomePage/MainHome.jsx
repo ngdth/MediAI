@@ -18,7 +18,8 @@ const heroData = {
     {
       bgImageUrl: 'assets/img/background.jpg',
       contactTitle: 'VÌ SỨC KHỎE GIA ĐÌNH BẠN',
-      contact: 'Liên hệ : (+2) 56 54 1453',
+      contact: 'Liên hệ : (+84) 123 456 789',
+      link2: '/contact'
     },
     {
       bgImageUrl: 'assets/img/hero_slider_2.jpg',
