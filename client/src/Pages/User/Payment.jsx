@@ -4,6 +4,7 @@ import FilterBar from "../../Components/User/FilterBar"
 import BillCard from "../../Components/User/BillCard"
 import Section from "../../Components/Section"
 import PageHeading from "../../Components/PageHeading"
+import { toast } from "react-toastify"
 
 export default function Payment() {
     const headingData = {
@@ -74,11 +75,11 @@ export default function Payment() {
             if (result.payUrl) {
                 window.location.href = result.payUrl;
             } else {
-                alert("Thanh toán thành công!");
+                toast.success("Thanh toán thành công!");
             }
         } catch (error) {
             console.error("Payment error:", error);
-            alert("Có lỗi xảy ra khi thanh toán!");
+            toast.error("Có lỗi xảy ra khi thanh toán!");
         }
     };
 
@@ -119,6 +120,8 @@ export default function Payment() {
                     )}
                 </div>
             </div>
+
+            <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
         </>
     )
 }

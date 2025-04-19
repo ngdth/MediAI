@@ -93,7 +93,7 @@ const BillUpdate = () => {
             console.log("Payment API response:", result);
 
             if (result.payUrl) {
-                window.location.href = "result.payUrl";
+                window.location.href = result.payUrl;
             } else {
                 toast.success("Thanh toán thành công!");
             }
