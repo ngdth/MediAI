@@ -225,7 +225,7 @@ const TopBar = ({ isSidebarOpen }) => {
                         <Link className="text-white">{username}</Link>
                         <ul>
                           <li>
-                            <Link to="/profile">Hồ Sơ</Link>
+                            <Link to="/hod/profile">Hồ Sơ</Link>
                           </li>
                           <li>
                             <Link
