@@ -4,7 +4,7 @@ import FilterBar from "../../Components/User/FilterBar"
 import BillCard from "../../Components/User/BillCard"
 import Section from "../../Components/Section"
 import PageHeading from "../../Components/PageHeading"
-import { toast } from "react-toastify"
+import { toast, ToastContainer } from "react-toastify"
 
 export default function Payment() {
     const headingData = {

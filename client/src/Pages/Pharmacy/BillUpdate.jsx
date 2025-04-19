@@ -312,7 +312,7 @@ const BillUpdate = () => {
                 <Button
                     variant="success"
                     onClick={handleQRCode}
-                    disabled={!isPriceValid()}
+                    disabled={!isPriceValid() || bill.paymentStatus === "Paid"}
                 >
                     Thanh toán QR Code (MoMo)
                 </Button>
