@@ -209,7 +209,7 @@ const NurseAssigned = () => {
 
   return (
     <div className="assigned">
-      <h2>Assigned Appointments</h2>
+      <h2>Lịch hẹn đã phân công</h2>
       {loading ? (
         <p>Loading...</p>
       ) : (

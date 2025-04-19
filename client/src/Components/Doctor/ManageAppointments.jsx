@@ -221,7 +221,7 @@ const ManageAppointment = () => {
                                                 to={doctorRole === "head of department"
                                                     ? `/hod/appointments/manage-result/${appointment._id}`
                                                     : `/doctor/appointments/manage-result/${appointment._id}`}
-                                                className="btn btn-primary"
+                                                className="btn btn-primary me-2"
                                             >
                                                 Tạo kết quả khám bệnh
                                             </Link>

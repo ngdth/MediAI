@@ -36,16 +36,16 @@ const ForgotPassForm = () => {
         <Container>
             <Row className="justify-content-center">
                 <Col md={12}>
-                    <h2 className="text-center mb-3">Quên Mật Khẩu</h2>
+                    <h3 className="text-center mb-3">Quên mật khẩu</h3>
                     {error && <Alert variant="danger">{error}</Alert>}
                     <Form onSubmit={handleSubmit}>
                         <Form.Group controlId="formBasicEmail" className="pb-3">
                             <Form.Label>
-                                Hãy nhập địa chỉ email của bạn để nhận mã xác thực đặt lại mật khẩu.
+                            Vui lòng nhập địa chỉ email bạn muốn đặt lại mật khẩu 
                             </Form.Label>
                             <Form.Control
                                 type="email"
-                                placeholder="Nhập địa chỉ email của bạn"
+                                placeholder="Nhập email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
