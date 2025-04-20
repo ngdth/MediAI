@@ -21,13 +21,13 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           <li>
             <Link to="/pharmacy/pending" className="menu-item">
               <FaClipboard className="menu-icon" />
-              <span>Pending</span>
+              <span>Đơn thuốc đang chờ</span>
             </Link>
           </li>
           <li>
             <Link to="/pharmacy/bills" className="menu-item">
               <FaCalendarAlt className="menu-icon" />
-              <span>Bills</span>
+              <span>Tất cả hóa đơn</span>
             </Link>
           </li>
         </ul>
