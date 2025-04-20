@@ -8,6 +8,11 @@ interface IBlogCommentReply {
     unlikes: Types.ObjectId[];
     createdAt: Date;
     updatedAt: Date;
+    reported: {
+        user: Types.ObjectId;
+        reason: string;
+        createdAt: Date;
+    }[];
 }
 
 interface IBlogComment {
@@ -56,6 +61,8 @@ const blogSchema = new Schema<IBlog>({
         content: { type: String, required: true },
         likes: [{ type: Schema.Types.ObjectId, ref: 'user' }],
         unlikes: [{ type: Schema.Types.ObjectId, ref: 'user' }],
+        createdAt: { type: Date, default: Date.now },
+        updatedAt: { type: Date, default: Date.now },
         replies: [{
             user: { type: Schema.Types.ObjectId, ref: 'user', required: true },
             content: { type: String },

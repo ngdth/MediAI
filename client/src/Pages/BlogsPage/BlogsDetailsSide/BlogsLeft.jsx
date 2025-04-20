@@ -4,8 +4,7 @@ import { FaCalendarAlt, FaUser, FaThumbsUp, FaThumbsDown, FaReply, FaTags } from
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-
-const BlogsLeft = ({ data, blogId, onAddComment, onReplyComment, onLikeComment, onUnlikeComment }) => {
+const BlogsLeft = ({ data, blogId, setBlog, onUnlikeReply, onLikeReply, onAddComment, onReplyComment, onLikeComment, onUnlikeComment }) => {
   const [commentText, setCommentText] = useState('');
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState('');
@@ -20,7 +19,7 @@ const BlogsLeft = ({ data, blogId, onAddComment, onReplyComment, onLikeComment, 
   const [localLikes, setLocalLikes] = useState(data.card.progress.likes.count || 0);
   const [localUnlikes, setLocalUnlikes] = useState(data.card.progress.unlikes.count || 0);
   const [hasLiked, setHasLiked] = useState(false);
-  const [hasUnliked, setHasUnliked] = useState(false)
+  const [hasUnliked, setHasUnliked] = useState(false);
 
   useEffect(() => {
     console.log('Local likes/unlikes changed:', localLikes, localUnlikes);
@@ -103,7 +102,9 @@ const BlogsLeft = ({ data, blogId, onAddComment, onReplyComment, onLikeComment, 
           { text: commentText },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        window.location.reload();
+        if (typeof onRefresh === 'function') {
+          onRefresh();
+        }
       }
       setCommentText('');
       setError(null);
@@ -115,39 +116,25 @@ const BlogsLeft = ({ data, blogId, onAddComment, onReplyComment, onLikeComment, 
     }
   };
 
-  // Hàm xử lý like comment
-  const handleLikeComment = async (commentId) => {
+  const handleCommentReaction = async (commentId, action) => {
     try {
-      if (typeof onLikeComment === 'function') {
-        await onLikeComment(commentId);
-      } else {
-        const token = localStorage.getItem('token');
-        await axios.post(`http://localhost:8080/blog/${blogId}/comments/${commentId}/like`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        window.location.reload();
-      }
-    } catch (err) {
-      console.error("Error liking comment:", err);
-      setError("Failed to like comment. Please try again.");
-    }
-  };
+      const response = await (action === 'like'
+        ? onLikeComment(commentId)
+        : onUnlikeComment(commentId));
 
-  // Hàm xử lý unlike comment
-  const handleUnlikeComment = async (commentId) => {
-    try {
-      if (typeof onUnlikeComment === 'function') {
-        await onUnlikeComment(commentId);
-      } else {
-        const token = localStorage.getItem('token');
-        await axios.post(`http://localhost:8080/blog/${blogId}/comments/${commentId}/unlike`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        window.location.reload();
+      if (response?.success) {
+        setBlog(prev => ({
+          ...prev,
+          comments: prev.comments.map(comment =>
+            comment._id === commentId ? response.data : comment
+          )
+        }));
       }
-    } catch (err) {
-      console.error("Error unliking comment:", err);
-      setError("Failed to unlike comment. Please try again.");
+    } catch (error) {
+      // ✅ Hiển thị message từ backend nếu có
+      const errorMessage = error.response?.data?.message || `Thao tác ${action} thất bại`;
+      setError(errorMessage);
+      console.error(`Error ${action} comment:`, error);
     }
   };
 
@@ -162,7 +149,6 @@ const BlogsLeft = ({ data, blogId, onAddComment, onReplyComment, onLikeComment, 
   const handleReplySubmit = async (e, commentId) => {
     e.preventDefault();
     if (!replyText.trim()) return;
-
     setSubmitting(true);
     try {
       if (typeof onReplyComment === 'function') {
@@ -170,11 +156,13 @@ const BlogsLeft = ({ data, blogId, onAddComment, onReplyComment, onLikeComment, 
       } else {
         const token = localStorage.getItem('token');
         await axios.post(
-          `http://localhost:8080/blog/${blogId}/comments/${commentId}/reply`,
-          { text: replyText },
+          `http://localhost:8080/blog/${blogId}/comments/${commentId}/replies`,
+          { content: replyText },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        window.location.reload();
+        if (typeof onRefresh === 'function') {
+          onRefresh();
+        }
       }
       setReplyingTo(null);
       setReplyText('');
@@ -323,13 +311,17 @@ const BlogsLeft = ({ data, blogId, onAddComment, onReplyComment, onLikeComment, 
                       src={comment.avatarSrc}
                       alt={comment.avatarAlt}
                       className="cs_radius_5"
+                      onError={(e) => {
+                        e.target.onerror = null; // Tránh lặp vô hạn
+                        e.target.src = '/assets/img/avatar_2.png'; // Ảnh mặc định
+                      }}
                     />
                   </div>
                   <div className="cs_comment_info">
                     <h3>{comment.name}</h3>
                     <p>{comment.text}</p>
                     <div className="cs_comment_meta_wrapper">
-                      <div className="cs_comment_date">
+                      <div className="cs_comment_date gap-4">
                         <span>{comment.date}</span>
                         <span>{comment.time}</span>
                       </div>
@@ -337,15 +329,15 @@ const BlogsLeft = ({ data, blogId, onAddComment, onReplyComment, onLikeComment, 
                       {/* Comment Actions */}
                       <div className="cs_comment_actions">
                         <button
-                          className="cs_btn cs_style_1 cs_color_1 cs_size_xs me-2"
-                          onClick={() => handleLikeComment(comment.id)}
+                          className="cs_btn cs_style_12 cs_color_1 cs_size_xs me-2"
+                          onClick={() => handleCommentReaction(comment.id, 'like')}
                         >
                           <FaThumbsUp className="me-1" />
                           {comment.likes || 0}
                         </button>
                         <button
-                          className="cs_btn cs_style_1 cs_color_2 cs_size_xs me-2"
-                          onClick={() => handleUnlikeComment(comment.id)}
+                          className="cs_btn cs_style_12 cs_color_2 cs_size_xs me-2"
+                          onClick={() => handleCommentReaction(comment.id, 'unlike')}
                         >
                           <FaThumbsDown className="me-1" />
                           {comment.unlikes || 0}
@@ -397,29 +389,51 @@ const BlogsLeft = ({ data, blogId, onAddComment, onReplyComment, onLikeComment, 
 
                     {/* Display Replies */}
                     {comment.replies && comment.replies.length > 0 && (
-                      <ul className="cs_comment_list cs_mp0 cs_mt_15">
-                        {comment.replies.map((reply, replyIndex) => (
-                          <li className="cs_comment_body cs_reply_item" key={replyIndex}>
-                            <div className="cs_comment_thumbnail">
-                              <img
-                                src={reply.avatarSrc || '/assets/img/avatar_3.png'}
-                                alt={reply.avatarAlt || "Reply Author"}
-                                className="cs_radius_5"
-                              />
-                            </div>
-                            <div className="cs_comment_info">
-                              <h3>{reply.name || 'Anonymous'}</h3>
-                              <p>{reply.text}</p>
-                              <div className="cs_comment_meta_wrapper">
-                                <div className="cs_comment_date">
-                                  <span>{reply.date}</span>
-                                  {reply.time && <span>{reply.time}</span>}
+                      <div className="cs_replies_container">
+                        <ul className="cs_mp0">
+                          {comment.replies.map((reply, replyIndex) => (
+                            <li className="cs_comment_body cs_reply_item" key={replyIndex}>
+                              <div className="cs_comment_thumbnail">
+                                <img
+                                  src={reply.avatarSrc || '/assets/img/avatar_3.png'}
+                                  alt={reply.avatarAlt || "Reply Author"}
+                                  className="cs_radius_5"
+                                  onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = '/assets/img/avatar_2.png';
+                                  }}
+                                />
+                              </div>
+                              <div className="cs_comment_info">
+                                <h3>{reply.name || 'Anonymous'}</h3>
+                                <p>{reply.text}</p>
+                                <div className="cs_comment_meta_wrapper">
+                                  <div className="cs_comment_date">
+                                    <span>{reply.date}</span>
+                                    {reply.time && <span>{reply.time}</span>}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
+                              <div className="cs_comment_actions">
+                                <button
+                                  className="cs_btn cs_style_12 cs_color_1 cs_size_xs me-2"
+                                  onClick={() => onLikeReply(comment.id, reply.id)}
+                                >
+                                  <FaThumbsUp className="me-1" />
+                                  {reply.likes || 0}
+                                </button>
+                                <button
+                                  className="cs_btn cs_style_12 cs_color_2 cs_size_xs"
+                                  onClick={() => onUnlikeReply(comment.id, reply.id)}
+                                >
+                                  <FaThumbsDown className="me-1" />
+                                  {reply.unlikes || 0}
+                                </button>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     )}
                   </div>
                 </li>

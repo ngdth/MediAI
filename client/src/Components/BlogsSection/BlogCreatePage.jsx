@@ -746,7 +746,7 @@ const BlogCreatePage = () => {
                                             onChange={handleChange}
                                         >
                                             <option value="public">Công khai - Tất cả mọi người</option>
-                                            <option value="private">Riêng tư - Chỉ bạn</option>
+                                            {/* <option value="private">Riêng tư - Chỉ bạn</option> */}
                                             <option value="doctors">Bác sĩ - Chỉ bác sĩ</option>
                                         </select>
                                     </div>

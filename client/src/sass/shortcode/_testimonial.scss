@@ -41,7 +41,7 @@
 
   &.cs_type_1 {
     max-width: 100%;
-    padding: 35px 35px 40px;
+    padding: 20px 35px 25px;
     background-color: #F2F6FD;
 
     @media(max-width:575px) {
@@ -49,11 +49,12 @@
     }
 
     .cs_testimonial_subtitle {
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
   }
 
   .cs_rating_container {
+    display: flex;
     margin-bottom: 17px;
   }
 

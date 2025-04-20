@@ -11,7 +11,7 @@ import {
 } from '../controllers/blog/blogController';
 import { authorizeRole, authenticateToken } from '../middlewares/authMiddleware';
 import { uploadMedia } from '../utils/multer';
-import { addComment, addReply, likeComment, reportComment, unlikeComment } from '../controllers/blog/commentBlogController';
+import { addComment, addReply, likeComment, likeReply, reportComment, unlikeComment, unlikeReply } from '../controllers/blog/commentBlogController';
 
 
 const router = Router();
@@ -35,9 +35,11 @@ router.put('/:blogId/:action', authenticateToken, (req, res, next) => {
 
 // Comment routes
 router.post('/:blogId/comments', authenticateToken, addComment);
-router.post('/:blogId/comments/:commentId/replies', authenticateToken, addReply);
 router.post('/:blogId/comments/:commentId/report', authenticateToken, reportComment);
 router.put('/:blogId/comments/:commentId/like', authenticateToken, likeComment);
 router.put('/:blogId/comments/:commentId/unlike', authenticateToken, unlikeComment);
+router.post('/:blogId/comments/:commentId/replies', authenticateToken, addReply);
+router.put('/:blogId/comments/:commentId/replies/:replyId/like', authenticateToken, likeReply);
+router.put('/:blogId/comments/:commentId/replies/:replyId/unlike', authenticateToken, unlikeReply);
 
 export default router;

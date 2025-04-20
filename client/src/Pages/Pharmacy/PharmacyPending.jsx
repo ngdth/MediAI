@@ -58,7 +58,7 @@ const PharmacyPending = () => {
                         <th className="text-center">Bệnh Nhân</th>
                         <th className="text-center">Ngày Khám</th>
                         <th className="text-center">Giờ khám</th>
-                        <th className="text-center">Action</th>
+                        <th className="text-center">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -74,7 +74,7 @@ const PharmacyPending = () => {
                                 <td className="text-center">{appointment.time}</td>
                                 <td className="text-center">
                                     <Link to={`/pharmacy/prescription/${appointment._id}`} className="btn btn-primary">
-                                        Chi tiết
+                                        Tạo hóa đơn 
                                     </Link>
                                 </td>
                             </tr>

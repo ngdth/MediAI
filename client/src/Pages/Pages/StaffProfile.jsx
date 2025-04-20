@@ -5,7 +5,7 @@ import {Container,Col, Row, Button, Modal, Form } from "react-bootstrap";
 import { FaRegEdit } from "react-icons/fa";
 import axios from "axios";
 
-const UserProfile = () => {
+const StaffProfile = () => {
     const [user, setUser] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [passwordData, setPasswordData] = useState({
@@ -113,23 +113,8 @@ const UserProfile = () => {
 
     return (
         <>
-            <div className="cs_site_header_spacing_100"></div>
             <Container fluid className="p-0">
-                <Row className="header pb-8 pt-5 pt-lg-8 align-items-center cs_blue_bg"
-                    style={{
-                        minHeight: "250px",
-                        backgroundSize: "cover",
-                        backgroundPosition: "center 35%",
-                    }}
-                >
-                    <Col md={12} className="text-center">
-                        <h1 className="display-4 fw-bold text-white" style={{ marginTop: "-7rem"}}>
-                            Xin chào {user?.username || "Null"}
-                        </h1>
-                    </Col>
-                </Row>
-    
-                <Container style={{ marginTop: "-6rem" }}>
+                <Container>
                     <Row>
                         <Col xl={4} className="order-xl-2 mb-5 mb-xl-0">
                             <div className="card card-profile shadow">
@@ -169,6 +154,15 @@ const UserProfile = () => {
                                     </div>
                                 </div>
                             </div>
+                            {(user?.role === "doctor" || user?.role === "nurse" || user?.role === "head of department") && (
+                                <div className="card mt-4 shadow">
+                                    <div className="card-body text-center">
+                                        <h4 className="font-weight-bold">Thông tin chuyên môn</h4>
+                                        <p><strong>Khoa:</strong> {user?.specialization || "Chưa cập nhật"}</p>
+                                        <p><strong>Kinh nghiệm:</strong> {user?.experience || 0} năm</p>
+                                    </div>
+                                </div>
+                            )}
                         </Col>
     
                         <Col xl={8} className="order-xl-1">
@@ -228,4 +222,4 @@ const UserProfile = () => {
     );
 };
 
-export default UserProfile;
+export default StaffProfile;
