@@ -17,6 +17,7 @@ const ProfileForm = ({ user, setUser }) => {
         city: user?.city || "",
         country: user?.country || "",
         phone: user?.phone || "",
+        bio: user?.bio || "",
     });
 
     useEffect(() => {
@@ -32,6 +33,7 @@ const ProfileForm = ({ user, setUser }) => {
                 city: user.city || "",
                 country: user.country || "",
                 phone: user.phone || "",
+                bio: user.bio || "",
             });
         }
     }, [user]);
@@ -195,6 +197,21 @@ const ProfileForm = ({ user, setUser }) => {
                         </Form.Group>
                     </Col>
                 </Row>
+                {["nurse", "doctor", "head of department"].includes(user.role) && (
+                    <Row className="mb-3">
+                        <Col>
+                        <Form.Group>
+                            <Form.Label>Bio</Form.Label>
+                            <Form.Control
+                            type="text"
+                            name="bio"
+                            value={formData.bio}
+                            onChange={handleChange}
+                            />
+                        </Form.Group>
+                        </Col>
+                    </Row>
+                )}
 
                 <div className="text-end">
                     <Button type="submit" className="cs_btn cs_style_1 cs_color_1" disabled={!isFormChanged}>
