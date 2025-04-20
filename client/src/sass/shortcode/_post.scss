@@ -3,7 +3,6 @@
 ----------------------------------------------------------------*/
 .cs_post.cs_style_1 {
   overflow: hidden;
-
   .cs_post_thumbnail {
     display: inline-block;
     padding: 0 10px;
@@ -53,7 +52,7 @@
   }
 
   .cs_posted_by {
-    width: 65px;
+    // width: 65px;
     height: 57px;
     padding: 10px;
     border: 2px solid var(--white);

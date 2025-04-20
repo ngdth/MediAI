@@ -1344,6 +1344,7 @@ label {
   .cs_progress_in {
     height: 100%;
     border-radius: inherit;
+    transition: width 0.3s ease-in-out;
     background-color: var(--accent-color);
   }
 }
