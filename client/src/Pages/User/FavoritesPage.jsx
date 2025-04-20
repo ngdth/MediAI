@@ -58,7 +58,7 @@ const FavoritesPage = () => {
             >
                 <PageHeading data={headingData} />
                 <SectionHeading
-                    SectionSubtitle="FAVORITES"
+                  
                     SectionTitle="Không tìm thấy bác sĩ yêu thích"
                     variant="text-center"
                 />
@@ -75,7 +75,7 @@ const FavoritesPage = () => {
 
             <Section
                 className="cs_page_heading cs_bg_filed cs_center"
-                backgroundImage="/assets/img/page_heading_bg.jpg"
+                backgroundImage="/assets/img/background.jpg"
             >
                 <PageHeading data={headingData} />
             </Section>

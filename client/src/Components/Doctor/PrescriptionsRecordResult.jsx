@@ -80,7 +80,7 @@ const PrescriptionsRecordResult = () => {
                             <th>Mức độ nghiêm trọng</th>
                             <th>Kết luận và hướng điều trị</th>
                             <th>Đơn thuốc</th>
-                            <th>Thao tác</th>
+                            <th style={{ width: '160px' }}>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -115,19 +115,21 @@ const PrescriptionsRecordResult = () => {
                                             "Chưa có đơn thuốc"
                                         )}
                                     </td>
-                                    <td>
-                                        <button
-                                            className="btn btn-success btn-sm mr-2"
-                                            onClick={() => handleAssignToDoctor(appointment._id)}
-                                        >
-                                            Assign to Doctor
-                                        </button>
-                                        <button
-                                            className="btn btn-primary btn-sm"
-                                            onClick={() => openAssignModal(appointment._id)}
-                                        >
-                                            Assign to Pharmacy
-                                        </button>
+                                    <td className="text-nowrap">
+                                        <div className="d-flex flex-column gap-2">
+                                            <button
+                                                className="btn btn-success btn-sm"
+                                                onClick={() => handleAssignToDoctor(appointment._id)}
+                                            >
+                                                Gửi bác sĩ khác
+                                            </button>
+                                            <button
+                                                className="btn btn-primary btn-sm"
+                                                onClick={() => openAssignModal(appointment._id)}
+                                            >
+                                                Gửi nhà thuốc
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             );
