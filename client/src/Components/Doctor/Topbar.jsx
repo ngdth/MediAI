@@ -163,9 +163,8 @@ const TopBar = ({ isSidebarOpen }) => {
                               <h5>Thông báo</h5>
                               <div>
                                 <a
-                                  className={`nav-link d-inline ${
-                                    activeTab === "unread" ? "active" : ""
-                                  }`}
+                                  className={`nav-link d-inline ${activeTab === "unread" ? "active" : ""
+                                    }`}
                                   href="#"
                                   onClick={(e) => {
                                     e.preventDefault();
@@ -175,9 +174,8 @@ const TopBar = ({ isSidebarOpen }) => {
                                   Chưa đọc
                                 </a>
                                 <a
-                                  className={`nav-link d-inline ${
-                                    activeTab === "read" ? "active" : ""
-                                  }`}
+                                  className={`nav-link d-inline ${activeTab === "read" ? "active" : ""
+                                    }`}
                                   href="#"
                                   onClick={(e) => {
                                     e.preventDefault();
@@ -214,9 +212,8 @@ const TopBar = ({ isSidebarOpen }) => {
                                       />
                                     )}
                                     <i
-                                      className={`fas ${
-                                        notif.type === "appointment" ? "fa-calendar" : "fa-bell"
-                                      } notification-icon`}
+                                      className={`fas ${notif.type === "appointment" ? "fa-calendar" : "fa-bell"
+                                        } notification-icon`}
                                     ></i>
                                   </div>
                                 ))
@@ -231,6 +228,11 @@ const TopBar = ({ isSidebarOpen }) => {
                             </div>
                           </div>
                         )}
+                      </li>
+                      <li>
+                        <Link to="/blog" className="custom-blog-btn">
+                          View Blog
+                        </Link>
                       </li>
                       <li className="menu-item-has-children">
                         <Link className="text-white">{username}</Link>
