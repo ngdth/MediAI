@@ -35,6 +35,7 @@ const LoginForm = ({ onLogin }) => {
 
             console.log(data);
             localStorage.setItem("username", data.user.username);
+            localStorage.setItem("role", data.user.role);
             onLogin(data);
             navigate("/");
         } catch (err) {
@@ -60,6 +61,8 @@ const LoginForm = ({ onLogin }) => {
             console.log(data.token);
             localStorage.setItem("username", data.user.username);
             onLogin(data.user);
+            localStorage.setItem("role", data.user.role);
+            console.log(data.user.role);
 
             if (data.user.role === "admin") {
                 navigate("/admin");
@@ -67,11 +70,11 @@ const LoginForm = ({ onLogin }) => {
                 navigate("/nurse/dashboard");
             } else if (data.user.role === "doctor") {
                 navigate("/doctor");
-            }else if (data.user.role === "pharmacy") {
+            } else if (data.user.role === "pharmacy") {
                 navigate("/pharmacy");
             } else if (data.user.role === "head of department") {
                 navigate("/hod");
-            } else {navigate("/");}
+            } else { navigate("/"); }
         } catch (err) {
             setError(err.message);
             console.log(err);

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaAngleRight } from "react-icons/fa";
 import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
 import { useEffect, useState } from "react";
+import { Modal, Button } from 'react-bootstrap';
 import axios from "axios";
 import "../../sass/blog/blogsSection1.scss";
 
@@ -18,6 +19,8 @@ const BlogsSection1 = ({ data }) => {
   const [selectedSpecialization, setSelectedSpecialization] = useState('');
   const [error, setError] = useState(null);
   const [allBlogs, setAllBlogs] = useState([]); // Lưu trữ tất cả blog để lọc cục bộ
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [blogToDelete, setBlogToDelete] = useState(null);
 
   // Thêm state để lưu thông tin người dùng
   const [currentUser, setCurrentUser] = useState(null);
@@ -274,24 +277,30 @@ const BlogsSection1 = ({ data }) => {
 
   // Hàm xử lý xóa bài viết
   const handleDeleteBlog = async (blogId) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa bài viết này?')) {
-      try {
-        const token = localStorage.getItem('token');
-        await axios.delete(`http://localhost:8080/blog/${blogId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+    setBlogToDelete(blogId);
+    setShowDeleteModal(true);
+  };
 
-        // Cập nhật lại danh sách sau khi xóa
-        if (activeTag === 'my') {
-          fetchMyBlogs();
-        } else {
-          fetchBlogs();
-        }
+  const confirmDeleteBlog = async () => {
+    if (!blogToDelete) return;
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`http://localhost:8080/blog/${blogToDelete}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setShowDeleteModal(false);
+      setBlogToDelete(null);
 
-      } catch (error) {
-        console.error('Error deleting blog:', error);
-        setError('Không thể xóa bài viết. Vui lòng thử lại.');
+      // Làm mới danh sách blog sau khi xóa
+      if (activeTag === 'my') {
+        fetchMyBlogs();
+      } else {
+        fetchBlogs();
       }
+    } catch (error) {
+      setError('Không thể xóa bài viết. Vui lòng thử lại.');
+      setShowDeleteModal(false);
+      setBlogToDelete(null);
     }
   };
 
@@ -544,6 +553,24 @@ const BlogsSection1 = ({ data }) => {
           </>
         )}
       </div>
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Xác nhận xóa</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="alert alert-danger mb-0">
+            Bạn có muốn xóa bài viết này không?
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+            Hủy
+          </Button>
+          <Button variant="danger" onClick={confirmDeleteBlog}>
+            Xóa
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };
