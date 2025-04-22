@@ -103,58 +103,6 @@ const BillUpdate = () => {
         }
     };
 
-    // const handleCreateBill = async () => {
-    //     try {
-    //         const medicineFees = prescriptions.map((prescription, index) => {
-    //             const price = parseInt(prices[index]) || 0;
-    //             const quantity = parseInt(prescription.quantity) || 0;
-    //             return {
-    //                 name: prescription.medicineName,
-    //                 quantity,
-    //                 unit: prescription.unit,
-    //                 unitPrice: price,
-    //                 totalPrice: price * quantity,
-    //                 usage: prescription.usage,
-    //             };
-    //         });
-
-    //         const testFees = services.map((service) => ({
-    //             name: service.name,
-    //             department: service.department,
-    //             price: service.price,
-    //         }));
-
-    //         const additionalFees = tax;
-    //         const paymentMethod = "MOMO";
-
-    //         const response = await axios.post(
-    //             `http://localhost:8080/pharmacy/createbill`,
-    //             {
-    //                 appointmentId: appointmentId,
-    //                 testFees,
-    //                 medicineFees,
-    //                 additionalFees,
-    //                 paymentMethod,
-    //             },
-    //             {
-    //                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    //             }
-    //         );
-    //         console.log(response);
-    //         if (response.status === 201) {
-    //             toast.success("Tạo hóa đơn thành công!");
-    //             setTimeout(() => navigate("/pharmacy/pending"), 6000);
-    //             // navigate("/pharmacy/pending");
-    //         } else {
-    //             toast.error(response.data?.message || "Tạo hóa đơn thất bại!");
-    //         }
-    //     } catch (error) {
-    //         console.error("Error creating bill:", error);
-    //         console.log(error.response.data);
-    //         console.log(error);
-    //         toast.error("Có lỗi khi tạo hóa đơn!");
-    //     }
-    // };
 
     return (
         <div className="container">
@@ -233,40 +181,45 @@ const BillUpdate = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {prescriptions.map((prescription, index) => {
-                        const price = parseInt(prices[index]) || 0;
-                        const quantity = parseInt(prescription.quantity) || 0;
-                        const total = price * quantity;
+                    {prescriptions.length > 0 ? (
+                        prescriptions.map((prescription, index) => {
+                            const price = parseInt(prices[index]) || 0;
+                            const quantity = parseInt(prescription.quantity) || 0;
+                            const total = price * quantity;
 
-                        return (
-                            <tr key={index}>
-                                <td className="text-center">{index + 1}</td>
-                                <td>{prescription.name}</td>
-                                <td>{prescription.unit}</td>
-                                <td className="text-center">{prescription.quantity}</td>
-                                <td>
-                                    <input
-                                        type="number"
-                                        className="form-control"
-                                        placeholder="Nhập giá"
-                                        min="1000"
-                                        value={prices[index] || ""}
-                                        onChange={(e) => {
-                                            const value = e.target.value;
-                                            // Không cho nhập số âm
-                                            if (parseInt(value) < 1) {
-                                                handlePriceChange(index, ""); // Reset nếu nhập số âm
-                                            } else {
-                                                handlePriceChange(index, value);
-                                            }
-                                        }}
-                                    />
-                                </td>
-                                <td className="text-center">{total} VND</td>
-                                <td>{prescription.usage}</td>
-                            </tr>
-                        );
-                    })}
+                            return (
+                                <tr key={index}>
+                                    <td className="text-center">{index + 1}</td>
+                                    <td>{prescription.name}</td>
+                                    <td>{prescription.unit}</td>
+                                    <td className="text-center">{prescription.quantity}</td>
+                                    <td>
+                                        <input
+                                            type="number"
+                                            className="form-control"
+                                            placeholder="Nhập giá"
+                                            min="1000"
+                                            value={prices[index] || ""}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                if (parseInt(value) < 1) {
+                                                    handlePriceChange(index, "");
+                                                } else {
+                                                    handlePriceChange(index, value);
+                                                }
+                                            }}
+                                        />
+                                    </td>
+                                    <td className="text-center">{total.toLocaleString()} VND</td>
+                                    <td>{prescription.usage}</td>
+                                </tr>
+                            );
+                        })
+                    ) : (
+                        <tr>
+                            <td colSpan="7" className="text-center">Khách hàng không lấy thuốc</td>
+                        </tr>
+                    )}
                 </tbody>
             </table>
             {/* {!isPriceValid() && (
@@ -317,33 +270,6 @@ const BillUpdate = () => {
                     Thanh toán QR Code (MoMo)
                 </Button>
             </div>
-
-            {/* Submit Button */}
-            {/* <div className="d-flex justify-content-end mt-4">
-                <button className="btn btn-primary" onClick={() => setShowConfirm(true)} disabled={!isPriceValid()}>
-                    chỉnh sửa hóa đơn
-                </button>
-            </div>
-            <Modal show={showConfirm} onHide={() => setShowConfirm(false)} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>Xác nhận chỉnh sửa hóa đơn</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>Bạn có chắc chắn muốn chỉnh sửa hóa đơn của bệnh nhân này?</Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowConfirm(false)}>
-                        Hủy
-                    </Button>
-                    <Button
-                        variant="primary"
-                        onClick={() => {
-                            handleCreateBill();
-                            setShowConfirm(false);
-                        }}
-                    >
-                        Xác nhận
-                    </Button>
-                </Modal.Footer>
-            </Modal> */}
             <ToastContainer
                 position="top-right"
                 autoClose={6000}
