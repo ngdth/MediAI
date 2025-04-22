@@ -12,7 +12,7 @@ const BillUpdate = () => {
     const [prices, setPrices] = useState({});
     const [services, setServices] = useState([]);
     const [diagnosisDetails, setDiagnosisDetails] = useState([]);
-    // const [showConfirm, setShowConfirm] = useState(false);
+    const [showConfirmUpdate, setShowConfirmUpdate] = useState(false); // State for confirmation modal
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -25,18 +25,17 @@ const BillUpdate = () => {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             setBill(response.data.bill);
-
-            console.log("response.data: ", response.data);
-            setAppointment(response.data.bill.appointmentId); // Set appointment
-            setDiagnosisDetails(response.data.diagnosisDetails); // Set diagnosis details
-            setPrescriptions(response.data.bill.medicineFees); // Set prescription
-            setServices(response.data.bill.testFees || []); // Set services
+            setAppointment(response.data.bill.appointmentId);
+            setDiagnosisDetails(response.data.diagnosisDetails);
+            setPrescriptions(response.data.bill.medicineFees);
+            setServices(response.data.bill.testFees || []);
             if (response.data.bill.medicineFees && response.data.bill.medicineFees.length > 0) {
                 const oldPrices = response.data.bill.medicineFees.map((med) => med.unitPrice);
                 setPrices(oldPrices);
             }
         } catch (error) {
-            console.error("Error fetching appointment details:", error);
+            console.error("Error fetching bill details:", error);
+            toast.error(error.response?.data?.message || "Không thể tải thông tin hóa đơn!");
         }
     };
 
@@ -71,6 +70,44 @@ const BillUpdate = () => {
         });
     };
 
+    const handleUpdatePrices = async () => {
+        try {
+            const medicineFees = prescriptions.map((prescription, index) => {
+                const price = parseInt(prices[index]) || 0;
+                const quantity = parseInt(prescription.quantity) || 0;
+                return {
+                    name: prescription.name,
+                    unit: prescription.unit,
+                    quantity,
+                    unitPrice: price,
+                    totalPrice: price * quantity,
+                    usage: prescription.usage,
+                };
+            });
+
+            const response = await axios.put(
+                `http://localhost:8080/pharmacy/update-medicines-price/${billId}`,
+                { medicineFees },
+                {
+                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+                }
+            );
+
+            if (response.status === 200) {
+                setBill(response.data.bill); // Update bill with new data
+                setPrescriptions(response.data.bill.medicineFees); // Update prescriptions
+                toast.success("Cập nhật giá thuốc thành công!");
+            } else {
+                toast.error(response.data?.message || "Cập nhật giá thuốc thất bại!");
+            }
+        } catch (error) {
+            console.error("Error updating medicine prices:", error);
+            toast.error(error.response?.data?.message || "Có lỗi khi cập nhật giá thuốc!");
+        } finally {
+            setShowConfirmUpdate(false); // Close modal
+        }
+    };
+
     const handleQRCode = async () => {
         try {
             const response = await fetch("http://localhost:8080/payment/create-payment", {
@@ -103,6 +140,13 @@ const BillUpdate = () => {
         }
     };
 
+    const hasPriceChanged = useMemo(() => {
+        return prescriptions.some((prescription, index) => {
+            const currentPrice = parseInt(prices[index]) || 0;
+            const originalPrice = prescription.unitPrice || 0;
+            return currentPrice !== originalPrice;
+        });
+    }, [prescriptions, prices]);
 
     return (
         <div className="container">
@@ -208,6 +252,7 @@ const BillUpdate = () => {
                                                     handlePriceChange(index, value);
                                                 }
                                             }}
+                                            readOnly={bill.paymentStatus === "Paid"}
                                         />
                                     </td>
                                     <td className="text-center">{total.toLocaleString()} VND</td>
@@ -222,9 +267,7 @@ const BillUpdate = () => {
                     )}
                 </tbody>
             </table>
-            {/* {!isPriceValid() && (
-                <p className="text-danger mt-2">Vui lòng nhập đầy đủ giá cho tất cả thuốc trước khi tạo hóa đơn.</p>
-            )} */}
+
             <h3 className="mt-4">Thông tin dịch vụ khám</h3>
             <table className="table table-bordered">
                 <thead>
@@ -261,7 +304,8 @@ const BillUpdate = () => {
                 </div>
             </div>
 
-            <div className="d-flex justify-content-end mt-4">
+            <div className="d-flex justify-content-end mt-4 gap-2">
+
                 <Button
                     variant="success"
                     onClick={handleQRCode}
@@ -269,7 +313,36 @@ const BillUpdate = () => {
                 >
                     Thanh toán QR Code (MoMo)
                 </Button>
+                {prescriptions.length > 0 && hasPriceChanged && (
+                    <Button
+                        variant="warning"
+                        onClick={() => setShowConfirmUpdate(true)}
+                        disabled={!isPriceValid() || bill.paymentStatus === "Paid"}
+                    >
+                        Cập nhật giá thuốc
+                    </Button>
+                )}
             </div>
+
+            {/* Confirmation Modal for Updating Prices */}
+            <Modal show={showConfirmUpdate} onHide={() => setShowConfirmUpdate(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Xác nhận cập nhật giá thuốc</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Bạn có chắc chắn muốn cập nhật giá thuốc cho hóa đơn này?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowConfirmUpdate(false)}>
+                        Hủy
+                    </Button>
+                    <Button
+                        variant="primary"
+                        onClick={handleUpdatePrices}
+                    >
+                        Xác nhận
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
             <ToastContainer
                 position="top-right"
                 autoClose={6000}
