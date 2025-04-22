@@ -1,6 +1,6 @@
 import express from "express";
 import { authenticateToken, authorizeRole } from "../middlewares/authMiddleware";
-import { createBill, getBillDetail, getBills, getBillsByUser, getDoneAppointments, updateBill } from "../controllers/auth/pharmacyController";
+import { createBill, getBillDetail, getBills, getBillsByUser, getDoneAppointments, updateBill, updateMedicinesPrice } from "../controllers/auth/pharmacyController";
 
 const router = express.Router();
 
@@ -22,5 +22,8 @@ router.get("/detail/:billId", getBillDetail);
 
 // Route cập nhật trạng thái thanh toán hóa đơn
 router.patch("/:billId", authorizeRole(["pharmacy", "admin"]), updateBill);
+
+// Update medicine prices in a bill
+router.put('/update-medicines-price/:billId', authorizeRole(["pharmacy"]), updateMedicinesPrice);
 
 export default router;
