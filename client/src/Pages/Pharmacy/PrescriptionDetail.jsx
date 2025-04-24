@@ -12,6 +12,7 @@ const PrescriptionsDetail = () => {
     const [services, setServices] = useState([]);
     const [showConfirm, setShowConfirm] = useState(false);
     const [diagnosisDetails, setDiagnosisDetails] = useState([]);
+    const [excludedPrescriptions, setExcludedPrescriptions] = useState({})
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -38,9 +39,17 @@ const PrescriptionsDetail = () => {
         setPrices(updatedPrices);
     };
 
+    const handleExcludePrescription = (index) => {
+        setExcludedPrescriptions((prev) => ({
+            ...prev,
+            [index]: !prev[index], // Toggle exclusion status
+        }));
+    };
+
     // Tính tổng tiền thuốc
     const totalMedicine = useMemo(() => {
         return prescriptions.reduce((total, prescription, index) => {
+            if (excludedPrescriptions[index]) return total;
             const price = parseInt(prices[index]) || 0;
             const quantity = parseInt(prescription.quantity) || 0;
             return total + price * quantity;
@@ -60,6 +69,7 @@ const PrescriptionsDetail = () => {
 
     const isPriceValid = () => {
         return prescriptions.every((_, index) => {
+            if (excludedPrescriptions[index]) return true;
             const price = parseInt(prices[index]);
             return price && price > 0; // phải có giá trị và > 0
         });
@@ -68,6 +78,7 @@ const PrescriptionsDetail = () => {
     const handleCreateBill = async () => {
         try {
             const medicineFees = prescriptions.map((prescription, index) => {
+                if (excludedPrescriptions[index]) return null;
                 const price = parseInt(prices[index]) || 0;
                 const quantity = parseInt(prescription.quantity) || 0;
                 return {
@@ -78,7 +89,8 @@ const PrescriptionsDetail = () => {
                     totalPrice: price * quantity,
                     usage: prescription.usage,
                 };
-            });
+            })
+            .filter((item) => item !== null);
 
             const testFees = services.map((service) => ({
                 name: service.name,
@@ -178,13 +190,14 @@ const PrescriptionsDetail = () => {
                         <th className="text-center">Giá</th>
                         <th className="text-center">Thành tiền</th>
                         <th className="text-center">Cách dùng</th>
+                        <th className="text-center">Bệnh nhân không lấy thuốc</th>
                     </tr>
                 </thead>
                 <tbody>
                     {prescriptions.map((prescription, index) => {
                         const price = parseInt(prices[index]) || 0;
                         const quantity = parseInt(prescription.quantity) || 0;
-                        const total = price * quantity;
+                        const total = excludedPrescriptions[index] ? 0 : price * quantity; // Set total to 0 if excluded
 
                         return (
                             <tr key={index}>
@@ -208,10 +221,18 @@ const PrescriptionsDetail = () => {
                                                 handlePriceChange(index, value);
                                             }
                                         }}
+                                        disabled={excludedPrescriptions[index]} // Disable price input if excluded
                                     />
                                 </td>
                                 <td className="text-center">{total} VND</td>
                                 <td>{prescription.usage}</td>
+                                <td className="text-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={excludedPrescriptions[index] || false}
+                                        onChange={() => handleExcludePrescription(index)}
+                                    />
+                                </td>
                             </tr>
                         );
                     })}

@@ -314,9 +314,9 @@ const ManageResult = () => {
                   className="form-control"
                 >
                   <option value="">Chọn mức độ nghiêm trọng</option>
-                  <option value="mild">Nhẹ</option>
-                  <option value="moderate">Trung bình</option>
-                  <option value="severe">Nặng</option>
+                  <option value="Nhẹ">Nhẹ</option>
+                  <option value="Trung bình">Trung bình</option>
+                  <option value="Nặng">Nặng</option>
                 </select>
               </td>
             </tr>

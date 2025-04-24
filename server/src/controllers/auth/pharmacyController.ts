@@ -395,3 +395,80 @@ export const updateBill = async (req: Request, res: Response, next: NextFunction
         next(error);
     }
 };
+
+// Update medicine prices in a bill
+export const updateMedicinesPrice = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { billId } = req.params;
+        const { medicineFees } = req.body;
+
+        console.log(`Attempting to update medicine prices for bill with ID: ${billId}`);
+
+        // Find the bill by _id
+        const bill = await Bill.findById(billId);
+        if (!bill) {
+            console.log(`Bill with ID: ${billId} not found`);
+            res.status(404).json({ message: "Bill not found" });
+            return;
+        }
+
+        // Check if the bill is in process of payment or already paid
+        if (bill.paymentStatus === 'Paying' || bill.paymentStatus === 'Paid') {
+            const message =
+                bill.paymentStatus === 'Paying'
+                    ? 'Hóa đơn không thể cập nhật vì đang trong quá trình thanh toán.'
+                    : 'Hóa đơn không thể cập nhật vì đã được thanh toán.';
+            console.log(`Hóa đơn với ID: ${billId} không thể cập nhật vì trạng thái là ${bill.paymentStatus}`);
+            res.status(400).json({ message });
+            return;
+        }
+
+        // Validate medicineFees
+        if (!Array.isArray(medicineFees) || medicineFees.length !== bill.medicineFees.length) {
+            console.log(`Invalid medicineFees array`);
+            res.status(400).json({ message: "Invalid medicineFees array" });
+            return;
+        }
+
+        // Validate each medicine entry
+        for (let i = 0; i < medicineFees.length; i++) {
+            const med = medicineFees[i];
+            const originalMed = bill.medicineFees[i];
+
+            if (
+                !med.name ||
+                !med.unit ||
+                !med.quantity ||
+                !med.unitPrice ||
+                !med.totalPrice ||
+                !med.usage ||
+                med.name !== originalMed.name ||
+                med.unit !== originalMed.unit ||
+                med.quantity !== originalMed.quantity ||
+                med.usage !== originalMed.usage ||
+                med.unitPrice < 0 ||
+                med.totalPrice !== med.unitPrice * med.quantity
+            ) {
+                console.log(`Invalid medicine entry at index ${i}`);
+                res.status(400).json({ message: `Invalid medicine entry at index ${i}` });
+                return;
+            }
+        }
+
+        // Update medicineFees
+        bill.medicineFees = medicineFees;
+
+        // Recalculate totalAmount
+        bill.totalAmount = calculateTotalAmount(bill.testFees, bill.medicineFees, bill.additionalFees);
+
+        // Save the updated bill
+        await bill.save();
+        console.log(`Bill with ID: ${billId} updated successfully`);
+
+        res.status(200).json({ message: 'Medicine prices updated successfully', bill });
+    } catch (error) {
+        console.error('Error updating medicine prices:', error);
+        console.log(`Error details: ${error}`);
+        next(error);
+    }
+};
