@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 
 const socket = io('http://localhost:8080'); // Đảm bảo trỏ đúng tới server
@@ -9,6 +9,9 @@ const VideoCall = () => {
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const peerConnectionRef = useRef(null);
+  const location = useLocation();
+  const autoStart = location.state?.autoStart;
+  const autoAnswer = location.state?.autoAnswer;
 
   const [localStream, setLocalStream] = useState(null);
   const [mySocketId, setMySocketId] = useState('');
@@ -22,11 +25,16 @@ const VideoCall = () => {
       setMySocketId(id);
     });
 
-    socket.emit('join-video-room', roomId); // Tham gia phòng theo videoCallCode
+    socket.emit('join-video-room', roomId);
 
     socket.on('call-made', async ({ offer }) => {
       setIncomingCall(true);
       window.offer = offer;
+
+      // 👇 Nếu có autoAnswer thì trả lời luôn
+      if (autoAnswer && !callStarted) {
+        await answerCall();
+      }
     });
 
     socket.on('answer-made', async ({ answer }) => {
@@ -37,13 +45,17 @@ const VideoCall = () => {
       peerConnectionRef.current?.addIceCandidate(new RTCIceCandidate(candidate));
     });
 
+    if (autoStart && !callStarted) {
+      startCall();
+    }
+
     return () => {
       socket.off('your-id');
       socket.off('call-made');
       socket.off('answer-made');
       socket.off('ice-candidate');
     };
-  }, [roomId]);
+  }, [roomId, autoStart, autoAnswer]);
 
   const createPeerConnection = () => {
     const pc = new RTCPeerConnection({

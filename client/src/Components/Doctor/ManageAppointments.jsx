@@ -301,6 +301,7 @@ const ManageAppointment = () => {
                                             </button>
                                             <Link
                                                 to={`/videocall/${appointment.meetingCode}`}
+                                                state={{ autoStart: true }}
                                                 className="btn btn-success me-2"
                                             >
                                                 Tham gia cuộc gọi
