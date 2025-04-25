@@ -100,7 +100,7 @@ function App() {
     return (
         <>
             <Routes>
-                <Route path="/videocall" element={<VideoCall />} />
+                <Route path="/videocall/:roomId" element={<VideoCall />} />
                 <Route path="/" element={<Layout isTopBar={true} />}>
                     <Route index element={<MainHome />} />
                     <Route path="/home-v2" element={<HomeV2 />} />

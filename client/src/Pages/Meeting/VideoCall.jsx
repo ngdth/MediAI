@@ -1,41 +1,38 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:8080'); // Thay bằng URL server của bạn
+const socket = io('http://localhost:8080'); // Đảm bảo trỏ đúng tới server
 
 const VideoCall = () => {
+  const { roomId } = useParams(); // Chính là videoCallCode
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const peerConnectionRef = useRef(null);
 
   const [localStream, setLocalStream] = useState(null);
   const [mySocketId, setMySocketId] = useState('');
-  const [targetId, setTargetId] = useState('');
   const [incomingCall, setIncomingCall] = useState(false);
   const [callStarted, setCallStarted] = useState(false);
-  const [callerId, setCallerId] = useState('');
-  const [isMuted, setIsMuted] = useState(false); // State kiểm tra micro
-  const [isVideoOff, setIsVideoOff] = useState(false); // State kiểm tra camera
+  const [isMuted, setIsMuted] = useState(false);
+  const [isVideoOff, setIsVideoOff] = useState(false);
 
   useEffect(() => {
-    // Nhận socket ID
     socket.on('your-id', (id) => {
       setMySocketId(id);
     });
 
-    // Nhận cuộc gọi đến
-    socket.on('call-made', async ({ offer, caller }) => {
+    socket.emit('join-video-room', roomId); // Tham gia phòng theo videoCallCode
+
+    socket.on('call-made', async ({ offer }) => {
       setIncomingCall(true);
-      setCallerId(caller);
       window.offer = offer;
     });
 
-    // Nhận câu trả lời
     socket.on('answer-made', async ({ answer }) => {
       await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(answer));
     });
 
-    // Nhận ICE candidate
     socket.on('ice-candidate', ({ candidate }) => {
       peerConnectionRef.current?.addIceCandidate(new RTCIceCandidate(candidate));
     });
@@ -46,7 +43,7 @@ const VideoCall = () => {
       socket.off('answer-made');
       socket.off('ice-candidate');
     };
-  }, []);
+  }, [roomId]);
 
   const createPeerConnection = () => {
     const pc = new RTCPeerConnection({
@@ -57,7 +54,7 @@ const VideoCall = () => {
       if (event.candidate) {
         socket.emit('ice-candidate', {
           candidate: event.candidate,
-          target: targetId || callerId,
+          roomId: roomId,
         });
       }
     };
@@ -83,7 +80,7 @@ const VideoCall = () => {
 
     socket.emit('call-user', {
       offer,
-      target: targetId,
+      roomId: roomId,
     });
 
     setCallStarted(true);
@@ -104,7 +101,7 @@ const VideoCall = () => {
 
     socket.emit('make-answer', {
       answer,
-      target: callerId,
+      roomId: roomId,
     });
 
     setIncomingCall(false);
@@ -115,8 +112,6 @@ const VideoCall = () => {
     peerConnectionRef.current?.close();
     setCallStarted(false);
     setIncomingCall(false);
-    setTargetId('');
-    setCallerId('');
     localVideoRef.current.srcObject = null;
     remoteVideoRef.current.srcObject = null;
   };
@@ -136,19 +131,13 @@ const VideoCall = () => {
   return (
     <div className="video-call-container">
       <h2>🔗 Video Call WebRTC</h2>
-      <p>Your Socket ID: <code>{mySocketId}</code></p>
-      <input
-        placeholder="Enter socket ID to call"
-        value={targetId}
-        onChange={(e) => setTargetId(e.target.value)}
-        disabled={callStarted}
-      />
+      <p>Room Code: <code>{roomId}</code></p>
       <div className="video-container">
         <video ref={localVideoRef} autoPlay muted playsInline />
         <video ref={remoteVideoRef} autoPlay playsInline />
       </div>
 
-      {!callStarted && <button onClick={startCall} disabled={!targetId}>Start Call</button>}
+      {!callStarted && <button onClick={startCall} disabled={!roomId}>Start Call</button>}
       {incomingCall && !callStarted && <button onClick={answerCall}>Answer Call</button>}
       {callStarted && <button onClick={endCall}>End Call</button>}
 

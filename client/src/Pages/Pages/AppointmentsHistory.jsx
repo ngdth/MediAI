@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
 import PageHeading from "../../Components/PageHeading";
@@ -247,6 +247,12 @@ const AppointmentsHistory = () => {
                                   Hủy
                                 </button>
                               )}
+                              <Link
+                                to={`/videocall/${appointment.meetingCode}`}
+                                className="btn btn-success btn-sm me-2"
+                              >
+                                Tham gia cuộc gọi
+                              </Link>
                             </td>
                           </tr>
                         );

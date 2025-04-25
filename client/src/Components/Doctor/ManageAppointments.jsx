@@ -228,7 +228,7 @@ const ManageAppointment = () => {
                 <table className="table table-bordered text-center">
                     <thead>
                         <tr>
-                        <th>
+                            <th>
                                 <span
                                     onClick={() => handleSort("id")}
                                     style={{ cursor: "pointer" }}
@@ -299,6 +299,12 @@ const ManageAppointment = () => {
                                             >
                                                 Từ chối
                                             </button>
+                                            <Link
+                                                to={`/videocall/${appointment.meetingCode}`}
+                                                className="btn btn-success me-2"
+                                            >
+                                                Tham gia cuộc gọi
+                                            </Link>
                                         </td>
                                     </tr>
                                 );

@@ -12,22 +12,31 @@ export const initSocketServer = (server: http.Server) => {
     console.log('✅ User connected:', socket.id);
     socket.emit('your-id', socket.id);
 
-    socket.on('call-user', ({ offer, target }) => {
-      io.to(target).emit('call-made', {
+    // Join room theo videoCallCode
+    socket.on('join-video-room', (roomId: string) => {
+      socket.join(roomId);
+      console.log(`📌 Socket ${socket.id} joined room ${roomId}`);
+    });
+
+    // Gửi lời gọi tới phòng
+    socket.on('call-user', ({ offer, roomId }) => {
+      socket.to(roomId).emit('call-made', {
         offer,
         caller: socket.id,
       });
     });
 
-    socket.on('make-answer', ({ answer, target }) => {
-      io.to(target).emit('answer-made', {
+    // Trả lời cuộc gọi
+    socket.on('make-answer', ({ answer, roomId }) => {
+      socket.to(roomId).emit('answer-made', {
         answer,
         callee: socket.id,
       });
     });
 
-    socket.on('ice-candidate', ({ candidate, target }) => {
-      io.to(target).emit('ice-candidate', {
+    // ICE Candidate
+    socket.on('ice-candidate', ({ candidate, roomId }) => {
+      socket.to(roomId).emit('ice-candidate', {
         candidate,
         from: socket.id,
       });
