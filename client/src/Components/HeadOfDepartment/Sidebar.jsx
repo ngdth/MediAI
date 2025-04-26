@@ -1,6 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FaTachometerAlt, FaUserMd, FaUserNurse, FaBars, FaTimes, FaPills } from "react-icons/fa";
+import {
+  FaTachometerAlt,
+  FaUserMd,
+  FaUserNurse,
+  FaBars,
+  FaTimes,
+  FaPills,
+} from "react-icons/fa";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   return (
@@ -39,6 +46,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             <Link to="/hod/medical-history" className="menu-item">
               <FaPills className="menu-icon" />
               <span>Lịch sử khám bệnh</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/hod/specialization" className="menu-item">
+              <FaPills className="menu-icon" />
+              <span>Lịch sử khám bệnh các bác sĩ</span>
             </Link>
           </li>
         </ul>

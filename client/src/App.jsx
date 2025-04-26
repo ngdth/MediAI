@@ -76,6 +76,7 @@ import DoctorAppointmentList from "./Pages/Doctor/HeadOfDepartment/DoctorAppoint
 import BlogCreatePage from "./Components/BlogsSection/BlogCreatePage";
 import EditBlogPage from "./Components/BlogsSection/EditBlogPage";
 import StaffProfile from "./pages/Pages/StaffProfile";
+import AdminDashboard from "./Pages/Admin/AdminDashboard";
 import VideoCall from "./Pages/Meeting/VideoCall";
 
 function App() {
@@ -151,6 +152,7 @@ function App() {
                     <Route path="/resetPass" element={<ResetPass />} />
                 </Route>
                 <Route path="/admin" element={<AdminLayout />}>
+                    <Route path="/admin" element={<AdminDashboard />} />
                     <Route path="/admin/users" element={<UserManagement />} />
                     <Route path="/admin/doctors" element={<DoctorManagement />} />
                     <Route path="/admin/headofdepartments" element={<HeadOfDepartmentManagement />} />
