@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import ProfileForm from "../../components/Form/ProfileForm/ProfileForm";
+import ProfileForm from "../../Components/Form/ProfileForm/ProfileForm";
 import { ToastContainer, toast } from "react-toastify";
 import {Container,Col, Row, Button, Modal, Form } from "react-bootstrap";
 import { FaRegEdit } from "react-icons/fa";
