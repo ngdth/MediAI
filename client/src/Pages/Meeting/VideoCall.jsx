@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { FaMicrophone, FaMicrophoneSlash, FaPhone, FaVideo, FaVideoSlash } from 'react-icons/fa';
 import { useLocation, useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 
@@ -155,12 +156,15 @@ const VideoCall = () => {
 
       {callStarted && (
         <div className="control-buttons">
-          <div className="mute-btn" onClick={toggleMute}>
-            {isMuted ? 'Unmute Microphone' : 'Mute Microphone'}
-          </div>
-          <div className="video-btn" onClick={toggleVideo}>
-            {isVideoOff ? 'Turn Video On' : 'Turn Video Off'}
-          </div>
+          <button className="control-btn" onClick={toggleMute}>
+            {isMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
+          </button>
+          <button className="control-btn" onClick={toggleVideo}>
+            {isVideoOff ? <FaVideoSlash /> : <FaVideo />}
+          </button>
+          <button className="control-btn end-call" onClick={endCall}>
+            <FaPhone />
+          </button>
         </div>
       )}
     </div>
