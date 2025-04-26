@@ -140,17 +140,12 @@ const DoctorsDetailsPage = () => {
       secSubtitle: doctorDetails.email,
     },
     {
-      icon: <FaPhone />,
-      title: 'Số điện thoại',
-      subtitle: doctorDetails.phone,
-      secIcon: <FaGlobe />,
-      secTitle: 'Website',
-      secSubtitle: doctorDetails.website,
-    },
-    {
       icon: <FaSuitcase />,
       title: 'Kinh nghiệm',
       subtitle: doctorDetails.experience,
+      secIcon: <FaPhone />,
+      secTitle: 'Số điện thoại',
+      secSubtitle: doctorDetails.phone,
     },
   ];
 
