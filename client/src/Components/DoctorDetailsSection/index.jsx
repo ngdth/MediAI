@@ -31,7 +31,7 @@ const DoctorDetailsSection = ({ data, onFavoriteToggle, favoriteStatus, onBookNo
                       onClick={onFavoriteToggle}
                       style={{
                         padding: "8px 16px",
-                        backgroundColor: favoriteStatus ? "green" : "#007bff",
+                        backgroundColor: favoriteStatus ? "red" : "#007bff",
                         color: "#fff",
                         border: "none",
                         borderRadius: "5px",
@@ -42,7 +42,7 @@ const DoctorDetailsSection = ({ data, onFavoriteToggle, favoriteStatus, onBookNo
                       }}
                     >
                       <FaHeart />
-                      {favoriteStatus ? "Đã thêm vào danh sách yêu thích" : "Thêm vào danh sách yêu thích"}
+                      {favoriteStatus ? "" : ""}
                     </button>
                     <Button variant="primary" onClick={onBookNow}>
                       Đặt lịch ngay
