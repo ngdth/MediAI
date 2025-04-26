@@ -1,6 +1,6 @@
 import React from "react";
 import { Container, Row, Col, Card, Image } from "react-bootstrap";
-import RegisterForm from "../../components/Form/Authenform/RegisterForm";
+import RegisterForm from "../../Components/Form/Authenform/RegisterForm";
 
 function RegisterPage() {
     const handleRegistering = () => {
