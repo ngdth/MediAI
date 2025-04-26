@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import {
-  FaEnvelope,
-  FaFacebookF,
-  FaInstagram,
-  FaPinterestP,
-  FaTwitter,
-} from "react-icons/fa";
+import { useEffect, useState } from "react";
+// import {
+//   FaEnvelope,
+//   FaFacebookF,
+//   FaInstagram,
+//   FaPinterestP,
+//   FaTwitter,
+// } from "react-icons/fa";
 import { FaAnglesRight, FaLocationDot } from "react-icons/fa6";
 import { HiMiniMagnifyingGlass } from "react-icons/hi2";
 import { Link } from "react-router-dom";
@@ -22,7 +22,6 @@ const Header = ({ isTopBar, variant }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [username, setUsername] = useState(localStorage.getItem("username"));
   const navigate = useNavigate();
-  const [role, setRole] = useState(localStorage.getItem("role"));
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,7 +40,6 @@ const Header = ({ isTopBar, variant }) => {
 
     const handleLogin = () => {
       setUsername(localStorage.getItem("username"));
-      setRole(localStorage.getItem("role"));
     };
 
     window.addEventListener("loginSuccess", handleLogin);
@@ -55,7 +53,6 @@ const Header = ({ isTopBar, variant }) => {
   const handleLogout = () => {
     localStorage.removeItem("token"); // Xóa token
     localStorage.removeItem("username"); // Xóa username
-    localStorage.removeItem("role"); // Xóa role
     setUsername(null); // Cập nhật state username về null
     navigate("/"); // Chuyển hướng về trang đăng nhập
   };
@@ -95,24 +92,17 @@ const Header = ({ isTopBar, variant }) => {
     btnText: "Liên hệ ngay ",
   };
 
-  const filteredNavItems = React.useMemo(() => {
-    return role === "doctor"
-      ? menu.navItems.filter(item => item.label !== "Blog")
-      : menu.navItems;
-  }, [role, menu.navItems]);
-  console.log("Filtered Nav Items:", filteredNavItems);
-
   const accountMenu = username
     ? [
-      { label: "Hồ sơ ", href: "/profile" },
-      // { label: "Danh sách yêu thích ", href: "/favorites" },
-      { label: "Thanh toán ", href: "/payment" },
-      { label: "Đăng xuất", action: handleLogout },
-    ]
+        { label: "Hồ sơ ", href: "/profile" },
+        // { label: "Danh sách yêu thích ", href: "/favorites" },
+        { label: "Thanh toán ", href: "/payment" },
+        { label: "Đăng xuất", action: handleLogout },
+      ]
     : [
-      { label: "Đăng nhập", href: "/login" },
-      { label: "Đăng ký", href: "/register" },
-    ];
+        { label: "Đăng nhập", href: "/login" },
+        { label: "Đăng ký", href: "/register" },
+      ];
 
 
   const handleOpenMobileSubmenu = (index) => {
@@ -202,7 +192,7 @@ const Header = ({ isTopBar, variant }) => {
                   <ul
                     className={`cs_nav_list ${isShowMobileMenu && "cs_active"}`}
                   >
-                    {filteredNavItems.map((item, index) => (
+                    {menu.navItems.map((item, index) => (
                       <li
                         className={
                           item.subItems ? "menu-item-has-children" : ""
@@ -239,10 +229,11 @@ const Header = ({ isTopBar, variant }) => {
                         )}
                         {item.subItems?.length && (
                           <span
-                            className={`cs_menu_dropdown_toggle ${openMobileSubmenuIndex.includes(index)
-                              ? "active"
-                              : ""
-                              }`}
+                            className={`cs_menu_dropdown_toggle ${
+                              openMobileSubmenuIndex.includes(index)
+                                ? "active"
+                                : ""
+                            }`}
                             onClick={() => handleOpenMobileSubmenu(index)}
                           >
                             <span></span>
@@ -275,8 +266,9 @@ const Header = ({ isTopBar, variant }) => {
                     </li>
                   </ul>
                   <span
-                    className={`cs_menu_toggle ${isShowMobileMenu && "cs_toggle_active"
-                      }`}
+                    className={`cs_menu_toggle ${
+                      isShowMobileMenu && "cs_toggle_active"
+                    }`}
                     onClick={() => setIsShowMobileMenu(!isShowMobileMenu)}
                   >
                     <span></span>
@@ -293,8 +285,9 @@ const Header = ({ isTopBar, variant }) => {
                   </div>
                   <form
                     action="#"
-                    className={`cs_header_search_form ${isSearchActive ? "active" : ""
-                      }`}
+                    className={`cs_header_search_form ${
+                      isSearchActive ? "active" : ""
+                    }`}
                     onSubmit={handleSearch}
                   >
                     <div className="cs_header_search_form_in">

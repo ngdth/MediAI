@@ -49,7 +49,7 @@ const DoctorDetailsSection = ({ data, onFavoriteToggle, favoriteStatus, onBookNo
                     </Button>
                   </div>
                 </div>
-                <p className="cs_doctor_subtitle mb-0">{subtitle}</p>
+                <p className="cs_doctor_subtitle mb-0 pt-3">{subtitle}</p>
               </div>
               {description.map((desc, index) => (
                 <p className="mb-0" key={index}>
