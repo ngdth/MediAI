@@ -7,6 +7,7 @@ const socket = io('http://localhost:8080'); // Đảm bảo trỏ đúng tới s
 
 const VideoCall = () => {
   const { roomId } = useParams(); // Chính là videoCallCode
+  const offerRef = useRef(null);
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const peerConnectionRef = useRef(null);
@@ -14,6 +15,7 @@ const VideoCall = () => {
   const autoStart = location.state?.autoStart;
   const autoAnswer = location.state?.autoAnswer;
 
+  const [offerReady, setOfferReady] = useState(false);
   const [localStream, setLocalStream] = useState(null);
   const [mySocketId, setMySocketId] = useState('');
   const [incomingCall, setIncomingCall] = useState(false);
@@ -29,13 +31,9 @@ const VideoCall = () => {
     socket.emit('join-video-room', roomId);
 
     socket.on('call-made', async ({ offer }) => {
+      offerRef.current = offer;
       setIncomingCall(true);
-      window.offer = offer;
-
-      // 👇 Nếu có autoAnswer thì trả lời luôn
-      if (autoAnswer && !callStarted) {
-        await answerCall();
-      }
+      setOfferReady(true);
     });
 
     socket.on('answer-made', async ({ answer }) => {
@@ -57,6 +55,12 @@ const VideoCall = () => {
       socket.off('ice-candidate');
     };
   }, [roomId, autoStart, autoAnswer]);
+
+  useEffect(() => {
+    if (autoAnswer && offerReady && !callStarted) {
+      answerCall();
+    }
+  }, [autoAnswer, offerReady, callStarted]);
 
   const createPeerConnection = () => {
     const pc = new RTCPeerConnection({
@@ -108,7 +112,7 @@ const VideoCall = () => {
     stream.getTracks().forEach(track => pc.addTrack(track, stream));
     peerConnectionRef.current = pc;
 
-    await pc.setRemoteDescription(new RTCSessionDescription(window.offer));
+    await pc.setRemoteDescription(new RTCSessionDescription(offerRef.current));
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
 
@@ -143,7 +147,7 @@ const VideoCall = () => {
 
   return (
     <div className="video-call-container">
-      <h2>🔗 Video Call WebRTC</h2>
+      <h2>Video Call WebRTC</h2>
       <p>Room Code: <code>{roomId}</code></p>
       <div className="video-container">
         <video ref={localVideoRef} autoPlay muted playsInline />
@@ -152,7 +156,7 @@ const VideoCall = () => {
 
       {!callStarted && <button onClick={startCall} disabled={!roomId}>Start Call</button>}
       {incomingCall && !callStarted && <button onClick={answerCall}>Answer Call</button>}
-      {callStarted && <button onClick={endCall}>End Call</button>}
+      {/* {callStarted && <button onClick={endCall}>End Call</button>} */}
 
       {callStarted && (
         <div className="control-buttons">
