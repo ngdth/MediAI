@@ -239,6 +239,10 @@ export const updateAppointmentStatus = async (req: Request, res: Response, next:
                 return;
             }
 
+            const generateMeetingCode = `call_${appointment._id}`;
+            appointment.meetingCode = generateMeetingCode;
+            await appointment.save();
+
             const userEmail = (appointment.userId as any)?.email;
             if (!userEmail) {
                 res.status(400).json({ message: "User email not found" });

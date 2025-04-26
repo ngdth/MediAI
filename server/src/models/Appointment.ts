@@ -47,6 +47,7 @@ interface IAppointment extends Document {
     isContinuousCare?: boolean;
     isDoctorAssignedByPatient?: boolean;
     patientHistory?: string[];
+    meetingCode?: string;
 }
 
 const transferNoteSchema = new Schema<ITransferNote>({
@@ -85,6 +86,7 @@ const appointmentSchema = new Schema<IAppointment>(
         isContinuousCare: { type: Boolean, default: false },
         isDoctorAssignedByPatient: { type: Boolean, default: false },
         patientHistory: [{ type: String, ref: 'Appointment' }],
+        meetingCode: { type: String }
     },
     { timestamps: true, _id: false }
 );

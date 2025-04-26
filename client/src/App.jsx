@@ -77,6 +77,7 @@ import BlogCreatePage from "./Components/BlogsSection/BlogCreatePage";
 import EditBlogPage from "./Components/BlogsSection/EditBlogPage";
 import StaffProfile from "./pages/Pages/StaffProfile";
 import AdminDashboard from "./Pages/Admin/AdminDashboard";
+import VideoCall from "./Pages/Meeting/VideoCall";
 
 function App() {
     Aos.init({
@@ -100,6 +101,7 @@ function App() {
     return (
         <>
             <Routes>
+                <Route path="/videocall/:roomId" element={<VideoCall />} />
                 <Route path="/" element={<Layout isTopBar={true} />}>
                     <Route index element={<MainHome />} />
                     <Route path="/home-v2" element={<HomeV2 />} />

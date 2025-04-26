@@ -5,6 +5,9 @@ import { Request, Response, NextFunction } from 'express';
 import app from './utils/app' // (server)
 import mongo from './config/mongo' // (database)
 import { PORT } from './constants/index'
+import http from 'http'
+// import { setupVideoCallSocket } from './utils/socket';
+import { initSocketServer } from './utils/socket';
 import authRoutes from './routes/authRoutes' // Import auth routes
 import userRoutes from './routes/userRoutes' // Import user routes
 import adminRoutes from './routes/adminRoutes' // Import admin routes
@@ -22,6 +25,9 @@ interface MulterError extends Error {
   field?: string;
   code?: string;
 }
+
+const server = http.createServer(app) // 👈 quan trọng: tạo HTTP server từ app
+
 const bootstrap = async () => {
   await mongo.connect()
 
@@ -53,7 +59,13 @@ const bootstrap = async () => {
     }
     res.status(400).json({ error: error.message });
   });
-  app.listen(PORT || 8080, () => {
+
+  // Kết nối socket
+  // setupVideoCallSocket(server)
+  initSocketServer(server)
+
+  // Lắng nghe
+  server.listen(PORT || 8080, () => {
     console.log(`✅ Server is listening on port: ${PORT || 8080}`)
   })
 }
