@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
-import { Doctor, HeadOfDepartment, IHeadOfDepartment } from "../../models/User";
+import { HeadOfDepartment, IHeadOfDepartment } from "../../models/User";
 import User from "../../models/User";
 import mongoose from "mongoose";
 

@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express";
 // Định nghĩa kiểu JwtPayload
 export interface JwtPayload {
     id: string;
-    role: "admin" | "user" | "doctor" | "nurse" | "pharmacy";
+    role: "admin" | "user" | "doctor" | "nurse" | "pharmacy" |"head of department";
 }
 
 // Middleware authenticate token
