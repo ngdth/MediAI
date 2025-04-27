@@ -36,7 +36,11 @@ const LoginForm = ({ onLogin }) => {
             console.log(data);
             localStorage.setItem("username", data.user.username);
             onLogin(data);
-            navigate("/");
+            if (data.user.role === "admin") {
+                navigate("/admin");
+            } else {
+                navigate("/");
+            }
         } catch (err) {
             setError(err.message);
         }
