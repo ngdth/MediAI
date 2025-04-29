@@ -113,4 +113,6 @@ appointmentSchema.pre('save', async function (next) {
 
 const Appointment = model<IAppointment>('Appointment', appointmentSchema);
 
+export type { IAppointment };
+
 export default Appointment;

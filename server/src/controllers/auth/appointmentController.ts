@@ -183,10 +183,10 @@ export const updateAppointmentField = async (req: Request, res: Response, next: 
             }
         } else {
             if (!(field in typedAppointment)) {
-                typedAppointment[field] = {} as any;
+                (typedAppointment as any)[field] = {};
             }
-            if (typedAppointment[field] && typeof typedAppointment[field] === 'object') {
-                (typedAppointment[field] as any)[subField] = value;
+            if ((typedAppointment as any)[field] && typeof (typedAppointment as any)[field] === 'object') {
+                (typedAppointment as any)[field][subField] = value;
             } else {
                 res.status(400).json({ message: `Subfield '${subField}' in '${field}' is not valid` });
                 return;

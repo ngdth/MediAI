@@ -106,10 +106,10 @@ export const getSchedulesByDoctor = async (req: Request, res: Response): Promise
             .populate('doctorId', 'name email role') // Take doctor info
             .sort({ createdAt: -1 }); // Sort by createdAt
 
-        if (!schedules || schedules.length === 0) {
-            res.status(404).json({ message: 'Không tìm thấy lịch khám cho bác sĩ này' });
-            return;
-        }
+        // if (!schedules || schedules.length === 0) {
+        //     res.status(404).json({ message: 'Không tìm thấy lịch khám cho bác sĩ này' });
+        //     return;
+        // }
 
         // return schedules
         res.status(200).json(schedules);
