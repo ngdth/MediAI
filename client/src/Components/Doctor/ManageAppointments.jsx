@@ -294,15 +294,15 @@ const ManageAppointment = () => {
                                                 Tạo kết quả khám bệnh
                                             </Link>
                                             <button
-                                                className="btn btn-danger me-2"
+                                                className="btn btn-danger me-2 mt-2"
                                                 onClick={() => handleReject(appointment)}
                                             >
                                                 Từ chối
                                             </button>
                                             <Link
-                                                to={`/videocall/${appointment.meetingCode}`}
+                                                to={`/meeting/${appointment.meetingCode}`}
                                                 state={{ autoStart: true }}
-                                                className="btn btn-success me-2"
+                                                className="btn btn-success me-2 mt-2"
                                             >
                                                 Tham gia cuộc gọi
                                             </Link>

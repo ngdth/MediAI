@@ -247,13 +247,15 @@ const AppointmentsHistory = () => {
                                   Hủy
                                 </button>
                               )}
-                              <Link
-                                to={`/videocall/${appointment.meetingCode}`}
-                                state={{ autoAnswer: true }}
-                                className="btn btn-success btn-sm me-2"
-                              >
-                                Yêu cầu cuộc gọi
-                              </Link>
+                              {appointment.status === "Accepted" && (
+                                <Link
+                                  to={`/meeting/${appointment.meetingCode}`}
+                                  state={{ autoAnswer: true }}
+                                  className="btn btn-success btn-sm"
+                                >
+                                  Yêu cầu cuộc gọi
+                                </Link>
+                              )}
                             </td>
                           </tr>
                         );

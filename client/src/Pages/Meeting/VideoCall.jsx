@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FaMicrophone, FaMicrophoneSlash, FaPhone, FaVideo, FaVideoSlash } from 'react-icons/fa';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:8080'); // Đảm bảo trỏ đúng tới server
+const socket = io('http://localhost:8080'); // Server URL
 
 const VideoCall = () => {
-  const { roomId } = useParams(); // Chính là videoCallCode
+  const { roomId } = useParams(); // Get roomId from URL
+  const navigate = useNavigate();
   const offerRef = useRef(null);
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
@@ -131,6 +132,12 @@ const VideoCall = () => {
     setIncomingCall(false);
     localVideoRef.current.srcObject = null;
     remoteVideoRef.current.srcObject = null;
+
+    // Quay lại trang trước và reload
+    navigate(-1); // Quay lại trang trước
+    setTimeout(() => {
+      window.location.reload(); // Reload để đảm bảo giải phóng
+    }, 100); // Chờ một chút cho điều hướng xong
   };
 
   const toggleMute = () => {
@@ -147,7 +154,7 @@ const VideoCall = () => {
 
   return (
     <div className="video-call-container">
-      <h2>Video Call WebRTC</h2>
+      <h2>Online Meeting</h2>
       <p>Room Code: <code>{roomId}</code></p>
       <div className="video-container">
         <video ref={localVideoRef} autoPlay muted playsInline />
