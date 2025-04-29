@@ -286,7 +286,7 @@ export const changePassword: RequestHandler = async (req: Request, res: Response
 export const updateProfile = async (req: Request, res: Response): Promise<void> => {
     try {
         const userId = req.user.id; // Lấy user id từ request
-        const { username, email, firstName, lastName, birthday, gender, phone, address, city, country, bio } = req.body;
+        const { username, email, firstName, lastName, birthday, gender, phone, address, city, country, bio, role } = req.body;
 
         // Cập nhật thông tin người dùng
         const updatedUser = await User.findByIdAndUpdate(
@@ -302,6 +302,7 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
                 address,
                 city,
                 country,
+                role,
                 bio
             },
             { new: true } // Trả về user sau khi cập nhật
