@@ -228,7 +228,7 @@ const ManageAppointment = () => {
                 <table className="table table-bordered text-center">
                     <thead>
                         <tr>
-                        <th>
+                            <th>
                                 <span
                                     onClick={() => handleSort("id")}
                                     style={{ cursor: "pointer" }}
@@ -294,11 +294,18 @@ const ManageAppointment = () => {
                                                 Tạo kết quả khám bệnh
                                             </Link>
                                             <button
-                                                className="btn btn-danger me-2"
+                                                className="btn btn-danger me-2 mt-2"
                                                 onClick={() => handleReject(appointment)}
                                             >
                                                 Từ chối
                                             </button>
+                                            <Link
+                                                to={`/meeting/${appointment.meetingCode}`}
+                                                state={{ autoStart: true }}
+                                                className="btn btn-success me-2 mt-2"
+                                            >
+                                                Tham gia cuộc gọi
+                                            </Link>
                                         </td>
                                     </tr>
                                 );

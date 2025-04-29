@@ -77,6 +77,7 @@ import BlogCreatePage from "./Components/BlogsSection/BlogCreatePage";
 import EditBlogPage from "./Components/BlogsSection/EditBlogPage";
 import StaffProfile from "./Pages/Pages/StaffProfile";
 import AdminDashboard from "./Pages/Admin/AdminDashboard";
+import Meeting from "./Pages/Meeting/Meeting";
 
 function App() {
     Aos.init({
@@ -100,6 +101,7 @@ function App() {
     return (
         <>
             <Routes>
+                <Route path="/meeting/:roomId" element={<Meeting />} />
                 <Route path="/" element={<Layout isTopBar={true} />}>
                     <Route index element={<MainHome />} />
                     <Route path="/home-v2" element={<HomeV2 />} />
