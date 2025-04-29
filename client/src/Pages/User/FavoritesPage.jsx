@@ -21,7 +21,7 @@ const FavoritesPage = () => {
 
     const fetchFavorites = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/user/favorites", {
+            const response = await axios.get("https://amma-care.com/user/favorites", {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -38,7 +38,7 @@ const FavoritesPage = () => {
 
     const handleRemove = async (doctorId) => {
         try {
-            await axios.delete(`http://localhost:8080/user/favorites/delete/${doctorId}`, {
+            await axios.delete(`https://amma-care.com/user/favorites/delete/${doctorId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

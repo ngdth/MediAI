@@ -19,7 +19,7 @@ const TopBar = ({ isSidebarOpen }) => {
         console.error("No token found in localStorage");
         return;
       }
-      const response = await axios.get("http://localhost:8080/user/me", {
+      const response = await axios.get("https://amma-care.com/user/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
       console.log("User data from /user/me:", response.data);
@@ -37,7 +37,7 @@ const TopBar = ({ isSidebarOpen }) => {
     }
     try {
       const response = await axios.get(
-        `http://localhost:8080/notification/${userId}`,
+        `https://amma-care.com/notification/${userId}`,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
@@ -89,7 +89,7 @@ const TopBar = ({ isSidebarOpen }) => {
     e.stopPropagation();
     try {
       await axios.put(
-        `http://localhost:8080/notification/${notificationId}/read`,
+        `https://amma-care.com/notification/${notificationId}/read`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },

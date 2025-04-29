@@ -30,7 +30,7 @@ const BlogsPage = () => {
 
   const fetchSpecializations = async () => {
     try {
-      const specResponse = await axios.get('http://localhost:8080/blog/specializations');
+      const specResponse = await axios.get('https://amma-care.com/blog/specializations');
       setSpecializations(specResponse.data);
     } catch (err) {
       console.error("Error fetching specializations:", err);
@@ -50,8 +50,8 @@ const BlogsPage = () => {
         return;
       }
 
-      console.log("Gọi API với URL:", 'http://localhost:8080/blog');
-      const response = await axios.get('http://localhost:8080/blog', {
+      console.log("Gọi API với URL:", 'https://amma-care.com/blog');
+      const response = await axios.get('https://amma-care.com/blog', {
         headers: {
           Authorization: `Bearer ${token}`
         },

@@ -65,7 +65,7 @@ const ProfileForm = ({ user, setUser }) => {
 
         try {
             const response = await axios.put(
-                `http://localhost:8080/user/updateProfile/${user._id}`,
+                `https://amma-care.com/user/updateProfile/${user._id}`,
                 formData,
                 {
                     headers: { Authorization: `Bearer ${token}` },
@@ -74,7 +74,7 @@ const ProfileForm = ({ user, setUser }) => {
             if (response.status === 200) {
                 toast.success("Profile updated successfully!");
                 localStorage.setItem("username", formData.username);
-                const updatedUserResponse = await axios.get("http://localhost:8080/user/profile", {
+                const updatedUserResponse = await axios.get("https://amma-care.com/user/profile", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setUser(updatedUserResponse.data.user);

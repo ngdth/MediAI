@@ -79,7 +79,7 @@ const BlogsSection1 = ({ data }) => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await axios.get("http://localhost:8080/user/me", {
+      const response = await axios.get("https://amma-care.com/user/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -109,7 +109,7 @@ const BlogsSection1 = ({ data }) => {
         return;
       }
 
-      const response = await axios.get('http://localhost:8080/blog/my-blogs', {
+      const response = await axios.get('https://amma-care.com/blog/my-blogs', {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -161,7 +161,7 @@ const BlogsSection1 = ({ data }) => {
         return;
       }
 
-      const response = await axios.get('http://localhost:8080/blog', {
+      const response = await axios.get('https://amma-care.com/blog', {
         headers: { Authorization: `Bearer ${token}` },
         params: { search: term, specialization, sortBy: 'createdAt', order: 'desc' }
       });
@@ -285,7 +285,7 @@ const BlogsSection1 = ({ data }) => {
     if (!blogToDelete) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:8080/blog/${blogToDelete}`, {
+      await axios.delete(`https://amma-care.com/blog/${blogToDelete}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setShowDeleteModal(false);

@@ -21,7 +21,7 @@ const ManageAppointment = () => {
     useEffect(() => {
         const fetchDoctorId = async () => {
             try {
-                const response = await axios.get("http://localhost:8080/user/me", {
+                const response = await axios.get("https://amma-care.com/user/me", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setDoctorId(response.data.id);
@@ -42,7 +42,7 @@ const ManageAppointment = () => {
 
             try {
                 const response = await axios.get(
-                    `http://localhost:8080/appointment?status=Accepted&doctorId=${doctorId}`,
+                    `https://amma-care.com/appointment?status=Accepted&doctorId=${doctorId}`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     }
@@ -180,7 +180,7 @@ const ManageAppointment = () => {
 
         try {
             await axios.put(
-                `http://localhost:8080/appointment/${selectedAppointmentId}/reject`,
+                `https://amma-care.com/appointment/${selectedAppointmentId}/reject`,
                 { rejectReason },
                 {
                     headers: { Authorization: `Bearer ${token}` },

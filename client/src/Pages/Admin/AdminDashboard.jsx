@@ -42,7 +42,7 @@ const AdminDashboard = () => {
   // Fetch appointments (giữ nguyên)
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/appointment/", {
+      const response = await axios.get("https://amma-care.com/appointment/", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       console.log("Appointments data:", response.data);
@@ -58,7 +58,7 @@ const AdminDashboard = () => {
   // Fetch bills và xử lý thống kê
   const fetchBills = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/pharmacy/", {
+      const response = await axios.get("https://amma-care.com/pharmacy/", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       console.log("Bills data:", response.data);

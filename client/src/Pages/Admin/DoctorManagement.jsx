@@ -26,7 +26,7 @@ const DoctorManagement = () => {
 
     const fetchDoctors = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/user/doctors", {
+            const response = await axios.get("https://amma-care.com/user/doctors", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setDoctors(response.data);
@@ -43,11 +43,11 @@ const DoctorManagement = () => {
         e.preventDefault();
         try {
             if (editingDoctor) {
-                await axios.put(`http://localhost:8080/admin/doctors/update/${editingDoctor._id}`, formData, {
+                await axios.put(`https://amma-care.com/admin/doctors/update/${editingDoctor._id}`, formData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
             } else {
-                await axios.post("http://localhost:8080/admin/doctors/create", formData, {
+                await axios.post("https://amma-care.com/admin/doctors/create", formData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
             }
@@ -77,7 +77,7 @@ const DoctorManagement = () => {
 
     const confirmDelete = async () => {
         try {
-            await axios.delete(`http://localhost:8080/admin/doctors/delete/${doctorToDelete._id}`, {
+            await axios.delete(`https://amma-care.com/admin/doctors/delete/${doctorToDelete._id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             fetchDoctors();

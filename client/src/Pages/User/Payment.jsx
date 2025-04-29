@@ -20,7 +20,7 @@ export default function Payment() {
     useEffect(() => {
         const fetchBills = async () => {
             try {
-                const response = await fetch("http://localhost:8080/pharmacy/my-bills", {
+                const response = await fetch("https://amma-care.com/pharmacy/my-bills", {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -48,7 +48,7 @@ export default function Payment() {
 
     const handlePayBill = async (bill) => {
         try {
-            const response = await fetch("http://localhost:8080/payment/create-payment", {
+            const response = await fetch("https://amma-care.com/payment/create-payment", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

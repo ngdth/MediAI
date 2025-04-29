@@ -23,7 +23,7 @@ const AvailabilitySchedule = () => {
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/schedule/token`, {
+        const response = await axios.get(`https://amma-care.com/schedule/token`, {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -84,7 +84,7 @@ const AvailabilitySchedule = () => {
   const handleSave = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8080/schedule/upsert",
+        "https://amma-care.com/schedule/upsert",
         { availableSlots },
         {
           headers: { Authorization: `Bearer ${token}` }

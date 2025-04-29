@@ -14,7 +14,7 @@ const PharmacyPending = () => {
 
     const fetchAppointments = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/pharmacy/appointments/done`, {
+            const response = await axios.get(`https://amma-care.com/pharmacy/appointments/done`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             setAppointments(response.data.data);

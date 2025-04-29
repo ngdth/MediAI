@@ -22,7 +22,7 @@ const LoginForm = ({ onLogin }) => {
 
     const fetchUserData = async (token) => {
         try {
-            const response = await fetch("http://localhost:8080/user/profile", {
+            const response = await fetch("https://amma-care.com/user/profile", {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -51,7 +51,7 @@ const LoginForm = ({ onLogin }) => {
         setError("");
 
         try {
-            const response = await fetch("http://localhost:8080/user/login", {
+            const response = await fetch("https://amma-care.com/user/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
@@ -83,7 +83,7 @@ const LoginForm = ({ onLogin }) => {
     };
 
     const handleGoogleLogin = () => {
-        window.location.href = "http://localhost:8080/auth/google";
+        window.location.href = "https://amma-care.com/auth/google";
     };
 
     return (

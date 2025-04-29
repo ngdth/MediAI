@@ -14,7 +14,7 @@ const DoctorAppointmentList = () => {
 
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/appointment/hod/specialization", {
+      const response = await axios.get("https://amma-care.com/appointment/hod/specialization", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setAppointments(response.data.data);

@@ -34,7 +34,7 @@ const DoctorsDetailsPage = () => {
   useEffect(() => {
     const fetchDoctorDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/user/doctors/${doctorId}`, {
+        const response = await axios.get(`https://amma-care.com/user/doctors/${doctorId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setDoctorDetails(response.data);
@@ -42,7 +42,7 @@ const DoctorsDetailsPage = () => {
         // Nếu lỗi là 404 thì thử gọi API HOD
         if (error.response?.status === 404) {
           try {
-            const hodResponse = await axios.get(`http://localhost:8080/user/hod/${doctorId}`, {
+            const hodResponse = await axios.get(`https://amma-care.com/user/hod/${doctorId}`, {
               headers: { Authorization: `Bearer ${token}` },
             });
             setDoctorDetails(hodResponse.data);
@@ -65,7 +65,7 @@ const DoctorsDetailsPage = () => {
   const handleFavoriteToggle = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:8080/user/favorites/add/${doctorId}`,
+        `https://amma-care.com/user/favorites/add/${doctorId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -79,7 +79,7 @@ const DoctorsDetailsPage = () => {
 
       if (errorMessage.includes("Doctor already in favorites")) {
         try {
-          await axios.delete(`http://localhost:8080/user/favorites/delete/${doctorId}`, {
+          await axios.delete(`https://amma-care.com/user/favorites/delete/${doctorId}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
 

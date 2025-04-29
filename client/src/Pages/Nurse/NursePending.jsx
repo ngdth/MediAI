@@ -50,7 +50,7 @@ const NursePending = () => {
     }, [showPopup, countdown]);
 
     const fetchAppointments = async (status) => {
-        const response = await axios.get(`http://localhost:8080/appointment?status=${status}`, {
+        const response = await axios.get(`https://amma-care.com/appointment?status=${status}`, {
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         console.log("Appointments:", response.data.data);
@@ -59,7 +59,7 @@ const NursePending = () => {
     };
 
     const fetchDoctors = async () => {
-        const response = await axios.get("http://localhost:8080/user/doctors", {
+        const response = await axios.get("https://amma-care.com/user/doctors", {
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         console.log("Doctors:", response.data);
@@ -67,7 +67,7 @@ const NursePending = () => {
     };
 
     const fetchSchedulesByDoctor = async (doctorId) => {
-        const response = await axios.get(`http://localhost:8080/schedule/schedules/${doctorId}`, {
+        const response = await axios.get(`https://amma-care.com/schedule/schedules/${doctorId}`, {
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         console.log(`Schedules for doctor ${doctorId}:`, response.data);
@@ -113,7 +113,7 @@ const NursePending = () => {
     };
 
     const updateAppointmentStatus = async (id, status) => {
-        await axios.put(`http://localhost:8080/appointment/${id}/status`, { status, rejectReason }, {
+        await axios.put(`https://amma-care.com/appointment/${id}/status`, { status, rejectReason }, {
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         await fetchAppointments("Pending");
@@ -126,7 +126,7 @@ const NursePending = () => {
             return;
         }
         try {
-            await axios.put(`http://localhost:8080/appointment/${id}/assign`, { doctorId: selectedDoctor._id }, {
+            await axios.put(`https://amma-care.com/appointment/${id}/assign`, { doctorId: selectedDoctor._id }, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             await updateAppointmentStatus(id, "Assigned");

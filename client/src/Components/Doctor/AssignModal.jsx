@@ -11,7 +11,7 @@ const AssignModal = ({ show, handleClose, onAssign, appointmentId }) => {
 
         const fetchPharmacy = async () => {
             try {
-                const response = await axios.get("http://localhost:8080/admin/pharmacy", {
+                const response = await axios.get("https://amma-care.com/admin/pharmacy", {
                     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                 });
 
@@ -31,7 +31,7 @@ const AssignModal = ({ show, handleClose, onAssign, appointmentId }) => {
         }
 
         try {
-            await axios.put(`http://localhost:8080/appointment/${appointmentId}/assign-pharmacy`, 
+            await axios.put(`https://amma-care.com/appointment/${appointmentId}/assign-pharmacy`, 
                 { pharmacyId: selectedId }, 
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
             );

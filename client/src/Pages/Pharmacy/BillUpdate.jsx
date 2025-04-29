@@ -21,7 +21,7 @@ const BillUpdate = () => {
 
     const fetchBillDetails = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/pharmacy/detail/${billId}`, {
+            const response = await axios.get(`https://amma-care.com/pharmacy/detail/${billId}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             setBill(response.data.bill);
@@ -86,7 +86,7 @@ const BillUpdate = () => {
             });
 
             const response = await axios.put(
-                `http://localhost:8080/pharmacy/update-medicines-price/${billId}`,
+                `https://amma-care.com/pharmacy/update-medicines-price/${billId}`,
                 { medicineFees },
                 {
                     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -110,7 +110,7 @@ const BillUpdate = () => {
 
     const handleQRCode = async () => {
         try {
-            const response = await fetch("http://localhost:8080/payment/create-payment", {
+            const response = await fetch("https://amma-care.com/payment/create-payment", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

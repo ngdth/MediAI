@@ -21,7 +21,7 @@ const PharmacyManagement = () => {
 
     const fetchPharmacy = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/admin/pharmacy", {
+            const response = await axios.get("https://amma-care.com/admin/pharmacy", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setPharmacy(response.data);
@@ -38,11 +38,11 @@ const PharmacyManagement = () => {
         e.preventDefault();
         try {
             if (editingPharmacy) {
-                await axios.put(`http://localhost:8080/admin/pharmacy/update/${editingPharmacy._id}`, formData, {
+                await axios.put(`https://amma-care.com/admin/pharmacy/update/${editingPharmacy._id}`, formData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
             } else {
-                await axios.post("http://localhost:8080/admin/pharmacy/create", formData, {
+                await axios.post("https://amma-care.com/admin/pharmacy/create", formData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
             }
@@ -67,7 +67,7 @@ const PharmacyManagement = () => {
 
     const handleDelete = async (pharmacyId) => {
         try {
-            await axios.delete(`http://localhost:8080/admin/pharmacy/delete/${pharmacyId}`, {
+            await axios.delete(`https://amma-care.com/admin/pharmacy/delete/${pharmacyId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             fetchPharmacy();

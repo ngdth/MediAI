@@ -60,13 +60,13 @@ const EditBlogPage = () => {
                     return;
                 }
                 // Fetch doctor info
-                const doctorRes = await axios.get('http://localhost:8080/user/profile', {
+                const doctorRes = await axios.get('https://amma-care.com/user/profile', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setDoctorInfo(doctorRes.data.user);
 
                 // Fetch blog data
-                const blogRes = await axios.get(`http://localhost:8080/blog/${blogId}`, {
+                const blogRes = await axios.get(`https://amma-care.com/blog/${blogId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 const blog = blogRes.data;
@@ -308,7 +308,7 @@ const EditBlogPage = () => {
             formDataToSend.append('specialization', formData.specialization);
             formDataToSend.append('visibility', formData.visibility);
             await axios.put(
-                `http://localhost:8080/blog/${blogId}`,
+                `https://amma-care.com/blog/${blogId}`,
                 formDataToSend,
                 {
                     headers: {

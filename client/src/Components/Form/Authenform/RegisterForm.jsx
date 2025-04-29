@@ -32,7 +32,7 @@ const RegisterForm = ({ onRegistering }) => {
                 setLoading(false);
                 return;
             }
-            const response = await fetch("http://localhost:8080/user/register", {
+            const response = await fetch("https://amma-care.com/user/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

@@ -12,7 +12,7 @@ const UserManagement = () => {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/admin/users", {
+            const response = await axios.get("https://amma-care.com/admin/users", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setUsers(response.data);
@@ -23,7 +23,7 @@ const UserManagement = () => {
 
     const handleBanUnban = async (userId) => {
         try {
-            await axios.put(`http://localhost:8080/admin/users/status/${userId}`, {}, {
+            await axios.put(`https://amma-care.com/admin/users/status/${userId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             fetchUsers();

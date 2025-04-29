@@ -108,7 +108,7 @@ const ImportDataButton = () => {
                 const formData = new FormData();
                 formData.append('file', file);
 
-                const response = await axios.post('http://localhost:8080/upload/upload', formData, {
+                const response = await axios.post('https://amma-care.com/upload/upload', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     },

@@ -34,7 +34,7 @@ const NurseAssigned = () => {
   const fetchAppointments = async (status) => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/appointment?status=${status}`,
+        `https://amma-care.com/appointment?status=${status}`,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
@@ -52,10 +52,10 @@ const NurseAssigned = () => {
   const fetchDoctors = async () => {
     try {
       const [doctorRes, hodRes] = await Promise.all([
-        axios.get("http://localhost:8080/user/doctors", {
+        axios.get("https://amma-care.com/user/doctors", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }),
-        axios.get("http://localhost:8080/user/hods", {
+        axios.get("https://amma-care.com/user/hods", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }),
       ]);
@@ -75,7 +75,7 @@ const NurseAssigned = () => {
   const updateAppointmentStatus = async (id, status) => {
     try {
       await axios.put(
-        `http://localhost:8080/appointment/${id}/status`,
+        `https://amma-care.com/appointment/${id}/status`,
         { status, rejectReason },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -91,7 +91,7 @@ const NurseAssigned = () => {
           )} lúc ${appointment.time}`;
 
           await axios.post(
-            "http://localhost:8080/notification",
+            "https://amma-care.com/notification",
             {
               userId: doctorId,
               message,

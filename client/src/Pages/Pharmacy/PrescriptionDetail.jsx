@@ -22,7 +22,7 @@ const PrescriptionsDetail = () => {
     // Fetch appointment details for prescription
     const fetchAppointmentDetails = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/appointment/${appointmentId}`, {
+            const response = await axios.get(`https://amma-care.com/appointment/${appointmentId}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             setAppointment(response.data.data.appointment);
@@ -102,7 +102,7 @@ const PrescriptionsDetail = () => {
             const paymentMethod = "MOMO";
 
             const response = await axios.post(
-                `http://localhost:8080/pharmacy/createbill`,
+                `https://amma-care.com/pharmacy/createbill`,
                 {
                     appointmentId: appointmentId,
                     testFees,

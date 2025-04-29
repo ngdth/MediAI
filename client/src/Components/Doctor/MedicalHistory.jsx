@@ -17,7 +17,7 @@ const MedicalHistory = () => {
 
     const fetchAppointments = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/appointment/history', {
+            const response = await axios.get('https://amma-care.com/appointment/history', {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             
@@ -35,7 +35,7 @@ const MedicalHistory = () => {
 
     const fetchDoctorRole = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/user/me", {
+            const response = await axios.get("https://amma-care.com/user/me", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setdoctorRole(response.data.role);

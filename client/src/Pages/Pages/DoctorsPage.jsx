@@ -14,14 +14,14 @@ const DoctorsPage = () => {
       let hodArray = [];
 
       try {
-        const doctorRes = await axios.get("http://localhost:8080/user/doctors");
+        const doctorRes = await axios.get("https://amma-care.com/user/doctors");
         doctorArray = Array.isArray(doctorRes.data) ? doctorRes.data : (doctorRes.data ? [doctorRes.data] : []);
       } catch (error) {
         console.error("Error fetching doctors:", error.response?.data || error);
       }
 
       try {
-        const hodRes = await axios.get("http://localhost:8080/user/hods");
+        const hodRes = await axios.get("https://amma-care.com/user/hods");
         hodArray = Array.isArray(hodRes.data) ? hodRes.data : (hodRes.data ? [hodRes.data] : []);
       } catch (error) {
         console.error("Error fetching hods:", error.response?.data || error);

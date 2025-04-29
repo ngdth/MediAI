@@ -12,7 +12,7 @@ const PrescriptionsRecordResult = () => {
         const fetchPrescriptionCreatedAppointments = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get('http://localhost:8080/appointment/prescription-created', {
+                const response = await axios.get('https://amma-care.com/appointment/prescription-created', {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                 });
                 console.log("Appointments data:", response.data);
@@ -31,13 +31,13 @@ const PrescriptionsRecordResult = () => {
     const handleAssignToDoctor = async (id) => {
         try {
             await axios.put(
-                `http://localhost:8080/appointment/${id}/status`,
+                `https://amma-care.com/appointment/${id}/status`,
                 { status: "Pending" },
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             );
             alert(`Appointment status updated to Pending.`);
 
-            const response = await axios.get('http://localhost:8080/appointment/prescription-created', {
+            const response = await axios.get('https://amma-care.com/appointment/prescription-created', {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
             setAppointments(response.data.data || []);

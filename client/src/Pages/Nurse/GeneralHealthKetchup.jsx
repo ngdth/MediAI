@@ -26,7 +26,7 @@ const GeneralHealthKetchup = () => {
 
   const fetchAppointmentData = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/appointment/${appointmentId}`, {
+      const response = await axios.get(`https://amma-care.com/appointment/${appointmentId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       console.log("API Response:", response.data);
@@ -63,7 +63,7 @@ const GeneralHealthKetchup = () => {
       };
 
       await axios.put(
-        `http://localhost:8080/appointment/${appointmentId}/update-nurse-fields`,
+        `https://amma-care.com/appointment/${appointmentId}/update-nurse-fields`,
         payload,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -111,7 +111,7 @@ const GeneralHealthKetchup = () => {
       }
 
       await axios.put(
-        `http://localhost:8080/appointment/${appointmentId}/update-nurse-fields`,
+        `https://amma-care.com/appointment/${appointmentId}/update-nurse-fields`,
         payload,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -134,7 +134,7 @@ const GeneralHealthKetchup = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/test/upload/${appointmentId}/${subField}`,
+        `https://amma-care.com/test/upload/${appointmentId}/${subField}`,
         formData,
         {
           headers: {
@@ -247,7 +247,7 @@ const GeneralHealthKetchup = () => {
 
   const handleDeleteImage = async () => {
     try {
-      await axios.delete(`http://localhost:8080/test/delete/${appointmentId}/${selectedImageName}`, {
+      await axios.delete(`https://amma-care.com/test/delete/${appointmentId}/${selectedImageName}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       await fetchAppointmentData();

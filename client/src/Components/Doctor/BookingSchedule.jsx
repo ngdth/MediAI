@@ -8,7 +8,7 @@ export default function BookingSchedule({ doctorId, selectedDay, setSelectedDay,
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/schedule/schedules/${doctorId}`, {
+        const response = await fetch(`https://amma-care.com/schedule/schedules/${doctorId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

@@ -39,7 +39,7 @@ const ResetPassForm = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:8080/user/forgotPassword",
+        "https://amma-care.com/user/forgotPassword",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -69,7 +69,7 @@ const ResetPassForm = () => {
 
     setError("Sending new OTP...");
     try {
-      const response = await fetch("http://localhost:8080/user/sendotp", {
+      const response = await fetch("https://amma-care.com/user/sendotp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: resetEmail }),

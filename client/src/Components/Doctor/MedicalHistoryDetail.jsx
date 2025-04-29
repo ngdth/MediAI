@@ -17,7 +17,7 @@ const MedicalHistoryDetail = () => {
         const fetchAppointmentDetails = async () => {
             try {
                 console.log(`Fetching details for appointment ID: ${appointmentId}`);
-                const response = await axios.get(`http://localhost:8080/appointment/history/${appointmentId}`, {
+                const response = await axios.get(`https://amma-care.com/appointment/history/${appointmentId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 

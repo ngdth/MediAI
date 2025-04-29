@@ -25,7 +25,7 @@ const HeadOfDepartmentManagement = () => {
 
     const fetchHODs = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/user/hods", {
+            const response = await axios.get("https://amma-care.com/user/hods", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setDoctors(response.data);
@@ -43,11 +43,11 @@ const HeadOfDepartmentManagement = () => {
         e.preventDefault();
         try {
             if (editingDoctor) {
-                await axios.put(`http://localhost:8080/admin/hod/update/${editingDoctor._id}`, formData, {
+                await axios.put(`https://amma-care.com/admin/hod/update/${editingDoctor._id}`, formData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
             } else {
-                await axios.post("http://localhost:8080/admin/hod/create", formData, {
+                await axios.post("https://amma-care.com/admin/hod/create", formData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
             }
@@ -78,7 +78,7 @@ const HeadOfDepartmentManagement = () => {
     const handleDeleteConfirm = async () => {
         try {
             console.log(doctorToDelete._id);
-            await axios.delete(`http://localhost:8080/admin/hod/delete/${doctorToDelete._id}`, {
+            await axios.delete(`https://amma-care.com/admin/hod/delete/${doctorToDelete._id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             fetchHODs();

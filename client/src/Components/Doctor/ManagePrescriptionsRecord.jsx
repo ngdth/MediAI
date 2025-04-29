@@ -21,7 +21,7 @@ const ManagePrescriptionsRecord = () => {
     useEffect(() => {
         const fetchDoctorId = async () => {
             try {
-                const response = await axios.get("http://localhost:8080/user/me", {
+                const response = await axios.get("https://amma-care.com/user/me", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 const id = response.data.id;
@@ -38,7 +38,7 @@ const ManagePrescriptionsRecord = () => {
 
     const fetchAppointmentDetails = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/appointment/waiting`, {
+            const response = await axios.get(`https://amma-care.com/appointment/waiting`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const appointments = response.data.data || [];
@@ -67,7 +67,7 @@ const ManagePrescriptionsRecord = () => {
 
     const fetchAllServices = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/service/active", {
+            const response = await axios.get("https://amma-care.com/service/active", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setServices(response.data || []);
@@ -119,7 +119,7 @@ const ManagePrescriptionsRecord = () => {
             }));
 
             await axios.post(
-                `http://localhost:8080/appointment/${appointmentId}/createprescription`,
+                `https://amma-care.com/appointment/${appointmentId}/createprescription`,
                 { prescription: prescriptionData },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -127,7 +127,7 @@ const ManagePrescriptionsRecord = () => {
             const updatedServices = usedServices.concat(selectedServices);
 
             await axios.put(
-                `http://localhost:8080/appointment/${appointmentId}/update-field`,
+                `https://amma-care.com/appointment/${appointmentId}/update-field`,
                 {
                     field: "services",
                     value: updatedServices,

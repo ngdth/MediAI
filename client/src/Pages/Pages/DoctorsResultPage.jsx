@@ -16,7 +16,7 @@ const DoctorsResultPage = () => {
     useEffect(() => {
         const fetchDoctors = async () => {
             try {
-                const response = await axios.post(`http://localhost:8080/user/search?keyword=${keyword}`);
+                const response = await axios.post(`https://amma-care.com/user/search?keyword=${keyword}`);
                 // Kiểm tra nếu response là object => Chuyển thành mảng
                 const doctorsArray = Array.isArray(response.data) ? response.data : [response.data];
                 console.log("Doctors API Response:", response.data);

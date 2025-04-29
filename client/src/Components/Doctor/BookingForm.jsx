@@ -31,7 +31,7 @@ const BookingForm = ({ show, doctorId, onClose, onBookingSuccess }) => {
           return;
         }
 
-        const response = await axios.get("http://localhost:8080/user/profile", {
+        const response = await axios.get("https://amma-care.com/user/profile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -103,7 +103,7 @@ const BookingForm = ({ show, doctorId, onClose, onBookingSuccess }) => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/appointment/book",
+        "https://amma-care.com/appointment/book",
         appointmentData,
         {
           headers: {

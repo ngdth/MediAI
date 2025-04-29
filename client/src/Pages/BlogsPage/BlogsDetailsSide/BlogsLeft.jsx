@@ -43,7 +43,7 @@ const BlogsLeft = ({ data, blogId, setBlog, onUnlikeReply, onLikeReply, onAddCom
     try {
       setLiking(true);
       const token = localStorage.getItem('token');
-      const response = await axios.put(`http://localhost:8080/blog/${blogId}/like`, {}, {
+      const response = await axios.put(`https://amma-care.com/blog/${blogId}/like`, {}, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -68,7 +68,7 @@ const BlogsLeft = ({ data, blogId, setBlog, onUnlikeReply, onLikeReply, onAddCom
     try {
       setLiking(true);
       const token = localStorage.getItem('token');
-      const response = await axios.put(`http://localhost:8080/blog/${blogId}/unlike`, {}, {
+      const response = await axios.put(`https://amma-care.com/blog/${blogId}/unlike`, {}, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -98,7 +98,7 @@ const BlogsLeft = ({ data, blogId, setBlog, onUnlikeReply, onLikeReply, onAddCom
         await onAddComment(commentText);
       } else {
         const token = localStorage.getItem('token');
-        await axios.post(`http://localhost:8080/blog/${blogId}/comments`,
+        await axios.post(`https://amma-care.com/blog/${blogId}/comments`,
           { text: commentText },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -156,7 +156,7 @@ const BlogsLeft = ({ data, blogId, setBlog, onUnlikeReply, onLikeReply, onAddCom
       } else {
         const token = localStorage.getItem('token');
         await axios.post(
-          `http://localhost:8080/blog/${blogId}/comments/${commentId}/replies`,
+          `https://amma-care.com/blog/${blogId}/comments/${commentId}/replies`,
           { content: replyText },
           { headers: { Authorization: `Bearer ${token}` } }
         );

@@ -30,7 +30,7 @@ const AppointmentsHistory = () => {
         }
 
         console.log("Fetching user details...");
-        const response = await axios.get("http://localhost:8080/user/me", {
+        const response = await axios.get("https://amma-care.com/user/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -58,7 +58,7 @@ const AppointmentsHistory = () => {
 
       try {
         console.log(`Fetching appointments for userId: ${userId}`);
-        const response = await axios.get(`http://localhost:8080/appointment?userId=${userId}`, {
+        const response = await axios.get(`https://amma-care.com/appointment?userId=${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -93,7 +93,7 @@ const AppointmentsHistory = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:8080/appointment/${selectedAppointmentId}/cancel`,
+        `https://amma-care.com/appointment/${selectedAppointmentId}/cancel`,
         { rejectReason },
         {
           headers: { Authorization: `Bearer ${token}` },
