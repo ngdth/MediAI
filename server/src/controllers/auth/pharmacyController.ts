@@ -64,7 +64,7 @@ export const getDoneAppointments = async (req: Request, res: Response, next: Nex
 
         // Xây dựng filter dựa trên vai trò của người dùng
         let filter: Record<string, any> = { status: AppointmentStatus.DONE }; // Chỉ lọc các cuộc hẹn có status "DONE"
-        
+
         // Nếu là bác sĩ, chỉ tìm các cuộc hẹn có doctorId là userId của bác sĩ
         if (userRole === 'doctor') {
             console.log("User is a doctor, filtering by doctorId");
@@ -229,13 +229,13 @@ export const createBill = async (req: Request, res: Response, next: NextFunction
         await Appointment.findByIdAndUpdate(appointmentId, { status: AppointmentStatus.BILL_CREATED });
         console.log("✅ Appointment status updated to BILL_CREATED");
 
-        
+
         res.status(201).json({
             message: 'Bill created successfully',
             bill: savedBill,
             billId: savedBill._id
         });
-        
+
         // Gửi email thông báo
         if (userEmail) {
             await sendEmail(userEmail, newBill, "create_bill");
@@ -309,19 +309,19 @@ export const getBillDetail = async (req: Request, res: Response, next: NextFunct
 
         // Tìm hóa đơn theo ID
         const bill = await Bill.findById(billId)
-        .select('-doctorId -doctorName')
-        .populate({
-            path: 'userId',
-            select: 'username email' // Lấy username & email patient
-        })
-        .populate({
-            path: 'appointmentId',
-            select: '-services -createdAt -updatedAt -__v -patientName -pharmacyId -status -phone -email',
-            populate: {
-                path: 'doctorId',
-                select: 'username email' // Lấy doctorId trong appointment
-            }
-        });
+            .select('-doctorId -doctorName')
+            .populate({
+                path: 'userId',
+                select: 'username email' // Lấy username & email patient
+            })
+            .populate({
+                path: 'appointmentId',
+                select: '-services -createdAt -updatedAt -__v -patientName -pharmacyId -status -phone -email',
+                populate: {
+                    path: 'doctorId',
+                    select: 'username email' // Lấy doctorId trong appointment
+                }
+            });
 
         if (!bill) {
             console.warn('Bill not found:', billId);
@@ -345,11 +345,11 @@ export const getBillDetail = async (req: Request, res: Response, next: NextFunct
             }
         }
 
-        const diagnosisDetails = await DiagnosisDetails.find({ appointmentId: bill.appointmentId._id }).populate('doctorId', 'username');
-         console.log('Diagnosis details:', diagnosisDetails);
- 
-         console.log('Bill found:', bill, diagnosisDetails);
-         res.status(200).json({ bill, diagnosisDetails });
+        const diagnosisDetails = await DiagnosisDetails.find({ appointmentId: (bill.appointmentId as any)._id }).populate('doctorId', 'username');
+        console.log('Diagnosis details:', diagnosisDetails);
+
+        console.log('Bill found:', bill, diagnosisDetails);
+        res.status(200).json({ bill, diagnosisDetails });
     } catch (error) {
         console.error('Error fetching bill details:', error);
         res.status(500).json({ message: 'Internal server error', error: error });
