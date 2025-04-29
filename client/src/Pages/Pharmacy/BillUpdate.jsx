@@ -117,7 +117,7 @@ const BillUpdate = () => {
                 },
                 body: JSON.stringify({
                     _id: bill._id,
-                    redirectUrl: "http://localhost:5173/pharmacy/bills",
+                    redirectUrl: "https://amma-care.com/pharmacy/bills",
                     requestType: "captureWallet"
                 }),
             });

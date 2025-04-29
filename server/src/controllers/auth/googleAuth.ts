@@ -84,7 +84,7 @@ export const googleCallback = (req: Request, res: Response, next: NextFunction) 
         const token = generateJwtToken(user);
         console.log("✅ Google login successful. Token generated:", token);
         // Redirect về frontend kèm theo token
-        res.redirect(`http://localhost:5173/login?token=${token}`);
+        res.redirect(`https://amma-care.com/login?token=${token}`);
     })(req, res, next);
 };
 

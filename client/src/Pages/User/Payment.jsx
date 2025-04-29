@@ -56,7 +56,7 @@ export default function Payment() {
                 },
                 body: JSON.stringify({
                     _id: bill._id,
-                    redirectUrl: "http://localhost:5173/payment",
+                    redirectUrl: "https://amma-care.com/payment",
                     requestType: "payWithMethod"
                 })
             });
