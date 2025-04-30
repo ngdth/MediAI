@@ -66,12 +66,12 @@ export const searchDoctorByUsername = async (req: Request, res: Response): Promi
         }
 
         // Tìm kiếm user có role là "doctor" và username chứa keyword
-        const doctor = await User.findOne({
+        const doctor = await User.find({
             username: { $regex: keyword, $options: "i" }, // Tìm kiếm keyword (không phân biệt hoa/thường)
-            role: "doctor",
+            role: { $in: ["doctor", "head of department"] },
         }).select("-password"); // Loại bỏ password trong kết quả
 
-        if (!doctor || !doctor.username.length) {
+        if (!doctor || !doctor.length) {
             res.status(404).json({ error: "No doctors found." });
             return;
         }
