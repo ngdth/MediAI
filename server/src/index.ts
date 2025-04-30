@@ -2,6 +2,8 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 import { Request, Response, NextFunction } from 'express';
+import http from 'http'
+import { initSocketServer } from './utils/socketIO';
 import app from './utils/app' // (server)
 import mongo from './config/mongo' // (database)
 import { PORT } from './constants/index'
@@ -22,6 +24,9 @@ interface MulterError extends Error {
   field?: string;
   code?: string;
 }
+
+const server = http.createServer(app)
+
 const bootstrap = async () => {
   await mongo.connect()
 
@@ -53,7 +58,10 @@ const bootstrap = async () => {
     }
     res.status(400).json({ error: error.message });
   });
-  app.listen(PORT || 8080, () => {
+
+  initSocketServer(server)
+
+  server.listen(PORT || 8080, () => {
     console.log(`✅ Server is listening on port: ${PORT || 8080}`)
   })
 }
