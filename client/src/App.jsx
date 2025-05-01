@@ -78,6 +78,7 @@ import EditBlogPage from "./Components/BlogsSection/EditBlogPage";
 import StaffProfile from "./Pages/Pages/StaffProfile";
 import AdminDashboard from "./Pages/Admin/AdminDashboard";
 import Meeting from "./Pages/Meeting/Meeting";
+import { ToastContainer } from "react-toastify";
 
 function App() {
     Aos.init({
@@ -205,6 +206,8 @@ function App() {
             </Routes>
             <ScrollUpButton />
             {shouldShowFloatingMenu && <FloatingMenu />}
+
+            <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
         </>
     );
 }

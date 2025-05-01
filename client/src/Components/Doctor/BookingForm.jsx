@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import BookingSchedule from "./BookingSchedule";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
+import { validateAge, validateBookingForm, validateEmail, validatePhone } from "../../utils/validateUtils";
 
 const BookingForm = ({ show, doctorId, onClose, onBookingSuccess }) => {
   const [formData, setFormData] = useState({
@@ -18,6 +19,8 @@ const BookingForm = ({ show, doctorId, onClose, onBookingSuccess }) => {
     doctorId,
   });
 
+  const requiredFields = ["fullName", "age", "gender", "address", "email", "phone", "symptoms"];
+  const [errors, setErrors] = useState({});
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const token = localStorage.getItem("token");
@@ -67,7 +70,22 @@ const BookingForm = ({ show, doctorId, onClose, onBookingSuccess }) => {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    const updatedFormData = { ...formData, [name]: value };
+    const newErrors = { ...errors };
+
+    if (name === 'age') {
+      const fixedAge = validateAge(value);
+      updatedFormData.age = fixedAge;
+      newErrors.age = fixedAge === null ? "Tuổi không hợp lệ (1-120)" : "";
+    } else if (name === 'email') {
+      newErrors.email = !validateEmail(value) ? "Email không hợp lệ!" : "";
+    } else if (name === 'phone') {
+      newErrors.phone = !validatePhone(value) ? "Số điện thoại không hợp lệ!" : "";
+    }
+
+    setFormData(updatedFormData);
+    setErrors(newErrors);
   };
 
   const handleSubmit = async () => {
@@ -76,13 +94,18 @@ const BookingForm = ({ show, doctorId, onClose, onBookingSuccess }) => {
       return;
     }
 
-    if (!formData.fullName || !formData.age || !formData.gender || !formData.address || !formData.email || !formData.phone) {
-      toast.error("Vui lòng điền đầy đủ thông tin!");
-      return;
-    }
+    const validation = validateBookingForm({ formData, selectedDay, selectedSlot });
 
-    if (!selectedDay || !selectedSlot) {
-      toast.error("Vui lòng chọn ngày và giờ khám!");
+    const newErrors = {};
+    requiredFields.forEach((field) => {
+      if (!formData[field]) {
+        newErrors[field] = true;
+      }
+    });
+    setErrors(newErrors);
+
+    if (!validation.isValid) {
+      toast.error(validation.message);
       return;
     }
 
@@ -140,6 +163,7 @@ const BookingForm = ({ show, doctorId, onClose, onBookingSuccess }) => {
                   value={formData.fullName}
                   onChange={handleChange}
                   required
+                  isInvalid={!!errors.fullName}
                 />
               </Form.Group>
 
@@ -151,6 +175,7 @@ const BookingForm = ({ show, doctorId, onClose, onBookingSuccess }) => {
                   value={formData.age}
                   onChange={handleChange}
                   required
+                  isInvalid={!!errors.age}
                 />
               </Form.Group>
 
@@ -161,6 +186,7 @@ const BookingForm = ({ show, doctorId, onClose, onBookingSuccess }) => {
                   value={formData.gender}
                   onChange={handleChange}
                   required
+                  isInvalid={!!errors.gender}
                 >
                   <option value="">Chọn giới tính</option>
                   <option value="male">Nam</option>
@@ -177,6 +203,7 @@ const BookingForm = ({ show, doctorId, onClose, onBookingSuccess }) => {
                   value={formData.address}
                   onChange={handleChange}
                   required
+                  isInvalid={!!errors.address}
                 />
               </Form.Group>
 
@@ -188,7 +215,11 @@ const BookingForm = ({ show, doctorId, onClose, onBookingSuccess }) => {
                   value={formData.email}
                   onChange={handleChange}
                   required
+                  isInvalid={!!errors.email}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {errors.email}
+                </Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group className="mb-3">
@@ -199,7 +230,11 @@ const BookingForm = ({ show, doctorId, onClose, onBookingSuccess }) => {
                   value={formData.phone}
                   onChange={handleChange}
                   required
+                  isInvalid={!!errors.phone}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {errors.phone}
+                </Form.Control.Feedback>
               </Form.Group>
             </Col>
 
@@ -222,6 +257,7 @@ const BookingForm = ({ show, doctorId, onClose, onBookingSuccess }) => {
                   onChange={handleChange}
                   placeholder="Triệu chứng, khám định kỳ, kiểm tra sức khỏe..."
                   required
+                  isInvalid={!!errors.symptoms}
                 />
               </Form.Group>
 
