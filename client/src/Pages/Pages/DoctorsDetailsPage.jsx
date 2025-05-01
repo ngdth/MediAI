@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import PageHeading from '../../Components/PageHeading';
 import DoctorDetailsSection from '../../Components/DoctorDetailsSection';
-// import BookingCalendar from '../../Components/Doctor/BookingCalendar';
 import BookingForm from '../../Components/Doctor/BookingForm';
 import {
   FaCertificate,
@@ -15,9 +14,9 @@ import {
   FaPhone,
 } from 'react-icons/fa6';
 import Section from '../../Components/Section';
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { Button } from 'react-bootstrap';
+import { checkAuth } from '../../utils/validateUtils';
 
 const DoctorsDetailsPage = () => {
   const [doctorDetails, setDoctorDetails] = useState(null);
@@ -27,6 +26,7 @@ const DoctorsDetailsPage = () => {
   const [showBookingForm, setShowBookingForm] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [bookingData, setBookingData] = useState(null);
+  const navigate = useNavigate();
 
   // Lấy token từ localStorage
   const token = localStorage.getItem("token");
@@ -59,10 +59,26 @@ const DoctorsDetailsPage = () => {
       }
     };
 
+    const checkIfFavorite = async () => {
+      try {
+        const res = await axios.get(`http://localhost:8080/user/favorites`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const favoriteDoctors = res.data.favorites || [];
+        const isFavorite = favoriteDoctors.some((doc) => doc._id === doctorId);
+        setFavoriteStatus(isFavorite);
+      } catch (error) {
+        console.error("Error checking favorite doctors:", error.response?.data || error);
+      }
+    };
+
     fetchDoctorDetails();
+    checkIfFavorite();
   }, [doctorId, token]);
 
   const handleFavoriteToggle = async () => {
+    checkAuth(async () => {
     try {
       const response = await axios.post(
         `http://localhost:8080/user/favorites/add/${doctorId}`,
@@ -95,6 +111,7 @@ const DoctorsDetailsPage = () => {
         console.error("Error adding doctor to favorites:", error.response?.data || error);
       }
     }
+  }, navigate);
   };
 
   const handleBookingSubmit = (bookingData) => {
@@ -170,7 +187,9 @@ const DoctorsDetailsPage = () => {
           data={{ ...doctorDetails, info: doctorInfo, progressBars }}
           onFavoriteToggle={handleFavoriteToggle}
           favoriteStatus={favoriteStatus}
-          onBookNow={() => setShowBookingForm(true)}
+          onBookNow={() => {
+            checkAuth(() => setShowBookingForm(true), navigate);
+          }}
         />
       </Section>
 
@@ -199,8 +218,6 @@ const DoctorsDetailsPage = () => {
           </div>
         </div>
       )}
-
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
     </>
   );
 };
