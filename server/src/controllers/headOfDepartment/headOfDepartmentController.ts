@@ -71,7 +71,7 @@ export const searchHODByUsername = async (req: Request, res: Response): Promise<
 
 export const createHODAccount = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { username, email, password, specialization, experience } = req.body;
+        const { username, email, password, specialization, experience, gender } = req.body;
 
         if (!username || !email || !password || !specialization) {
             res.status(400).json({ error: "Missing required fields." });
@@ -93,6 +93,7 @@ export const createHODAccount = async (req: Request, res: Response): Promise<voi
             specialization,
             experience,
             role: "head of department",
+            gender,
         });
 
         await newHead.save();

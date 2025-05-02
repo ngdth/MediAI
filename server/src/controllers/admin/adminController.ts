@@ -44,7 +44,7 @@ export const setUserStatus = async (req: Request, res: Response): Promise<void> 
 
 export const createDoctorAccount = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { username, email, password, specialization, experience } = req.body;
+        const { username, email, password, specialization, experience, gender } = req.body;
 
         // Check required fields
         if (!username || !email || !password || !specialization) {
@@ -70,6 +70,7 @@ export const createDoctorAccount = async (req: Request, res: Response): Promise<
             role: "doctor",
             specialization,
             experience: experience || 0, // Default 0 if not provided
+            gender: gender || "Nam", // Default "not specified" if not provided
         });
 
         await newDoctor.save();

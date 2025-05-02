@@ -11,6 +11,7 @@ const HeadOfDepartmentManagement = () => {
         password: "",
         specialization: "",
         experience: 0,
+        gender: "",
     });
     const [editingDoctor, setEditingDoctor] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);  // Add this state for delete confirmation
@@ -39,6 +40,21 @@ const HeadOfDepartmentManagement = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const capitalizeName = (name) => {
+        return name
+            .toLowerCase()
+            .trim()
+            .split(/\s+/)
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+    };
+
+    // Chuẩn hóa tên và chuẩn bị dữ liệu gửi đi
+    const submissionData = {
+    ...formData,
+    username: formData.username ? capitalizeName(formData.username) : formData.username,
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -47,7 +63,7 @@ const HeadOfDepartmentManagement = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 });
             } else {
-                await axios.post("http://localhost:8080/admin/hod/create", formData, {
+                await axios.post("http://localhost:8080/admin/hod/create", submissionData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
             }
@@ -65,6 +81,7 @@ const HeadOfDepartmentManagement = () => {
             password: "",
             specialization: doctor.specialization,
             experience: doctor.experience,
+            gender: doctor.gender,
         });
         setEditingDoctor(doctor);
         setShowModal(true);
@@ -114,6 +131,7 @@ const HeadOfDepartmentManagement = () => {
                             <th>Họ tên </th>
                             <th>Email</th>
                             <th>Chuyên khoa</th>
+                            <th>Giới tính </th>
                             <th>Kinh nghiệm </th>
                             <th>Hoạt động </th>
                         </tr>
@@ -124,6 +142,7 @@ const HeadOfDepartmentManagement = () => {
                                 <td>{doctor.username}</td>
                                 <td>{doctor.email}</td>
                                 <td>{doctor.specialization}</td>
+                                <td>{doctor.gender}</td>
                                 <td>{doctor.experience} năm</td>
                                 <td>
                                     <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(doctor)}>Chỉnh sửa </button>
@@ -166,6 +185,15 @@ const HeadOfDepartmentManagement = () => {
                                 {specialties.map((spec, idx) => (
                                     <option key={idx} value={spec}>{spec}</option>
                                 ))}
+                            </Form.Select>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" controlId="gender">
+                            <Form.Label className="d-block text-start fw-bold">Giới tính</Form.Label>
+                            <Form.Select name="gender" value={formData.gender} onChange={handleChange} required >
+                                <option value="">Chọn giới tính</option>
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
                             </Form.Select>
                         </Form.Group>
 
