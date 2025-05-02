@@ -9,9 +9,7 @@ const ProfileForm = ({ user, setUser }) => {
     const [formData, setFormData] = useState({
         username: user?.username || "",
         email: user?.email || "",
-        firstName: user?.firstName || "",
-        lastName: user?.lastName || "",
-        birthday: user?.birthday || "",
+        birthday: user?.birthday || null,
         gender: user?.gender || "",
         address: user?.address || "",
         city: user?.city || "",
@@ -25,8 +23,6 @@ const ProfileForm = ({ user, setUser }) => {
             setFormData({
                 username: user.username || "",
                 email: user.email || "",
-                firstName: user.firstName || "",
-                lastName: user.lastName || "",
                 birthday: user.birthday ? new Date(user.birthday) : null,
                 gender: user.gender || "",
                 address: user.address || "",
@@ -40,11 +36,11 @@ const ProfileForm = ({ user, setUser }) => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prevState) => {
-            const updatedData = { ...prevState, [name]: value };
-            setIsFormChanged(true);
-            return updatedData;
-        });
+        setFormData((prevState) => ({
+            ...prevState,
+            [name]: value,
+        }));
+        setIsFormChanged(true);
     };
 
     const handleDateChange = (date) => {
@@ -55,24 +51,66 @@ const ProfileForm = ({ user, setUser }) => {
         setIsFormChanged(true);
     };
 
+    const validateFormData = (data) => {
+        const errors = [];
+        if (data.username && !/^[a-zA-Z\s\u00C0-\u1EF9]{2,50}$/.test(data.username)) {
+            errors.push("Tên người dùng chỉ được chứa chữ cái và khoảng trắng.");
+        }
+        if (data.email && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(data.email)) {
+            errors.push("Vui lòng nhập địa chỉ email hợp lệ.");
+        }
+        if (data.gender && !["Nam", "Nữ"].includes(data.gender)) {
+            errors.push("Giới tính phải là 'Nam' hoặc 'Nữ'.");
+        }
+        if (data.phone && !/^(\+84|0)(3|5|7|8|9)[0-9]{8}$/.test(data.phone)) {
+            errors.push("Vui lòng nhập số điện thoại hợp lệ");
+        }
+        if (data.address && data.address.length > 100) {
+            errors.push("Địa chỉ không được vượt quá 100 ký tự.");
+        }
+        if (data.city && data.city.length > 50) {
+            errors.push("Thành phố không được vượt quá 50 ký tự.");
+        }
+        if (data.country && data.country.length > 50) {
+            errors.push("Quốc gia không được vượt quá 50 ký tự.");
+        }
+        if (data.bio && data.bio.length > 1000) {
+            errors.push("Tiểu sử không được vượt quá 1000 ký tự.");
+        }
+        return errors;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem("token");
         if (!token) {
-            toast.error("You must be logged in to update your profile");
+            toast.error("Bạn phải đăng nhập để cập nhật hồ sơ");
             return;
         }
+
+        // Validate form data
+        const validationErrors = validateFormData(formData);
+        if (validationErrors.length > 0) {
+            toast.error(validationErrors.join(" "));
+            return;
+        }
+
+        // Prepare data for submission (convert birthday to ISO string or omit if null)
+        const submissionData = {
+            ...formData,
+            birthday: formData.birthday ? formData.birthday.toISOString() : undefined,
+        };
 
         try {
             const response = await axios.put(
                 `http://localhost:8080/user/updateProfile/${user._id}`,
-                formData,
+                submissionData,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
             if (response.status === 200) {
-                toast.success("Profile updated successfully!");
+                toast.success("Cập nhật hồ sơ thành công!");
                 localStorage.setItem("username", formData.username);
                 const updatedUserResponse = await axios.get("http://localhost:8080/user/profile", {
                     headers: { Authorization: `Bearer ${token}` },
@@ -84,7 +122,8 @@ const ProfileForm = ({ user, setUser }) => {
                 }, 6000);
             }
         } catch (error) {
-            toast.error("Failed to update profile. Please try again.");
+            const errorMessage = error.response?.data?.message || "Không thể cập nhật hồ sơ. Vui lòng thử lại.";
+            toast.error(errorMessage);
         }
     };
 
@@ -112,7 +151,7 @@ const ProfileForm = ({ user, setUser }) => {
                                 type="email"
                                 name="email"
                                 value={formData.email}
-                                readOnly 
+                                readOnly
                             />
                         </Form.Group>
                     </Col>
@@ -146,7 +185,6 @@ const ProfileForm = ({ user, setUser }) => {
 
                 <hr className="my-3" />
 
-                {/* <h6 className="heading-small text-muted mb-4">Liên hệ</h6> */}
                 <Row className="mb-3">
                     <Col md={12}>
                         <Form.Group>
@@ -200,15 +238,15 @@ const ProfileForm = ({ user, setUser }) => {
                 {["nurse", "doctor", "head of department"].includes(user.role) && (
                     <Row className="mb-3">
                         <Col>
-                        <Form.Group>
-                            <Form.Label>Bio</Form.Label>
-                            <Form.Control
-                            type="text"
-                            name="bio"
-                            value={formData.bio}
-                            onChange={handleChange}
-                            />
-                        </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Bio</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="bio"
+                                    value={formData.bio}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
                         </Col>
                     </Row>
                 )}
