@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import TimeSlotGrid from "./TimeSlotGrid"
 import { generateDateRange, formatDate } from "../../utils/dateUtils"
 import axios from "axios"
-import { toast, ToastContainer } from "react-toastify"
+import { toast  } from "react-toastify"
 
 const AvailabilitySchedule = () => {
   const token = localStorage.getItem("token")
@@ -122,8 +122,6 @@ const AvailabilitySchedule = () => {
           Lưu lịch
         </button>
       </div>
-
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
     </div>
   );
 };

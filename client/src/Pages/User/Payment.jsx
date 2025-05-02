@@ -4,7 +4,7 @@ import FilterBar from "../../Components/User/FilterBar"
 import BillCard from "../../Components/User/BillCard"
 import Section from "../../Components/Section"
 import PageHeading from "../../Components/PageHeading"
-import { toast, ToastContainer } from "react-toastify"
+import { toast  } from "react-toastify"
 
 export default function Payment() {
     const headingData = {
@@ -120,8 +120,6 @@ export default function Payment() {
                     )}
                 </div>
             </div>
-
-            <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
         </>
     )
 }

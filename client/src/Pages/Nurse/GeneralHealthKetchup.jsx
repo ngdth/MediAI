@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import { FaSearch } from "react-icons/fa";
 import { Modal, Button } from "react-bootstrap";
@@ -453,18 +453,6 @@ const GeneralHealthKetchup = () => {
           </button>
         </div>
       )}
-
-      <ToastContainer
-        position="top-right"
-        autoClose={6000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
 
       {isModalOpen && <div className="modal-overlay"></div>}
       <Modal show={isModalOpen} onHide={() => setIsModalOpen(false)} centered>

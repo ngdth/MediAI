@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 const PrescriptionsDetail = () => {
     const { appointmentId } = useParams();
@@ -303,7 +303,7 @@ const PrescriptionsDetail = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-            <ToastContainer
+            <
                 position="top-right"
                 autoClose={6000}
                 hideProgressBar={false}

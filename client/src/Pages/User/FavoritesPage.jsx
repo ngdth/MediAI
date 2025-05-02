@@ -4,7 +4,7 @@ import axios from "axios";
 import PageHeading from "../../Components/PageHeading";
 import SectionHeading from "../../Components/SectionHeading";
 import Section from "../../Components/Section";
-import { toast, ToastContainer } from "react-toastify";
+import { toast  } from "react-toastify";
 
 const FavoritesPage = () => {
     const headingData = {
@@ -115,8 +115,6 @@ const FavoritesPage = () => {
                     </div>
                 </div>
             </Section>
-
-            <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
         </>
     );
 };

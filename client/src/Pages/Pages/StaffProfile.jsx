@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ProfileForm from "../../Components/Form/ProfileForm/ProfileForm";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import {Container,Col, Row, Button, Modal, Form } from "react-bootstrap";
 import { FaRegEdit } from "react-icons/fa";
 import axios from "axios";
@@ -216,8 +216,6 @@ const StaffProfile = () => {
                     <Button variant="primary" onClick={handlePasswordSubmit}>Cập nhật</Button>
                 </Modal.Footer>
             </Modal>
-    
-            <ToastContainer position="top-right" autoClose={6000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
         </>
     );
 };
