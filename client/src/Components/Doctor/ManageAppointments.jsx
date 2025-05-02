@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import RejectModal from "../Nurse/RejectModal";
 import { FaSearch } from "react-icons/fa";
-import { toast, ToastContainer } from "react-toastify";
+import { toast  } from "react-toastify";
 
 const ManageAppointment = () => {
     const [appointments, setAppointments] = useState([]);
@@ -326,8 +326,6 @@ const ManageAppointment = () => {
                 rejectReason={rejectReason}
                 setRejectReason={setRejectReason}
             />
-
-            <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
         </div>
     );
 };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Modal, Button, Form  } from "react-bootstrap";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 const ServiceManagement = () => {
     const [services, setServices] = useState([]);
@@ -227,7 +227,6 @@ const ServiceManagement = () => {
                     </Form>
                 </Modal.Body>
             </Modal>
-            <ToastContainer position="top-right" autoClose={6000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover/>
         </div>
     );
 };
