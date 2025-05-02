@@ -7,7 +7,6 @@ function LoginPage() {
 
     const handleLogin = (data) => {
         setData(data);
-        console.log("Login attempt: ");
     };
 
     return (
