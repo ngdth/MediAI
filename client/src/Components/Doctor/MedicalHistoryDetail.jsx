@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { FaSearch } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 
 const MedicalHistoryDetail = () => {
@@ -10,6 +11,7 @@ const MedicalHistoryDetail = () => {
     const [tests, setTests] = useState({});
     const [diagnosisDetails, setDiagnosisDetails] = useState([]);
     const [prescriptions, setPrescriptions] = useState([]);
+    const [zoomedImage, setZoomedImage] = useState(null);
     const token = localStorage.getItem("token");
 
     // Fetch dữ liệu từ API khi component được mount
@@ -60,6 +62,31 @@ const MedicalHistoryDetail = () => {
         );
     };
 
+    // Render ảnh với chức năng zoom
+    const renderImages = (imagePaths) => {
+        imagePaths = imagePaths || [];
+        if (imagePaths.length === 0) {
+            return <span>Không có hình ảnh</span>;
+        }
+        return imagePaths.map((path, index) => (
+            <div key={index} className="image-container">
+                <img
+                    src={path}
+                    // style={{ width: "100px", height: "100px", margin: "5px" }}
+                    alt="Test Image"
+                />
+                <div className="image-actions-history">
+                    <div className="zoom-icon-wrapper">
+                        <FaSearch
+                            className="icon zoom-icon"
+                            onClick={() => setZoomedImage(path)}
+                        />
+                    </div>
+                </div>
+            </div>
+        ));
+    };
+
     // Kiểm tra nếu dữ liệu đang được tải
     if (loading) {
         return (
@@ -77,16 +104,6 @@ const MedicalHistoryDetail = () => {
             </div>
         );
     }
-
-    const renderImages = (imagePaths) => {
-        imagePaths = imagePaths || [];
-        if (imagePaths.length === 0) {
-            return <span>Không có hình ảnh</span>;
-        }
-        return imagePaths.map((path, index) => (
-            <img key={index} src={path} style={{ width: "100px", height: "100px", margin: "5px" }} alt="Test Image" />
-        ));
-    };
 
     const testTypes = [
         { label: "Xét nghiệm máu", detailKey: "bloodTest", imageKey: null },
@@ -106,7 +123,7 @@ const MedicalHistoryDetail = () => {
 
     return (
         <div className="container">
-            <h2 className="text-center ">Kết quả khám bệnh</h2>
+            <h2 className="text-center">Kết quả khám bệnh</h2>
 
             <div>
                 <strong>Bệnh nhân:</strong> {appointment.patientName}
@@ -227,6 +244,16 @@ const MedicalHistoryDetail = () => {
                     </tbody>
                 </table>
             </div>
+
+            {/* Overlay cho ảnh phóng to */}
+            {zoomedImage && (
+                <div className="zoomed-image-overlay" onClick={() => setZoomedImage(null)}>
+                    <img src={zoomedImage} alt="Zoomed image" className="zoomed-image" />
+                    <button className="close-btn" onClick={() => setZoomedImage(null)}>
+                        ✕
+                    </button>
+                </div>
+            )}
         </div>
     );
 };
