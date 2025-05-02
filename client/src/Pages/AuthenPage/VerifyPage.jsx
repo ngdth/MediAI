@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
 import VerifyForm from "../../Components/Form/Authenform/VerifyForm";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function VerifyPage() {
@@ -62,17 +62,6 @@ function VerifyPage() {
                     </Col>
                 </Row>
             </Container>
-            <ToastContainer
-                position="top-right"
-                autoClose={3000}
-                hideProgressBar={false}
-                newestOnTop
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-            />
         </>
     );
 }
