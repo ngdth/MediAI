@@ -73,7 +73,7 @@ const ManageResult = () => {
       !diagnosisDetails.diseaseName ||
       !diagnosisDetails.severity ||
       !diagnosisDetails.treatmentPlan ||
-      !diagnosisDetails.followUpSchedule ||
+      // !diagnosisDetails.followUpSchedule ||
       !diagnosisDetails.specialInstructions
     ) {
       alert("Vui lòng điền đầy đủ thông tin chẩn đoán trước khi gửi.");
