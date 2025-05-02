@@ -1,5 +1,4 @@
 import { Request, Response, RequestHandler } from "express";
-import Joi from "joi";
 import fs from "fs";
 import path from "path";
 import bcrypt from "bcrypt";
@@ -8,138 +7,48 @@ import User from "../../models/User";
 import { sendEmail } from "../../config/email";
 import { normalizeEmail } from "../../utils/normalizeEmail";
 import { generateVerificationCode } from "../../utils/generateToken";
+import {
+    validateEmail,
+    validateUsername,
+    validatePassword,
+    validatePhone,
+    validateGender,
+    validateCode,
+    validateBirthday,
+    validateAddress,
+    validateCity,
+    validateCountry,
+    validateBio,
+    validateConfPassword,
+    validateFields,
+} from "../../utils/validate";
 
 const TEMP_CODE_STORAGE: Map<string, string> = new Map();
-
-// Base schemas for reusable fields
-const baseSchemas = {
-    email: Joi.string()
-        .pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
-        .allow("")
-        .messages({
-            "string.pattern.base": "Vui lòng nhập địa chỉ email hợp lệ.",
-        }),
-    username: Joi.string()
-        .pattern(/^[a-zA-Z\s\u00C0-\u1EF9]{2,50}$/)
-        .allow("")
-        .messages({
-            "string.pattern.base": "Tên người dùng chỉ được chứa chữ cái và khoảng trắng",
-        }),
-    password: Joi.string()
-        .pattern(/^(?=.*[A-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()_+\-=\[\]{}|;:,.<>?]{6,24}$/)
-        .messages({
-            "string.empty": "Mật khẩu là bắt buộc.",
-            "string.pattern.base":
-                "Mật khẩu phải từ 6-24 ký tự, bao gồm chữ cái, số, ít nhất một chữ cái in hoa.",
-        }),
-    phone: Joi.string()
-        .pattern(/^(\+84|0)(3|5|7|8|9)[0-9]{8}$/)
-        .allow("")
-        .messages({
-            "string.pattern.base": "Vui lòng nhập số điện thoại hợp lệ.",
-        }),
-    gender: Joi.string()
-        .valid("Nam", "Nữ", "")
-        .messages({
-            "any.only": "Giới tính phải là 'Nam' hoặc 'Nữ'.",
-        }),
-    code: Joi.string()
-        .pattern(/^\d{6}$/)
-        .messages({
-            "string.empty": "Mã xác thực là bắt buộc.",
-            "string.pattern.base": "Mã xác thực phải là 6 chữ số.",
-        }),
-    birthday: Joi.date()
-        .allow(null)
-        .messages({
-            "date.base": "Ngày sinh phải là ngày hợp lệ.",
-        }),
-    address: Joi.string()
-        .max(100)
-        .allow("")
-        .messages({
-            "string.max": "Địa chỉ không được vượt quá 100 ký tự.",
-        }),
-    city: Joi.string()
-        .max(50)
-        .allow("")
-        .messages({
-            "string.max": "Thành phố không được vượt quá 50 ký tự.",
-        }),
-    country: Joi.string()
-        .max(50)
-        .allow("")
-        .messages({
-            "string.max": "Quốc gia không được vượt quá 50 ký tự.",
-        }),
-    bio: Joi.string()
-        .max(1000)
-        .allow("")
-        .messages({
-            "string.max": "Tiểu sử không được vượt quá 1000 ký tự.",
-        }),
-};
-
-// Endpoint-specific schemas
-const userSchema = Joi.object({
-    email: baseSchemas.email.required(),
-    username: baseSchemas.username.required(),
-    password: baseSchemas.password.required(),
-    phone: baseSchemas.phone,
-    gender: baseSchemas.gender.required(),
-});
-
-const verifySchema = Joi.object({
-    email: baseSchemas.email.required(),
-    code: baseSchemas.code.required(),
-});
-
-const otpSchema = Joi.object({
-    email: baseSchemas.email.required(),
-});
-
-const forgotPasswordSchema = Joi.object({
-    email: baseSchemas.email.required(),
-    code: baseSchemas.code.required(),
-    newPassword: baseSchemas.password.required(),
-});
-
-const deleteUnverifiedSchema = Joi.object({
-    email: baseSchemas.email.required(),
-});
-
-const changePasswordSchema = Joi.object({
-    oldPassword: baseSchemas.password.required(),
-    newPassword: baseSchemas.password.required(),
-    confPassword: Joi.string()
-        .valid(Joi.ref("newPassword"))
-        .required()
-        .messages({
-            "string.empty": "Xác nhận mật khẩu là bắt buộc.",
-            "any.only": "Xác nhận mật khẩu phải trùng với mật khẩu mới.",
-        }),
-});
-
-const updateProfileSchema = Joi.object({
-    username: baseSchemas.username,
-    email: baseSchemas.email,
-    birthday: baseSchemas.birthday,
-    gender: baseSchemas.gender,
-    phone: baseSchemas.phone,
-    address: baseSchemas.address,
-    city: baseSchemas.city,
-    country: baseSchemas.country,
-    bio: baseSchemas.bio,
-});
 
 // Hàm đăng ký người dùng
 export const registerUser: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const { email, username, password, phone, gender } = req.body;
 
-    // Validate dữ liệu đầu vào
-    const { error } = userSchema.validate(req.body, { abortEarly: false });
-    if (error) {
-        const errorMessage = error.details.map((detail) => detail.message).join(", ");
+    // Kiểm tra các trường bắt buộc
+    const errors: string[] = [];
+    if (!email) errors.push("Email không được trống.");
+    if (!username) errors.push("Tên người dùng không được trống.");
+    if (!password) errors.push("Mật khẩu không được trống.");
+    if (!gender) errors.push("Giới tính không được trống.");
+
+    // Validate định dạng các trường
+    const validationErrors = validateFields({
+        email: { value: email, validator: validateEmail },
+        username: { value: username, validator: validateUsername },
+        password: { value: password, validator: validatePassword },
+        phone: { value: phone, validator: validatePhone },
+        gender: { value: gender, validator: validateGender },
+    });
+
+    errors.push(...validationErrors);
+
+    if (errors.length > 0) {
+        const errorMessage = errors.join(" ");
         res.status(400).json({ message: errorMessage });
         return;
     }
@@ -197,6 +106,23 @@ export const registerUser: RequestHandler = async (req: Request, res: Response):
 export const loginUser: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
 
+    // Kiểm tra các trường bắt buộc
+    const errors: string[] = [];
+    if (!email || !password) errors.push("Email và mật khẩu không được trống.");
+
+    // Validate định dạng các trường
+    const validationErrors = validateFields({
+        email: { value: email, validator: validateEmail },
+    });
+
+    errors.push(...validationErrors);
+
+    if (errors.length > 0) {
+        const errorMessage = errors.join(" ");
+        res.status(400).json({ message: errorMessage });
+        return;
+    }
+
     try {
         const normalizedEmail = normalizeEmail(email);
 
@@ -212,7 +138,7 @@ export const loginUser: RequestHandler = async (req: Request, res: Response): Pr
         }
 
         if (!user.password) {
-            res.status(500).json({ message: "Mật khẩu của người dùng này bị thiếu." });
+            res.status(500).json({ message: "Tài khoản này không có mật khẩu" });
             return;
         }
 
@@ -248,10 +174,21 @@ export const loginUser: RequestHandler = async (req: Request, res: Response): Pr
 export const verifyAccount: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const { email, code } = req.body;
 
-    // Validate dữ liệu đầu vào
-    const { error } = verifySchema.validate(req.body, { abortEarly: false });
-    if (error) {
-        const errorMessage = error.details.map((detail) => detail.message).join(", ");
+    // Kiểm tra các trường bắt buộc
+    const errors: string[] = [];
+    if (!email) errors.push("Email không được trống.");
+    if (!code) errors.push("Mã xác thực không được trống.");
+
+    // Validate định dạng các trường
+    const validationErrors = validateFields({
+        email: { value: email, validator: validateEmail },
+        code: { value: code, validator: validateCode },
+    });
+
+    errors.push(...validationErrors);
+
+    if (errors.length > 0) {
+        const errorMessage = errors.join(" ");
         res.status(400).json({ message: errorMessage });
         return;
     }
@@ -292,10 +229,19 @@ export const verifyAccount: RequestHandler = async (req: Request, res: Response)
 export const sendOTP: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const { email } = req.body;
 
-    // Validate dữ liệu đầu vào
-    const { error } = otpSchema.validate(req.body, { abortEarly: false });
-    if (error) {
-        const errorMessage = error.details.map((detail) => detail.message).join(", ");
+    // Kiểm tra các trường bắt buộc
+    const errors: string[] = [];
+    if (!email) errors.push("Email không được trống.");
+
+    // Validate định dạng các trường
+    const validationErrors = validateFields({
+        email: { value: email, validator: validateEmail },
+    });
+
+    errors.push(...validationErrors);
+
+    if (errors.length > 0) {
+        const errorMessage = errors.join(" ");
         res.status(400).json({ message: errorMessage });
         return;
     }
@@ -323,10 +269,23 @@ export const sendOTP: RequestHandler = async (req: Request, res: Response): Prom
 export const forgotPassword: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const { email, code, newPassword } = req.body;
 
-    // Validate dữ liệu đầu vào
-    const { error } = forgotPasswordSchema.validate(req.body, { abortEarly: false });
-    if (error) {
-        const errorMessage = error.details.map((detail) => detail.message).join(", ");
+    // Kiểm tra các trường bắt buộc
+    const errors: string[] = [];
+    if (!email) errors.push("Email không được trống.");
+    if (!code) errors.push("Mã xác thực không được trống.");
+    if (!newPassword) errors.push("Mật khẩu mới không được trống.");
+
+    // Validate định dạng các trường
+    const validationErrors = validateFields({
+        email: { value: email, validator: validateEmail },
+        code: { value: code, validator: validateCode },
+        newPassword: { value: newPassword, validator: validatePassword },
+    });
+
+    errors.push(...validationErrors);
+
+    if (errors.length > 0) {
+        const errorMessage = errors.join(" ");
         res.status(400).json({ message: errorMessage });
         return;
     }
@@ -361,10 +320,19 @@ export const forgotPassword: RequestHandler = async (req: Request, res: Response
 export const deleteUnverifiedAcc: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const { email } = req.body;
 
-    // Validate dữ liệu đầu vào
-    const { error } = deleteUnverifiedSchema.validate(req.body, { abortEarly: false });
-    if (error) {
-        const errorMessage = error.details.map((detail) => detail.message).join(", ");
+    // Kiểm tra các trường bắt buộc
+    const errors: string[] = [];
+    if (!email) errors.push("Email không được trống.");
+
+    // Validate định dạng các trường
+    const validationErrors = validateFields({
+        email: { value: email, validator: validateEmail },
+    });
+
+    errors.push(...validationErrors);
+
+    if (errors.length > 0) {
+        const errorMessage = errors.join(" ");
         res.status(400).json({ message: errorMessage });
         return;
     }
@@ -396,10 +364,26 @@ export const deleteUnverifiedAcc: RequestHandler = async (req: Request, res: Res
 export const changePassword: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const { oldPassword, newPassword, confPassword } = req.body;
 
-    // Validate dữ liệu đầu vào
-    const { error } = changePasswordSchema.validate(req.body, { abortEarly: false });
-    if (error) {
-        const errorMessage = error.details.map((detail) => detail.message).join(", ");
+    // Kiểm tra các trường bắt buộc
+    const errors: string[] = [];
+    if (!oldPassword) errors.push("Mật khẩu cũ không được trống.");
+    if (!newPassword) errors.push("Mật khẩu mới không được trống.");
+    if (!confPassword) errors.push("Xác nhận mật khẩu không được trống.");
+
+    // Validate định dạng các trường
+    const validationErrors = validateFields({
+        oldPassword: { value: oldPassword, validator: validatePassword },
+        newPassword: { value: newPassword, validator: validatePassword },
+        confPassword: {
+            value: confPassword,
+            validator: (value: string | undefined) => validateConfPassword(newPassword, value),
+        },
+    });
+
+    errors.push(...validationErrors);
+
+    if (errors.length > 0) {
+        const errorMessage = errors.join(" ");
         res.status(400).json({ message: errorMessage });
         return;
     }
@@ -438,10 +422,26 @@ export const changePassword: RequestHandler = async (req: Request, res: Response
 export const updateProfile: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const { username, email, birthday, gender, phone, address, city, country, bio } = req.body;
 
-    // Validate dữ liệu đầu vào
-    const { error } = updateProfileSchema.validate(req.body, { abortEarly: false });
-    if (error) {
-        const errorMessage = error.details.map((detail) => detail.message).join(", ");
+    // Không có trường bắt buộc, tất cả đều tùy chọn
+    const errors: string[] = [];
+
+    // Validate định dạng các trường
+    const validationErrors = validateFields({
+        username: { value: username, validator: validateUsername },
+        email: { value: email, validator: validateEmail },
+        birthday: { value: birthday, validator: validateBirthday },
+        gender: { value: gender, validator: validateGender },
+        phone: { value: phone, validator: validatePhone },
+        address: { value: address, validator: validateAddress },
+        city: { value: city, validator: validateCity },
+        country: { value: country, validator: validateCountry },
+        bio: { value: bio, validator: validateBio },
+    });
+
+    errors.push(...validationErrors);
+
+    if (errors.length > 0) {
+        const errorMessage = errors.join(" ");
         res.status(400).json({ message: errorMessage });
         return;
     }

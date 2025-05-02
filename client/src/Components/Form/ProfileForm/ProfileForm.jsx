@@ -80,6 +80,15 @@ const ProfileForm = ({ user, setUser }) => {
         return errors;
     };
 
+    const capitalizeName = (name) => {
+        return name
+            .toLowerCase()
+            .trim()
+            .split(/\s+/)
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem("token");
@@ -95,9 +104,10 @@ const ProfileForm = ({ user, setUser }) => {
             return;
         }
 
-        // Prepare data for submission (convert birthday to ISO string or omit if null)
+        // Chuẩn hóa tên và chuẩn bị dữ liệu gửi đi
         const submissionData = {
             ...formData,
+            username: formData.username ? capitalizeName(formData.username) : formData.username,
             birthday: formData.birthday ? formData.birthday.toISOString() : undefined,
         };
 
@@ -111,7 +121,7 @@ const ProfileForm = ({ user, setUser }) => {
             );
             if (response.status === 200) {
                 toast.success("Cập nhật hồ sơ thành công!");
-                localStorage.setItem("username", formData.username);
+                localStorage.setItem("username", submissionData.username);
                 const updatedUserResponse = await axios.get("http://localhost:8080/user/profile", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
