@@ -12,6 +12,7 @@ const DoctorManagement = () => {
         password: "",
         specialization: "",
         experience: 0,
+        gender: "",
     });
     const [editingDoctor, setEditingDoctor] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);  // Add this state for delete confirmation
@@ -30,6 +31,7 @@ const DoctorManagement = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setDoctors(response.data);
+            console.log("Doctors fetched successfully:", response.data);
         } catch (error) {
             console.error("Error fetching doctors:", error);
         }
@@ -37,6 +39,21 @@ const DoctorManagement = () => {
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const capitalizeName = (name) => {
+        return name
+            .toLowerCase()
+            .trim()
+            .split(/\s+/)
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+    };
+
+    // Chuẩn hóa tên và chuẩn bị dữ liệu gửi đi
+    const submissionData = {
+    ...formData,
+    username: formData.username ? capitalizeName(formData.username) : formData.username,
     };
 
     const handleSubmit = async (e) => {
@@ -47,7 +64,7 @@ const DoctorManagement = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 });
             } else {
-                await axios.post("http://localhost:8080/admin/doctors/create", formData, {
+                await axios.post("http://localhost:8080/admin/doctors/create", submissionData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
             }
@@ -65,6 +82,7 @@ const DoctorManagement = () => {
             password: "",
             specialization: doctor.specialization,
             experience: doctor.experience,
+            gender: doctor.gender,
         });
         setEditingDoctor(doctor);
         setShowModal(true);
@@ -101,7 +119,7 @@ const DoctorManagement = () => {
         <div className="container mt-5" style={{ minHeight: "80vh", display: "flex", flexDirection: "column" }}>
             <h2 className="text-center mb-4">Quản Lý Bác Sĩ </h2>
             <div className="d-flex justify-content-end mb-3">
-                <button className="btn btn-primary" onClick={handleShowModal}>
+                <button className="btn btn-primary me-1" onClick={handleShowModal}>
                     Tạo tài khoản bác sĩ
                 </button>
                 <ImportDataButton/>
@@ -114,8 +132,9 @@ const DoctorManagement = () => {
                             <th>Họ tên </th>
                             <th>Email</th>
                             <th>Chuyên khoa</th>
+                            <th>Giới tính </th>
                             <th>Kinh nghiệm </th>
-                            <th>Hoạt động </th>
+                            <th>Hành động </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -124,6 +143,7 @@ const DoctorManagement = () => {
                                 <td>{doctor.username}</td>
                                 <td>{doctor.email}</td>
                                 <td>{doctor.specialization}</td>
+                                <td>{doctor.gender}</td>
                                 <td>{doctor.experience} năm</td>
                                 <td>
                                     <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(doctor)}>Chỉnh sửa </button>
@@ -168,6 +188,15 @@ const DoctorManagement = () => {
                                 ))}
                             </Form.Select>
                         </Form.Group>
+                        
+                        <Form.Group className="mb-3" controlId="gender">
+                            <Form.Label className="d-block text-start fw-bold">Giới tính</Form.Label>
+                            <Form.Select name="gender" value={formData.gender} onChange={handleChange} required >
+                                <option value="">Chọn giới tính</option>
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                            </Form.Select>
+                        </Form.Group>
 
                         <Form.Group className="mb-3" controlId="experience">
                             <Form.Label className="d-block text-start fw-bold">Kinh nghiệm</Form.Label>
@@ -180,7 +209,20 @@ const DoctorManagement = () => {
                         </div>
                     </Form>
                 </Modal.Body>
-
+            </Modal>
+            <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>XÁC NHẬN XÓA</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Bạn có chắc muốn xóa tài khoản này?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+                        Hủy
+                    </Button>
+                    <Button variant="danger" onClick={confirmDelete}>
+                        Xóa
+                    </Button>
+                </Modal.Footer>
             </Modal>
         </div>
     );
