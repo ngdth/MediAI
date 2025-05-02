@@ -265,6 +265,8 @@ const GeneralHealthKetchup = () => {
       displayValue = value === "male" ? "Nam" : value === "female" ? "Nữ" : value || "Chưa có dữ liệu";
     } else if (label === "Ngày") {
       displayValue = value ? new Date(value).toLocaleDateString("vi-VN") : "Chưa có dữ liệu";
+    } else if (label === "Lịch tái khám") {
+      displayValue = value ? new Date(value).toLocaleDateString("vi-VN") : "Không có lịch tái khám";
     } else {
       displayValue = value || "Chưa có dữ liệu";
     }

@@ -26,12 +26,16 @@ const LoginForm = ({ onLogin }) => {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
-                }
+                },
             });
-
 
             const data = await response.json();
             if (!response.ok) throw new Error(data.message || "Failed to fetch user data");
+
+            if (!data.user.active) {
+                setError("Tài khoản của bạn đã bị khóa.");
+                return;
+            }
 
             console.log(data);
             localStorage.setItem("username", data.user.username);
@@ -60,8 +64,14 @@ const LoginForm = ({ onLogin }) => {
             const data = await response.json();
             if (!response.ok) throw new Error(data.message || "Login failed");
 
+            // Check if user is not verified
+            if (!data.user.verified) {
+                localStorage.setItem("unverifiedEmail", email); // Store email for verification
+                navigate("/verify");
+                return;
+            }
+
             localStorage.setItem("token", data.token);
-            console.log(data.token);
             localStorage.setItem("username", data.user.username);
             onLogin(data.user);
 
@@ -75,7 +85,9 @@ const LoginForm = ({ onLogin }) => {
                 navigate("/pharmacy");
             } else if (data.user.role === "head of department") {
                 navigate("/hod");
-            } else { navigate("/"); }
+            } else {
+                navigate("/");
+            }
         } catch (err) {
             setError(err.message);
             console.log(err);
@@ -91,7 +103,11 @@ const LoginForm = ({ onLogin }) => {
             <h3 className="mb-4 text-center">Đăng nhập</h3>
 
             <div className="d-flex flex-row align-items-center justify-content-center">
-                <button className="btn btn-outline-danger d-flex align-items-center" type="button" onClick={handleGoogleLogin}>
+                <button
+                    className="btn btn-outline-danger d-flex align-items-center"
+                    type="button"
+                    onClick={handleGoogleLogin}
+                >
                     <FaGoogle className="me-2" /> Đăng nhập với Google
                 </button>
             </div>
@@ -131,7 +147,11 @@ const LoginForm = ({ onLogin }) => {
             </div>
 
             <div className="text-center">
-                <Button type="submit" className="cs_btn cs_style_1 cs_color_1" style={{ border: "none", outline: "none" }}>
+                <Button
+                    type="submit"
+                    className="cs_btn cs_style_1 cs_color_1"
+                    style={{ border: "none", outline: "none" }}
+                >
                     Đăng nhập
                 </Button>
                 <p className="small mt-2 pt-1 mb-2">
@@ -149,4 +169,4 @@ const LoginForm = ({ onLogin }) => {
     );
 };
 
-export default LoginForm;	
+export default LoginForm;
