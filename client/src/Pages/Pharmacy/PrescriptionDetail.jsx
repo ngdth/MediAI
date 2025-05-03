@@ -303,17 +303,6 @@ const PrescriptionsDetail = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-            <
-                position="top-right"
-                autoClose={6000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-            />
         </div>
     );
 };
