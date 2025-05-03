@@ -174,6 +174,11 @@ const BookingForm = ({ show, doctorId, onClose, onBookingSuccess }) => {
                   name="age"
                   value={formData.age}
                   onChange={handleChange}
+                  onKeyDown={(e) => {
+                    if (["e", "E", "-", "."].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
                   required
                   isInvalid={!!errors.age}
                 />

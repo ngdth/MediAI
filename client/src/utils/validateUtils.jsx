@@ -12,12 +12,10 @@ export const validatePhone = (phone) => {
 
 export const validateAge = (age) => {
   const parsedAge = parseInt(age, 10);
-  if (isNaN(parsedAge)) {
-    return "";
-  }
-  if (parsedAge > 120) {
-    return 120;
-  }
+  if (isNaN(parsedAge)) return "";
+  if (parsedAge < 1) return 1;
+  if (parsedAge > 120) return 120;
+
   return parsedAge;
 };
 
