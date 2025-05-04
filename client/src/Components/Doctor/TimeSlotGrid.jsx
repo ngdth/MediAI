@@ -13,10 +13,10 @@ function TimeSlotGrid({ dates, selectedSlots, onToggleTimeSlot }) {
       <div className="time-slot-grid">
         {/* Header row with dates */}
         <div className="grid-header">
-          <div className="time-label-header fw-bold">Thời gian</div>
+          <div></div>
           {dates.map((date, index) => (
             <div key={index} className="date-header">
-              <div className="day-name">{getDayName(date)}</div>
+              <div className="date-name">{getDayName(date)}</div>
               <div className="date-value">{formatDate(date)}</div>
             </div>
           ))}
@@ -38,18 +38,26 @@ function TimeSlotGrid({ dates, selectedSlots, onToggleTimeSlot }) {
             <div key={dateIndex} className="day-column">
               {timeSlots.map((slot, timeIndex) => {
                 const dateTimeKey = `${date.toLocaleDateString("en-CA")}-${slot.hour}-${slot.minute}`
-                const isSelected = selectedSlots[dateTimeKey]
+                const slotData = selectedSlots[dateTimeKey]
+                const isSelected = slotData?.isAvailable
+                const isBooked = slotData?.isBooked
 
                 return (
                   <div
                     key={timeIndex}
                     onClick={() => onToggleTimeSlot(dateTimeKey)}
-                    className={`time-slot ${isSelected ? "selected" : ""}`}
-                    aria-label={`${isSelected ? "Available" : "Unavailable"} at ${formatTime(slot.hour, slot.minute)} on ${formatDate(date)}`}
+                    className={`time-slot 
+            ${isBooked ? "booked" : ""}
+            ${isSelected ? "selected" : ""}`}
+                    aria-label={`${isBooked ? "Booked" : isSelected ? "Available" : "Unavailable"} at ${formatTime(slot.hour, slot.minute)} on ${formatDate(date)}`}
                     role="button"
                     tabIndex={0}
                   >
-                    {isSelected && <span className="available-text">Đã chọn</span>}
+                    {isBooked ? (
+                      <span className="booked-text">Booked</span>
+                    ) : isSelected ? (
+                      <span className="available-text">Available</span>
+                    ) : null}
                   </div>
                 )
               })}

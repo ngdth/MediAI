@@ -24,7 +24,7 @@
     text-align: center;
 }
 
-.day-name {
+.date-name {
     font-weight: 500;
 }
 
@@ -83,6 +83,18 @@
 }
 
 .available-text {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.time-slot.booked {
+    background-color: #ccc;
+    color: #555;
+    pointer-events: none;
+    // cursor: not-allowed;
+}
+
+.booked-text {
     font-size: 0.75rem;
     font-weight: 500;
 }
