@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import RejectModal from "../Nurse/RejectModal";
 import { FaSearch } from "react-icons/fa";
-import { toast  } from "react-toastify";
+import { toast } from "react-toastify";
 
 const ManageAppointment = () => {
     const [appointments, setAppointments] = useState([]);

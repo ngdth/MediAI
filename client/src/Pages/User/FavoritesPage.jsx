@@ -4,7 +4,7 @@ import axios from "axios";
 import PageHeading from "../../Components/PageHeading";
 import SectionHeading from "../../Components/SectionHeading";
 import Section from "../../Components/Section";
-import { toast  } from "react-toastify";
+import { toast } from "react-toastify";
 
 const FavoritesPage = () => {
     const headingData = {

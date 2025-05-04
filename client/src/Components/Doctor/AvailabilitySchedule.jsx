@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import TimeSlotGrid from "./TimeSlotGrid"
 import { generateDateRange, formatDate } from "../../utils/dateUtils"
 import axios from "axios"
-import { toast  } from "react-toastify"
+import { toast } from "react-toastify"
 
 const AvailabilitySchedule = () => {
   const token = localStorage.getItem("token")
@@ -38,7 +38,10 @@ const AvailabilitySchedule = () => {
             const dateKey = slot.date.split("T")[0]; // Giữ đúng YYYY-MM-DD
             const [hour, minute] = slot.time.split(":");
             const dateTimeKey = `${dateKey}-${parseInt(hour)}-${parseInt(minute)}`;
-            fetchedSlots[dateTimeKey] = !slot.isBooked // Chỉ hiển thị nếu chưa bị đặt
+            fetchedSlots[dateTimeKey] = {
+              isAvailable: !slot.isBooked,
+              isBooked: slot.isBooked
+            };
           })
         })
 
@@ -64,11 +67,18 @@ const AvailabilitySchedule = () => {
   }
 
   const toggleTimeSlot = (dateTimeKey) => {
-    setSelectedSlots((prev) => ({
-      ...prev,
-      [dateTimeKey]: !prev[dateTimeKey],
-    }))
-  }
+    setSelectedSlots((prev) => {
+      const slot = prev[dateTimeKey];
+      if (slot?.isBooked) return prev;
+      return {
+        ...prev,
+        [dateTimeKey]: {
+          ...slot,
+          isAvailable: !slot?.isAvailable
+        }
+      };
+    });
+  };
 
   const availableSlots = Object.keys(selectedSlots)
     .filter((key) => selectedSlots[key])
