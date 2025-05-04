@@ -36,7 +36,12 @@ const NurseManagement = () => {
     };
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        if (name === "experience") {
+            const fixedExp = validateExp(value);
+            setFormData({ ...formData, experience: fixedExp });
+        }
     };
 
     const handleSubmit = async (e) => {

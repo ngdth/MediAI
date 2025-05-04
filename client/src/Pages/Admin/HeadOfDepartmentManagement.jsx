@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Modal, Button, Form } from "react-bootstrap";
 import DoctorModal from "../../Components/Admin/DoctorModal";
+import { validateExp } from "../../utils/validateUtils";
 
 const HeadOfDepartmentManagement = () => {
     const [doctors, setDoctors] = useState([]);
@@ -38,7 +39,12 @@ const HeadOfDepartmentManagement = () => {
     };
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        if (name === "experience") {
+            const fixedExp = validateExp(value);
+            setFormData({ ...formData, experience: fixedExp });
+        }
     };
 
     const capitalizeName = (name) => {
