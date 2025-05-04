@@ -170,7 +170,7 @@ export const getAllNurses = async (req: Request, res: Response): Promise<void> =
 
 export const createNurseAccount = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { username, email, password, specialization, experience } = req.body;
+        const { username, email, password, specialization, experience, gender } = req.body;
 
         // Kiểm tra các trường bắt buộc
         if (!username || !email || !password || !specialization) {
@@ -194,8 +194,9 @@ export const createNurseAccount = async (req: Request, res: Response): Promise<v
             email,
             password: hashedPassword,
             specialization,
-            experience,
             role: "nurse",
+            experience: experience || 0, // Default 0 if not provided
+            gender: gender || "Nữ", // Default "not specified" if not provided
         });
 
         await newNurse.save();
@@ -210,7 +211,7 @@ export const createNurseAccount = async (req: Request, res: Response): Promise<v
 export const updateNurseAccount = async (req: Request, res: Response): Promise<void> => {
     try {
         const nurseId = req.params.nurseId;
-        const { username, email, password, specialization, experience } = req.body;
+        const { username, email, password, specialization, experience, gender } = req.body;
 
         // Tìm nurse cần cập nhật
         const nurse = await Nurse.findById(nurseId) as INurse;
@@ -224,6 +225,7 @@ export const updateNurseAccount = async (req: Request, res: Response): Promise<v
         if (email) nurse.email = email;
         if (specialization) nurse.specialization = specialization;
         if (experience !== undefined) nurse.experience = experience;
+        if (gender) nurse.gender = gender;
 
         // Kiểm tra email mới có bị trùng không
         if (email && email !== nurse.email) {

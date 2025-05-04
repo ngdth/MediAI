@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Modal, Button, Form } from "react-bootstrap";
 import { FaFileExport } from "react-icons/fa";  // Import biểu tượng cho nút Export
+import DoctorModal from "../../Components/Admin/DoctorModal";
 
 const NurseManagement = () => {
     const [nurses, setNurses] = useState([]);
@@ -12,6 +13,7 @@ const NurseManagement = () => {
         password: "",
         specialization: "",
         experience: 0,
+        gender: "",
     });
     const [editingNurse, setEditingNurse] = useState(null);
     const token = localStorage.getItem("token");
@@ -61,17 +63,17 @@ const NurseManagement = () => {
         const csvContent = headers.join(",") + "\n";
         const now = new Date();
         const vietnamTime = new Date(now.getTime() + (7 * 60 * 60 * 1000));
-        const dateString = vietnamTime.toISOString().slice(0, 19).replace(/[-T]/g, "_").replace(":", "-");  
+        const dateString = vietnamTime.toISOString().slice(0, 19).replace(/[-T]/g, "_").replace(":", "-");
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         const fileName = `nurse_template_${dateString}.csv`;
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = fileName;  
+        link.download = fileName;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     };
-    
+
     const handleEdit = (nurse) => {
         setFormData({
             username: nurse.username,
@@ -79,6 +81,7 @@ const NurseManagement = () => {
             password: "",
             specialization: nurse.specialization,
             experience: nurse.experience,
+            gender: nurse.gender,
         });
         setEditingNurse(nurse);
         setShowModal(true);
@@ -126,6 +129,7 @@ const NurseManagement = () => {
                             <th>Họ tên </th>
                             <th>Email</th>
                             <th>Chuyên khoa </th>
+                            <th>Giới tính </th>
                             <th>Kinh nghiệm </th>
                             <th>Hoạt động </th>
                         </tr>
@@ -136,6 +140,7 @@ const NurseManagement = () => {
                                 <td>{nurse.username}</td>
                                 <td>{nurse.email}</td>
                                 <td>{nurse.specialization}</td>
+                                <td>{nurse.gender}</td>
                                 <td>{nurse.experience} năm </td>
                                 <td>
                                     <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(nurse)}>Chỉnh sửa</button>
@@ -147,53 +152,15 @@ const NurseManagement = () => {
                 </table>
             </div>
 
-            {/* Modal thêm/sửa bác sĩ */}
-            <Modal show={showModal} onHide={handleCloseModal} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title style={{ fontWeight: 'bold', width: '100%' }}>
-                        {editingNurse ? "Chỉnh sửa y tá " : "Thêm y tá "}
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form onSubmit={handleSubmit}>
-                        <Form.Group className="mb-3" controlId="username">
-                            <Form.Label className="d-block text-start fw-bold">Họ tên</Form.Label>
-                            <Form.Control type="text" name="username" placeholder="Họ tên" value={formData.username} onChange={handleChange} required />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3" controlId="email">
-                            <Form.Label className="d-block text-start fw-bold">Email</Form.Label>
-                            <Form.Control type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3" controlId="password">
-                            <Form.Label className="d-block text-start fw-bold">Mật khẩu</Form.Label>
-                            <Form.Control type="password" name="password" placeholder="Mật khẩu" value={formData.password} onChange={handleChange} required={!editingNurse} />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3" controlId="specialization">
-                            <Form.Label className="d-block text-start fw-bold">Chuyên khoa</Form.Label>
-                            <Form.Select name="specialization" value={formData.specialization} onChange={handleChange} required>
-                                <option value="">Chọn chuyên khoa</option>
-                                {specialties.map((spec, index) => (
-                                    <option key={index} value={spec}>{spec}</option>
-                                ))}
-                            </Form.Select>
-                        </Form.Group>
-
-                        <Form.Group className="mb-3" controlId="experience">
-                            <Form.Label className="d-block text-start fw-bold">Kinh nghiệm</Form.Label>
-                            <Form.Control type="number" name="experience" value={formData.experience} onChange={handleChange} required />
-                        </Form.Group>
-
-                        <div className="text-end">
-                            <Button variant="secondary" onClick={handleCloseModal} className="me-2">Hủy</Button>
-                            <Button type="submit" variant="primary">{editingNurse ? "Cập nhật" : "Tạo"}</Button>
-                        </div>
-                    </Form>
-                </Modal.Body>
-
-            </Modal>
+            <DoctorModal
+                show={showModal}
+                handleClose={handleCloseModal}
+                handleSubmit={handleSubmit}
+                formData={formData}
+                handleChange={handleChange}
+                editingDoctor={editingNurse}
+                specialties={specialties}
+            />
         </div>
     );
 };

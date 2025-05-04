@@ -11,12 +11,20 @@ export const validatePhone = (phone) => {
 };
 
 export const validateAge = (age) => {
-  const parsedAge = parseInt(age, 10);
-  if (isNaN(parsedAge)) return "";
-  if (parsedAge < 1) return 1;
-  if (parsedAge > 120) return 120;
+  if (age === "") return "";
+  if (age < 1) return 1;
+  if (age > 120) return 120;
+  return age;
+};
 
-  return parsedAge;
+export const validateExp = (exp) => {
+  if (typeof exp === "string" && exp.length > 1 && exp.startsWith("0")) {
+    exp = exp.slice(1);
+    return exp;
+  }
+  if (exp < 0) return 0;
+  if (exp > 99) return 99;
+  return exp;
 };
 
 export const checkAuth = (callback, navigate) => {
