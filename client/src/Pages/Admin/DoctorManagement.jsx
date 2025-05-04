@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Modal, Button, Form } from "react-bootstrap";
 import ImportDataButton from "../../Components/UploadFile";
+import DoctorModal from "../../Components/Admin/DoctorModal";
+import { validateExp } from "../../utils/validateUtils";
 
 const DoctorManagement = () => {
     const [doctors, setDoctors] = useState([]);
@@ -38,7 +40,12 @@ const DoctorManagement = () => {
     };
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        if (name === "experience") {
+            const fixedExp = validateExp(value);
+            setFormData({ ...formData, experience: fixedExp });
+        }
     };
 
     const capitalizeName = (name) => {
@@ -52,8 +59,8 @@ const DoctorManagement = () => {
 
     // Chuẩn hóa tên và chuẩn bị dữ liệu gửi đi
     const submissionData = {
-    ...formData,
-    username: formData.username ? capitalizeName(formData.username) : formData.username,
+        ...formData,
+        username: formData.username ? capitalizeName(formData.username) : formData.username,
     };
 
     const handleSubmit = async (e) => {
@@ -122,7 +129,7 @@ const DoctorManagement = () => {
                 <button className="btn btn-primary me-1" onClick={handleShowModal}>
                     Tạo tài khoản bác sĩ
                 </button>
-                <ImportDataButton/>
+                <ImportDataButton />
             </div>
 
             <div className="table-responsive">
@@ -134,7 +141,7 @@ const DoctorManagement = () => {
                             <th>Chuyên khoa</th>
                             <th>Giới tính </th>
                             <th>Kinh nghiệm </th>
-                            <th>Hành động </th>
+                            <th>Hoạt động </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -155,61 +162,16 @@ const DoctorManagement = () => {
                 </table>
             </div>
 
-            {/* Modal thêm/sửa bác sĩ */}
-            <Modal show={showModal} onHide={handleCloseModal} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title style={{ fontWeight: 'bold', width: '100%' }}>
-                        {editingDoctor ? "Cập nhật thông tin " : "Thêm bác sĩ "}
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form onSubmit={handleSubmit}>
-                        <Form.Group className="mb-3" controlId="username">
-                            <Form.Label className="d-block text-start fw-bold">Họ tên</Form.Label>
-                            <Form.Control type="text" name="username" placeholder="Họ tên" value={formData.username} onChange={handleChange} required />
-                        </Form.Group>
+            <DoctorModal
+                show={showModal}
+                handleClose={handleCloseModal}
+                handleSubmit={handleSubmit}
+                formData={formData}
+                handleChange={handleChange}
+                editingDoctor={editingDoctor}
+                specialties={specialties}
+            />
 
-                        <Form.Group className="mb-3" controlId="email">
-                            <Form.Label className="d-block text-start fw-bold">Email</Form.Label>
-                            <Form.Control type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3" controlId="password">
-                            <Form.Label className="d-block text-start fw-bold">Mật khẩu</Form.Label>
-                            <Form.Control type="password" name="password" placeholder="Mật khẩu" value={formData.password} onChange={handleChange} required={!editingDoctor} />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3" controlId="specialization">
-                            <Form.Label className="d-block text-start fw-bold">Chuyên khoa</Form.Label>
-                            <Form.Select name="specialization" value={formData.specialization} onChange={handleChange} required >
-                                <option value="">Chọn chuyên khoa</option>
-                                {specialties.map((spec) => (
-                                    <option key={spec} value={spec}>{spec}</option>
-                                ))}
-                            </Form.Select>
-                        </Form.Group>
-                        
-                        <Form.Group className="mb-3" controlId="gender">
-                            <Form.Label className="d-block text-start fw-bold">Giới tính</Form.Label>
-                            <Form.Select name="gender" value={formData.gender} onChange={handleChange} required >
-                                <option value="">Chọn giới tính</option>
-                                <option value="Nam">Nam</option>
-                                <option value="Nữ">Nữ</option>
-                            </Form.Select>
-                        </Form.Group>
-
-                        <Form.Group className="mb-3" controlId="experience">
-                            <Form.Label className="d-block text-start fw-bold">Kinh nghiệm</Form.Label>
-                            <Form.Control type="number" name="experience" value={formData.experience} onChange={handleChange} required />
-                        </Form.Group>
-
-                        <div className="text-end">
-                            <Button variant="secondary" onClick={handleCloseModal} className="me-2">Hủy</Button>
-                            <Button type="submit" variant="primary">{editingDoctor ? "Cập nhật" : "Tạo"}</Button>
-                        </div>
-                    </Form>
-                </Modal.Body>
-            </Modal>
             <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>XÁC NHẬN XÓA</Modal.Title>
