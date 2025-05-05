@@ -31,12 +31,35 @@ export const upsertSchedule = async (req: Request, res: Response, next: NextFunc
         const existingSchedule = await Schedule.findOne({ doctorId });
 
         if (existingSchedule) {
-            // Cập nhật lịch nếu đã tồn tại
-            existingSchedule.availableSlots = availableSlots;
+            const existingSlots = existingSchedule.availableSlots;
+
+            const bookedSlots = existingSlots.filter(slot => slot.isBooked === true);
+
+            const unbookedSlots = availableSlots.filter(newSlot =>
+                !bookedSlots.some(
+                    booked =>
+                        new Date(booked.date).toISOString() === new Date(newSlot.date).toISOString() &&
+                        booked.time === newSlot.time
+                )
+            );
+
+            const mergedSlots = [...bookedSlots, ...unbookedSlots];
+
+            mergedSlots.sort((a, b) => {
+                const dateA = new Date(a.date).getTime();
+                const dateB = new Date(b.date).getTime();
+                if (dateA !== dateB) return dateA - dateB;
+
+                const timeA = parseInt(a.time.replace(":", ""), 10);
+                const timeB = parseInt(b.time.replace(":", ""), 10);
+                return timeA - timeB;
+            });
+
+            existingSchedule.availableSlots = mergedSlots;
             await existingSchedule.save();
 
-            res.status(200).json({
-                message: "Schedule updated successfully",
+            return res.status(200).json({
+                message: "Schedule updated successfully. Booked slots preserved.",
                 data: existingSchedule,
             });
         } else {
