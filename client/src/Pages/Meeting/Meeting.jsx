@@ -3,7 +3,7 @@ import { FaMicrophone, FaMicrophoneSlash, FaPhone, FaVideo, FaVideoSlash } from 
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 
-const socket = io(import.meta.env.VITE_BE_URL); // Server URL
+const socket = io("wss://api.amma-care.com"); // Server URL
 
 const Meeting = () => {
   const { roomId } = useParams(); // Get roomId from URL
