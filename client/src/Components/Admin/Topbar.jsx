@@ -25,16 +25,6 @@ const TopBar = (isSidebarOpen) => {
     navigate("/login");
   };
 
-  // const accountMenu = username
-  //   ? [
-  //     { label: "Profile", href: "/profile" },
-  //     { label: "Logout", action: handleLogout },
-  //   ]
-  //   : [
-  //     { label: "Login", href: "/login" },
-  //     { label: "Register", href: "/register" },
-  //   ];
-
   return (
     <header className="cs_site_header cs_style_1 cs_primary_color cs_sticky_header">
       <div className={`topbar ${isSidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
@@ -52,28 +42,9 @@ const TopBar = (isSidebarOpen) => {
                     <ul className="cs_nav_list">
                       <li className="menu-item-has-children">
                         <Link className="text-white">{username}</Link>
-                        {/* <ul>
-                      {accountMenu.map((subItem, index) => (
-                        <li key={index}>
-                          {subItem.href ? (
-                            <Link to={subItem.href}>{subItem.label}</Link>
-                          ) : (
-                            <Link
-                              to="#"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                subItem.action();
-                              }}
-                            >
-                              {subItem.label}
-                            </Link>
-                          )}
-                        </li>
-                      ))}
-                    </ul> */}
                         <ul>
                           <li>
-                            <Link to="/admin/profile">Profile</Link>
+                            <Link to="/admin/profile">Hồ sơ</Link>
                           </li>
                           <li>
                             <Link
