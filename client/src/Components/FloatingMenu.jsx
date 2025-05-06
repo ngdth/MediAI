@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Link } from 'react-router-dom';
+import chatbotIcon from '../assets/chatboticon.jpg';
+import bookingIcon from '../assets/booking.png'
 
 const FloatingMenu = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -8,6 +10,12 @@ const FloatingMenu = () => {
   const [input, setInput] = useState('');
   const [conversationId, setConversationId] = useState(null);
   const messagesEndRef = useRef(null);
+  const [showInvite, setShowInvite] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowInvite(false), 10000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (!conversationId) {
@@ -15,7 +23,7 @@ const FloatingMenu = () => {
       setConversationId(newConversationId);
       console.log('Generated conversation_id:', newConversationId);
     }
-  }, [conversationId]); 
+  }, [conversationId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -91,12 +99,15 @@ const FloatingMenu = () => {
 
   return (
     <div className="floating-menu">
-      <Link to="/BookingAppointments" className="floating-btn booking-btn">
-        <i className="fas fa-calendar-check"></i>
-        <span>Đặt lịch</span>
-      </Link>
-      <button className="chat-toggle-btn" onClick={() => setIsChatOpen(!isChatOpen)}>
-        {isChatOpen ? 'Đóng Chat' : 'Mở Chat'}
+      {showInvite && (
+        <div id="chatbot-invite">
+          🤖 Xin chào! Tôi là Chatbot của phòng khám AMMA.
+        </div>
+      )}
+      <button className="floating-icon chat-icon" onClick={() => setIsChatOpen(!isChatOpen)} title="Chat với AMMA">
+        <div className="chatbot-icon-wrapper">
+          <img src={chatbotIcon} alt="Chatbot" />
+        </div>
       </button>
       {isChatOpen && (
         <div className="chat-window">
@@ -121,6 +132,14 @@ const FloatingMenu = () => {
           </div>
         </div>
       )}
+
+      <div style={{ height: '20px' }}></div>
+
+      <Link to="/BookingAppointments" className="floating-icon booking-icon" title="Đặt lịch">
+        <div className="booking-icon-wrapper">
+          <img src={bookingIcon} alt="Đặt lịch" />
+        </div>
+      </Link>
     </div>
   );
 };
