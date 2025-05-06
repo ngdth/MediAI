@@ -13,7 +13,7 @@ const MedicalResult = () => {
     useEffect(() => {
         const fetchDoctorId = async () => {
             try {
-                const response = await axios.get("http://localhost:8080/user/me", {
+                const response = await axios.get(`${import.meta.env.VITE_BE_URL}/user/me`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setDoctorId(response.data.id);
@@ -33,7 +33,7 @@ const MedicalResult = () => {
 
             try {
                 const response = await axios.get(
-                    `http://localhost:8080/appointment/waiting?doctorId=${doctorId}`,
+                    `${import.meta.env.VITE_BE_URL}/appointment/waiting?doctorId=${doctorId}`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     }

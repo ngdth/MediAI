@@ -26,7 +26,7 @@ const NurseManagement = () => {
 
     const fetchNurses = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/admin/nurses", {
+            const response = await axios.get(`${import.meta.env.VITE_BE_URL}/admin/nurses`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setNurses(response.data);
@@ -48,11 +48,11 @@ const NurseManagement = () => {
         e.preventDefault();
         try {
             if (editingNurse) {
-                await axios.put(`http://localhost:8080/admin/nurses/update/${editingNurse._id}`, formData, {
+                await axios.put(`${import.meta.env.VITE_BE_URL}/admin/nurses/update/${editingNurse._id}`, formData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
             } else {
-                await axios.post("http://localhost:8080/admin/nurses/create", formData, {
+                await axios.post(`${import.meta.env.VITE_BE_URL}/admin/nurses/create`, formData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
             }
@@ -94,7 +94,7 @@ const NurseManagement = () => {
 
     const handleDelete = async (nurseId) => {
         try {
-            await axios.delete(`http://localhost:8080/admin/nurses/delete/${nurseId}`, {
+            await axios.delete(`${import.meta.env.VITE_BE_URL}/admin/nurses/delete/${nurseId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             fetchNurses();

@@ -21,7 +21,7 @@ const FavoritesPage = () => {
 
     const fetchFavorites = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/user/favorites", {
+            const response = await axios.get(`${import.meta.env.VITE_BE_URL}/user/favorites`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -38,7 +38,7 @@ const FavoritesPage = () => {
 
     const handleRemove = async (doctorId) => {
         try {
-            await axios.delete(`http://localhost:8080/user/favorites/delete/${doctorId}`, {
+            await axios.delete(`${import.meta.env.VITE_BE_URL}/user/favorites/delete/${doctorId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

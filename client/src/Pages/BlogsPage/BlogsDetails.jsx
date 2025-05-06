@@ -26,7 +26,7 @@ const BlogsDetails = () => {
 
     // Xử lý đường dẫn từ server
     if (imagePath.startsWith('/src/uploads') || imagePath.startsWith('/uploads')) {
-      return `http://localhost:8080${imagePath.replace('/src', '')}`;
+      return `${import.meta.env.VITE_BE_URL}${imagePath.replace('/src', '')}`;
     }
 
     return imagePath;
@@ -39,12 +39,12 @@ const BlogsDetails = () => {
       const headers = { Authorization: `Bearer ${token}` };
 
       // Gọi API lấy chi tiết blog
-      const blogResponse = await axios.get(`http://localhost:8080/blog/${blogId}`, { headers });
+      const blogResponse = await axios.get(`${import.meta.env.VITE_BE_URL}/blog/${blogId}`, { headers });
       console.log("Blog content from server:", blogResponse.data.content);
       const blogData = blogResponse.data;
 
       const authorResponse = await axios.get(
-        `http://localhost:8080/user/user/${blogData.author._id}`, // Sử dụng _id thay vì $oid
+        `${import.meta.env.VITE_BE_URL}/user/user/${blogData.author._id}`, // Sử dụng _id thay vì $oid
         { headers }
       );
       const authorData = authorResponse.data.user;
@@ -65,7 +65,7 @@ const BlogsDetails = () => {
       const authorId = blogResponse.data.author._id;
 
       // Gọi API lấy các bài viết gần đây của cùng tác giả
-      const recentPostsResponse = await axios.get('http://localhost:8080/blog', {
+      const recentPostsResponse = await axios.get(`${import.meta.env.VITE_BE_URL}/blog`, {
         headers,
         params: {
           authorId: authorId,
@@ -121,7 +121,7 @@ const BlogsDetails = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        `http://localhost:8080/blog/${blogId}/comments`,
+        `${import.meta.env.VITE_BE_URL}/blog/${blogId}/comments`,
         { content: commentText }, // Sử dụng 'content' thay vì 'text'
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -153,7 +153,7 @@ const BlogsDetails = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.put(
-        `http://localhost:8080/blog/${blogId}/comments/${commentId}/like`,
+        `${import.meta.env.VITE_BE_URL}/blog/${blogId}/comments/${commentId}/like`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -170,7 +170,7 @@ const BlogsDetails = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.put(
-        `http://localhost:8080/blog/${blogId}/comments/${commentId}/unlike`,
+        `${import.meta.env.VITE_BE_URL}/blog/${blogId}/comments/${commentId}/unlike`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -187,7 +187,7 @@ const BlogsDetails = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        `http://localhost:8080/blog/${blogId}/comments/${commentId}/replies`,
+        `${import.meta.env.VITE_BE_URL}/blog/${blogId}/comments/${commentId}/replies`,
         { content: replyText },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -240,7 +240,7 @@ const BlogsDetails = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.put(
-        `http://localhost:8080/blog/${blogId}/comments/${commentId}/replies/${replyId}/like`,
+        `${import.meta.env.VITE_BE_URL}/blog/${blogId}/comments/${commentId}/replies/${replyId}/like`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -254,7 +254,7 @@ const BlogsDetails = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.put(
-        `http://localhost:8080/blog/${blogId}/comments/${commentId}/replies/${replyId}/unlike`,
+        `${import.meta.env.VITE_BE_URL}/blog/${blogId}/comments/${commentId}/replies/${replyId}/unlike`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

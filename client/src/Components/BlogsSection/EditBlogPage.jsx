@@ -60,13 +60,13 @@ const EditBlogPage = () => {
                     return;
                 }
                 // Fetch doctor info
-                const doctorRes = await axios.get('http://localhost:8080/user/profile', {
+                const doctorRes = await axios.get(`${import.meta.env.VITE_BE_URL}/user/profile`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setDoctorInfo(doctorRes.data.user);
 
                 // Fetch blog data
-                const blogRes = await axios.get(`http://localhost:8080/blog/${blogId}`, {
+                const blogRes = await axios.get(`${import.meta.env.VITE_BE_URL}/blog/${blogId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 const blog = blogRes.data;
@@ -76,7 +76,7 @@ const EditBlogPage = () => {
                     specialization: blog.specialization || doctorRes.data.user.specialization || '',
                     media: (blog.media || []).map(m => ({
                         ...m,
-                        preview: `http://localhost:8080${m.url.replace('/src', '')}`,
+                        preview: `${import.meta.env.VITE_BE_URL}${m.url.replace('/src', '')}`,
                         type: m.type
                     })),
                     visibility: blog.visibility || 'public'
@@ -308,7 +308,7 @@ const EditBlogPage = () => {
             formDataToSend.append('specialization', formData.specialization);
             formDataToSend.append('visibility', formData.visibility);
             await axios.put(
-                `http://localhost:8080/blog/${blogId}`,
+                `${import.meta.env.VITE_BE_URL}/blog/${blogId}`,
                 formDataToSend,
                 {
                     headers: {

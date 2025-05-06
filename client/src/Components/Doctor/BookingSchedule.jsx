@@ -8,7 +8,7 @@ export default function BookingSchedule({ doctorId, selectedDay, setSelectedDay,
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/schedule/schedules/${doctorId}`, {
+        const response = await fetch(`${import.meta.env.VITE_BE_URL}/schedule/schedules/${doctorId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

@@ -30,7 +30,7 @@ const BlogsPage = () => {
 
   const fetchSpecializations = async () => {
     try {
-      const specResponse = await axios.get('http://localhost:8080/blog/specializations');
+      const specResponse = await axios.get(`${import.meta.env.VITE_BE_URL}/blog/specializations`);
       setSpecializations(specResponse.data);
     } catch (err) {
       console.error("Error fetching specializations:", err);
@@ -50,8 +50,8 @@ const BlogsPage = () => {
         return;
       }
 
-      console.log("Gọi API với URL:", 'http://localhost:8080/blog');
-      const response = await axios.get('http://localhost:8080/blog', {
+      console.log("Gọi API với URL:", `${import.meta.env.VITE_BE_URL}/blog`);
+      const response = await axios.get(`${import.meta.env.VITE_BE_URL}/blog`, {
         headers: {
           Authorization: `Bearer ${token}`
         },
@@ -98,7 +98,7 @@ const BlogsPage = () => {
           title: blog.title,
           subtitle: blog.content.substring(0, 100) + '...',
           image: blog.media && blog.media.length > 0
-            ? `http://localhost:8080${blog.media[0].url.replace('/src', '')}`
+            ? `${import.meta.env.VITE_BE_URL}${blog.media[0].url.replace('/src', '')}`
             : '/assets/img/post_1.jpeg',
           link: `/blog/${blog._id}`,
           linkText: 'Đọc thêm',

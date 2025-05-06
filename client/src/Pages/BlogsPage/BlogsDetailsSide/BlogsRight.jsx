@@ -65,7 +65,7 @@ const BlogsRight = ({ data, blogData }) => {
                   >
                     <img
                       src={post.imgSrc.startsWith('/src')
-                        ? `http://localhost:8080${post.imgSrc.replace('/src', '')}`
+                        ? `${import.meta.env.VITE_BE_URL}${post.imgSrc.replace('/src', '')}`
                         : post.imgSrc}
                       alt={post.title || "Blog post"}
                       className="cs_zoom_in"
