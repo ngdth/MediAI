@@ -57,11 +57,6 @@ export const upsertSchedule = async (req: Request, res: Response, next: NextFunc
 
             existingSchedule.availableSlots = mergedSlots;
             await existingSchedule.save();
-
-            res.status(200).json({
-                message: "Schedule updated successfully. Booked slots preserved.",
-                data: existingSchedule,
-            });
         } else {
             // Tạo lịch mới nếu chưa có
             const newSchedule = new Schedule({
