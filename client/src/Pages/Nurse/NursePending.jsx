@@ -20,15 +20,18 @@ const NursePending = () => {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const [appointmentsResponse, doctorsResponse] = await Promise.all([
+                const [appointmentsResponse, doctorsResponse, hodsResponse] = await Promise.all([
                     fetchAppointments("Pending"),
                     fetchDoctors(),
+                    fetchHODs(),
                 ]);
 
-                console.log("Doctors after fetch:", doctorsResponse);
-                setDoctors(doctorsResponse);
+                // Combine doctors and HODs into a single array
+                const combinedDoctors = [...doctorsResponse, ...hodsResponse];
+                console.log("Combined Doctors and HODs:", combinedDoctors);
+                setDoctors(combinedDoctors);
 
-                await fetchAllSchedules(doctorsResponse);
+                await fetchAllSchedules(combinedDoctors);
             } catch (error) {
                 console.error("Error loading initial data:", error);
             } finally {
@@ -63,6 +66,14 @@ const NursePending = () => {
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         console.log("Doctors:", response.data);
+        return response.data || [];
+    };
+
+    const fetchHODs = async () => {
+        const response = await axios.get(`${import.meta.env.VITE_BE_URL}/user/hods`, {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        console.log("HODs:", response.data);
         return response.data || [];
     };
 
