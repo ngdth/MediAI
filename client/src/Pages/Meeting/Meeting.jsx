@@ -36,8 +36,13 @@ const Meeting = () => {
 
     socket.on('call-made', async ({ offer }) => {
       offerRef.current = offer;
-      setIncomingCall(true);
       setOfferReady(true);
+
+      if (autoAnswer && !callStarted) {
+        await answerCall();
+      } else {
+        setIncomingCall(true);
+      }
     });
 
     socket.on('answer-made', async ({ answer }) => {
@@ -59,12 +64,6 @@ const Meeting = () => {
       socket.off('ice-candidate');
     };
   }, [roomId, autoStart, autoAnswer]);
-
-  useEffect(() => {
-    if (autoAnswer && offerReady && !callStarted) {
-      answerCall();
-    }
-  }, [autoAnswer, offerReady, callStarted]);
 
   const createPeerConnection = () => {
     const pc = new RTCPeerConnection({
