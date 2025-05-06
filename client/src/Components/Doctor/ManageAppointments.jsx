@@ -300,7 +300,7 @@ const ManageAppointment = () => {
                                                 Từ chối
                                             </button>
                                             <Link
-                                                to={`/meeting/${appointment.meetingCode}`}
+                                                to={`/meeting/${appointment._id}`}
                                                 state={{ autoStart: true }}
                                                 className="btn btn-success me-2 mt-2"
                                             >
