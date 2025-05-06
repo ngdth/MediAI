@@ -46,3 +46,33 @@ export const validateBookingForm = ({ formData, selectedDay, selectedSlot }) => 
   }
   return { isValid: true };
 };
+
+export const validateUsername = (username) => {
+  if (!username) return true;
+  return /^[a-zA-Z\s\u00C0-\u1EF9]{2,50}$/.test(username);
+};
+
+export const validateGender = (gender) => {
+  if (!gender) return true;
+  return ["Nam", "Nữ"].includes(gender);
+};
+
+export const validateAddress = (address) => {
+  if (!address) return true;
+  return address.length <= 100;
+};
+
+export const validateCity = (city) => {
+  if (!city) return true;
+  return city.length <= 50;
+};
+
+export const validateCountry = (country) => {
+  if (!country) return true;
+  return country.length <= 50;
+};
+
+export const validateBio = (bio) => {
+  if (!bio) return true;
+  return bio.length <= 1000;
+};

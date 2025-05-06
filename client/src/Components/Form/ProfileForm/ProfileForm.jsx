@@ -3,6 +3,7 @@ import DatePicker from "react-datepicker";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { validateUsername, validateEmail, validatePhone, validateGender, validateAddress, validateCity, validateCountry, validateBio } from "../../../utils/validateUtils";
 
 const ProfileForm = ({ user, setUser }) => {
     const [isFormChanged, setIsFormChanged] = useState(false);
@@ -17,6 +18,18 @@ const ProfileForm = ({ user, setUser }) => {
         phone: user?.phone || "",
         bio: user?.bio || "",
     });
+    const [errors, setErrors] = useState({});
+    
+    const ERROR_MESSAGES = {
+        username: "Tên chỉ được chứa chữ cái và khoảng trắng (2-50 ký tự)",
+        email: "Vui lòng nhập địa chỉ email hợp lệ",
+        phone: "Vui lòng nhập số điện thoại hợp lệ",
+        gender: "Giới tính phải là 'Nam' hoặc 'Nữ'",
+        address: "Địa chỉ không được vượt quá 100 ký tự",
+        city: "Thành phố không được vượt quá 50 ký tự",
+        country: "Quốc gia không được vượt quá 50 ký tự",
+        bio: "Tiểu sử không được vượt quá 1000 ký tự"
+    };
 
     useEffect(() => {
         if (user) {
@@ -31,6 +44,7 @@ const ProfileForm = ({ user, setUser }) => {
                 phone: user.phone || "",
                 bio: user.bio || "",
             });
+            setErrors({});
         }
     }, [user]);
 
@@ -41,6 +55,37 @@ const ProfileForm = ({ user, setUser }) => {
             [name]: value,
         }));
         setIsFormChanged(true);
+
+        const newErrors = { ...errors };
+        switch (name) {
+            case 'username':
+                newErrors.username = !validateUsername(value) ? ERROR_MESSAGES.username : "";
+                break;
+            case 'email':
+                newErrors.email = !validateEmail(value) ? ERROR_MESSAGES.email : "";
+                break;
+            case 'phone':
+                newErrors.phone = !validatePhone(value) ? ERROR_MESSAGES.phone : "";
+                break;
+            case 'gender':
+                newErrors.gender = !validateGender(value) ? ERROR_MESSAGES.gender : "";
+                break;
+            case 'address':
+                newErrors.address = !validateAddress(value) ? ERROR_MESSAGES.address : "";
+                break;
+            case 'city':
+                newErrors.city = !validateCity(value) ? ERROR_MESSAGES.city : "";
+                break;
+            case 'country':
+                newErrors.country = !validateCountry(value) ? ERROR_MESSAGES.country : "";
+                break;
+            case 'bio':
+                newErrors.bio = !validateBio(value) ? ERROR_MESSAGES.bio : "";
+                break;
+            default:
+                break;
+        }
+        setErrors(newErrors);
     };
 
     const handleDateChange = (date) => {
@@ -49,35 +94,6 @@ const ProfileForm = ({ user, setUser }) => {
             birthday: date,
         }));
         setIsFormChanged(true);
-    };
-
-    const validateFormData = (data) => {
-        const errors = [];
-        if (data.username && !/^[a-zA-Z\s\u00C0-\u1EF9]{2,50}$/.test(data.username)) {
-            errors.push("Tên người dùng chỉ được chứa chữ cái và khoảng trắng.");
-        }
-        if (data.email && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(data.email)) {
-            errors.push("Vui lòng nhập địa chỉ email hợp lệ.");
-        }
-        if (data.gender && !["Nam", "Nữ"].includes(data.gender)) {
-            errors.push("Giới tính phải là 'Nam' hoặc 'Nữ'.");
-        }
-        if (data.phone && !/^(\+84|0)(3|5|7|8|9)[0-9]{8}$/.test(data.phone)) {
-            errors.push("Vui lòng nhập số điện thoại hợp lệ");
-        }
-        if (data.address && data.address.length > 100) {
-            errors.push("Địa chỉ không được vượt quá 100 ký tự.");
-        }
-        if (data.city && data.city.length > 50) {
-            errors.push("Thành phố không được vượt quá 50 ký tự.");
-        }
-        if (data.country && data.country.length > 50) {
-            errors.push("Quốc gia không được vượt quá 50 ký tự.");
-        }
-        if (data.bio && data.bio.length > 1000) {
-            errors.push("Tiểu sử không được vượt quá 1000 ký tự.");
-        }
-        return errors;
     };
 
     const capitalizeName = (name) => {
@@ -98,9 +114,20 @@ const ProfileForm = ({ user, setUser }) => {
         }
 
         // Validate form data
-        const validationErrors = validateFormData(formData);
-        if (validationErrors.length > 0) {
-            toast.error(validationErrors.join(" "));
+        const newErrors = {};
+        if (!validateUsername(formData.username)) newErrors.username = ERROR_MESSAGES.username;
+        if (!validateEmail(formData.email)) newErrors.email = ERROR_MESSAGES.email;
+        if (formData.phone && !validatePhone(formData.phone)) newErrors.phone = ERROR_MESSAGES.phone;
+        if (formData.gender && !validateGender(formData.gender)) newErrors.gender = ERROR_MESSAGES.gender;
+        if (formData.address && !validateAddress(formData.address)) newErrors.address = ERROR_MESSAGES.address;
+        if (formData.city && !validateCity(formData.city)) newErrors.city = ERROR_MESSAGES.city;
+        if (formData.country && !validateCountry(formData.country)) newErrors.country = ERROR_MESSAGES.country;
+        if (formData.bio && !validateBio(formData.bio)) newErrors.bio = ERROR_MESSAGES.bio;
+
+        setErrors(newErrors);
+
+        if (Object.keys(newErrors).length > 0) {
+            toast.error("Vui lòng sửa các lỗi trong biểu mẫu");
             return;
         }
 
@@ -151,7 +178,11 @@ const ProfileForm = ({ user, setUser }) => {
                                 name="username"
                                 value={formData.username}
                                 onChange={handleChange}
+                                isInvalid={!!errors.username}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.username}
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Col>
                     <Col md={6}>
@@ -162,7 +193,11 @@ const ProfileForm = ({ user, setUser }) => {
                                 name="email"
                                 value={formData.email}
                                 readOnly
+                                isInvalid={!!errors.email}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.email}
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Col>
                 </Row>
@@ -184,11 +219,19 @@ const ProfileForm = ({ user, setUser }) => {
                     <Col md={6}>
                         <Form.Group>
                             <Form.Label>Giới tính</Form.Label>
-                            <Form.Select name="gender" value={formData.gender} onChange={handleChange}>
+                            <Form.Select
+                                name="gender"
+                                value={formData.gender}
+                                onChange={handleChange}
+                                isInvalid={!!errors.gender}
+                            >
                                 <option value="">Chọn giới tính</option>
                                 <option value="Nam">Nam</option>
                                 <option value="Nữ">Nữ</option>
                             </Form.Select>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.gender}
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Col>
                 </Row>
@@ -204,7 +247,11 @@ const ProfileForm = ({ user, setUser }) => {
                                 name="address"
                                 value={formData.address}
                                 onChange={handleChange}
+                                isInvalid={!!errors.address}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.address}
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Col>
                 </Row>
@@ -217,7 +264,11 @@ const ProfileForm = ({ user, setUser }) => {
                                 name="city"
                                 value={formData.city}
                                 onChange={handleChange}
+                                isInvalid={!!errors.city}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.city}
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Col>
                     <Col md={6}>
@@ -228,7 +279,11 @@ const ProfileForm = ({ user, setUser }) => {
                                 name="country"
                                 value={formData.country}
                                 onChange={handleChange}
+                                isInvalid={!!errors.country}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.country}
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Col>
                 </Row>
@@ -241,7 +296,11 @@ const ProfileForm = ({ user, setUser }) => {
                                 name="phone"
                                 value={formData.phone}
                                 onChange={handleChange}
+                                isInvalid={!!errors.phone}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.phone}
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Col>
                 </Row>
@@ -255,7 +314,11 @@ const ProfileForm = ({ user, setUser }) => {
                                     name="bio"
                                     value={formData.bio}
                                     onChange={handleChange}
+                                    isInvalid={!!errors.bio}
                                 />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.bio}
+                                </Form.Control.Feedback>
                             </Form.Group>
                         </Col>
                     </Row>
