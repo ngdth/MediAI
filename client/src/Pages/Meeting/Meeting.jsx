@@ -3,7 +3,10 @@ import { FaMicrophone, FaMicrophoneSlash, FaPhone, FaVideo, FaVideoSlash } from 
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 
-const socket = io("wss://amma-care.com"); // Server URL
+const socket = io("https://amma-care.com", {
+  transports: ["websocket"],
+  secure: true,
+});
 
 const Meeting = () => {
   const { roomId } = useParams(); // Get roomId from URL
