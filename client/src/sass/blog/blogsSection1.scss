@@ -5,13 +5,18 @@
 
     .cs_post_thumbnail {
         display: inline-block;
-        padding: 0 10px;
-        margin-bottom: -8px;
+        width: 100%;
+        aspect-ratio: 16 / 9; // Thay bằng 16/9 hoặc 1/1 nếu bạn thích
+        overflow: hidden;
+        position: relative;
+        background-color: #f0f0f0;
 
         img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            object-position: center;
+            display: block;
         }
     }
 
@@ -69,6 +74,16 @@
     .cs_post_title {
         font-size: 22px;
         margin-bottom: 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        /* Giới hạn 2 dòng */
+        -webkit-box-orient: vertical;
+        line-height: 1.4;
+        /* Chỉnh khoảng cách dòng cho đẹp */
+        max-height: calc(1.4em * 2);
+        /* Đảm bảo chiều cao đúng 2 dòng */
     }
 
     .cs_post_subtitle {

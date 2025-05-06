@@ -230,7 +230,7 @@ const TopBar = ({ isSidebarOpen }) => {
                         )}
                       </li>
                       <li>
-                        <Link to="/blog" className="custom-blog-btn">
+                        <Link to={localStorage.getItem("role") === "doctor" ? "/doctor/blog" : "/blog"} className="custom-blog-btn">
                           View Blog
                         </Link>
                       </li>

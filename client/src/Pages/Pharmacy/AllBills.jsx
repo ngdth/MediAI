@@ -76,7 +76,7 @@ const AllBills = () => {
                                 {/* <td className="text-center">{appointment.time}</td> */}
                                 <td className="text-center">
                                     <Link to={`/pharmacy/bill/${bill._id}`} className="btn btn-primary">
-                                       Chi tiết 
+                                        Chi tiết
                                     </Link>
                                     {/* <Button variant="primary">
                                         Chi tiết

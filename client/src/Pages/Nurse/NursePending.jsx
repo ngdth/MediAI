@@ -106,7 +106,7 @@ const NursePending = () => {
                     return isAvailable;
                 })
             );
-
+            console.log("Doctor schedules:", doctorSchedules);
             console.log(`Doctor ${doctor.username} is ${hasAvailableSlot ? "available" : "not available"} for ${appointmentDate} ${appointmentTime}`);
             return hasAvailableSlot;
         });
@@ -296,7 +296,7 @@ const NursePending = () => {
                                                     className="btn btn-warning"
                                                     onClick={() => updateAppointmentStatus(appointment._id, "Prescription_created")}
                                                 >
-                                                    Gửi lại cho bác sĩ 
+                                                    Gửi lại cho bác sĩ
                                                 </button>
                                             )}
                                         </td>
