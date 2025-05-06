@@ -29,7 +29,7 @@ const ServiceManagement = () => {
 
     const fetchServices = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/service/getAll", {
+            const response = await axios.get(`${import.meta.env.VITE_BE_URL}/service/getAll`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setServices(response.data);
@@ -64,12 +64,12 @@ const ServiceManagement = () => {
         };
         try {
             if (editingService) {
-                await axios.put(`http://localhost:8080/service/update/${editingService._id}`, preparedData, {
+                await axios.put(`${import.meta.env.VITE_BE_URL}/service/update/${editingService._id}`, preparedData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 showToastMessage("Service updated successfully", "success");
             } else {
-                await axios.post("http://localhost:8080/service/create", preparedData, {
+                await axios.post(`${import.meta.env.VITE_BE_URL}/service/create`, preparedData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 showToastMessage("Service added successfully", "success");
@@ -91,7 +91,7 @@ const ServiceManagement = () => {
     const handleDeleteConfirm = async () => {
         if (!deleteServiceId) return;
         try {
-            await axios.delete(`http://localhost:8080/service/delete/${deleteServiceId}`, {
+            await axios.delete(`${import.meta.env.VITE_BE_URL}/service/delete/${deleteServiceId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             showToastMessage("Service deleted successfully", "success");

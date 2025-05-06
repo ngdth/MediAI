@@ -27,7 +27,7 @@ const ManageResult = () => {
   useEffect(() => {
     const fetchDoctorId = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/user/me", {
+        const response = await axios.get(`${import.meta.env.VITE_BE_URL}/user/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const id = response.data.id;
@@ -45,7 +45,7 @@ const ManageResult = () => {
 
   const fetchAppointmentDetails = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/appointment/${appointmentId}`, {
+      const response = await axios.get(`${import.meta.env.VITE_BE_URL}/appointment/${appointmentId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = response.data.data;
@@ -82,7 +82,7 @@ const ManageResult = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/appointment/${appointmentId}/createresult`,
+        `${import.meta.env.VITE_BE_URL}/appointment/${appointmentId}/createresult`,
         { diagnosisDetails },
         { headers: { Authorization: `Bearer ${token}` } }
       );

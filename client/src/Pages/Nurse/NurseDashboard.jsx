@@ -23,10 +23,10 @@ const Dashboard = () => {
       console.log("Fetching stats...");
 
       const [pendingResponse, assignedResponse, canceledResponse, acceptedResponse] = await Promise.all([
-        axios.get("http://localhost:8080/appointment?status=Pending", { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
-        axios.get("http://localhost:8080/appointment?status=Assigned", { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
-        axios.get("http://localhost:8080/appointment?status=Canceled", { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
-        axios.get("http://localhost:8080/appointment?status=Accepted", { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
+        axios.get(`${import.meta.env.VITE_BE_URL}/appointment?status=Pending`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
+        axios.get(`${import.meta.env.VITE_BE_URL}/appointment?status=Assigned`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
+        axios.get(`${import.meta.env.VITE_BE_URL}/appointment?status=Canceled`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
+        axios.get(`${import.meta.env.VITE_BE_URL}/appointment?status=Accepted`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
       ]);
 
       const pendingCount = pendingResponse.data?.data?.length || 0;

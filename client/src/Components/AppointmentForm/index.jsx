@@ -32,7 +32,7 @@ const AppointmentForm = () => {
                     return;
                 }
 
-                const response = await axios.get('http://localhost:8080/user/profile', {
+                const response = await axios.get(`${import.meta.env.VITE_BE_URL}/user/profile`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -97,7 +97,7 @@ const AppointmentForm = () => {
             const age = calculateAge(formData.dateOfBirth);
             
             const response = await axios.post(
-                `http://localhost:8080/appointment/booknodoctor`,
+                `${import.meta.env.VITE_BE_URL}/appointment/booknodoctor`,
                 {
                     patientName: formData.fullName,
                     phone: formData.phone,

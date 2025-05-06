@@ -14,7 +14,7 @@ const ForgotPassForm = () => {
         setLoading(true);
 
         try {
-            const response = await fetch("http://localhost:8080/user/sendotp", {
+            const response = await fetch(`${import.meta.env.VITE_BE_URL}/user/sendotp`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email }),

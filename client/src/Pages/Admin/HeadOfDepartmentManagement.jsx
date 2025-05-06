@@ -28,7 +28,7 @@ const HeadOfDepartmentManagement = () => {
 
     const fetchHODs = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/user/hods", {
+            const response = await axios.get(`${import.meta.env.VITE_BE_URL}/user/hods`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setDoctors(response.data);
@@ -66,11 +66,11 @@ const HeadOfDepartmentManagement = () => {
         e.preventDefault();
         try {
             if (editingDoctor) {
-                await axios.put(`http://localhost:8080/admin/hod/update/${editingDoctor._id}`, formData, {
+                await axios.put(`${import.meta.env.VITE_BE_URL}/admin/hod/update/${editingDoctor._id}`, formData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
             } else {
-                await axios.post("http://localhost:8080/admin/hod/create", submissionData, {
+                await axios.post(`${import.meta.env.VITE_BE_URL}/admin/hod/create`, submissionData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
             }
@@ -102,7 +102,7 @@ const HeadOfDepartmentManagement = () => {
     const handleDeleteConfirm = async () => {
         try {
             console.log(doctorToDelete._id);
-            await axios.delete(`http://localhost:8080/admin/hod/delete/${doctorToDelete._id}`, {
+            await axios.delete(`${import.meta.env.VITE_BE_URL}/admin/hod/delete/${doctorToDelete._id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             fetchHODs();

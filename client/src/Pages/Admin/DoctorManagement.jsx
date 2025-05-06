@@ -29,7 +29,7 @@ const DoctorManagement = () => {
 
     const fetchDoctors = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/user/doctors", {
+            const response = await axios.get(`${import.meta.env.VITE_BE_URL}/user/doctors`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setDoctors(response.data);
@@ -67,11 +67,11 @@ const DoctorManagement = () => {
         e.preventDefault();
         try {
             if (editingDoctor) {
-                await axios.put(`http://localhost:8080/admin/doctors/update/${editingDoctor._id}`, formData, {
+                await axios.put(`${import.meta.env.VITE_BE_URL}/admin/doctors/update/${editingDoctor._id}`, formData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
             } else {
-                await axios.post("http://localhost:8080/admin/doctors/create", submissionData, {
+                await axios.post(`${import.meta.env.VITE_BE_URL}/admin/doctors/create`, submissionData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
             }
@@ -102,7 +102,7 @@ const DoctorManagement = () => {
 
     const confirmDelete = async () => {
         try {
-            await axios.delete(`http://localhost:8080/admin/doctors/delete/${doctorToDelete._id}`, {
+            await axios.delete(`${import.meta.env.VITE_BE_URL}/admin/doctors/delete/${doctorToDelete._id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             fetchDoctors();

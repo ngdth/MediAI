@@ -34,7 +34,7 @@ const BookingForm = ({ show, doctorId, onClose, onBookingSuccess }) => {
           return;
         }
 
-        const response = await axios.get("http://localhost:8080/user/profile", {
+        const response = await axios.get(`${import.meta.env.VITE_BE_URL}/user/profile`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -126,7 +126,7 @@ const BookingForm = ({ show, doctorId, onClose, onBookingSuccess }) => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/appointment/book",
+        `${import.meta.env.VITE_BE_URL}/appointment/book`,
         appointmentData,
         {
           headers: {

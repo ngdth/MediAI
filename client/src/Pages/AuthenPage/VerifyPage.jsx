@@ -12,7 +12,7 @@ function VerifyPage() {
         const unverifiedEmail = localStorage.getItem("unverifiedEmail");
 
         try {
-            await fetch("http://localhost:8080/user/deleteUnverified", {
+            await fetch(`${import.meta.env.VITE_BE_URL}/user/deleteUnverified`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email: unverifiedEmail }),

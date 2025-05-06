@@ -79,7 +79,7 @@ const BlogsSection1 = ({ data }) => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await axios.get("http://localhost:8080/user/me", {
+      const response = await axios.get(`${import.meta.env.VITE_BE_URL}/user/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -109,7 +109,7 @@ const BlogsSection1 = ({ data }) => {
         return;
       }
 
-      const response = await axios.get('http://localhost:8080/blog/my-blogs', {
+      const response = await axios.get(`${import.meta.env.VITE_BE_URL}/blog/my-blogs`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -134,7 +134,7 @@ const BlogsSection1 = ({ data }) => {
         title: blog.title,
         subtitle: truncateHTML(blog.content, 50),
         image: blog.media && blog.media.length > 0
-          ? `http://localhost:8080${blog.media[0].url.replace('/src', '')}`
+          ? `${import.meta.env.VITE_BE_URL}${blog.media[0].url.replace('/src', '')}`
           : '/assets/img/post_1.jpeg',
         link: `/blog/${blog._id}`,
         linkText: 'Đọc thêm',
@@ -161,7 +161,7 @@ const BlogsSection1 = ({ data }) => {
         return;
       }
 
-      const response = await axios.get('http://localhost:8080/blog', {
+      const response = await axios.get(`${import.meta.env.VITE_BE_URL}/blog`, {
         headers: { Authorization: `Bearer ${token}` },
         params: { search: term, specialization, sortBy: 'createdAt', order: 'desc' }
       });
@@ -186,7 +186,7 @@ const BlogsSection1 = ({ data }) => {
         title: blog.title,
         subtitle: truncateHTML(blog.content, 50),
         image: blog.media && blog.media.length > 0
-          ? `http://localhost:8080${blog.media[0].url.replace('/src', '')}`
+          ? `${import.meta.env.VITE_BE_URL}${blog.media[0].url.replace('/src', '')}`
           : '/assets/img/post_1.jpeg',
         link: `/blog/${blog._id}`,
         linkText: 'Đọc thêm',
@@ -285,7 +285,7 @@ const BlogsSection1 = ({ data }) => {
     if (!blogToDelete) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:8080/blog/${blogToDelete}`, {
+      await axios.delete(`${import.meta.env.VITE_BE_URL}/blog/${blogToDelete}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setShowDeleteModal(false);
@@ -479,7 +479,7 @@ const BlogsSection1 = ({ data }) => {
                     <Link to={blog.link} className="cs_post_thumbnail position-relative">
                       <img
                         src={blog.image.startsWith('/src')
-                          ? `http://localhost:8080${blog.image.replace('/src', '')}`
+                          ? `${import.meta.env.VITE_BE_URL}${blog.image.replace('/src', '')}`
                           : blog.image}
                         alt={blog.title || "Post Thumbnail"}
                         onError={(e) => {
