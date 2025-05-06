@@ -4,6 +4,7 @@ import SectionHeading from "../../Components/SectionHeading";
 import Section from "../../Components/Section";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import "react-datepicker/dist/react-datepicker.css";
+import { toast } from "react-toastify";
 
 // Dữ liệu demo: dịch vụ & bác sĩ
 const servicesData = [
@@ -109,8 +110,7 @@ const Appointments = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Appointment Data:", formData);
-    alert("Đặt lịch thành công!");
-    // Reset hoặc chuyển trang tuỳ ý
+    toast.success("Đặt lịch thành công!");
   };
 
   // Step Indicator (ở dưới form)

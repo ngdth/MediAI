@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const ManageResult = () => {
   const { appointmentId } = useParams();
@@ -36,6 +37,7 @@ const ManageResult = () => {
         console.log("Current Doctor ID:", id);
       } catch (error) {
         console.error("Error fetching doctor ID:", error);
+        toast.error(error.response?.data?.message || "Có lỗi xảy ra khi lấy thông tin bác sĩ.");
         setLoading(false);
       }
     };
@@ -58,6 +60,7 @@ const ManageResult = () => {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching appointment details:", error);
+      toast.error(error.response?.data?.message || "Có lỗi xảy ra khi lấy chi tiết lịch hẹn.");
       setLoading(false);
     }
   };
@@ -73,10 +76,9 @@ const ManageResult = () => {
       !diagnosisDetails.diseaseName ||
       !diagnosisDetails.severity ||
       !diagnosisDetails.treatmentPlan ||
-      // !diagnosisDetails.followUpSchedule ||
       !diagnosisDetails.specialInstructions
     ) {
-      alert("Vui lòng điền đầy đủ thông tin chẩn đoán trước khi gửi.");
+      toast.error("Vui lòng điền đầy đủ thông tin chẩn đoán trước khi gửi.");
       return;
     }
 
@@ -86,15 +88,15 @@ const ManageResult = () => {
         { diagnosisDetails },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert("Kết quả chẩn đoán đã được tạo thành công!");
-      if(doctorRole === "doctor") {
-      navigate("/doctor/medical-result");
-      } else { 
+      toast.success("Kết quả chẩn đoán đã được tạo thành công!");
+      if (doctorRole === "doctor") {
+        navigate("/doctor/medical-result");
+      } else {
         navigate("/hod/medical-result");
       }
     } catch (error) {
       console.error("Error creating result:", error);
-      alert("Có lỗi xảy ra khi tạo kết quả chẩn đoán.");
+      toast.error(error.response?.data?.message || "Có lỗi xảy ra khi tạo kết quả chẩn đoán.");
     }
   };
 

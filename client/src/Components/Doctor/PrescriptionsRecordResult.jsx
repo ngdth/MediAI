@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AssignModal from './AssignModal';
+import { toast } from 'react-toastify';
 
 const PrescriptionsRecordResult = () => {
     const [appointments, setAppointments] = useState([]);
@@ -35,15 +36,15 @@ const PrescriptionsRecordResult = () => {
                 { status: "Pending" },
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             );
-            alert(`Appointment status updated to Pending.`);
+            toast.success("Cập nhật trạng thái lịch hẹn thành Pending thành công.");
 
             const response = await axios.get(`${import.meta.env.VITE_BE_URL}/appointment/prescription-created`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
             setAppointments(response.data.data || []);
         } catch (error) {
-            console.error(`Error updating appointment status:`, error);
-            alert(error.response?.data?.message || "Có lỗi xảy ra khi cập nhật trạng thái lịch hẹn.");
+            console.error(`Lỗi khi cập nhật trạng thái lịch hẹn:`, error);
+            toast.error(error.response?.data?.message || "Có lỗi xảy ra khi cập nhật trạng thái lịch hẹn.");
         }
     };
 
@@ -55,7 +56,7 @@ const PrescriptionsRecordResult = () => {
     if (loading) {
         return (
             <div className="container">
-                <p>Loading...</p>
+                <p>Đang tải...</p>
             </div>
         );
     }
