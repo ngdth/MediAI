@@ -249,7 +249,7 @@ const AppointmentsHistory = () => {
                               )}
                               {appointment.status === "Accepted" && (
                                 <Link
-                                  to={`/meeting/${appointment.meetingCode}`}
+                                  to={`/meeting/${appointment._id}`}
                                   state={{ autoAnswer: true }}
                                   className="btn btn-success btn-sm"
                                 >
