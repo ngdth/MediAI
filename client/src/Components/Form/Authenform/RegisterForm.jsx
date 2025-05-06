@@ -223,11 +223,8 @@ const RegisterForm = ({ onRegistering }) => {
                 <Col md={12}>
                     <h3 className="text-center mb-3">Đăng ký tài khoản</h3>
 
-                    {formError && (
-                        <div style={{ padding: 10, color: 'darkred', backgroundColor: '#f8d7da', border: '1px solid red', borderRadius: 4 }}>
-                            {formError}
-                        </div>
-                    )}
+                    {formError && <Alert variant="danger">{formError}</Alert>}
+
                     <Form onSubmit={handleSubmit}>
                         <Form.Group className="mb-2">
                             <Form.Label>Họ và tên</Form.Label>
