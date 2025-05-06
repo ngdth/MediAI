@@ -26,9 +26,9 @@ const BlogSection = ({ data }) => {
           return;
         }
 
-        console.log("Gọi API với URL:", 'http://localhost:8080/blog');
+        console.log("Gọi API với URL:", `${import.meta.env.VITE_BE_URL}/blog`);
 
-        const response = await axios.get('http://localhost:8080/blog', {
+        const response = await axios.get(`${import.meta.env.VITE_BE_URL}/blog`, {
           headers: {
             Authorization: `Bearer ${token}`
           },
@@ -210,7 +210,7 @@ const BlogSection = ({ data }) => {
                         >
                           <img
                             src={post.thumbnail.startsWith('/src')
-                              ? `http://localhost:8080${post.thumbnail.replace('/src', '')}`
+                              ? `${import.meta.env.VITE_BE_URL}${post.thumbnail.replace('/src', '')}`
                               : post.thumbnail}
                             alt="post Thumbnail"
                             onError={(e) => {

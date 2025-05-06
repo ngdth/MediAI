@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import Schedule from '../../models/Schedule';
 import mongoose from 'mongoose';
 
-export const upsertSchedule = async (req: Request, res: Response, next: NextFunction) => {
+export const upsertSchedule = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const doctorId = req.user?.id; // Lấy ID bác sĩ từ user đã đăng nhập
         const { availableSlots } = req.body;
@@ -58,7 +58,7 @@ export const upsertSchedule = async (req: Request, res: Response, next: NextFunc
             existingSchedule.availableSlots = mergedSlots;
             await existingSchedule.save();
 
-            return res.status(200).json({
+            res.status(200).json({
                 message: "Schedule updated successfully. Booked slots preserved.",
                 data: existingSchedule,
             });

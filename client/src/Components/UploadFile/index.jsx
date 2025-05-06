@@ -108,7 +108,7 @@ const ImportDataButton = () => {
                 const formData = new FormData();
                 formData.append('file', file);
 
-                const response = await axios.post('http://localhost:8080/upload/upload', formData, {
+                const response = await axios.post(`${import.meta.env.VITE_BE_URL}/upload/upload`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     },

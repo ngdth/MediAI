@@ -113,7 +113,7 @@ const ProfileForm = ({ user, setUser }) => {
 
         try {
             const response = await axios.put(
-                `http://localhost:8080/user/updateProfile/${user._id}`,
+                `${import.meta.env.VITE_BE_URL}/user/updateProfile/${user._id}`,
                 submissionData,
                 {
                     headers: { Authorization: `Bearer ${token}` },
@@ -122,7 +122,7 @@ const ProfileForm = ({ user, setUser }) => {
             if (response.status === 200) {
                 toast.success("Cập nhật hồ sơ thành công!");
                 localStorage.setItem("username", submissionData.username);
-                const updatedUserResponse = await axios.get("http://localhost:8080/user/profile", {
+                const updatedUserResponse = await axios.get(`${import.meta.env.VITE_BE_URL}/user/profile`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setUser(updatedUserResponse.data.user);

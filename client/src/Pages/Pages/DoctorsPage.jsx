@@ -14,14 +14,14 @@ const DoctorsPage = () => {
       let hodArray = [];
 
       try {
-        const doctorRes = await axios.get("http://localhost:8080/user/doctors");
+        const doctorRes = await axios.get(`${import.meta.env.VITE_BE_URL}/user/doctors`);
         doctorArray = Array.isArray(doctorRes.data) ? doctorRes.data : (doctorRes.data ? [doctorRes.data] : []);
       } catch (error) {
         console.error("Error fetching doctors:", error.response?.data || error);
       }
 
       try {
-        const hodRes = await axios.get("http://localhost:8080/user/hods");
+        const hodRes = await axios.get(`${import.meta.env.VITE_BE_URL}/user/hods`);
         hodArray = Array.isArray(hodRes.data) ? hodRes.data : (hodRes.data ? [hodRes.data] : []);
       } catch (error) {
         console.error("Error fetching hods:", error.response?.data || error);

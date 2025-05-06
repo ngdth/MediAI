@@ -34,7 +34,7 @@ const DoctorsDetailsPage = () => {
   useEffect(() => {
     const fetchDoctorDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/user/doctors/${doctorId}`, {
+        const response = await axios.get(`${import.meta.env.VITE_BE_URL}/user/doctors/${doctorId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setDoctorDetails(response.data);
@@ -42,7 +42,7 @@ const DoctorsDetailsPage = () => {
         // Nếu lỗi là 404 thì thử gọi API HOD
         if (error.response?.status === 404) {
           try {
-            const hodResponse = await axios.get(`http://localhost:8080/user/hod/${doctorId}`, {
+            const hodResponse = await axios.get(`${import.meta.env.VITE_BE_URL}/user/hod/${doctorId}`, {
               headers: { Authorization: `Bearer ${token}` },
             });
             setDoctorDetails(hodResponse.data);
@@ -61,7 +61,7 @@ const DoctorsDetailsPage = () => {
 
     const checkIfFavorite = async () => {
       try {
-        const res = await axios.get(`http://localhost:8080/user/favorites`, {
+        const res = await axios.get(`${import.meta.env.VITE_BE_URL}/user/favorites`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -81,7 +81,7 @@ const DoctorsDetailsPage = () => {
     checkAuth(async () => {
     try {
       const response = await axios.post(
-        `http://localhost:8080/user/favorites/add/${doctorId}`,
+        `${import.meta.env.VITE_BE_URL}/user/favorites/add/${doctorId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -95,7 +95,7 @@ const DoctorsDetailsPage = () => {
 
       if (errorMessage.includes("Doctor already in favorites")) {
         try {
-          await axios.delete(`http://localhost:8080/user/favorites/delete/${doctorId}`, {
+          await axios.delete(`${import.meta.env.VITE_BE_URL}/user/favorites/delete/${doctorId}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
 

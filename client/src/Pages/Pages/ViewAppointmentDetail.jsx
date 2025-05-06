@@ -17,7 +17,7 @@ const ViewAppointmentDetail = () => {
 
   const fetchAppointmentData = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/appointment/${appointmentId}`, {
+      const response = await axios.get(`${import.meta.env.VITE_BE_URL}/appointment/${appointmentId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       console.log("API Response:", response.data); // Kiểm tra dữ liệu trả về từ API

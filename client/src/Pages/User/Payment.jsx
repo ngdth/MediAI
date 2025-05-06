@@ -20,7 +20,7 @@ export default function Payment() {
     useEffect(() => {
         const fetchBills = async () => {
             try {
-                const response = await fetch("http://localhost:8080/pharmacy/my-bills", {
+                const response = await fetch(`${import.meta.env.VITE_BE_URL}/pharmacy/my-bills`, {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -48,7 +48,7 @@ export default function Payment() {
 
     const handlePayBill = async (bill) => {
         try {
-            const response = await fetch("http://localhost:8080/payment/create-payment", {
+            const response = await fetch(`${import.meta.env.VITE_BE_URL}/payment/create-payment`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -56,7 +56,7 @@ export default function Payment() {
                 },
                 body: JSON.stringify({
                     _id: bill._id,
-                    redirectUrl: "http://localhost:5173/payment",
+                    redirectUrl: `${import.meta.env.VITE_FE_URL}/payment`,
                     requestType: "payWithMethod"
                 })
             });

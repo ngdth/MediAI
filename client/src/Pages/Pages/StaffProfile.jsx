@@ -25,7 +25,7 @@ const StaffProfile = () => {
             }
 
             try {
-                const response = await axios.get("http://localhost:8080/user/profile", {
+                const response = await axios.get(`${import.meta.env.VITE_BE_URL}/user/profile`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -61,7 +61,7 @@ const StaffProfile = () => {
             return;
         }
         try {
-            await axios.post(`http://localhost:8080/user/changePassword/${user?._id}`, passwordData, {
+            await axios.post(`${import.meta.env.VITE_BE_URL}/user/changePassword/${user?._id}`, passwordData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             toast.success("Password change successfully!");
@@ -97,7 +97,7 @@ const StaffProfile = () => {
     
         try {
             const token = localStorage.getItem("token");
-            const response = await axios.post("http://localhost:8080/user/update-avatar", formData, {
+            const response = await axios.post(`${import.meta.env.VITE_BE_URL}/user/update-avatar`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "multipart/form-data",

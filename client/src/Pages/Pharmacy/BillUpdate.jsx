@@ -21,7 +21,7 @@ const BillUpdate = () => {
 
     const fetchBillDetails = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/pharmacy/detail/${billId}`, {
+            const response = await axios.get(`${import.meta.env.VITE_BE_URL}/pharmacy/detail/${billId}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             setBill(response.data.bill);
@@ -86,7 +86,7 @@ const BillUpdate = () => {
             });
 
             const response = await axios.put(
-                `http://localhost:8080/pharmacy/update-medicines-price/${billId}`,
+                `${import.meta.env.VITE_BE_URL}/pharmacy/update-medicines-price/${billId}`,
                 { medicineFees },
                 {
                     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -110,14 +110,14 @@ const BillUpdate = () => {
 
     const handleQRCode = async () => {
         try {
-            const response = await fetch("http://localhost:8080/payment/create-payment", {
+            const response = await fetch(`${import.meta.env.VITE_BE_URL}/payment/create-payment`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     _id: bill._id,
-                    redirectUrl: "http://localhost:5173/pharmacy/bills",
+                    redirectUrl: `${import.meta.env.VITE_FE_URL}/pharmacy/bills`,
                     requestType: "captureWallet"
                 }),
             });

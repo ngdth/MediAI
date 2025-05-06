@@ -36,7 +36,7 @@ const ChangePassForm = ({ userId, onBackToProfile }) => {
             }
 
             const response = await axios.post(
-                `http://localhost:8080/user/changePassword/${userId}`,
+                `${import.meta.env.VITE_BE_URL}/user/changePassword/${userId}`,
                 {
                     oldPassword: formData.oldPassword,
                     newPassword: formData.newPassword,

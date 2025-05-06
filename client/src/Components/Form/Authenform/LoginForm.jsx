@@ -22,7 +22,7 @@ const LoginForm = ({ onLogin }) => {
 
     const fetchUserData = async (token) => {
         try {
-            const response = await fetch("http://localhost:8080/user/profile", {
+            const response = await fetch(`${import.meta.env.VITE_BE_URL}/user/profile`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -55,7 +55,7 @@ const LoginForm = ({ onLogin }) => {
         setError("");
 
         try {
-            const response = await fetch("http://localhost:8080/user/login", {
+            const response = await fetch(`${import.meta.env.VITE_BE_URL}/user/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
@@ -95,7 +95,7 @@ const LoginForm = ({ onLogin }) => {
     };
 
     const handleGoogleLogin = () => {
-        window.location.href = "http://localhost:8080/auth/google";
+        window.location.href = `${import.meta.env.VITE_BE_URL}/auth/google`;
     };
 
     return (

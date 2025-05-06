@@ -18,7 +18,7 @@ const NurseDashboard = () => {
 
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/appointment", {
+      const response = await axios.get(`${import.meta.env.VITE_BE_URL}/appointment`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
       });
       const appointments = response.data.data;
