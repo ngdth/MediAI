@@ -1,0 +1,529 @@
+@import 'default/fonts';
+@import 'default/variable';
+@import 'default/typography';
+@import 'common/preloader';
+@import 'common/spacing';
+@import 'common/general';
+@import 'common/slider';
+@import 'common/video-modal';
+@import 'common/header';
+@import 'common/footer';
+@import 'common/sidebar';
+@import 'shortcode/hero';
+@import 'shortcode/banner';
+@import 'shortcode/iconbox';
+@import 'shortcode/post';
+@import 'shortcode/cta';
+@import 'shortcode/testimonial';
+@import 'shortcode/counter';
+@import 'shortcode/casestudie';
+@import 'shortcode/team';
+@import 'shortcode/imagebox';
+@import 'shortcode/pricing';
+@import 'shortcode/card';
+@import 'shortcode/tabs';
+@import 'shortcode/user';
+@import 'shortcode/admin';
+@import 'shortcode/nurse';
+@import 'shortcode/pharmacy';
+@import 'shortcode/calendar';
+@import 'shortcode/schedule';
+@import 'shortcode/popup';
+@import 'shortcode/profile_page';
+@import 'shortcode/bill';
+@import 'shortcode/ketchup';
+@import 'shortcode/meeting';
+/*--------------------------------
+ Extra css
+ -------------------------------*/
+.cs_hero.cs_style_1 .cs_hero_text {
+  background-color: inherit;
+  padding: inherit;
+  border-radius: inherit;
+  position: inherit;
+}
+.cs_tab_links.cs_style_1 li a span {
+  font-size: 19px;
+}
+.cs_card.cs_style_2 .cs_card_text {
+  max-width: 530px;
+}
+.cs_card.cs_style_2 .cs_card_title {
+  font-size: 27px;
+}
+.home_form_area .cs_form_field {
+  background-color: #fff;
+}
+.about-page-area .about-team hr{
+  display: none;
+}
+.custom-datepicker {
+  border-radius: 12px;
+  padding: 12px;
+  background: #ffffff;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #ddd;
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker {
+  font-family: "Arial", sans-serif;
+  border-radius: 10px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  border: none;
+}
+
+.react-datepicker__header {
+  background-color: #007bff;
+  color: white;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.react-datepicker__day--selected {
+  background-color: #007bff !important;
+  color: white !important;
+  border-radius: 50%;
+}
+
+.react-datepicker__day--keyboard-selected {
+  background-color: #0056b3 !important;
+  color: white !important;
+}
+
+.react-datepicker__day:hover {
+  background-color: #e9ecef !important;
+  border-radius: 50%;
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.react-datepicker__triangle {
+  display: none;
+}
+.cs-btn-container {
+  display: flex;
+  justify-content: center; 
+  gap: 20px; 
+}
+.table th, .table td {
+  border-right: 2px solid #ddd; 
+}
+
+.table {
+  border: 1px solid #ddd;
+  border-collapse: collapse; 
+}
+
+.floating-menu {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column; 
+}
+
+.floating-btn {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  justify-content: center;
+  width: 80px;  
+  height: 80px;  
+  color: white;
+  border-radius: 12px; 
+  margin-bottom: 15px; 
+  font-size: 18px; 
+  text-decoration: none;
+  transition: all 0.3s ease;
+  padding: 12px 0;
+}
+
+.floating-btn i {
+  font-size: 30px; 
+}
+
+.floating-btn span {
+  margin-top: 5px; 
+  font-size: 14px; 
+}
+
+.floating-btn:hover {
+  opacity: 0.8;
+}
+
+.chat-btn {
+  background-color: #0066cc; 
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.booking-btn {
+  background-color: #0066cc; 
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chat-box-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.chat-box {
+  background-color: #fff;
+  width: 400px;
+  max-width: 100%;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.chat-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.chat-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.chat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-content input {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.chat-content button {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.close-chat-btn {
+  background-color: transparent;
+  border: none;
+  font-size: 20px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.close-chat-btn:hover {
+  color: red;
+}
+.chat-btn {
+  display: flex;
+  align-items: center;
+}
+
+.chat-btn i {
+  margin-right: 5px;
+}
+
+.chat-box {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  height: 400px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.message {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.outgoing {
+  text-align: right;
+  background-color: #f1f1f1;
+}
+
+.incoming {
+  text-align: left;
+  background-color: #e1f5fe;
+}
+/* Áp dụng cho tất cả các bảng */
+.table {
+  width: 100%; /* Đảm bảo bảng chiếm toàn bộ chiều rộng */
+  table-layout: fixed; /* Đảm bảo tất cả các cột có cùng chiều rộng */
+  border-collapse: collapse; /* Gộp các đường kẻ bảng */
+}
+
+/* Đảm bảo mỗi ô trong bảng có đường viền như nhau */
+.table th, .table td {
+  border: 1px solid #ddd;
+  padding: 10px; /* Khoảng cách trong ô */
+  text-align: left; /* Căn chỉnh văn bản bên trái */
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  text-decoration: none;
+  color: #333; /* Màu mặc định */
+}
+
+.menu-item:hover {
+  background-color: #f0f0f0;
+}
+
+// .menu-item .menu-icon {
+//   margin-right: 10px;
+// }
+
+.menu-item.active {
+  background-color: #3046d8;  /* Màu nền khi chọn */
+  color: white; /* Màu chữ khi chọn */
+}
+.pending .table {
+  margin-top: 50px; /* Tạo khoảng cách trên cho table */
+}
+
+.notification-panel {
+  position: absolute;
+  top: 70px;
+  right: 0;
+  width: 360px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  z-index: 1000;
+}
+.notification-header {
+  padding: 16px;
+  border-bottom: 1px solid #ddd;
+}
+.notification-header h5 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+.notification-header .nav-link {
+  padding: 0;
+  font-size: 14px;
+  color: #007bff;
+  margin-left: 8px;
+}
+.notification-item {
+  padding: 16px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+}
+.notification-item:last-child {
+  border-bottom: none;
+}
+.notification-item img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+.notification-item .notification-text {
+  flex-grow: 1;
+}
+.notification-item .notification-text p {
+  margin: 0;
+  font-size: 14px;
+}
+.notification-item .notification-text .text-muted {
+  font-size: 12px;
+  color: #6c757d;
+}
+.notification-item .notification-icon {
+  margin-left: 8px;
+  color: #007bff;
+}
+.notification-footer {
+  padding: 16px;
+  text-align: center;
+}
+.notification-footer button {
+  font-size: 14px;
+  color: #007bff;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.notification-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.notification-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.search-bar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  margin-top: 50px;
+
+  .search-container {
+    position: relative;
+    width: 350px;
+
+    input {
+      width: 100%;
+      padding: 12px 40px 12px 20px;
+      font-size: 16px;
+      border: 1px solid ;
+      border-radius: 25px;
+      outline: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px;
+
+      &:focus {
+        border-color: 00;
+        box-shadow: 0 0 8px rgba(0,0, 0.3);
+      }
+
+      &::placeholder {
+        color: #aaa;
+        font-style: italic;
+      }
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #aaa;
+      font-size: 18px;
+    }
+  }
+}
+
+.chat-toggle-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.chat-toggle-btn:hover {
+  background-color: #0056b3;
+}
+
+.chat-window {
+  width: 350px;
+  height: 500px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-header {
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background-color: #f9f9f9;
+}
+
+.message {
+  margin: 5px 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  max-width: 80%;
+}
+
+.message.user {
+  background-color: #007bff;
+  color: white;
+  margin-left: auto;
+  text-align: right;
+}
+
+.message.bot {
+  background-color: #e9ecef;
+  color: black;
+  margin-right: auto;
+}
+
+.chat-input {
+  display: flex;
+  padding: 10px;
+  background-color: #fff;
+  border-top: 1px solid #ddd;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.chat-input button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.chat-input button:hover {
+  background-color: #0056b3;
+}

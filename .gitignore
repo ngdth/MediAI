@@ -1,0 +1,16 @@
+# dependencies
+node_modules
+.pnp
+.pnp.js
+
+# production
+build
+dist
+
+# misc
+.env
+.DS_Store
+*.log
+*.pid
+
+client/public/uploads/

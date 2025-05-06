@@ -1,0 +1,36 @@
+.card-profile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    border: 1px solid rgba(0, 0, 0, .05);
+    border-radius: .375rem;
+    background-color: #fff;
+    background-clip: border-box;
+}
+
+.circle-image {
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: auto;
+    aspect-ratio: 1 / 1; /* Đảm bảo tỷ lệ luôn là hình vuông */
+    max-width: 100%; /* Để ảnh không bị co kéo khi thu nhỏ */
+}
+
+.card-profile-image-container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.card-profile-image-container .edit-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    color: white;
+    opacity: 0.8;
+}
