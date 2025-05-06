@@ -235,7 +235,7 @@ const TopBar = ({ isSidebarOpen }) => {
                                 handleLogout();
                               }}
                             >
-                              Logout
+                              Đăng xuất
                             </Link>
                           </li>
                         </ul>

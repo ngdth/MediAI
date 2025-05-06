@@ -119,7 +119,7 @@ const TopBar = ({ isSidebarOpen }) => {
             <div className="cs_main_header_in">
               <div className="cs_main_header_left ps-5 pt-2">
                 <Link className="cs_site_branding h1 bold" to="/">
-                  Doctor
+                  Bác Sĩ
                 </Link>
               </div>
               {username && (
@@ -231,14 +231,14 @@ const TopBar = ({ isSidebarOpen }) => {
                       </li>
                       <li>
                         <Link to={localStorage.getItem("role") === "doctor" ? "/doctor/blog" : "/blog"} className="custom-blog-btn">
-                          View Blog
+                          Xem Blog
                         </Link>
                       </li>
                       <li className="menu-item-has-children">
                         <Link className="text-white">{username}</Link>
                         <ul>
                           <li>
-                            <Link to="/doctor/profile">Hồ Sơ</Link>
+                            <Link to="/doctor/profile">Hồ sơ</Link>
                           </li>
                           <li>
                             <Link
@@ -248,7 +248,7 @@ const TopBar = ({ isSidebarOpen }) => {
                                 handleLogout();
                               }}
                             >
-                              Logout
+                              Đăng xuất
                             </Link>
                           </li>
                         </ul>

@@ -22,7 +22,7 @@ const TopBar = ({ isSidebarOpen }) => {
             <div className="cs_main_header_in">
               <div className="cs_main_header_left ps-5 pt-2">
                 <Link className="cs_site_branding h1 bold" to="/">
-                  Nurse
+                  Y Tá
                 </Link>
               </div>
               {username && (
