@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import RejectModal from "../../Components/Nurse/RejectModal";
 
 const NurseAssigned = () => {
@@ -59,12 +60,12 @@ const NurseAssigned = () => {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }),
       ]);
-  
+
       const doctorMap = {};
       [...doctorRes.data, ...hodRes.data].forEach((user) => {
         doctorMap[user._id] = user.username;
       });
-  
+
       setDoctors(doctorMap);
     } catch (error) {
       console.error("Error fetching doctors and HODs:", error);
@@ -85,7 +86,7 @@ const NurseAssigned = () => {
       if (status === "Accepted") {
         const appointment = appointments.find((item) => item.appointment._id === id)?.appointment;
         if (appointment) {
-          const doctorId = appointment.doctorId[0]; 
+          const doctorId = appointment.doctorId[0];
           const message = `Bạn có lịch hẹn mới vào ${new Date(appointment.date).toLocaleDateString(
             "vi-VN"
           )} lúc ${appointment.time}`;
@@ -110,7 +111,7 @@ const NurseAssigned = () => {
       fetchAppointments("Assigned");
     } catch (error) {
       console.error("Lỗi khi cập nhật trạng thái:", error);
-      alert("Có lỗi xảy ra khi cập nhật trạng thái lịch hẹn. Vui lòng thử lại.");
+      toast.error("Có lỗi xảy ra khi cập nhật trạng thái lịch hẹn. Vui lòng thử lại.");
     }
   };
 
@@ -186,12 +187,12 @@ const NurseAssigned = () => {
 
   const handleConfirmReject = async () => {
     if (!rejectReason.trim()) {
-      alert("Vui lòng nhập lý do từ chối.");
+      toast.error("Vui lòng nhập lý do từ chối.");
       return;
     }
 
     if (!selectedAppointmentId) {
-      alert("Không tìm thấy cuộc hẹn để từ chối.");
+      toast.error("Không tìm thấy cuộc hẹn để từ chối.");
       return;
     }
 
@@ -203,7 +204,7 @@ const NurseAssigned = () => {
       fetchAppointments("Assigned");
     } catch (error) {
       console.error("Lỗi khi từ chối cuộc hẹn:", error);
-      alert(error.response?.data?.message || "Có lỗi xảy ra khi từ chối lịch hẹn.");
+      toast.error(error.response?.data?.message || "Có lỗi xảy ra khi từ chối lịch hẹn.");
     }
   };
 

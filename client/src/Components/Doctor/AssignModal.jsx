@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const AssignModal = ({ show, handleClose, onAssign, appointmentId }) => {
     const [pharmacy, setPharmacy] = useState([]);
@@ -18,6 +19,7 @@ const AssignModal = ({ show, handleClose, onAssign, appointmentId }) => {
                 setPharmacy(response.data);
             } catch (error) {
                 console.error("Error fetching pharmacy list:", error);
+                toast.error("Có lỗi xảy ra khi lấy danh sách nhà thuốc.");
             }
         };
 
@@ -26,7 +28,7 @@ const AssignModal = ({ show, handleClose, onAssign, appointmentId }) => {
 
     const handleAssign = async () => {
         if (!selectedId) {
-            alert("Vui lòng chọn một nhà thuốc để gán!");
+            toast.error("Vui lòng chọn một nhà thuốc để gán!");
             return;
         }
 
@@ -36,11 +38,11 @@ const AssignModal = ({ show, handleClose, onAssign, appointmentId }) => {
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
             );
 
-            alert("Gán nhà thuốc thành công!");
+            toast.success("Gán nhà thuốc thành công!");
             handleClose();
         } catch (error) {
             console.error("Error assigning pharmacy:", error);
-            alert("Có lỗi xảy ra khi gán nhà thuốc!");
+            toast.error(error.response?.data?.message || "Có lỗi xảy ra khi gán nhà thuốc!");
         }
     };
 
