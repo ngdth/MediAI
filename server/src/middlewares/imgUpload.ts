@@ -16,21 +16,7 @@ if (!fs.existsSync(uploadTestDir)) {
 }
 
 // Middleware tự động chọn thư mục dựa trên field name
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        if (file.fieldname === "avatar") {
-            cb(null, uploadDir);
-        } else if (file.fieldname === "testImages") {
-            cb(null, uploadTestDir);
-        } else {
-            cb(new Error("Field name không hợp lệ"), "");
-        }
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
-    },
-});
+const storage = multer.memoryStorage();
 
 // Kiểm tra định dạng file
 import { Request } from "express";

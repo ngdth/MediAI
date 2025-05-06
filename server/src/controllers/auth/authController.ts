@@ -22,6 +22,9 @@ import {
     validateConfPassword,
     validateFields,
 } from "../../utils/validate";
+import { v4 as uuidv4 } from "uuid";
+import streamifier from "streamifier";
+import bucket from "../../config/firebase";
 
 const TEMP_CODE_STORAGE: Map<string, string> = new Map();
 
@@ -477,7 +480,7 @@ export const updateProfile: RequestHandler = async (req: Request, res: Response)
 // Hàm cập nhật avatar
 export const updateAvatar: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     try {
-        if (!req.file) {
+        if (!req.file || !req.file.buffer) {
             res.status(400).json({ message: "Không có file nào được tải lên." });
             return;
         }
@@ -490,24 +493,42 @@ export const updateAvatar: RequestHandler = async (req: Request, res: Response):
             return;
         }
 
-        // Delete the physical file
-        const uploadsDir = path.join(__dirname, process.env.UPLOADS_DIR_AVATARS || "../../../../client/public");
-
-        // Nếu user đã có avatar cũ thì xóa ảnh cũ
-        if (user.imageUrl) {
+        // Nếu user đã có avatar cũ (từng là URL Firebase), ta không cần xóa file vật lý cục bộ nữa
+        // Nhưng nếu trước đó dùng local và còn giữ đường dẫn cũ, bạn có thể xử lý:
+        if (user.imageUrl && user.imageUrl.startsWith("/uploads/avatars/")) {
+            const uploadsDir = path.join(__dirname, process.env.UPLOADS_DIR_AVATARS || "../../../../client/public");
             const oldAvatarPath = path.join(uploadsDir, user.imageUrl);
             if (fs.existsSync(oldAvatarPath)) {
                 fs.unlinkSync(oldAvatarPath);
             }
         }
 
-        // Lưu avatar mới
-        user.imageUrl = `/uploads/avatars/${req.file.filename}`;
-        await user.save();
+        // Upload file mới lên Firebase
+        const fileName = `avatars/${uuidv4()}-${req.file.originalname}`;
+        const file = bucket.file(fileName);
 
-        res.json({ imageUrl: user.imageUrl });
-    } catch (error) {
-        console.error("Lỗi khi cập nhật avatar:", error);
-        res.status(500).json({ message: "Có lỗi xảy ra khi cập nhật avatar." });
+        const stream = file.createWriteStream({
+            metadata: {
+                contentType: req.file.mimetype,
+            },
+        });
+
+        stream.on("error", (err: any) => {
+            console.error("🟥 Firebase upload error:", err.message);
+            res.status(500).json({ message: "Lỗi upload Firebase", error: err.message });
+        });
+
+        stream.on("finish", async () => {
+            await file.makePublic(); // Cho phép public ảnh
+            const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+            user.imageUrl = publicUrl;
+            await user.save();
+            res.json({ imageUrl: publicUrl });
+        });
+
+        streamifier.createReadStream(req.file.buffer).pipe(stream);
+    } catch (error: any) {
+        console.error("🟥 Lỗi khi cập nhật avatar:", error.message);
+        res.status(500).json({ message: "Có lỗi xảy ra khi cập nhật avatar", error: error.message });
     }
 };
