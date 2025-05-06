@@ -204,16 +204,6 @@ const BlogsLeft = ({ data, blogId, setBlog, onUnlikeReply, onLikeReply, onAddCom
             </li>
           </ul>
 
-          {/* Post Content */}
-          <div
-            className="blog-content"
-            dangerouslySetInnerHTML={{ __html: data.content }}
-            style={{
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-word',
-            }}
-          />
-
           <div className="cs_height_27 cs_height_lg_10" />
 
           {/* Testimonial and Card Section */}
@@ -296,6 +286,16 @@ const BlogsLeft = ({ data, blogId, setBlog, onUnlikeReply, onLikeReply, onAddCom
               </div>
             </div>
           </div>
+
+          {/* Post Content */}
+          <div
+            className="blog-content"
+            dangerouslySetInnerHTML={{ __html: data.content }}
+            style={{
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word',
+            }}
+          />
 
           <div className="cs_height_30 cs_height_lg_30" />
 

@@ -16,11 +16,11 @@ import { addComment, addReply, likeComment, likeReply, reportComment, unlikeComm
 
 const router = Router();
 
-router.post('/', authenticateToken, authorizeRole(["doctor"]), uploadMedia, createBlog);
-router.get('/', authenticateToken, getAllBlogs);
+router.post('/', authenticateToken, authorizeRole(["doctor", "head of department"]), uploadMedia, createBlog);
+router.get('/', getAllBlogs);
 router.get('/my-blogs', authenticateToken, getMyBlogs);
-router.get('/:blogId', authenticateToken, getBlogById);
-router.get('/specializations', authenticateToken, getSpecializations);
+router.get('/specializations', getSpecializations);
+router.get('/:blogId', getBlogById);
 router.delete('/:blogId', authenticateToken, authorizeRole(["doctor", "admin"]), deleteBlog);
 router.put('/:blogId', authenticateToken, authorizeRole(["doctor"]), uploadMedia, updateBlog);
 router.put('/:blogId/:action', authenticateToken, (req, res, next) => {

@@ -100,7 +100,7 @@ export const sendEmail = async (email: string, data: any, type: string) => {
                 html: `
                         <h2>Hóa Đơn Khám Bệnh</h2>
                         <p>Xin chào ${data.patientName},</p>
-                        <p>Bạn đã đặt lịch khám với bác sĩ <strong>${data.doctorName}</strong> (${data.doctorSpecialization}).</p>
+                        <p>Bạn đã đặt lịch khám với bác sĩ <strong>${data.doctorName}</strong></p>
                         <p><strong>Phí khám:</strong> ${data.consultationFee} VNĐ</p>
                         <p><strong>Phí xét nghiệm:</strong> ${data.testFees.map((t: any) => `${t.name}: ${t.price} VNĐ`).join(", ")}</p>
                         <p><strong>Phí thuốc:</strong> ${data.medicineFees.map((m: any) => `${m.name}: ${m.totalPrice} VNĐ`).join(", ")}</p>

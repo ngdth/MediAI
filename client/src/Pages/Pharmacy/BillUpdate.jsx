@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { Modal, Button, Row, Col } from "react-bootstrap";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import BillExportPDF from "./BillExportPDF";
 
 const BillUpdate = () => {
     const { billId } = useParams();
@@ -322,6 +323,16 @@ const BillUpdate = () => {
                         Cập nhật giá thuốc
                     </Button>
                 )}
+                <BillExportPDF
+                    bill={bill}
+                    appointment={appointment}
+                    diagnosisDetails={diagnosisDetails}
+                    prescriptions={prescriptions}
+                    services={services}
+                    totalMedicine={totalMedicine}
+                    totalService={totalService}
+                    totalPayment={totalPayment}
+                />
             </div>
 
             {/* Confirmation Modal for Updating Prices */}

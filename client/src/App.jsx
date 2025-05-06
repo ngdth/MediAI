@@ -79,6 +79,7 @@ import StaffProfile from "./Pages/Pages/StaffProfile";
 import AdminDashboard from "./Pages/Admin/AdminDashboard";
 import Meeting from "./Pages/Meeting/Meeting";
 import { ToastContainer } from "react-toastify";
+import BlogsSection1 from "./Components/BlogsSection/BlogsSection1";
 
 function App() {
     Aos.init({
@@ -98,6 +99,8 @@ function App() {
         pathname.startsWith("/nurse") ||
         pathname.startsWith("/pharmacy")
     );
+
+    const role = localStorage.getItem('role');
 
     return (
         <>
@@ -163,6 +166,10 @@ function App() {
                     <Route path="profile" element={<StaffProfile />} />
                 </Route>
                 <Route path="/doctor" element={<DoctorLayout />}>
+                    <Route path="blog" element={<BlogsPage />} />
+                    <Route path="blog/:blogId" element={<BlogsDetails />} />
+                    <Route path="blog/create" element={<BlogCreatePage />} />
+                    <Route path="blog/edit/:blogId" element={<EditBlogPage />} />
                     <Route path="/doctor" element={<ManageAppointments />} />
                     <Route path="appointments/manage-result/:appointmentId" element={<ManageResult />} />
                     <Route path="/doctor/medical-result" element={<MedicalResult />} />
