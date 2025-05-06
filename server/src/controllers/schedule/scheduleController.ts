@@ -58,7 +58,7 @@ export const upsertSchedule = async (req: Request, res: Response, next: NextFunc
             existingSchedule.availableSlots = mergedSlots;
             await existingSchedule.save();
 
-            return res.status(200).json({
+            res.status(200).json({
                 message: "Schedule updated successfully. Booked slots preserved.",
                 data: existingSchedule,
             });
