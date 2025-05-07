@@ -10,7 +10,7 @@ router.get("/appointments/done", authenticateToken, authorizeRole(["pharmacy", "
 router.post("/createbill", authenticateToken,  authorizeRole(["pharmacy"]), createBill);
 
 // get all bills
-router.get("/", authenticateToken,  authorizeRole(["admin", "pharmacy", "doctor"]),getBills);
+router.get("/bills", authenticateToken,  authorizeRole(["admin", "pharmacy", "doctor"]),getBills);
 
 // Route lấy tất cả hóa đơn của người dùng hiện tại (dựa trên token)
 router.get("/my-bills", authenticateToken, getBillsByUser);
