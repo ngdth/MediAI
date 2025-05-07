@@ -70,9 +70,9 @@ const Meeting = () => {
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
         {
-          urls: 'turn:app.appspot.com:3478',
-          username: 'webrtc',
-          credential: 'webrtc'
+          urls: 'turn:turn.metered.ca:3478',
+          username: 'openrelayproject',
+          credential: 'openrelayproject'
         }
       ]
     });
