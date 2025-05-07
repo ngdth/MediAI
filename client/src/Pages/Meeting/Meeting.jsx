@@ -50,7 +50,6 @@ const Meeting = () => {
     });
 
     socket.on('ice-candidate', ({ candidate }) => {
-      console.log("Received ICE Candidate:", candidate);
       peerConnectionRef.current?.addIceCandidate(new RTCIceCandidate(candidate));
     });
 
@@ -71,16 +70,15 @@ const Meeting = () => {
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
         {
-          urls: 'turn:openrelay.metered.ca:80',
-          username: 'openrelayproject',
-          credential: 'openrelayproject'
-        }
+          urls: "turn:relay1.expressturn.com:3478",
+          username: "efac-test",
+          credential: "efac123"
+        }
       ]
     });
 
     pc.onicecandidate = (event) => {
       if (event.candidate) {
-        console.log("Sending ICE Candidate:", event.candidate);
         socket.emit('ice-candidate', {
           candidate: event.candidate,
           roomId: roomId,
