@@ -70,10 +70,10 @@ const Meeting = () => {
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
         {
-          urls: "turn:relay1.expressturn.com:3478",
-          username: "efac-test",
-          credential: "efac123"
-        }
+          urls: 'turn:openrelay.metered.ca:80',
+          username: 'openrelayproject',
+          credential: 'openrelayproject'
+        }
       ]
     });
 
