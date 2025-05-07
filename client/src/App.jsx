@@ -79,6 +79,7 @@ import StaffProfile from "./Pages/Pages/StaffProfile";
 import AdminDashboard from "./Pages/Admin/AdminDashboard";
 import Meeting from "./Pages/Meeting/Meeting";
 import { ToastContainer } from "react-toastify";
+import BlogsSection1 from "./Components/BlogsSection/BlogsSection1";
 
 function App() {
     Aos.init({
@@ -92,12 +93,9 @@ function App() {
         window.scrollTo(0, 0);
     }, [pathname]);
 
-    const shouldShowFloatingMenu = !(
-        pathname.startsWith("/admin") ||
-        pathname.startsWith("/doctor") ||
-        pathname.startsWith("/nurse") ||
-        pathname.startsWith("/pharmacy")
-    );
+    const shouldShowFloatingMenu = !/^\/(admin|doctor(\/|$)|nurse|pharmacy)/.test(pathname);
+
+    const role = localStorage.getItem('role');
 
     return (
         <>
@@ -163,6 +161,10 @@ function App() {
                     <Route path="profile" element={<StaffProfile />} />
                 </Route>
                 <Route path="/doctor" element={<DoctorLayout />}>
+                    <Route path="blog" element={<BlogsPage />} />
+                    <Route path="blog/:blogId" element={<BlogsDetails />} />
+                    <Route path="blog/create" element={<BlogCreatePage />} />
+                    <Route path="blog/edit/:blogId" element={<EditBlogPage />} />
                     <Route path="/doctor" element={<ManageAppointments />} />
                     <Route path="appointments/manage-result/:appointmentId" element={<ManageResult />} />
                     <Route path="/doctor/medical-result" element={<MedicalResult />} />
@@ -185,23 +187,23 @@ function App() {
                     <Route path="/hod/medical-history-detail/:appointmentId" element={<MedicalHistoryDetail />} />
                     <Route path="/hod/specialization" element={<DoctorAppointmentList />} />
                     <Route path="/hod/profile" element={<StaffProfile />} />
-                    <Route path="general-health/:appointmentId" element={<GeneralHealthKetchup />} />
+                    <Route path="/hod/general-health/:appointmentId" element={<GeneralHealthKetchup />} />
                 </Route>
                 <Route path="/nurse" element={<NurseLayout />}>
-                    <Route path="dashboard" element={<NurseDashboard />} />
-                    <Route path="pending" element={<NursePending />} />
-                    <Route path="assigned" element={<NurseAssigned />} />
-                    <Route path="list" element={<NurseAppointmentList />} />
-                    <Route path="general-health/:appointmentId" element={<GeneralHealthKetchup />} />
-                    <Route path="profile" element={<StaffProfile />} />
+                    <Route path="/nurse/dashboard" element={<NurseDashboard />} />
+                    <Route path="/nurse/pending" element={<NursePending />} />
+                    <Route path="/nurse/assigned" element={<NurseAssigned />} />
+                    <Route path="/nurse/list" element={<NurseAppointmentList />} />
+                    <Route path="/nurse/general-health/:appointmentId" element={<GeneralHealthKetchup />} />
+                    <Route path="/nurse/profile" element={<StaffProfile />} />
                 </Route>
                 <Route path="/pharmacy" element={<PharmacyLayout />}>
-                    <Route path="dashboard" element={<PharmacyeDashboard />} />
-                    <Route path="pending" element={<PharmacyPending />} />
-                    <Route path="bills" element={<AllBills />} />
-                    <Route path="prescription/:appointmentId" element={<PrescriptionDetail />} />
-                    <Route path="bill/:billId" element={<BillUpdate />} />
-                    <Route path="profile" element={<StaffProfile />} />
+                    <Route path="/pharmacy/dashboard" element={<PharmacyeDashboard />} />
+                    <Route path="/pharmacy/pending" element={<PharmacyPending />} />
+                    <Route path="/pharmacy/bills" element={<AllBills />} />
+                    <Route path="/pharmacy/prescription/:appointmentId" element={<PrescriptionDetail />} />
+                    <Route path="/pharmacy/bill/:billId" element={<BillUpdate />} />
+                    <Route path="/pharmacy/profile" element={<StaffProfile />} />
                 </Route>
             </Routes>
             <ScrollUpButton />

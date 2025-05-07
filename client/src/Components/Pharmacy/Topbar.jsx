@@ -22,7 +22,7 @@ const TopBar = ({ isSidebarOpen }) => {
             <div className="cs_main_header_in">
               <div className="cs_main_header_left ps-5 pt-2">
                 <Link className="cs_site_branding h1 bold" to="/">
-                  Pharmacy
+                  Nhà Thuốc
                 </Link>
               </div>
               {username && (
@@ -33,7 +33,7 @@ const TopBar = ({ isSidebarOpen }) => {
                         <Link className="text-white">{username}</Link>
                         <ul>
                           <li>
-                            <Link to="/pharmacy/profile">Profile</Link>
+                            <Link to="/pharmacy/profile">Hồ sơ</Link>
                           </li>
                           <li>
                             <Link
@@ -43,7 +43,7 @@ const TopBar = ({ isSidebarOpen }) => {
                                 handleLogout();
                               }}
                             >
-                              Logout
+                              Đăng xuất
                             </Link>
                           </li>
                         </ul>

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import PageHeading from '../../Components/PageHeading';
 import Section from '../../Components/Section';
 import BlogsLeft from './BlogsDetailsSide/BlogsLeft';
 import BlogsRight from './BlogsDetailsSide/BlogsRight';
+import DoctorBlogsLeft from './BlogsDetailsSide/DoctorBlogsLeft';
+import DoctorBlogsRight from './BlogsDetailsSide/DoctorBlogsRight';
 
 const headingData = {
   title: 'Chi tiết Blog',
@@ -17,6 +19,10 @@ const BlogsDetails = () => {
   const [error, setError] = useState(null);
   const [recentPosts, setRecentPosts] = useState([]);
   const [specializations, setSpecializations] = useState([]);
+  const [isDoctor, setIsDoctor] = useState(false);
+  const role = localStorage.getItem('role');
+  const location = useLocation();
+  const isDoctorRoute = location.pathname.includes('/doctor');
 
   const [refreshCounter, setRefreshCounter] = useState(0); // Thêm state này
   // Hàm gọi API để lấy chi tiết blog và các dữ liệu liên quan
@@ -85,7 +91,7 @@ const BlogsDetails = () => {
             day: 'numeric', month: 'numeric', year: 'numeric'
           }),
           title: post.title,
-          link: `/blog/${post._id}`,
+          link: `${isDoctorRoute ? '/doctor' : ''}/blog/${post._id}`,
           commentsCount: post.comments?.length || 0,
           likesCount: post.likes?.length || 0,
           unlikesCount: post.unlikes?.length || 0,
@@ -126,6 +132,7 @@ const BlogsDetails = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const currentUser = JSON.parse(localStorage.getItem('user')) || {};
+      setIsDoctor(currentUser.role === 'doctor');
 
       const newComment = {
         ...response.data,
@@ -380,18 +387,19 @@ const BlogsDetails = () => {
   return (
     <>
       {/* Apply the optimized CSS structure */}
+
       <Section
         topSpaceMd="100"
       >
       </Section>
-
-      <Section
-        className={'cs_page_heading cs_bg_filed cs_center'}
-        backgroundImage="/assets/img/banner-doctors.png"
-      >
-        <PageHeading data={headingData} />
-      </Section>
-
+      {role !== 'doctor' && (
+        <Section
+          className={'cs_page_heading cs_bg_filed cs_center'}
+          backgroundImage="/assets/img/banner-doctors.png"
+        >
+          <PageHeading data={headingData} />
+        </Section>
+      )}
       {/* Start Blog Details Section with optimized spacing */}
       <Section
         topSpaceLg="80"
@@ -438,7 +446,7 @@ const BlogsDetails = () => {
                 />
               </div>
               <div className="col-lg-4">
-                <BlogsRight data={rightSideData} blogData={blog} />
+                  <BlogsRight data={rightSideData} blogData={blog} />
               </div>
             </div>
           </div>

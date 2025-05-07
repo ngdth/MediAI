@@ -19,6 +19,8 @@
     "chart.js": "^4.4.8",
     "dompurify": "^3.2.5",
     "font-awesome": "^4.7.0",
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.503.0",
     "medilo-react": "file:",
     "moment": "^2.30.1",

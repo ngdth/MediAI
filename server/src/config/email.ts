@@ -100,7 +100,7 @@ export const sendEmail = async (email: string, data: any, type: string) => {
                 html: `
                         <h2>Hóa Đơn Khám Bệnh</h2>
                         <p>Xin chào ${data.patientName},</p>
-                        <p>Bạn đã đặt lịch khám với bác sĩ <strong>${data.doctorName}</strong> (${data.doctorSpecialization}).</p>
+                        <p>Bạn đã đặt lịch khám với bác sĩ <strong>${data.doctorName}</strong></p>
                         <p><strong>Phí khám:</strong> ${data.consultationFee} VNĐ</p>
                         <p><strong>Phí xét nghiệm:</strong> ${data.testFees.map((t: any) => `${t.name}: ${t.price} VNĐ`).join(", ")}</p>
                         <p><strong>Phí thuốc:</strong> ${data.medicineFees.map((m: any) => `${m.name}: ${m.totalPrice} VNĐ`).join(", ")}</p>
@@ -126,6 +126,23 @@ export const sendEmail = async (email: string, data: any, type: string) => {
                     <p><strong>Phí khám:</strong> ${data.totalAmount} VNĐ</p>`
             };
             break;
+
+        case "contact":
+            mailOptions = {
+                from: `"AMMA" <${process.env.EMAIL_USER}>`,
+                to: email,
+                subject: `Liên hệ từ người dùng: ${data.name}`,
+                html: `
+            <h2>Yêu cầu liên hệ từ người dùng</h2>
+            <p><strong>Họ tên:</strong> ${data.name}</p>
+            <p><strong>Email:</strong> ${data.email}</p>
+            <p><strong>Số điện thoại:</strong> ${data.phone}</p>
+            <p><strong>Chủ đề:</strong> ${data.subject}</p>
+            <p><strong>Nội dung:</strong><br/>${data.message}</p>
+        `
+            };
+            break;
+
 
         default:
             throw new Error("Invalid email type");

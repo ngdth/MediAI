@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const ChangePassForm = ({ userId, onBackToProfile }) => {
     const [formData, setFormData] = useState({
@@ -50,7 +51,7 @@ const ChangePassForm = ({ userId, onBackToProfile }) => {
             );
 
             if (response.status === 200) {
-                alert("Đổi mật khẩu thành công!");
+                toast.success("Đổi mật khẩu thành công!");
                 onBackToProfile(); // Gọi hàm để quay lại ProfileForm
             }
         } catch (error) {

@@ -9,11 +9,13 @@ const BlogsRight = ({ data, blogData }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
   const [localBlogData, setLocalBlogData] = useState(blogData);
+  const role = localStorage.getItem('role');
 
   useEffect(() => {
     setLocalBlogData(blogData);
   }, [blogData]);
   // Kiểm tra dữ liệu để tránh lỗi
+
   if (!data) {
     return <aside className="col-lg-4">
       <div className="cs_height_0 cs_height_lg_50" />
@@ -105,27 +107,6 @@ const BlogsRight = ({ data, blogData }) => {
             )}
           </div>
 
-          {/* Blog Stats - Thêm phần hiển thị thống kê của bài viết hiện tại */}
-          {/* {localBlogData && (
-            <div className="cs_sidebar_widget cs_radius_15">
-              <h3 className="cs_sidebar_title">Thống kê bài viết</h3>
-              <div className="cs_blog_stats">
-                <div className="cs_stat_item">
-                  <i><FaComments /></i>
-                  <span>Bình luận: {localBlogData.comments?.length || 0}</span>
-                </div>
-                <div className="cs_stat_item">
-                  <i><FaThumbsUp /></i>
-                  <span>Lượt thích: {localBlogData.likes?.length || 0}</span>
-                </div>
-                <div className="cs_stat_item">
-                  <i><FaThumbsDown /></i>
-                  <span>Không thích: {localBlogData.unlikes?.length || 0}</span>
-                </div>
-              </div>
-            </div>
-          )} */}
-
           {/* Categories */}
           {data.secTitle && data.categories && (
             <div className="cs_sidebar_widget cs_radius_15">
@@ -133,13 +114,28 @@ const BlogsRight = ({ data, blogData }) => {
               <ul className="cs_categories cs_mp0">
                 {data.categories.map((category, index) => (
                   <li key={index}>
-                    <Link
-                      to={`/blogs?specialization=${encodeURIComponent(category.name)}`}
+                    <button
+                      onClick={() => {
+                        const basePath = role === 'doctor' ? '/doctor/blog' : '/blog';
+                        navigate(`${basePath}?specialization=${encodeURIComponent(category.name)}`)
+                      }}
                       className="cs_category_link"
+                      style={{
+                        background: "none",
+                        border: "none",
+                        padding: "0",
+                        margin: "0",
+                        color: "inherit",
+                        font: "inherit",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}
                     >
                       <i><FaArrowRightLong /></i>
                       {category.name || "Category"}
-                    </Link>
+                    </button>
                   </li>
                 ))}
               </ul>

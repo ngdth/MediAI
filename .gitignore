@@ -14,3 +14,4 @@ dist
 *.pid
 
 client/public/uploads/
+server/firebase-service-account.json

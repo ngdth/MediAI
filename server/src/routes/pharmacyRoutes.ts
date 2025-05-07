@@ -4,26 +4,24 @@ import { createBill, getBillDetail, getBills, getBillsByUser, getDoneAppointment
 
 const router = express.Router();
 
-router.use(authenticateToken);
-
-router.get("/appointments/done", authorizeRole(["pharmacy", "doctor"]), getDoneAppointments);
+router.get("/appointments/done", authenticateToken, authorizeRole(["pharmacy", "doctor"]), getDoneAppointments);
 
 // create bill
-router.post("/createbill",  authorizeRole(["pharmacy"]), createBill);
+router.post("/createbill", authenticateToken,  authorizeRole(["pharmacy"]), createBill);
 
 // get all bills
-router.get("/",  authorizeRole(["admin", "pharmacy", "doctor"]),getBills);
+router.get("/", authenticateToken,  authorizeRole(["admin", "pharmacy", "doctor"]),getBills);
 
 // Route lấy tất cả hóa đơn của người dùng hiện tại (dựa trên token)
-router.get("/my-bills", getBillsByUser);
+router.get("/my-bills", authenticateToken, getBillsByUser);
 
 // Route lấy chi tiết hóa đơn theo ID 
-router.get("/detail/:billId", getBillDetail);
+router.get("/detail/:billId", authenticateToken, getBillDetail);
 
 // Route cập nhật trạng thái thanh toán hóa đơn
-router.patch("/:billId", authorizeRole(["pharmacy", "admin"]), updateBill);
+router.patch("/:billId", authenticateToken, authorizeRole(["pharmacy", "admin"]), updateBill);
 
 // Update medicine prices in a bill
-router.put('/update-medicines-price/:billId', authorizeRole(["pharmacy"]), updateMedicinesPrice);
+router.put('/update-medicines-price/:billId', authenticateToken, authorizeRole(["pharmacy"]), updateMedicinesPrice);
 
 export default router;

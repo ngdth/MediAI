@@ -1,5 +1,5 @@
 import SectionHeading from "../SectionHeading";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FaAngleRight } from "react-icons/fa";
 import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
 import { useEffect, useState } from "react";
@@ -11,6 +11,10 @@ const BlogsSection1 = ({ data }) => {
   console.log("Component BlogsSection1 được render với data:", data);
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const specializationParam = queryParams.get('specialization');
+
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredBlogs, setFilteredBlogs] = useState(data.blogsData || []);
   const [hasSearched, setHasSearched] = useState(false);
@@ -34,9 +38,9 @@ const BlogsSection1 = ({ data }) => {
       setAllBlogs(data.blogsData);
       extractSpecializations(data.blogsData);
     } else {
-      fetchBlogs();
+      fetchBlogs('', specializationParam || '', isDoctor);
     }
-  }, [data]);
+  }, [data, specializationParam]);
 
   const truncateHTML = (html, maxLength) => {
     if (!html || typeof html !== 'string') return '';
@@ -82,6 +86,8 @@ const BlogsSection1 = ({ data }) => {
       const response = await axios.get(`${import.meta.env.VITE_BE_URL}/user/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
+      console.log("Role của người dùng:", response.data.role);
 
       setCurrentUser(response.data);
       setIsDoctor(response.data.role === 'doctor');
@@ -134,9 +140,9 @@ const BlogsSection1 = ({ data }) => {
         title: blog.title,
         subtitle: truncateHTML(blog.content, 50),
         image: blog.media && blog.media.length > 0
-          ? `${import.meta.env.VITE_BE_URL}${blog.media[0].url.replace('/src', '')}`
+          ? blog.media[0].url // Không cần xử lý gì thêm
           : '/assets/img/post_1.jpeg',
-        link: `/blog/${blog._id}`,
+        link: isDoctor ? `/doctor/blog/${blog._id}` : `/blog/${blog._id}`,
         linkText: 'Đọc thêm',
       }));
 
@@ -151,15 +157,10 @@ const BlogsSection1 = ({ data }) => {
     }
   };
 
-  const fetchBlogs = async (term = '', specialization = '') => {
+  const fetchBlogs = async (term = '', specialization = '', isDoc = isDoctor) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        setError("Bạn cần đăng nhập để xem danh sách blog");
-        setLoading(false);
-        return;
-      }
 
       const response = await axios.get(`${import.meta.env.VITE_BE_URL}/blog`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -186,11 +187,12 @@ const BlogsSection1 = ({ data }) => {
         title: blog.title,
         subtitle: truncateHTML(blog.content, 50),
         image: blog.media && blog.media.length > 0
-          ? `${import.meta.env.VITE_BE_URL}${blog.media[0].url.replace('/src', '')}`
+          ? blog.media[0].url // Không cần xử lý gì thêm
           : '/assets/img/post_1.jpeg',
-        link: `/blog/${blog._id}`,
+        link: isDoc ? `doctor/blog/${blog._id}` : `/blog/${blog._id}`,
         linkText: 'Đọc thêm',
       }));
+      // console.log("Blog link:", blog.link);
       setAllBlogs(formattedBlogs);
       setFilteredBlogs(formattedBlogs);
       extractSpecializations(formattedBlogs);
@@ -478,14 +480,12 @@ const BlogsSection1 = ({ data }) => {
                   <article key={blog.id} className="cs_post cs_style_12">
                     <Link to={blog.link} className="cs_post_thumbnail position-relative">
                       <img
-                        src={blog.image.startsWith('/src')
-                          ? `${import.meta.env.VITE_BE_URL}${blog.image.replace('/src', '')}`
-                          : blog.image}
+                        src={blog.image}
                         alt={blog.title || "Post Thumbnail"}
                         onError={(e) => {
                           e.target.onerror = null;
-                          e.target.src = '/assets/img/post_1.jpeg'; // Hình ảnh mặc định
-                        }}
+                          e.target.src = '/assets/img/post_1.jpeg';
+                        }}                        
                       />
                       <div className="cs_post_category position-absolute">{blog.category}</div>
                     </Link>
@@ -493,25 +493,26 @@ const BlogsSection1 = ({ data }) => {
                       <div className="cs_post_meta_wrapper">
                         <div className="cs_posted_by cs_center position-absolute">{blog.date}</div>
                         <div className="cs_post_meta_item">
-                          <img src="assets/img/icons/post_user_icon.png" alt="Icon" />
+                          <img src="/assets/img/icons/post_user_icon.png" alt="Icon" />
                           <span>{blog.author}</span>
                         </div>
                         <div className="cs_post_meta_item">
-                          <img src="assets/img/icons/post_comment_icon.png" alt="Icon" />
+                          <img src="/assets/img/icons/post_comment_icon.png" alt="Icon" />
                           <span>{blog.comments}</span>
                         </div>
                       </div>
                       <h3 className="cs_post_title">
                         <Link to={blog.link}>{blog.title}</Link>
                       </h3>
-                      <p
+                      {/* <p
                         className="cs_post_subtitle"
                         dangerouslySetInnerHTML={{ __html: blog.subtitle }}
-                      />
+                      /> */}
                       <Link to={blog.link} className="cs_post_btn">
                         <span>{blog.linkText}</span>
                         <span><FaAngleRight /></span>
                       </Link>
+                      {console.log("Blog Link:", blog.link)}
                       {/* Hiển thị nút chỉnh sửa và xóa khi đang xem "Bài viết của tôi" */}
                       {isDoctor && activeTag === 'my' && (
                         <div className="cs_blog_actions mt-3">

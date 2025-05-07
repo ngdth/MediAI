@@ -5,6 +5,9 @@ import { JwtPayload } from '../../middlewares/authMiddleware';
 import fs from 'fs';
 import mongoose from 'mongoose';
 import path from 'path';
+import bucket from '../../config/firebase';
+import streamifier from 'streamifier';
+import { v4 as uuidv4 } from 'uuid';
 
 const getMediaPath = (filename: string) => `/uploads/files/${filename}`;
 const getAbsoluteMediaPath = (relativePath: string) => {
@@ -14,6 +17,45 @@ const getAbsoluteMediaPath = (relativePath: string) => {
 /**
  * @desc Tạo mới blog - chỉ bác sĩ được tạo
  */
+const uploadFileToFirebase = async (file: Express.Multer.File): Promise<{ url: string, type: 'image' | 'video' }> => {
+    try {
+        const fileName = `blogs/${uuidv4()}-${file.originalname}`;
+        const firebaseFile = bucket.file(fileName);
+        const stream = firebaseFile.createWriteStream({
+            metadata: {
+                contentType: file.mimetype
+            }
+        });
+
+        return await new Promise((resolve, reject) => {
+            stream.on("error", (err) => {
+                console.error("🔥 Lỗi khi tạo stream upload Firebase:", err.message);
+                reject(err);
+            });
+
+            stream.on("finish", async () => {
+                try {
+                    await firebaseFile.makePublic();
+                    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${firebaseFile.name}`;
+                    console.log("✅ Upload Firebase thành công:", publicUrl);
+                    resolve({
+                        url: publicUrl,
+                        type: file.mimetype.startsWith('image/') ? 'image' : 'video'
+                    });
+                } catch (err) {
+                    console.error("🔥 Lỗi khi makePublic Firebase:", err);
+                    reject(err);
+                }
+            });
+
+            streamifier.createReadStream(file.buffer).pipe(stream);
+        });
+    } catch (err) {
+        console.error("🔥 Lỗi ngoài uploadFileToFirebase:", err);
+        throw err;
+    }
+};   
+
 export const createBlog = async (req: Request, res: Response): Promise<void> => {
     const user = req.user as JwtPayload; // lấy từ req.user sau khi authenticate
 
@@ -43,17 +85,9 @@ export const createBlog = async (req: Request, res: Response): Promise<void> => 
             return;
         }
 
-        const uploadedMedia = files.map(file => {
-            // Lấy đường dẫn tương đối để lưu vào DB
-            const url = getMediaPath(file.filename);
-            // Xác định loại media dựa trên mimetype
-            const type = file.mimetype.startsWith('image/') ? 'image' : 'video';
-
-            return {
-                url,
-                type: type as 'image' | 'video'
-            };
-        });
+        const uploadedMedia = await Promise.all(
+            files.map(file => uploadFileToFirebase(file))
+        );     
 
         // Xử lý thêm media từ req.body.media nếu có (URLs)
         let additionalMedia: { url: string; type: 'image' | 'video' }[] = [];

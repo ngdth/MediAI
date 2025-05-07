@@ -135,19 +135,12 @@
 }
 
 .floating-btn {
-  display: flex;
-  flex-direction: column; 
-  align-items: center;
-  justify-content: center;
-  width: 80px;  
-  height: 80px;  
-  color: white;
-  border-radius: 12px; 
-  margin-bottom: 15px; 
-  font-size: 18px; 
-  text-decoration: none;
-  transition: all 0.3s ease;
-  padding: 12px 0;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  font-size: 26px;
+  padding: 10;
+  text-align: center;
 }
 
 .floating-btn i {
@@ -161,12 +154,63 @@
 
 .floating-btn:hover {
   opacity: 0.8;
+  background-color: #0056b3;
 }
 
 .chat-btn {
   background-color: #0066cc; 
   border: none;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.floating-icon {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #007bff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.booking-icon-wrapper {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.booking-icon-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1); 
+  animation: pulse 1.5s infinite;
+}
+
+.chatbot-icon-wrapper {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chatbot-icon-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: pulse 1.5s infinite;
 }
 
 
@@ -448,6 +492,7 @@
   font-size: 16px;
   cursor: pointer;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  animation: pulse 1.5s infinite;
 }
 
 .chat-toggle-btn:hover {
@@ -526,4 +571,36 @@
 
 .chat-input button:hover {
   background-color: #0056b3;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+#chatbot-invite {
+  position: fixed;
+  bottom: 240px;
+  right: 90px;
+  background-color: #007bff;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 14px;
+  z-index: 10000;
+  animation: fadeOutBlink 10s forwards;
+  display: block;
+}
+
+@keyframes fadeOutBlink {
+  0%   { opacity: 1; }
+  30%  { opacity: 0.6; }
+  60%  { opacity: 0.3; }
+  90%  { opacity: 0.1; }
+  100% { opacity: 0; visibility: hidden; }
 }

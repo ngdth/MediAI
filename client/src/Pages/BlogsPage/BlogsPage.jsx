@@ -16,6 +16,8 @@ const BlogsPage = () => {
   const [loading, setLoading] = useState(true);
   const [blogs, setBlogs] = useState([]);
   const [error, setError] = useState(null);
+  const role = localStorage.getItem('role');
+  const isDoctorRole = role === 'doctor';
 
   const handleSpecializationFilter = (spec) => {
     navigate(`/blogs?specialization=${encodeURIComponent(spec)}`);
@@ -41,14 +43,6 @@ const BlogsPage = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-
-      // Kiểm tra token
-      if (!token) {
-        console.error("Không có token trong localStorage");
-        setError("Bạn cần đăng nhập để xem danh sách blog");
-        setLoading(false);
-        return;
-      }
 
       console.log("Gọi API với URL:", `${import.meta.env.VITE_BE_URL}/blog`);
       const response = await axios.get(`${import.meta.env.VITE_BE_URL}/blog`, {
@@ -100,7 +94,7 @@ const BlogsPage = () => {
           image: blog.media && blog.media.length > 0
             ? `${import.meta.env.VITE_BE_URL}${blog.media[0].url.replace('/src', '')}`
             : '/assets/img/post_1.jpeg',
-          link: `/blog/${blog._id}`,
+          link: isDoctorRole ? `/doctor/blog/${blog._id}` : `/blog/${blog._id}`,
           linkText: 'Đọc thêm',
           createdAt: blog.createdAt,
           updatedAt: blog.updatedAt,
@@ -150,18 +144,15 @@ const BlogsPage = () => {
   };
   return (
     <>
-      <Section
-        topSpaceMd="100"
-      >
-      </Section>
-
-      <Section
-        className={'cs_page_heading cs_bg_filed cs_center'}
-        backgroundImage="/assets/img/banner-doctors.png"
-      >
-        <PageHeading data={headingData} />
-      </Section>
-
+      <Section topSpaceMd="100" ></Section>
+      {role !== 'doctor' && (
+        <Section
+          className={'cs_page_heading cs_bg_filed cs_center'}
+          backgroundImage="/assets/img/banner-doctors.png"
+        >
+          <PageHeading data={headingData} />
+        </Section>
+      )}
       {/* Start Blog Section */}
       <Section>
         {loading ? (

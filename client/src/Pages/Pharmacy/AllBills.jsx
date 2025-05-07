@@ -14,7 +14,7 @@ const AllBills = () => {
 
     const fetchAppointments = async () => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_BE_URL}/pharmacy/`, {
+            const response = await axios.get(`${import.meta.env.VITE_BE_URL}/api/pharmacy/`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             setBills(response.data.bills);
@@ -76,7 +76,7 @@ const AllBills = () => {
                                 {/* <td className="text-center">{appointment.time}</td> */}
                                 <td className="text-center">
                                     <Link to={`/pharmacy/bill/${bill._id}`} className="btn btn-primary">
-                                       Chi tiết 
+                                        Chi tiết
                                     </Link>
                                     {/* <Button variant="primary">
                                         Chi tiết

@@ -3,7 +3,10 @@ import { FaMicrophone, FaMicrophoneSlash, FaPhone, FaVideo, FaVideoSlash } from 
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 
-const socket = io(import.meta.env.VITE_BE_URL); // Server URL
+const socket = io("https://amma-care.com", {
+  transports: ["websocket"],
+  secure: true,
+});
 
 const Meeting = () => {
   const { roomId } = useParams(); // Get roomId from URL
@@ -33,8 +36,13 @@ const Meeting = () => {
 
     socket.on('call-made', async ({ offer }) => {
       offerRef.current = offer;
-      setIncomingCall(true);
       setOfferReady(true);
+
+      if (autoAnswer && !callStarted) {
+        await answerCall();
+      } else {
+        setIncomingCall(true);
+      }
     });
 
     socket.on('answer-made', async ({ answer }) => {
@@ -57,15 +65,16 @@ const Meeting = () => {
     };
   }, [roomId, autoStart, autoAnswer]);
 
-  useEffect(() => {
-    if (autoAnswer && offerReady && !callStarted) {
-      answerCall();
-    }
-  }, [autoAnswer, offerReady, callStarted]);
-
   const createPeerConnection = () => {
     const pc = new RTCPeerConnection({
-      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        {
+          urls: 'turn:openrelay.metered.ca:80',
+          username: 'openrelayproject',
+          credential: 'openrelayproject'
+        }
+      ]
     });
 
     pc.onicecandidate = (event) => {

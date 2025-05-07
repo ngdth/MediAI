@@ -28,7 +28,7 @@ const ManageAppointment = () => {
                 setDoctorRole(response.data.role);
             } catch (error) {
                 console.error("Error fetching doctor ID:", error);
-                alert(error.response?.data?.message || "Có lỗi xảy ra khi lấy thông tin bác sĩ.");
+                toast.error(error.response?.data?.message || "Có lỗi xảy ra khi lấy thông tin bác sĩ.");
                 setLoading(false);
             }
         };
@@ -61,7 +61,7 @@ const ManageAppointment = () => {
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching appointments:", error);
-                alert(error.response?.data?.message || "Có lỗi xảy ra khi lấy danh sách lịch hẹn.");
+                toast.error(error.response?.data?.message || "Có lỗi xảy ra khi lấy danh sách lịch hẹn.");
                 setAppointments([]);
                 setFilteredAppointments([]);
                 setLoading(false);
@@ -199,7 +199,7 @@ const ManageAppointment = () => {
                 prevFiltered.filter((appt) => appt.appointment._id !== selectedAppointmentId)
             );
 
-            toast.success("Reject cuộc hẹn thành công!");
+            toast.success("Từ chối cuộc hẹn thành công!");
         } catch (error) {
             console.error("Lỗi khi từ chối cuộc hẹn:", error);
             toast.error(error.response?.data?.message || "Có lỗi xảy ra khi từ chối lịch hẹn.");
@@ -300,7 +300,7 @@ const ManageAppointment = () => {
                                                 Từ chối
                                             </button>
                                             <Link
-                                                to={`/meeting/${appointment.meetingCode}`}
+                                                to={`/meeting/${appointment._id}`}
                                                 state={{ autoStart: true }}
                                                 className="btn btn-success me-2 mt-2"
                                             >

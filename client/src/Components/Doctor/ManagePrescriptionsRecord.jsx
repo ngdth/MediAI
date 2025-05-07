@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const ManagePrescriptionsRecord = () => {
     const { appointmentId } = useParams();
@@ -30,6 +31,7 @@ const ManagePrescriptionsRecord = () => {
                 console.log("Current Doctor ID:", id);
             } catch (error) {
                 console.error("Error fetching doctor ID:", error);
+                toast.error(error.response?.data?.message || "Có lỗi xảy ra khi lấy thông tin bác sĩ.");
             }
         };
 
@@ -62,6 +64,7 @@ const ManagePrescriptionsRecord = () => {
             console.error("Error fetching appointment details:", error);
             setAppointmentData({ appointment: {}, diagnosisDetails: [] });
             setAllPrescriptions([]);
+            toast.error(error.response?.data?.message || "Có lỗi xảy ra khi lấy chi tiết lịch hẹn.");
         }
     };
 
@@ -74,6 +77,7 @@ const ManagePrescriptionsRecord = () => {
         } catch (error) {
             console.error("Error fetching services:", error);
             setServices([]);
+            toast.error(error.response?.data?.message || "Có lỗi xảy ra khi lấy danh sách dịch vụ.");
         }
     };
 
@@ -135,15 +139,15 @@ const ManagePrescriptionsRecord = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            alert('Đơn thuốc và dịch vụ đã được lưu!');
+            toast.success('Đơn thuốc và dịch vụ đã được lưu!');
             if (doctorRole === "doctor") {
-            navigate('/doctor/manage-prescription-result');
+                navigate('/doctor/manage-prescription-result');
             } else if (doctorRole === "head of department") {
                 navigate('/hod/manage-prescription-result');
             }
         } catch (error) {
             console.error("Error creating prescription:", error);
-            alert('Có lỗi xảy ra khi tạo đơn thuốc.');
+            toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi tạo đơn thuốc.');
         }
     };
 

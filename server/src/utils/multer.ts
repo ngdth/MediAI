@@ -51,10 +51,10 @@ const mediaFileFilter = (req: any, file: any, cb: any) => {
 };
 
 // Cấu hình multer cho upload media
-export const mediaUpload = multer({
-    storage: mediaStorage,
+const mediaUpload = multer({
+    storage: multer.memoryStorage(),
     fileFilter: mediaFileFilter,
-    limits: { fileSize: 10 * 1024 * 1024 } // 10MB cho cả ảnh và video
+    limits: { fileSize: 10 * 1024 * 1024 }
 });
 
 const csvStorage = multer.memoryStorage();
@@ -88,7 +88,7 @@ export const uploadMedia = (req: Request, res: Response, next: NextFunction) => 
     console.log('Bắt đầu upload file...');
     console.log('Thư mục lưu trữ:', mediaDir);
 
-    const upload = mediaUpload.array('newFiles[]', 1);
+    const upload = mediaUpload.array('newFiles[]', 5); // cho phép nhiều ảnh/video
 
     upload(req, res, (err) => {
         if (err instanceof multer.MulterError) {

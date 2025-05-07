@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import RejectModal from "../../Components/Nurse/RejectModal";
+import { toast } from "react-toastify";
 
 const NursePending = () => {
     const [appointments, setAppointments] = useState([]);
@@ -20,17 +21,21 @@ const NursePending = () => {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const [appointmentsResponse, doctorsResponse] = await Promise.all([
+                const [appointmentsResponse, doctorsResponse, hodsResponse] = await Promise.all([
                     fetchAppointments("Pending"),
                     fetchDoctors(),
+                    fetchHODs(),
                 ]);
 
-                console.log("Doctors after fetch:", doctorsResponse);
-                setDoctors(doctorsResponse);
+                // Combine doctors and HODs into a single array
+                const combinedDoctors = [...doctorsResponse, ...hodsResponse];
+                console.log("Combined Doctors and HODs:", combinedDoctors);
+                setDoctors(combinedDoctors);
 
-                await fetchAllSchedules(doctorsResponse);
+                await fetchAllSchedules(combinedDoctors);
             } catch (error) {
-                console.error("Error loading initial data:", error);
+                console.error("Lỗi khi tải dữ liệu ban đầu:", error);
+                toast.error(error.response?.data?.message || "Có lỗi xảy ra khi tải dữ liệu ban đầu.");
             } finally {
                 setLoading(false);
             }
@@ -63,6 +68,14 @@ const NursePending = () => {
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         console.log("Doctors:", response.data);
+        return response.data || [];
+    };
+
+    const fetchHODs = async () => {
+        const response = await axios.get(`${import.meta.env.VITE_BE_URL}/user/hods`, {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        console.log("HODs:", response.data);
         return response.data || [];
     };
 
@@ -106,7 +119,7 @@ const NursePending = () => {
                     return isAvailable;
                 })
             );
-
+            console.log("Doctor schedules:", doctorSchedules);
             console.log(`Doctor ${doctor.username} is ${hasAvailableSlot ? "available" : "not available"} for ${appointmentDate} ${appointmentTime}`);
             return hasAvailableSlot;
         });
@@ -122,7 +135,7 @@ const NursePending = () => {
     const assignDoctor = async (id) => {
         const selectedDoctor = selectedDoctors[id];
         if (!selectedDoctor || !selectedDoctor._id) {
-            alert("Vui lòng chọn bác sĩ trước khi xác nhận.");
+            toast.error("Vui lòng chọn bác sĩ trước khi xác nhận.");
             return;
         }
         try {
@@ -132,9 +145,10 @@ const NursePending = () => {
             await updateAppointmentStatus(id, "Assigned");
             setShowPopup(true);
             setCountdown(10);
+            toast.success("Gán bác sĩ thành công!");
         } catch (error) {
-            console.error("Error assigning doctor:", error);
-            alert("Có lỗi xảy ra khi xác nhận lịch hẹn. Vui lòng thử lại.");
+            console.error("Lỗi khi gán lịch hẹn cho bác sĩ:", error);
+            toast.error(error.response?.data?.message || "Có lỗi xảy ra khi phân công bác sĩ. Vui lòng thử lại.");
         }
     };
 
@@ -190,17 +204,23 @@ const NursePending = () => {
 
     const handleConfirmReject = async () => {
         if (!rejectReason.trim()) {
-            alert("Vui lòng nhập lý do từ chối.");
+            toast.error("Vui lòng nhập lý do từ chối.");
             return;
         }
         if (!selectedAppointmentId) {
-            alert("Không tìm thấy cuộc hẹn để từ chối.");
+            toast.error("Không tìm thấy lịch hẹn để từ chối.");
             return;
         }
-        await updateAppointmentStatus(selectedAppointmentId, "Rejected");
-        setShowRejectModal(false);
-        setRejectReason("");
-        setSelectedAppointmentId(null);
+        try {
+            await updateAppointmentStatus(selectedAppointmentId, "Rejected");
+            setShowRejectModal(false);
+            setRejectReason("");
+            setSelectedAppointmentId(null);
+            toast.success("Từ chối lịch hẹn thành công!");
+        } catch (error) {
+            console.error("Lỗi khi từ chối lịch hẹn:", error);
+            toast.error(error.response?.data?.message || "Có lỗi xảy ra khi từ chối lịch hẹn.");
+        }
     };
 
     return (
@@ -296,7 +316,7 @@ const NursePending = () => {
                                                     className="btn btn-warning"
                                                     onClick={() => updateAppointmentStatus(appointment._id, "Prescription_created")}
                                                 >
-                                                    Gửi lại cho bác sĩ 
+                                                    Gửi lại cho bác sĩ
                                                 </button>
                                             )}
                                         </td>

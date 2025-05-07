@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const specialties = ["Chẩn đoán hình ảnh", "Chấn thương chỉnh hình", "Da liễu", "Hô hấp", "Nhãn khoa", "Nhi khoa", "Nội tiết", "Nội tổng quát", "Sản phụ", "Sơ sinh", "Tai Mũi Họng (hay ENT)", "Thận", "Thần kinh", "Tiết niệu", "Tim mạch", "Ung thư", "Cơ xương khớp", "Hậu môn trực tràng"];
 
@@ -89,7 +90,7 @@ const AppointmentForm = () => {
         try {
             const token = localStorage.getItem("token");
             if (!token) {
-                alert("Bạn cần đăng nhập trước khi đặt lịch.");
+                toast.error("Bạn cần đăng nhập trước khi đặt lịch.");
                 return;
             }
 
@@ -108,7 +109,6 @@ const AppointmentForm = () => {
                     date: formattedDate,
                     time: formData.appointmentTime,
                     symptoms: formData.specialty,
-
                 },
                 {
                     headers: {
@@ -126,7 +126,7 @@ const AppointmentForm = () => {
             }
         } catch (error) {
             console.error("Lỗi đặt lịch:", error);
-            alert(error.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại.");
+            toast.error(error.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại.");
         }
     };
 
