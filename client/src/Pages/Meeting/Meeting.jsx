@@ -50,6 +50,7 @@ const Meeting = () => {
     });
 
     socket.on('ice-candidate', ({ candidate }) => {
+      console.log("Received ICE Candidate:", candidate);
       peerConnectionRef.current?.addIceCandidate(new RTCIceCandidate(candidate));
     });
 
@@ -79,6 +80,7 @@ const Meeting = () => {
 
     pc.onicecandidate = (event) => {
       if (event.candidate) {
+        console.log("Sending ICE Candidate:", event.candidate);
         socket.emit('ice-candidate', {
           candidate: event.candidate,
           roomId: roomId,
