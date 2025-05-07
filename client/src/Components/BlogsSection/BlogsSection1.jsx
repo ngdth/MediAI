@@ -140,7 +140,7 @@ const BlogsSection1 = ({ data }) => {
         title: blog.title,
         subtitle: truncateHTML(blog.content, 50),
         image: blog.media && blog.media.length > 0
-          ? `${import.meta.env.VITE_BE_URL}${blog.media[0].url.replace('/src', '')}`
+          ? blog.media[0].url // Không cần xử lý gì thêm
           : '/assets/img/post_1.jpeg',
         link: isDoctor ? `/doctor/blog/${blog._id}` : `/blog/${blog._id}`,
         linkText: 'Đọc thêm',
@@ -187,7 +187,7 @@ const BlogsSection1 = ({ data }) => {
         title: blog.title,
         subtitle: truncateHTML(blog.content, 50),
         image: blog.media && blog.media.length > 0
-          ? `${import.meta.env.VITE_BE_URL}${blog.media[0].url.replace('/src', '')}`
+          ? blog.media[0].url // Không cần xử lý gì thêm
           : '/assets/img/post_1.jpeg',
         link: isDoc ? `doctor/blog/${blog._id}` : `/blog/${blog._id}`,
         linkText: 'Đọc thêm',
@@ -480,14 +480,12 @@ const BlogsSection1 = ({ data }) => {
                   <article key={blog.id} className="cs_post cs_style_12">
                     <Link to={blog.link} className="cs_post_thumbnail position-relative">
                       <img
-                        src={blog.image.startsWith('/src')
-                          ? `${import.meta.env.VITE_BE_URL}${blog.image.replace('/src', '')}`
-                          : blog.image}
+                        src={blog.image}
                         alt={blog.title || "Post Thumbnail"}
                         onError={(e) => {
                           e.target.onerror = null;
-                          e.target.src = '/assets/img/post_1.jpeg'; // Hình ảnh mặc định
-                        }}
+                          e.target.src = '/assets/img/post_1.jpeg';
+                        }}                        
                       />
                       <div className="cs_post_category position-absolute">{blog.category}</div>
                     </Link>
