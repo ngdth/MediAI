@@ -14,7 +14,7 @@ const AllBills = () => {
 
     const fetchAppointments = async () => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_BE_URL}/pharmacy/`, {
+            const response = await axios.get(`${import.meta.env.VITE_BE_URL}/api/pharmacy/`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             setBills(response.data.bills);
