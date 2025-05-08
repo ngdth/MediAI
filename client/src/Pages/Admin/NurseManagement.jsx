@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Modal, Button, Form } from "react-bootstrap";
-import { FaFileExport } from "react-icons/fa";  // Import biểu tượng cho nút Export
+import { FaFileExport } from "react-icons/fa";
 import DoctorModal from "../../Components/Admin/DoctorModal";
 
 const NurseManagement = () => {
@@ -18,7 +18,6 @@ const NurseManagement = () => {
     const [editingNurse, setEditingNurse] = useState(null);
     const token = localStorage.getItem("token");
     const specialties = ["Chẩn đoán hình ảnh", "Chấn thương chỉnh hình", "Da liễu", "Hô hấp", "Nhãn khoa", "Nhi khoa", "Nội tiết", "Nội tổng quát", "Sản phụ", "Sơ sinh", "Tai Mũi Họng (hay ENT)", "Thận", "Thần kinh", "Tiết niệu", "Tim mạch", "Ung thư", "Cơ xương khớp", "Hậu môn trực tràng"];
-
 
     useEffect(() => {
         fetchNurses();
@@ -165,6 +164,7 @@ const NurseManagement = () => {
                 handleChange={handleChange}
                 editingDoctor={editingNurse}
                 specialties={specialties}
+                role="Nurse" // Truyền prop role
             />
         </div>
     );
