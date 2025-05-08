@@ -13,19 +13,19 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
         <ul className="menu-list">
           <li>
-            <Link to="/pharmacies/dashboard" className="menu-item">
+            <Link to="/pharmacy/dashboard" className="menu-item">
               <FaTachometerAlt className="menu-icon" />
               <span>Dashboard</span>
             </Link>
           </li>
           <li>
-            <Link to="/pharmacies/pending" className="menu-item">
+            <Link to="/pharmacy/pending" className="menu-item">
               <FaClipboard className="menu-icon" />
               <span>Đơn thuốc đang chờ</span>
             </Link>
           </li>
           <li>
-            <Link to="/pharmacies/bills" className="menu-item">
+            <Link to="/pharmacy/bills" className="menu-item">
               <FaCalendarAlt className="menu-icon" />
               <span>Tất cả hóa đơn</span>
             </Link>
