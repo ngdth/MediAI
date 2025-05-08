@@ -9,12 +9,22 @@ const DoctorModal = ({
   handleChange,
   editingDoctor,
   specialties,
+  role, // Thêm prop role
 }) => {
+  // Hàm xác định tiêu đề dựa trên role và trạng thái chỉnh sửa
+  const getModalTitle = () => {
+    const roleText = 
+      role === "Nurse" ? "Y tá" :
+      role === "HeadOfDepartment" ? "Trưởng khoa" :
+      "Bác sĩ"; // Mặc định là bác sĩ
+    return editingDoctor ? `Cập nhật thông tin ${roleText}` : `Thêm ${roleText}`;
+  };
+
   return (
     <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
         <Modal.Title className="fw-bold w-100">
-          {editingDoctor ? "Cập nhật thông tin" : "Thêm bác sĩ"}
+          {getModalTitle()}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

@@ -22,7 +22,6 @@ const DoctorManagement = () => {
     const token = localStorage.getItem("token");
     const specialties = ["Chẩn đoán hình ảnh", "Chấn thương chỉnh hình", "Da liễu", "Hô hấp", "Nhãn khoa", "Nhi khoa", "Nội tiết", "Nội tổng quát", "Sản phụ", "Sơ sinh", "Tai Mũi Họng (hay ENT)", "Thận", "Thần kinh", "Tiết niệu", "Tim mạch", "Ung thư", "Cơ xương khớp", "Hậu môn trực tràng"];
 
-
     useEffect(() => {
         fetchDoctors();
     }, []);
@@ -170,6 +169,7 @@ const DoctorManagement = () => {
                 handleChange={handleChange}
                 editingDoctor={editingDoctor}
                 specialties={specialties}
+                role="Doctor" // Truyền prop role
             />
 
             <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>

@@ -68,13 +68,19 @@ const Meeting = () => {
   const createPeerConnection = () => {
     const pc = new RTCPeerConnection({
       iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
-        {
-          urls: 'turn:openrelay.metered.ca:80',
-          username: 'openrelayproject',
-          credential: 'openrelayproject'
-        }
-      ]
+        {
+          urls: "turn:207.148.79.1:3478",
+          username: "webrtcuser",
+          credential: "webrtcpwd"
+        },
+        {
+          urls: "stun:stun.l.google.com:19302"
+        }
+      ],
+      iceTransportPolicy: "all",
+      bundlePolicy: "balanced",
+      rtcpMuxPolicy: "require",
+      iceCandidatePoolSize: 0
     });
 
     pc.onicecandidate = (event) => {

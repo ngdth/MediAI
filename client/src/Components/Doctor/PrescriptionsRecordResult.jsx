@@ -9,23 +9,23 @@ const PrescriptionsRecordResult = () => {
     const [modalShow, setModalShow] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchPrescriptionCreatedAppointments = async () => {
-            try {
-                setLoading(true);
-                const response = await axios.get(`${import.meta.env.VITE_BE_URL}/appointment/prescription-created`, {
-                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-                });
-                console.log("Appointments data:", response.data);
-                setAppointments(response.data.data || []);
-            } catch (error) {
-                console.error('Error fetching prescription created appointments:', error);
-                setAppointments([]);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetchPrescriptionCreatedAppointments = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(`${import.meta.env.VITE_BE_URL}/appointment/prescription-created`, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+            });
+            console.log("Appointments data:", response.data);
+            setAppointments(response.data.data || []);
+        } catch (error) {
+            console.error('Error fetching prescription created appointments:', error);
+            setAppointments([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchPrescriptionCreatedAppointments();
     }, []);
 
@@ -36,15 +36,11 @@ const PrescriptionsRecordResult = () => {
                 { status: "Pending" },
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             );
-            toast.success("Cập nhật trạng thái lịch hẹn thành Pending thành công.");
-
-            const response = await axios.get(`${import.meta.env.VITE_BE_URL}/appointment/prescription-created`, {
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-            });
-            setAppointments(response.data.data || []);
+            toast.success("Đã gửi cho bác sĩ khác thành công.");
+            await fetchPrescriptionCreatedAppointments();
         } catch (error) {
-            console.error(`Lỗi khi cập nhật trạng thái lịch hẹn:`, error);
-            toast.error(error.response?.data?.message || "Có lỗi xảy ra khi cập nhật trạng thái lịch hẹn.");
+            console.error(`Lỗi khi gửi kết quả cho bác sĩ khác:`, error);
+            toast.error(error.response?.data?.message || "Có lỗi xảy ra khi gửi kết quả cho bác sĩ khác.");
         }
     };
 
@@ -143,6 +139,7 @@ const PrescriptionsRecordResult = () => {
                 show={modalShow}
                 appointmentId={selectedAppointmentId}
                 handleClose={() => setModalShow(false)}
+                onAssign={fetchPrescriptionCreatedAppointments}
             />
         </div>
     );

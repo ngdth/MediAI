@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 import { Form, Button, Alert, Container, Row, Col } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import {
+    validateUsername,
+    validateEmail,
+    validatePhone,
+    validateGender,
+    validatePassword,
+    validateConfirmedPassword,
+} from "../../../utils/validateUtils";
 
 const RegisterForm = ({ onRegistering }) => {
     const navigate = useNavigate();
@@ -12,97 +21,59 @@ const RegisterForm = ({ onRegistering }) => {
         phone: "",
         gender: "",
     });
-    const [loading, setLoading] = useState(false);
     const [formError, setFormError] = useState("");
-    const [emptyFields, setEmptyFields] = useState({
-        username: false,
-        email: false,
-        password: false,
-        confirmedPassword: false,
-        gender: false,
+    const [fieldErrors, setFieldErrors] = useState({
+        username: "",
+        email: "",
+        password: "",
+        confirmedPassword: "",
+        phone: "",
+        gender: "",
     });
-    const [invalidFields, setInvalidFields] = useState({
-        username: false,
-        email: false,
-        password: false,
-        confirmedPassword: false,
-        phone: false,
-        gender: false,
-    });
-
-    // Regex cho mật khẩu: ít nhất 1 chữ in hoa, 1 số, cho phép ký tự đặc biệt, dài 6-24
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()_+\-=\[\]{}|;:,.<>?]{6,24}$/;
-    // Regex cho email
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    // Regex cho số điện thoại
-    const phoneRegex = /^(\+84|0)(3|5|7|8|9)[0-9]{8}$/;
-    // Regex cho tên: chữ cái (bao gồm tiếng Việt) và dấu cách, dài 2-50 ký tự
-    const usernameRegex = /^[a-zA-Z\s\u00C0-\u1EF9]{2,50}$/;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
-
-        // Reset lỗi trống và lỗi định dạng khi người dùng nhập
-        setEmptyFields((prev) => ({ ...prev, [name]: !value }));
-        setInvalidFields((prev) => ({ ...prev, [name]: false }));
         setFormError("");
+        setFieldErrors((prev) => ({ ...prev, [name]: "" }));
 
         // Real-time validation
-        if (name === "username" && value && !usernameRegex.test(value)) {
-            setInvalidFields((prev) => ({ ...prev, username: true }));
-            setFormError("Tên chỉ được chứa chữ cái và dấu cách.");
+        if (name === "username" && value) {
+            const isValid = validateUsername(value);
+            if (!isValid) {
+                setFieldErrors((prev) => ({ ...prev, username: "Tên chỉ được chứa chữ cái và dấu cách." }));
+            }
         }
-        if (name === "email" && value && !emailRegex.test(value)) {
-            setInvalidFields((prev) => ({ ...prev, email: true }));
-            setFormError("Vui lòng nhập email hợp lệ.");
+        if (name === "email" && value) {
+            const isValid = validateEmail(value);
+            if (!isValid) {
+                setFieldErrors((prev) => ({ ...prev, email: "Vui lòng nhập email hợp lệ." }));
+            }
         }
-        if (name === "password" && value && !passwordRegex.test(value)) {
-            setInvalidFields((prev) => ({ ...prev, password: true }));
-            setFormError(
-                "Mật khẩu phải dài 6-24 ký tự, bao gồm chữ cái, số, ít nhất 1 chữ in hoa."
-            );
+        if (name === "password" && value) {
+            const validation = validatePassword(value);
+            if (!validation.isValid) {
+                setFieldErrors((prev) => ({ ...prev, password: validation.message }));
+            }
         }
-        if (name === "confirmedPassword" && value && formData.password !== value) {
-            setInvalidFields((prev) => ({ ...prev, confirmedPassword: true }));
-            setFormError("Mật khẩu xác nhận không khớp.");
+        if (name === "confirmedPassword" && value) {
+            const validation = validateConfirmedPassword(formData.password, value);
+            if (!validation.isValid) {
+                setFieldErrors((prev) => ({ ...prev, confirmedPassword: validation.message }));
+            }
         }
-        if (name === "phone" && value && !phoneRegex.test(value)) {
-            setInvalidFields((prev) => ({ ...prev, phone: true }));
-            setFormError("Số điện thoại không hợp lệ.");
+        if (name === "phone" && value) {
+            const isValid = validatePhone(value);
+            if (!isValid) {
+                setFieldErrors((prev) => ({ ...prev, phone: "Số điện thoại không hợp lệ." }));
+            }
         }
-        if (name === "gender" && !value) {
-            setInvalidFields((prev) => ({ ...prev, gender: true }));
-            setFormError("Vui lòng chọn giới tính.");
+        if (name === "gender" && value) {
+            const isValid = validateGender(value);
+            if (!isValid) {
+                setFieldErrors((prev) => ({ ...prev, gender: "Vui lòng chọn giới tính hợp lệ." }));
+            }
         }
-    };
-
-    const validatePassword = (password) => {
-        if (!passwordRegex.test(password)) {
-            return "Mật khẩu phải dài 6-24 ký tự, bao gồm chữ cái, số, ít nhất 1 chữ in hoa.";
-        }
-        return "";
-    };
-
-    const validateEmail = (email) => {
-        if (!emailRegex.test(email)) {
-            return "Vui lòng nhập email hợp lệ.";
-        }
-        return "";
-    };
-
-    const validatePhone = (phone) => {
-        if (phone && !phoneRegex.test(phone)) {
-            return "Số điện thoại không hợp lệ.";
-        }
-        return "";
-    };
-
-    const validateUsername = (username) => {
-        if (!usernameRegex.test(username)) {
-            return "Tên chỉ được chứa chữ cái và dấu cách";
-        }
-        return "";
     };
 
     const capitalizeName = (name) => {
@@ -114,107 +85,116 @@ const RegisterForm = ({ onRegistering }) => {
             .join(" ");
     };
 
+    const handlePhoneInput = (e) => {
+        const value = e.target.value;
+        // Allow only digits
+        if (!/^\d*$/.test(value)) {
+            e.target.value = value.replace(/\D/g, "");
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setFormError("");
-        setEmptyFields({
-            username: false,
-            email: false,
-            password: false,
-            confirmedPassword: false,
-            gender: false,
-        });
-        setInvalidFields({
-            username: false,
-            email: false,
-            password: false,
-            confirmedPassword: false,
-            phone: false,
-            gender: false,
+        setFieldErrors({
+            username: "",
+            email: "",
+            password: "",
+            confirmedPassword: "",
+            phone: "",
+            gender: "",
         });
 
-        // Kiểm tra các trường yêu cầu trống
-        const newEmptyFields = {
-            username: !formData.username,
-            email: !formData.email,
-            password: !formData.password,
-            confirmedPassword: !formData.confirmedPassword,
-            gender: !formData.gender,
+        // Check for empty required fields
+        const newFieldErrors = {
+            username: !formData.username ? "Không được để trống!" : "",
+            email: !formData.email ? "Không được để trống!" : "",
+            password: !formData.password ? "Không được để trống!" : "",
+            confirmedPassword: !formData.confirmedPassword ? "Không được để trống!" : "",
+            gender: !formData.gender ? "Không được để trống!" : "",
+            phone: "",
         };
-        const hasEmptyFields = Object.values(newEmptyFields).some((isEmpty) => isEmpty);
+        const hasEmptyFields = Object.values(newFieldErrors).some((error) => error);
         if (hasEmptyFields) {
-            setFormError("Không được để trống");
-            setEmptyFields(newEmptyFields);
+            toast.error("Hãy sửa tất cả các lỗi trước khi tạo tài khoản");
+            setFieldErrors(newFieldErrors);
             return;
         }
 
-        // Validate username
-        const usernameValidationError = validateUsername(formData.username);
-        if (usernameValidationError) {
-            setFormError(usernameValidationError);
-            setInvalidFields((prev) => ({ ...prev, username: true }));
-            return;
+        // Validate fields
+        const usernameValid = validateUsername(formData.username);
+        const emailValid = validateEmail(formData.email);
+        const passwordValidation = validatePassword(formData.password);
+        const confirmedPasswordValidation = validateConfirmedPassword(formData.password, formData.confirmedPassword);
+        const phoneValid = formData.phone ? validatePhone(formData.phone) : true;
+        const genderValid = validateGender(formData.gender);
+
+        if (!usernameValid) {
+            newFieldErrors.username = "Tên chỉ được chứa chữ cái và dấu cách.";
+        }
+        if (!emailValid) {
+            newFieldErrors.email = "Vui lòng nhập email hợp lệ.";
+        }
+        if (!passwordValidation.isValid) {
+            newFieldErrors.password = passwordValidation.message;
+        }
+        if (!confirmedPasswordValidation.isValid) {
+            newFieldErrors.confirmedPassword = confirmedPasswordValidation.message;
+        }
+        if (!phoneValid) {
+            newFieldErrors.phone = "Số điện thoại không hợp lệ.";
+        }
+        if (!genderValid) {
+            newFieldErrors.gender = "Vui lòng chọn giới tính hợp lệ.";
         }
 
-        // Validate email
-        const emailValidationError = validateEmail(formData.email);
-        if (emailValidationError) {
-            setFormError(emailValidationError);
-            setInvalidFields((prev) => ({ ...prev, email: true }));
-            return;
-        }
-
-        // Validate password
-        const passwordValidationError = validatePassword(formData.password);
-        if (passwordValidationError) {
-            setFormError(passwordValidationError);
-            setInvalidFields((prev) => ({ ...prev, password: true }));
-            return;
-        }
-
-        // Validate confirmedPassword
-        if (formData.password !== formData.confirmedPassword) {
-            setFormError("Mật khẩu xác nhận không khớp.");
-            setInvalidFields((prev) => ({ ...prev, confirmedPassword: true }));
-            return;
-        }
-
-        // Validate phone (nếu có)
-        const phoneValidationError = validatePhone(formData.phone);
-        if (phoneValidationError) {
-            setFormError(phoneValidationError);
-            setInvalidFields((prev) => ({ ...prev, phone: true }));
+        const hasValidationErrors = Object.values(newFieldErrors).some((error) => error);
+        if (hasValidationErrors) {
+            toast.error("Hãy sửa tất cả các lỗi trước khi tạo tài khoản");
+            setFieldErrors(newFieldErrors);
             return;
         }
 
         // Chuẩn hóa tên trước khi gửi
         const capitalizedUsername = capitalizeName(formData.username);
 
-        setLoading(true);
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BE_URL}/user/register`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    username: capitalizedUsername,
-                    email: formData.email,
-                    password: formData.confirmedPassword,
-                    phone: formData.phone,
-                    gender: formData.gender,
-                }),
+        // Set localStorage and navigate immediately
+        localStorage.setItem("unverifiedEmail", formData.email);
+        localStorage.setItem("verifySource", "register");
+        onRegistering(formData.email);
+        navigate("/verify");
+
+        // Send registration request asynchronously in the background
+        fetch(`${import.meta.env.VITE_BE_URL}/user/register`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                username: capitalizedUsername,
+                email: formData.email,
+                password: formData.confirmedPassword,
+                phone: formData.phone,
+                gender: formData.gender,
+            }),
+        })
+            .then(async (response) => {
+                const result = await response.json();
+                if (!response.ok) {
+                    // If registration fails, navigate back and show error
+                    navigate("/register");
+                    setFormError(result.message || "Đăng ký thất bại.");
+                    toast.error(result.message || "Đăng ký thất bại.");
+                    localStorage.removeItem("unverifiedEmail");
+                    localStorage.removeItem("verifySource");
+                }
+            })
+            .catch((err) => {
+                // Handle network or other errors
+                navigate("/register");
+                setFormError(err.message || "Đã xảy ra lỗi. Vui lòng thử lại.");
+                toast.error(err.message || "Đã xảy ra lỗi. Vui lòng thử lại.");
+                localStorage.removeItem("unverifiedEmail");
+                localStorage.removeItem("verifySource");
             });
-            const result = await response.json();
-            if (response.ok) {
-                localStorage.setItem("unverifiedEmail", formData.email);
-                onRegistering(result.email);
-                navigate("/verify");
-            } else {
-                setFormError(result.message || "Đăng ký thất bại.");
-            }
-        } catch (err) {
-            setFormError(err.message || "Đã xảy ra lỗi. Vui lòng thử lại.");
-        }
-        setLoading(false);
     };
 
     return (
@@ -225,8 +205,8 @@ const RegisterForm = ({ onRegistering }) => {
 
                     {formError && <Alert variant="danger">{formError}</Alert>}
 
-                    <Form onSubmit={handleSubmit}>
-                        <Form.Group className="mb-2">
+                    <Form onSubmit={handleSubmit} noValidate>
+                        <Form.Group className="mb-2" controlId="username">
                             <Form.Label>Họ và tên</Form.Label>
                             <Form.Control
                                 type="text"
@@ -234,11 +214,11 @@ const RegisterForm = ({ onRegistering }) => {
                                 placeholder="Họ và tên"
                                 value={formData.username}
                                 onChange={handleChange}
-                                required
-                                style={{ borderColor: emptyFields.username || invalidFields.username ? "red" : "" }}
+                                isInvalid={!!fieldErrors.username}
                             />
+                            <Form.Control.Feedback type="invalid">{fieldErrors.username}</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group className="mb-2">
+                        <Form.Group className="mb-2" controlId="email">
                             <Form.Label>Email</Form.Label>
                             <Form.Control
                                 type="email"
@@ -246,11 +226,11 @@ const RegisterForm = ({ onRegistering }) => {
                                 placeholder="example@domain.com"
                                 value={formData.email}
                                 onChange={handleChange}
-                                required
-                                style={{ borderColor: emptyFields.email || invalidFields.email ? "red" : "" }}
+                                isInvalid={!!fieldErrors.email}
                             />
+                            <Form.Control.Feedback type="invalid">{fieldErrors.email}</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group className="mb-2">
+                        <Form.Group className="mb-2" controlId="password">
                             <Form.Label>Mật khẩu</Form.Label>
                             <Form.Control
                                 type="password"
@@ -258,11 +238,11 @@ const RegisterForm = ({ onRegistering }) => {
                                 placeholder="Mật khẩu"
                                 value={formData.password}
                                 onChange={handleChange}
-                                required
-                                style={{ borderColor: emptyFields.password || invalidFields.password ? "red" : "" }}
+                                isInvalid={!!fieldErrors.password}
                             />
+                            <Form.Control.Feedback type="invalid">{fieldErrors.password}</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group className="mb-2">
+                        <Form.Group className="mb-2" controlId="confirmedPassword">
                             <Form.Label>Xác nhận mật khẩu</Form.Label>
                             <Form.Control
                                 type="password"
@@ -270,13 +250,13 @@ const RegisterForm = ({ onRegistering }) => {
                                 placeholder="Xác nhận mật khẩu"
                                 value={formData.confirmedPassword}
                                 onChange={handleChange}
-                                required
-                                style={{
-                                    borderColor: emptyFields.confirmedPassword || invalidFields.confirmedPassword ? "red" : "",
-                                }}
+                                isInvalid={!!fieldErrors.confirmedPassword}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {fieldErrors.confirmedPassword}
+                            </Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group className="mb-2">
+                        <Form.Group className="mb-2" controlId="phone">
                             <Form.Label>Số điện thoại</Form.Label>
                             <Form.Control
                                 type="tel"
@@ -284,31 +264,33 @@ const RegisterForm = ({ onRegistering }) => {
                                 placeholder="Số điện thoại"
                                 value={formData.phone}
                                 onChange={handleChange}
-                                // pattern="^(\+84|0)(3|5|7|8|9)[0-9]{8}$"
-                                style={{ borderColor: invalidFields.phone ? "red" : "" }}
+                                onInput={handlePhoneInput}
+                                inputMode="numeric"
+                                isInvalid={!!fieldErrors.phone}
                             />
+                            <Form.Control.Feedback type="invalid">{fieldErrors.phone}</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group className="mb-3">
+                        <Form.Group className="mb-3" controlId="gender">
                             <Form.Label>Giới tính</Form.Label>
                             <Form.Select
                                 name="gender"
                                 value={formData.gender}
                                 onChange={handleChange}
-                                style={{ borderColor: emptyFields.gender || invalidFields.gender ? "red" : "" }}
+                                isInvalid={!!fieldErrors.gender}
                             >
                                 <option value="">Chọn giới tính</option>
                                 <option value="Nam">Nam</option>
                                 <option value="Nữ">Nữ</option>
                             </Form.Select>
+                            <Form.Control.Feedback type="invalid">{fieldErrors.gender}</Form.Control.Feedback>
                         </Form.Group>
                         <div className="text-center">
                             <Button
                                 type="submit"
                                 className="cs_btn cs_style_1 cs_color_1"
                                 style={{ border: "none", outline: "none" }}
-                                disabled={loading}
                             >
-                                {loading ? "Đang Gửi Mã OTP..." : "Tạo Tài Khoản"}
+                                Tạo Tài Khoản
                             </Button>
                         </div>
 

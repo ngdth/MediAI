@@ -2,18 +2,27 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { Form, Button } from 'react-bootstrap';
+import { validateQuantity, validateMedicineName, validateUnit, validateUsage } from '../../utils/validateUtils';
 
 const ManagePrescriptionsRecord = () => {
     const { appointmentId } = useParams();
     const [appointmentData, setAppointmentData] = useState({ appointment: {}, diagnosisDetails: [] });
     const [services, setServices] = useState([]);
-    const [selectedServices, setSelectedServices] = useState([]);
+    const [selectedServices, setSelectedServices] = useState([""]);
+    const [serviceErrors, setServiceErrors] = useState([{ service: "" }]);
     const [usedServices, setUsedServices] = useState([]);
     const [prescriptions, setPrescriptions] = useState([
         { medicineName: '', unit: '', quantity: '', usage: '' }
     ]);
+    const [errors, setErrors] = useState([{
+        medicineName: '',
+        unit: '',
+        quantity: '',
+        usage: ''
+    }]);
     const [doctorId, setDoctorId] = useState(null);
-    const [doctorRole, setdoctorRole] = useState(null);
+    const [doctorRole, setDoctorRole] = useState(null);
     const [expandedDoctors, setExpandedDoctors] = useState({});
     const [allPrescriptions, setAllPrescriptions] = useState([]);
     const navigate = useNavigate();
@@ -27,7 +36,7 @@ const ManagePrescriptionsRecord = () => {
                 });
                 const id = response.data.id;
                 setDoctorId(id);
-                setdoctorRole(response.data.role);
+                setDoctorRole(response.data.role);
                 console.log("Current Doctor ID:", id);
             } catch (error) {
                 console.error("Error fetching doctor ID:", error);
@@ -91,34 +100,133 @@ const ManagePrescriptionsRecord = () => {
             ...prescriptions,
             { medicineName: '', unit: '', quantity: '', usage: '' }
         ]);
+        setErrors([...errors, {
+            medicineName: '',
+            unit: '',
+            quantity: '',
+            usage: ''
+        }]);
+    };
+
+    const removePrescriptionRow = (index) => {
+        if (prescriptions.length === 1) {
+            toast.warn("Phải có ít nhất một hàng đơn thuốc!");
+            return;
+        }
+        setPrescriptions(prescriptions.filter((_, i) => i !== index));
+        setErrors(errors.filter((_, i) => i !== index));
     };
 
     const handlePrescriptionChange = (index, field, value) => {
         const updatedPrescriptions = [...prescriptions];
-        updatedPrescriptions[index][field] = value;
+        if (field === 'quantity') {
+            // Allow only digits or empty string
+            if (value === '' || /^\d*$/.test(value)) {
+                updatedPrescriptions[index][field] = value;
+            }
+        } else {
+            updatedPrescriptions[index][field] = value;
+        }
         setPrescriptions(updatedPrescriptions);
+
+        const updatedErrors = [...errors];
+        if (field === 'medicineName') {
+            const validation = validateMedicineName(value);
+            updatedErrors[index].medicineName = validation.message;
+        } else if (field === 'unit') {
+            const validation = validateUnit(value);
+            updatedErrors[index].unit = validation.message;
+        } else if (field === 'quantity') {
+            const validation = validateQuantity(value);
+            updatedErrors[index].quantity = validation.message;
+        } else if (field === 'usage') {
+            const validation = validateUsage(value);
+            updatedErrors[index].usage = validation.message;
+        }
+        setErrors(updatedErrors);
+    };
+
+    const handleQuantityInput = (e) => {
+        const value = e.target.value;
+        // Allow only digits
+        if (!/^\d*$/.test(value)) {
+            e.target.value = value.replace(/\D/g, '');
+        }
+    };
+
+    const handleQuantityPaste = (e) => {
+        const pastedData = e.clipboardData.getData('text');
+        // Allow only digits
+        if (!/^\d*$/.test(pastedData)) {
+            e.preventDefault();
+        }
     };
 
     const addServiceRow = () => {
         setSelectedServices([...selectedServices, ""]);
+        setServiceErrors([...serviceErrors, { service: "" }]);
     };
 
     const handleServiceChange = (index, serviceId) => {
         const updatedSelectedServices = [...selectedServices];
         updatedSelectedServices[index] = serviceId;
         setSelectedServices(updatedSelectedServices);
+
+        const updatedServiceErrors = [...serviceErrors];
+        updatedServiceErrors[index] = {
+            service: serviceId === "" ? "Vui lòng chọn dịch vụ bệnh nhân đã sử dụng!" : ""
+        };
+        setServiceErrors(updatedServiceErrors);
     };
 
     const removeServiceRow = (index) => {
         setSelectedServices(selectedServices.filter((_, i) => i !== index));
+        setServiceErrors(serviceErrors.filter((_, i) => i !== index));
     };
 
     const handleSubmitPrescription = async () => {
+        // Validate prescriptions
+        const validationErrors = prescriptions.map((prescription, index) => {
+            const medicineNameValidation = validateMedicineName(prescription.medicineName);
+            const unitValidation = validateUnit(prescription.unit);
+            const quantityValidation = validateQuantity(prescription.quantity);
+            const usageValidation = validateUsage(prescription.usage);
+            return {
+                medicineName: medicineNameValidation.message,
+                unit: unitValidation.message,
+                quantity: quantityValidation.message,
+                usage: usageValidation.message
+            };
+        });
+
+        setErrors(validationErrors);
+
+        // Validate services
+        const validationServiceErrors = selectedServices.map((serviceId, index) => ({
+            service: serviceId === "" ? "Vui lòng chọn dịch vụ bệnh nhân đã sử dụng!" : ""
+        }));
+
+        setServiceErrors(validationServiceErrors);
+
+        const hasPrescriptionErrors = validationErrors.some(error =>
+            error.medicineName !== '' ||
+            error.unit !== '' ||
+            error.quantity !== '' ||
+            error.usage !== ''
+        );
+
+        const hasServiceErrors = validationServiceErrors.some(error => error.service !== '');
+
+        if (hasPrescriptionErrors || hasServiceErrors) {
+            toast.error("Vui lòng sửa các lỗi trước khi gửi!");
+            return;
+        }
+
         try {
             const prescriptionData = prescriptions.map(prescription => ({
                 medicineName: prescription.medicineName,
                 unit: prescription.unit,
-                quantity: prescription.quantity,
+                quantity: parseInt(prescription.quantity, 10),
                 usage: prescription.usage
             }));
 
@@ -171,7 +279,7 @@ const ManagePrescriptionsRecord = () => {
     };
 
     const renderReadOnlyField = (label, value) => {
-        let displayValue = value;
+        let displayValue;
         if (label === "Lịch tái khám") {
             displayValue = value ? new Date(value).toISOString().split("T")[0] : "Không có thông tin";
         } else {
@@ -272,114 +380,158 @@ const ManagePrescriptionsRecord = () => {
 
             {/* Đơn thuốc */}
             <h3 className="mt-4">Thông tin đơn thuốc</h3>
-            <table className="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Tên thuốc</th>
-                        <th>Đơn vị tính</th>
-                        <th>Số lượng</th>
-                        <th>Cách dùng</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {prescriptions.map((prescription, index) => (
-                        <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>
-                                <input
-                                    type="text"
-                                    value={prescription.medicineName}
-                                    onChange={(e) => handlePrescriptionChange(index, 'medicineName', e.target.value)}
-                                    placeholder="Tên thuốc"
-                                    className="form-control"
-                                />
-                            </td>
-                            <td>
-                                <input
-                                    type="text"
-                                    value={prescription.unit}
-                                    onChange={(e) => handlePrescriptionChange(index, 'unit', e.target.value)}
-                                    placeholder="Đơn vị tính"
-                                    className="form-control"
-                                />
-                            </td>
-                            <td>
-                                <input
-                                    type="number"
-                                    value={prescription.quantity}
-                                    onChange={(e) => handlePrescriptionChange(index, 'quantity', e.target.value)}
-                                    placeholder="Số lượng"
-                                    className="form-control"
-                                />
-                            </td>
-                            <td>
-                                <input
-                                    type="text"
-                                    value={prescription.usage}
-                                    onChange={(e) => handlePrescriptionChange(index, 'usage', e.target.value)}
-                                    placeholder="Cách dùng"
-                                    className="form-control"
-                                />
-                            </td>
+            <Form>
+                <table className="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên thuốc</th>
+                            <th>Đơn vị tính</th>
+                            <th>Số lượng</th>
+                            <th>Cách dùng</th>
+                            <th className="text-center">Thao tác</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-            <button className="btn btn-success mb-4" onClick={addPrescriptionRow}>+ Thêm thuốc</button>
+                    </thead>
+                    <tbody>
+                        {prescriptions.map((prescription, index) => (
+                            <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>
+                                    <Form.Group controlId={`prescription-medicineName-${index}`}>
+                                        <Form.Control
+                                            type="text"
+                                            value={prescription.medicineName}
+                                            onChange={(e) => handlePrescriptionChange(index, 'medicineName', e.target.value)}
+                                            placeholder="Tên thuốc"
+                                            isInvalid={!!errors[index]?.medicineName}
+                                        />
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors[index]?.medicineName}
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </td>
+                                <td>
+                                    <Form.Group controlId={`prescription-unit-${index}`}>
+                                        <Form.Control
+                                            type="text"
+                                            value={prescription.unit}
+                                            onChange={(e) => handlePrescriptionChange(index, 'unit', e.target.value)}
+                                            placeholder="Viên, Tuýp, Lọ,..."
+                                            isInvalid={!!errors[index]?.unit}
+                                        />
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors[index]?.unit}
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </td>
+                                <td>
+                                    <Form.Group controlId={`prescription-quantity-${index}`}>
+                                        <Form.Control
+                                            type="text"
+                                            value={prescription.quantity}
+                                            onChange={(e) => handlePrescriptionChange(index, 'quantity', e.target.value)}
+                                            onInput={handleQuantityInput}
+                                            onPaste={handleQuantityPaste}
+                                            onKeyDown={(e) => {
+                                                if (["e", "E", ".", "-", "+"].includes(e.key)) {
+                                                    e.preventDefault();
+                                                }
+                                            }}
+                                            placeholder="Số lượng"
+                                            isInvalid={!!errors[index]?.quantity}
+                                        />
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors[index]?.quantity}
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </td>
+                                <td>
+                                    <Form.Group controlId={`prescription-usage-${index}`}>
+                                        <Form.Control
+                                            type="text"
+                                            value={prescription.usage}
+                                            onChange={(e) => handlePrescriptionChange(index, 'usage', e.target.value)}
+                                            placeholder="Cách dùng"
+                                            isInvalid={!!errors[index]?.usage}
+                                        />
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors[index]?.usage}
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </td>
+                                <td className="text-center">
+                                    <Button variant="danger" onClick={() => removePrescriptionRow(index)}>
+                                        Xóa
+                                    </Button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </Form>
+            <Button className="mb-4" variant="success" onClick={addPrescriptionRow}>
+                + Thêm thuốc
+            </Button>
 
             {/* Dịch vụ */}
             <h3 className="mt-5">Thông tin dịch vụ khám</h3>
-            <table className="table table-bordered">
-                <thead>
-                    <tr>
-                        <th className="text-center">STT</th>
-                        <th className="text-center">Tên dịch vụ</th>
-                        <th className="text-center">Khoa</th>
-                        <th className="text-center">Giá tiền</th>
-                        <th className="text-center">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {selectedServices.map((serviceId, index) => {
-                        const selectedService = services.find((s) => s._id === serviceId) || {};
-                        return (
-                            <tr key={index}>
-                                <td className="text-center">{index + 1}</td>
-                                <td>
-                                    <select
-                                        className="form-control"
-                                        value={serviceId}
-                                        onChange={(e) => handleServiceChange(index, e.target.value)}
-                                    >
-                                        <option value="">Chọn dịch vụ</option>
-                                        {services.map((s) => (
-                                            <option key={s._id} value={s._id}>
-                                                {s.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </td>
-                                <td className="text-center">{selectedService.department || "Không có thông tin"}</td>
-                                <td className="text-center">{selectedService.price ? selectedService.price.toLocaleString() : 0} VND</td>
-                                <td className="text-center">
-                                    <button className="btn btn-danger" onClick={() => removeServiceRow(index)}>
-                                        Xóa
-                                    </button>
-                                </td>
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
-            <button className="btn btn-success" onClick={addServiceRow}>
+            <Form>
+                <table className="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th className="text-center">STT</th>
+                            <th className="text-center">Tên dịch vụ</th>
+                            <th className="text-center">Khoa</th>
+                            <th className="text-center">Giá tiền</th>
+                            <th className="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {selectedServices.map((serviceId, index) => {
+                            const selectedService = services.find((s) => s._id === serviceId) || {};
+                            return (
+                                <tr key={index}>
+                                    <td className="text-center">{index + 1}</td>
+                                    <td>
+                                        <Form.Group controlId={`service-${index}`}>
+                                            <Form.Select
+                                                value={serviceId}
+                                                onChange={(e) => handleServiceChange(index, e.target.value)}
+                                                isInvalid={!!serviceErrors[index]?.service}
+                                            >
+                                                <option value="">Chọn dịch vụ</option>
+                                                {services.map((s) => (
+                                                    <option key={s._id} value={s._id}>
+                                                        {s.name}
+                                                    </option>
+                                                ))}
+                                            </Form.Select>
+                                            <Form.Control.Feedback type="invalid">
+                                                {serviceErrors[index]?.service}
+                                            </Form.Control.Feedback>
+                                        </Form.Group>
+                                    </td>
+                                    <td className="text-center">{selectedService.department || "Không có thông tin"}</td>
+                                    <td className="text-center">{selectedService.price ? selectedService.price.toLocaleString() : 0} VND</td>
+                                    <td className="text-center">
+                                        <Button variant="danger" onClick={() => removeServiceRow(index)}>
+                                            Xóa
+                                        </Button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </Form>
+            <Button variant="success" onClick={addServiceRow}>
                 + Thêm dịch vụ
-            </button>
+            </Button>
 
             <div className="d-flex justify-content-end mt-4">
-                <button className="btn btn-primary" onClick={handleSubmitPrescription}>
+                <Button variant="primary" onClick={handleSubmitPrescription}>
                     Tạo đơn thuốc
-                </button>
+                </Button>
             </div>
         </div>
     );

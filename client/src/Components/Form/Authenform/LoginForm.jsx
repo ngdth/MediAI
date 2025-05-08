@@ -67,8 +67,23 @@ const LoginForm = ({ onLogin }) => {
             // Check if user is not verified
             if (!data.user.verified) {
                 localStorage.setItem("unverifiedEmail", email); // Store email for verification
+                localStorage.setItem("verifySource", "login");
                 navigate("/verify");
-                return;
+                try {
+                    const otpResponse = await fetch(`${import.meta.env.VITE_BE_URL}/user/sendotp`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email }),
+                    });
+
+                    const otpData = await otpResponse.json();
+                    if (!otpResponse.ok) throw new Error(otpData.message || "Failed to send OTP");
+
+                    return;
+                } catch (otpError) {
+                    setError(otpError.message);
+                    return;
+                }
             }
 
             localStorage.setItem("token", data.token);
