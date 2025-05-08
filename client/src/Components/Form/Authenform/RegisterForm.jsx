@@ -206,6 +206,7 @@ const RegisterForm = ({ onRegistering }) => {
             const result = await response.json();
             if (response.ok) {
                 localStorage.setItem("unverifiedEmail", formData.email);
+                localStorage.setItem("verifySource", "register")
                 onRegistering(result.email);
                 navigate("/verify");
             } else {

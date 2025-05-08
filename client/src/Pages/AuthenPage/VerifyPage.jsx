@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 function VerifyPage() {
     const navigate = useNavigate();
+    const verifySource = localStorage.getItem("verifySource");
 
     const handleChangeEmail = async () => {
         const unverifiedEmail = localStorage.getItem("unverifiedEmail");
@@ -19,10 +20,17 @@ function VerifyPage() {
             });
 
             localStorage.removeItem("unverifiedEmail");
+            localStorage.removeItem("verifySource");
             navigate("/register");
         } catch (error) {
-            toast.error("Không thể xóa email chưa xác thực: " + error.message);
+            toast.error("Không thể xóa email này: " + error.message);
         }
+    };
+
+    const handleGoBack = () => {
+        localStorage.removeItem("unverifiedEmail");
+        localStorage.removeItem("verifySource");
+        navigate("/login");
     };
 
     // Callback to display toast messages from VerifyForm
@@ -49,13 +57,13 @@ function VerifyPage() {
                                 <h2 className="mb-4" style={{ fontSize: "38px" }}>Xác thực tài khoản</h2>
                                 <VerifyForm showToast={showToast} />
                                 <span
-                                    onClick={handleChangeEmail}
+                                    onClick={verifySource === "register" ? handleChangeEmail : handleGoBack}
                                     className="text-muted small cursor-pointer"
                                     style={{ textDecoration: "none", cursor: "pointer" }}
                                     onMouseEnter={(e) => (e.target.style.textDecoration = "underline")}
                                     onMouseLeave={(e) => (e.target.style.textDecoration = "none")}
                                 >
-                                    Dùng email khác?
+                                    {verifySource === "register" ? "Dùng email khác?" : "Trở về"}
                                 </span>
                             </Card.Body>
                         </Card>

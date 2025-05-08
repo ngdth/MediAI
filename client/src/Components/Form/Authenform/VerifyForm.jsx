@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-const VerifyForm = () => {
+const VerifyForm = ({ showToast }) => {
     const navigate = useNavigate();
     const [otp, setOtp] = useState("");
     const [message, setMessage] = useState("");
@@ -33,14 +33,17 @@ const VerifyForm = () => {
 
             const data = await response.json();
             if (response.ok) {
-                setMessage("Email verified successfully!");
+                showToast("Tài khoản đã xác thực thành công", "success");
                 localStorage.removeItem("unverifiedEmail");
+                localStorage.removeItem("verifySource");
                 navigate("/login");
             } else {
                 setMessage(`${data.message || "Invalid OTP"}`);
+                showToast(data.message || "OTP không hợp lệ", "error");
             }
         } catch (error) {
-            setMessage("Network error. Try again later.");
+            setMessage("Đã có lỗi xảy ra. Vui lòng thử lại sau");
+            showToast("Đã có lỗi xảy ra. Vui lòng thử lại sau", "error");
         }
 
         setLoading(false);
@@ -59,13 +62,16 @@ const VerifyForm = () => {
 
             const data = await response.json();
             if (response.ok) {
-                setMessage("OTP resent to your email!");
+                setMessage("OTP đã được gửi về email của bạn!");
+                showToast("OTP đã được gửi về email của bạn!", "success");
                 setResendTimer(60); // Đặt lại bộ đếm 60 giây
             } else {
                 setMessage(`${data.message}`);
+                showToast(data.message, "error");
             }
         } catch {
-            setMessage("Failed to resend OTP. Try again later.");
+            setMessage("Lỗi khi gửi OTP. Hãy thử lại!");
+            showToast("Lỗi khi gửi OTP. Hãy thử lại!", "error");
         }
     };
 
