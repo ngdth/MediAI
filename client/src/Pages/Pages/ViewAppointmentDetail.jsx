@@ -86,7 +86,7 @@ const ViewAppointmentDetail = () => {
         className={"cs_page_heading cs_bg_filed cs_center"}
         backgroundImage="/assets/img/page_heading_bg.jpg"
       >
-        <PageHeading data={{ title: "Appointment Details" }} />
+        <PageHeading data={{ title: "Chi tiết khám bệnh" }} />
       </Section>
 
       <Section
@@ -98,8 +98,8 @@ const ViewAppointmentDetail = () => {
       >
         <div className="container">
           <SectionHeading
-            SectionSubtitle="APPOINTMENT DETAILS"
-            SectionTitle="View Your Appointment Information"
+            SectionSubtitle="CHI TIẾT KHÁM BỆNH"
+            SectionTitle="Xem thông tin lịch hẹn của bạn"
             variant={"text-center"}
           />
           <div className="cs_height_40 cs_height_lg_35" />

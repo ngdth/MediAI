@@ -148,6 +148,20 @@ const AppointmentsHistory = () => {
       return "Đang chờ bác sĩ";
     } else if (status === "Assigned") {
       return "Đang chờ xác nhận";
+    } else if (status === "Accepted") {
+      return "Đã xác nhận";
+    } else if (status === "Canceled") {
+      return "Đã hủy";
+    } else if (status === "Bill_created") {
+      return "Đã tạo hóa đơn";
+    } else if (status === "Prescription_created") {
+      return "Đã tạo đơn thuốc";
+    } else if (status === "WaitingPrescription") {
+      return "Đang chờ đơn thuốc";
+    } else if (status === "Rejected") {
+      return "Đã từ chối";
+    } else if (status === "Done") {
+      return "Đã hoàn thành";
     }
     return status;
   };

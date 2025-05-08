@@ -306,14 +306,14 @@ const NursePending = () => {
                                                 </button>
                                             )}
                                             <button
-                                                className="btn btn-primary "
+                                                className="btn btn-primary mt-1 "
                                                 onClick={() => handleViewDetail(appointment._id)}
                                             >
                                                 Xem chi tiết
                                             </button>
                                             {appointment.doctorId && appointment.doctorId.length > 0 && (
                                                 <button
-                                                    className="btn btn-warning"
+                                                    className="btn btn-warning mt-1"
                                                     onClick={() => updateAppointmentStatus(appointment._id, "Prescription_created")}
                                                 >
                                                     Gửi lại cho bác sĩ

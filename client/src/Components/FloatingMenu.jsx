@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Link } from 'react-router-dom';
 import chatbotIcon from '../assets/chatboticon.jpg';
-import bookingIcon from '../assets/booking.png'
+import bookingIcon from '../assets/calendar.png'
 
 const FloatingMenu = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);

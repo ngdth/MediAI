@@ -4,6 +4,8 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { FaFileExport } from "react-icons/fa";
 import DoctorModal from "../../Components/Admin/DoctorModal";
 import { validateExp } from "../../utils/validateUtils";
+import ImportDataButton from "../../Components/UploadFile";
+import ExportDataButton from "../../Components/UploadFile/ExportFile";
 
 const NurseManagement = () => {
     const [nurses, setNurses] = useState([]);
@@ -116,15 +118,12 @@ const NurseManagement = () => {
     return (
         <div className="container mt-5" style={{ minHeight: "80vh", display: "flex", flexDirection: "column" }}>
             <h2 className="text-center mb-4">Quản Lý Y Tá </h2>
-
-            <div className="d-flex justify-content-between mb-3">
-                <button className="btn btn-primary" onClick={handleShowModal}>
+            <div className="d-flex justify-content-end mb-3">
+                <button className="btn btn-primary me-1" onClick={handleShowModal}>
                     Tạo tài khoản y tá
                 </button>
-                <button className="btn btn-secondary" onClick={handleExportTemplate}>
-                    <FaFileExport className="me-2" />
-                    Export Template
-                </button>
+                <ImportDataButton  />
+                <ExportDataButton />
             </div>
 
             <div className="table-responsive">
