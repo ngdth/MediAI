@@ -1,4 +1,3 @@
-import SectionHeading from "../SectionHeading";
 import {
   FaFacebookF,
   FaInstagram,
@@ -11,12 +10,6 @@ const AppointmentSection = ({ data }) => {
   return (
     <>
       <div className="container">
-        <SectionHeading
-          SectionSubtitle={data.subtitle}
-          SectionTitle={data.title}
-          variant={"text-center"}
-        />
-
         <div className="cs_height_50 cs_height_lg_50" />
         {/* <div className="cs_doctors_grid cs_style_1"> */}
         {data?.groupedDoctors && Object.entries(data.groupedDoctors).map(([specialization, doctors], groupIndex) => (

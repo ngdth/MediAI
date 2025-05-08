@@ -94,6 +94,13 @@
     // cursor: not-allowed;
 }
 
+.time-slot.disabled {
+    pointer-events: none;
+    opacity: 0.4;
+    // background-color: #f0f0f0;
+    // cursor: not-allowed;
+}  
+
 .booked-text {
     font-size: 0.75rem;
     font-weight: 500;

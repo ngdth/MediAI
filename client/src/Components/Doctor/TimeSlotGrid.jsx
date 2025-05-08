@@ -6,6 +6,14 @@ function TimeSlotGrid({ dates, selectedSlots, onToggleTimeSlot }) {
     return { hour: i + 8, minute: 0 }
   })
 
+  const isPastDate = (date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time
+    const compareDate = new Date(date);
+    compareDate.setHours(0, 0, 0, 0);
+    return compareDate < today;
+  };
+
   // console.log("Received props:", { dates, selectedSlots })
 
   return (
@@ -41,22 +49,24 @@ function TimeSlotGrid({ dates, selectedSlots, onToggleTimeSlot }) {
                 const slotData = selectedSlots[dateTimeKey]
                 const isSelected = slotData?.isAvailable
                 const isBooked = slotData?.isBooked
+                const isPast = isPastDate(date);
 
                 return (
                   <div
                     key={timeIndex}
                     onClick={() => onToggleTimeSlot(dateTimeKey)}
                     className={`time-slot 
-            ${isBooked ? "booked" : ""}
-            ${isSelected ? "selected" : ""}`}
+                      ${isBooked ? "booked" : ""}
+                      ${isSelected ? "selected" : ""}
+                      ${isPast ? "disabled" : ""}`}
                     aria-label={`${isBooked ? "Booked" : isSelected ? "Available" : "Unavailable"} at ${formatTime(slot.hour, slot.minute)} on ${formatDate(date)}`}
                     role="button"
-                    tabIndex={0}
+                    tabIndex={isPast ? -1 : 0}
                   >
                     {isBooked ? (
-                      <span className="booked-text">Booked</span>
+                      <span className="booked-text">Đã đặt</span>
                     ) : isSelected ? (
-                      <span className="available-text">Available</span>
+                      <span className="available-text">Lịch trống</span>
                     ) : null}
                   </div>
                 )
