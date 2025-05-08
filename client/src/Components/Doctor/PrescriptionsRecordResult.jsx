@@ -36,11 +36,11 @@ const PrescriptionsRecordResult = () => {
                 { status: "Pending" },
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             );
-            toast.success("Cập nhật trạng thái lịch hẹn thành Pending thành công.");
+            toast.success("Đã gửi cho bác sĩ khác thành công.");
             await fetchPrescriptionCreatedAppointments();
         } catch (error) {
-            console.error(`Lỗi khi cập nhật trạng thái lịch hẹn:`, error);
-            toast.error(error.response?.data?.message || "Có lỗi xảy ra khi cập nhật trạng thái lịch hẹn.");
+            console.error(`Lỗi khi gửi kết quả cho bác sĩ khác:`, error);
+            toast.error(error.response?.data?.message || "Có lỗi xảy ra khi gửi kết quả cho bác sĩ khác.");
         }
     };
 
