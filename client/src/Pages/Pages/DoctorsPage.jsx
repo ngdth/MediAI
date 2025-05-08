@@ -1,12 +1,14 @@
 import PageHeading from '../../Components/PageHeading';
 import AppointmentSection from '../../Components/AppointmentSection';
 import Section from '../../Components/Section';
+import SectionHeading from '../../Components/SectionHeading';
 import { useEffect, useState } from "react";
 import axios from "axios";
 
 const DoctorsPage = () => {
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchAllDoctors = async () => {
@@ -36,10 +38,19 @@ const DoctorsPage = () => {
   }, []);
 
   const headingData = {
-    title: 'CÁC BÁC SĨ',
+    title: 'BÁC SĨ',
   };
 
-  const groupedDoctors = doctors.reduce((groups, doctor) => {
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredDoctors = doctors.filter((doctor) =>
+    doctor.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    doctor.specialization.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const groupedDoctors = filteredDoctors.reduce((groups, doctor) => {
     const specialization = doctor.specialization || "Other";
     if (!groups[specialization]) {
       groups[specialization] = [];
@@ -60,7 +71,6 @@ const DoctorsPage = () => {
 
   const appointmentSectionData = {
     subtitle: 'TẤT CẢ CÁC BÁC SĨ',
-    // title: 'Meet Our Specialist This<br> Doctor Meeting',
     groupedDoctors,
   };
 
@@ -77,20 +87,50 @@ const DoctorsPage = () => {
       >
         <PageHeading data={headingData} />
       </Section>
-      {/* Appointment Section */}
+
       <Section
-        topSpaceLg="70"
-        topSpaceMd="110"
-        bottomSpaceLg="80"
-        bottomSpaceMd="120"
+        topSpaceMd="50"
       >
-        {/* <AppointmentSection data={appointmentSectionData} /> */}
+      </Section>
+
+      <SectionHeading
+        SectionSubtitle={appointmentSectionData.subtitle}
+        SectionTitle={appointmentSectionData.title}
+        variant={"text-center"}
+      />
+
+      <Section
+        topSpaceMd="30"
+      >
+        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+          <input
+            type="text"
+            placeholder="Tìm kiếm bác sĩ theo tên..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            style={{
+              padding: '10px 15px',
+              width: '80%',
+              maxWidth: '500px',
+              borderRadius: '8px',
+              border: '1px solid #ccc',
+              fontSize: '16px',
+            }}
+          />
+        </div>
+      </Section>
+
+      <Section>
         {loading ? (
-          <p className="text-center">Loading...</p>
-        ) : doctors.length === 0 ? (
-          <p className="text-center fw-bold">No doctors or HODs available.</p>
+          <p className="text-center">Đang tải dữ liệu...</p>
+        ) : filteredDoctors.length === 0 ? (
+          <p className="text-center fw-bold">Không tìm thấy bác sĩ nào.</p>
         ) : (
-          <AppointmentSection data={appointmentSectionData} />
+          <AppointmentSection
+            data={appointmentSectionData}
+            searchTerm={searchTerm}
+            onSearchChange={handleSearchChange}
+          />
         )}
       </Section>
     </>
