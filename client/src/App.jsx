@@ -93,7 +93,7 @@ function App() {
         window.scrollTo(0, 0);
     }, [pathname]);
 
-    const shouldShowFloatingMenu = !/^\/(admin|doctor(\/|$)|nurse|pharmacy)/.test(pathname);
+    const shouldShowFloatingMenu = !/^\/(admin|doctor(\/|$)|nurse|pharmacy|meeting|login|register|verify|forgotPass|resetPass)/.test(pathname);
 
     const role = localStorage.getItem('role');
 

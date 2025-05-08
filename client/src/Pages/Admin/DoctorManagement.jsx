@@ -4,6 +4,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 import ImportDataButton from "../../Components/UploadFile";
 import DoctorModal from "../../Components/Admin/DoctorModal";
 import { validateExp } from "../../utils/validateUtils";
+import ExportDataButton from "../../Components/UploadFile/ExportFile";
 
 const DoctorManagement = () => {
     const [doctors, setDoctors] = useState([]);
@@ -128,7 +129,8 @@ const DoctorManagement = () => {
                 <button className="btn btn-primary me-1" onClick={handleShowModal}>
                     Tạo tài khoản bác sĩ
                 </button>
-                <ImportDataButton />
+                <ImportDataButton  />
+                <ExportDataButton role="doctor" />
             </div>
 
             <div className="table-responsive">

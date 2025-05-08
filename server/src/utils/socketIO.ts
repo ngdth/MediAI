@@ -4,7 +4,7 @@ import http from 'http';
 export const initSocketServer = (server: http.Server) => {
   const io = new IOServer(server, {
     cors: {
-      origin: "https://amma-care.com",
+      origin: "https://api.amma-care.com",
       methods: ["GET", "POST"],
       credentials: true,
     }

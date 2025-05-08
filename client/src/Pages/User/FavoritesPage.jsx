@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 const FavoritesPage = () => {
     const headingData = {
-        title: "Favorite Doctors",
+        title: "Bác sĩ yêu thích",
     };
 
     const [favorites, setFavorites] = useState([]);
@@ -43,10 +43,10 @@ const FavoritesPage = () => {
             });
 
             setFavorites(favorites.filter((doctor) => doctor._id !== doctorId));
-            toast.success("Doctor has been removed from favorites.");
+            toast.success("Đã xóa bác sĩ khỏi danh sách yêu thích.");
         } catch (error) {
             console.error("Error removing favorite doctor:", error.response?.data || error);
-            toast.error("Failed to remove doctor.");
+            toast.error("Lỗi khi xóa bác sĩ khỏi danh sách yêu thích.");
         }
     };
 
@@ -58,7 +58,6 @@ const FavoritesPage = () => {
             >
                 <PageHeading data={headingData} />
                 <SectionHeading
-                  
                     SectionTitle="Không tìm thấy bác sĩ yêu thích"
                     variant="text-center"
                 />
@@ -83,7 +82,7 @@ const FavoritesPage = () => {
             <Section topSpaceLg="70" topSpaceMd="110" bottomSpaceLg="80" bottomSpaceMd="120" className="cs_appointment">
                 <div className="container">
                     <div className="cs_appointment_form_wrapper">
-                        <SectionHeading  SectionTitle  ="Danh sách bác sĩ yêu thích"     variant="text-center" />
+                        <SectionHeading SectionTitle="Danh sách bác sĩ yêu thích" variant="text-center" />
                         <div className="cs_height_40 cs_height_lg_35" />
                         <div className="favorites-table">
                             <table className="table table-bordered text-center">
@@ -101,10 +100,10 @@ const FavoritesPage = () => {
                                             <td>{doctor.specialization}</td>
                                             <td>
                                                 <button className="btn btn-primary btn-sm me-2" onClick={() => handleViewDetail(doctor._id)}>
-                                                   Xem chi tiết
+                                                    Xem chi tiết
                                                 </button>
                                                 <button className="btn btn-danger btn-se" onClick={() => handleRemove(doctor._id)}>
-                                                   Xóa
+                                                    Xóa
                                                 </button>
                                             </td>
                                         </tr>

@@ -8,13 +8,13 @@
             const { name, description, department, price, status } = req.body;
 
             if (!name || !description || !department || !price ) {
-                res.status(400).json({ error: "Missing required fields." });
+                res.status(400).json({ error: "Thiếu các trường bắt buộc." });
                 return;
             }
 
             const existingService = await Service.findOne({ name });
             if (existingService) {
-                res.status(400).json({ error: "Service name already exists." });
+                res.status(400).json({ error: "Tên dịch vụ đã tồn tại." });
                 return;
             }
 
@@ -27,7 +27,7 @@
             });
 
             await newService.save();
-            res.status(201).json({ message: "Service created successfully.", service: newService });
+            res.status(201).json({ message: "Tạo dịch vụ thành công.", service: newService });
         } catch (error) {
             next(error);
             console.log(error);
@@ -50,13 +50,13 @@
             const { serviceId } = req.params;
 
             if (!mongoose.Types.ObjectId.isValid(serviceId)) {
-                res.status(400).json({ error: "Invalid service ID." });
+                res.status(400).json({ error: "ID dịch vụ không hợp lệ." });
                 return;
             }
 
             const service = await Service.findById(serviceId);
             if (!service) {
-                res.status(404).json({ error: "Service not found." });
+                res.status(404).json({ error: "Không tìm thấy dịch vụ." });
                 return;
             }
 
@@ -73,13 +73,13 @@
             const { name, description, department, price, status } = req.body;
 
             if (!mongoose.Types.ObjectId.isValid(serviceId)) {
-                res.status(400).json({ error: "Invalid service ID." });
+                res.status(400).json({ error: "ID dịch vụ không hợp lệ." });
                 return;
             }
 
             const service = await Service.findById(serviceId);
             if (!service) {
-                res.status(404).json({ error: "Service not found." });
+                res.status(404).json({ error: "Không tìm thấy dịch vụ." });
                 return;
             }
 
@@ -90,7 +90,7 @@
             if (status) service.status = status;
 
             await service.save();
-            res.status(200).json({ message: "Service updated successfully.", service });
+            res.status(200).json({ message: "Cập nhật dịch vụ thành công.", service });
         } catch (error) {
             next(error);
         }
@@ -102,18 +102,18 @@
             const { serviceId } = req.params;
 
             if (!mongoose.Types.ObjectId.isValid(serviceId)) {
-                res.status(400).json({ error: "Invalid service ID." });
+                res.status(400).json({ error: "ID dịch vụ không hợp lệ." });
                 return;
             }
 
             const service = await Service.findById(serviceId);
             if (!service) {
-                res.status(404).json({ error: "Service not found." });
+                res.status(404).json({ error: "Không tìm thấy dịch vụ." });
                 return;
             }
 
             await Service.findByIdAndDelete(serviceId);
-            res.status(200).json({ message: "Service deleted successfully." });
+            res.status(200).json({ message: "Xóa dịch vụ thành công." });
         } catch (error) {
             next(error);
         }

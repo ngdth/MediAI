@@ -36,15 +36,6 @@ const ServiceManagement = () => {
         } catch (error) {
             console.error("Error fetching services:", error.response?.data?.error || error.message);
             setServices([]);
-            showToastMessage(error.response?.data?.error || "Error fetching services", "error");
-        }
-    };
-
-    const showToastMessage = (message, variant) => {
-        if (variant === "success") {
-            toast.success(message);
-        } else {
-            toast.error(message);
         }
     };
 
@@ -60,25 +51,25 @@ const ServiceManagement = () => {
         e.preventDefault();
         const preparedData = {
             ...formData,
-            price: Number(formData.price), // Convert tại đây
+            price: Number(formData.price),
         };
         try {
             if (editingService) {
                 await axios.put(`${import.meta.env.VITE_BE_URL}/service/update/${editingService._id}`, preparedData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                showToastMessage("Service updated successfully", "success");
+                toast.success("Cập nhật dịch vụ thành công");
             } else {
                 await axios.post(`${import.meta.env.VITE_BE_URL}/service/create`, preparedData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                showToastMessage("Service added successfully", "success");
+                toast.success("Thêm dịch vụ thành công");
             }
             fetchServices();
             handleCloseModal();
         } catch (error) {
             console.error("Error saving service:", error.response?.data?.error || error.message);
-            showToastMessage(error.response?.data?.error || "Error saving service", "error");
+            toast.error(error.response?.data?.error || "Lỗi khi lưu dịch vụ");
         }
     };
 
@@ -94,11 +85,11 @@ const ServiceManagement = () => {
             await axios.delete(`${import.meta.env.VITE_BE_URL}/service/delete/${deleteServiceId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            showToastMessage("Service deleted successfully", "success");
+            toast.success("Xóa dịch vụ thành công");
             fetchServices();
         } catch (error) {
             console.error("Error deleting service:", error.response?.data?.error || error.message);
-            showToastMessage(error.response?.data?.error || "Error deleting service", "error");
+            toast.error(error.response?.data?.error || "Lỗi khi xóa dịch vụ");
         }
         setConfirmDelete(false);
     };
@@ -111,7 +102,7 @@ const ServiceManagement = () => {
 
     return (
         <div className="container mt-5" style={{ minHeight: "80vh", display: "flex", flexDirection: "column" }}>
-            <h2 className="text-center mb-4">Quản lí dịch vụ khám bệnh</h2>
+            <h2 className="text-center mb-4">Quản Lý Dịch Vụ Khám Bệnh</h2>
 
             <div className="d-flex justify-content-end mb-3">
                 <button
