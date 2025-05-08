@@ -3,7 +3,7 @@ import { FaMicrophone, FaMicrophoneSlash, FaPhone, FaVideo, FaVideoSlash } from 
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 
-const socket = io("https://amma-care.com", {
+const socket = io("https://api.amma-care.com", {
   transports: ["websocket"],
   secure: true,
 });
