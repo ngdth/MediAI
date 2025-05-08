@@ -120,3 +120,27 @@ export const validateBio = (bio) => {
   if (!bio) return true;
   return bio.length <= 1000;
 };
+
+export const validatePassword = (password) => {
+  if (!password.trim()) {
+    return { isValid: false, message: "Không được để trống!" };
+  }
+  const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()_+\-=\[\]{}|;:,.<>?]{6,24}$/;
+  if (!passwordRegex.test(password)) {
+    return {
+      isValid: false,
+      message: "Mật khẩu phải dài 6-24 ký tự, bao gồm chữ cái, số, ít nhất 1 chữ in hoa.",
+    };
+  }
+  return { isValid: true, message: "" };
+};
+
+export const validateConfirmedPassword = (password, confirmedPassword) => {
+  if (!confirmedPassword.trim()) {
+    return { isValid: false, message: "Không được để trống!" };
+  }
+  if (password !== confirmedPassword) {
+    return { isValid: false, message: "Mật khẩu xác nhận không khớp." };
+  }
+  return { isValid: true, message: "" };
+};
