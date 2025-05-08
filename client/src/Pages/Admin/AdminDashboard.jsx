@@ -58,7 +58,7 @@ const AdminDashboard = () => {
   // Fetch bills và xử lý thống kê
   const fetchBills = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BE_URL}/pharmacy/`, {
+      const response = await axios.get(`${import.meta.env.VITE_BE_URL}/pharmacy/bills`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       console.log("Bills data:", response.data);
