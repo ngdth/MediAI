@@ -9,6 +9,11 @@ const ExportDataButton = ({ role }) => {
     const [isExporting, setIsExporting] = useState(false);
     const [exportStatus, setExportStatus] = useState(null);
 
+    // Kiểm tra role ngay khi nhận prop
+    if (!role) {
+        console.error('Prop "role" is required but was not provided');
+    }
+
     const handleExportData = () => {
         setShowModal(true);
         setExportStatus(null);
@@ -38,7 +43,7 @@ const ExportDataButton = ({ role }) => {
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `${role.replace(/\s+/g, '_').toLowerCase()}_template.xlsx`; // Tên file tùy thuộc vào role
+            link.download = `${role.replace(/\s+/g, '_').toLowerCase()}_template.xlsx`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -57,9 +62,10 @@ const ExportDataButton = ({ role }) => {
 
             if (axios.isAxiosError(error) && error.response) {
                 if (error.response.status === 400) {
+                    const errorMessage = error.response.data?.message || `Không có người dùng với vai trò ${role} để xuất.`;
                     setExportStatus({
                         type: 'danger',
-                        message: `Không có người dùng với vai trò ${role} để xuất.`,
+                        message: errorMessage,
                     });
                 } else if (error.response.status === 401) {
                     setExportStatus({
@@ -109,7 +115,7 @@ const ExportDataButton = ({ role }) => {
                             <div className="export-info">
                                 <FaFileExport size={48} />
                                 <h4>Bấm "Xuất" để tải file Excel</h4>
-                                <p>File sẽ chứa các tiêu đề cột và vai trò {role}.</p>
+                                <p>File sẽ chứa các tiêu đề cột và vai trò {role || 'không xác định'}.</p>
                             </div>
                         )}
 

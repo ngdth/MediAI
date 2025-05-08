@@ -131,7 +131,7 @@ const HeadOfDepartmentManagement = () => {
                     Tạo tài khoản trưởng khoa
                 </button>
                 <ImportDataButton  />
-                <ExportDataButton />
+                <ExportDataButton role="head of department" />
             </div>
 
             <div className="table-responsive">

@@ -123,7 +123,7 @@ const NurseManagement = () => {
                     Tạo tài khoản y tá
                 </button>
                 <ImportDataButton  />
-                <ExportDataButton />
+                <ExportDataButton role="nurse" />
             </div>
 
             <div className="table-responsive">
