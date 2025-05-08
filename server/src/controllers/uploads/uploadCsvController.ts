@@ -199,7 +199,10 @@ export const exportUsersToExcel = async (req: Request, res: Response): Promise<v
 
         // Lấy role từ query parameter
         const role = req.query.role?.toString().toLowerCase();
+        console.log(`Role nhận được từ query: ${role}`);
+
         if (!role || !['doctor', 'head of department', 'nurse'].includes(role)) {
+            console.log(`Role không hợp lệ: ${role}`);
             res.status(400).json({ message: 'Vai trò không hợp lệ. Phải là doctor, head of department, hoặc nurse.' });
             return;
         }
@@ -220,45 +223,52 @@ export const exportUsersToExcel = async (req: Request, res: Response): Promise<v
                 throw new Error('Vai trò không được hỗ trợ');
         }
 
+        // Kiểm tra và lấy base URL, cung cấp giá trị mặc định nếu không có
+        const baseUrl = process.env.VITE_BE_URL || 'http://localhost:8080';
+        if (!process.env.VITE_BE_URL) {
+            console.warn('VITE_BE_URL không được định nghĩa trong biến môi trường. Sử dụng giá trị mặc định:', baseUrl);
+        }
+
         // Gọi API tương ứng
-        const response = await axios.get(`${process.env.VITE_BE_URL}${apiEndpoint}`, {
+        const apiUrl = `${baseUrl}${apiEndpoint}`;
+        console.log(`Gọi API: ${apiUrl}`);
+        const response = await axios.get(apiUrl, {
             headers: { Authorization: `Bearer ${token}` },
         });
 
         const users = response.data;
+        console.log(`Dữ liệu trả về từ API (${role}):`, users);
 
-        if (!users || users.length === 0) {
-            console.log(`Không có người dùng với vai trò ${role} để xuất`);
-            res.status(400).json({ message: `Không có người dùng với vai trò ${role} trong hệ thống` });
+        let excelData: any[] = [];
+        // Chuẩn bị dữ liệu: ngay cả khi không có người dùng, vẫn tạo file với tiêu đề
+        if (Array.isArray(users)) {
+            excelData = users.length > 0
+                ? users.map(user => ({
+                    username: '',
+                    email: '',
+                    password: '',
+                    specialization: '',
+                    gender: '',
+                    experience: '',
+                    role: (user as any).role || role,
+                }))
+                : [{
+                    username: '',
+                    email: '',
+                    password: '',
+                    specialization: '',
+                    gender: '',
+                    experience: '',
+                    role: '',
+                }];
+        } else {
+            console.warn('Dữ liệu từ API không phải là một mảng:', users);
+            res.status(500).json({ message: 'Dữ liệu không hợp lệ từ API. Không thể xuất Excel.' });
             return;
         }
 
-        // Chuẩn bị dữ liệu: chỉ điền role, các cột khác để trống
-        const excelData = users.map(user => ({
-            username: '',
-            email: '',
-            password: '',
-            specialization: '',
-            gender: '',
-            experience: '',
-            role: user.role || role, // Đảm bảo role khớp với yêu cầu
-        }));
-
-        // Thêm hàng tiêu đề cố định
-        const headerRow = [{
-            username: 'username',
-            email: 'email',
-            password: 'password',
-            specialization: 'specialization',
-            gender: 'gender',
-            experience: 'experience',
-            role: 'role'
-        }];
-
-        const allData = [...headerRow, ...excelData];
-
-        // Tạo worksheet từ dữ liệu
-        const worksheet = XLSX.utils.json_to_sheet(allData);
+        // Tạo worksheet từ dữ liệu (không thêm headerRow, để json_to_sheet tự tạo tiêu đề)
+        const worksheet = XLSX.utils.json_to_sheet(excelData);
 
         // Tạo workbook và thêm worksheet
         const workbook = XLSX.utils.book_new();
@@ -282,7 +292,7 @@ export const exportUsersToExcel = async (req: Request, res: Response): Promise<v
         res.setHeader('Content-Disposition', `attachment; filename=${role.replace(/\s+/g, '_')}_template.xlsx`);
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
-        console.log(`Đã tạo file Excel chứa tiêu đề và dữ liệu role (${role}) thành công`);
+        console.log(`Đã tạo file Excel chứa tiêu đề và dữ liệu role (${role}) thành công, số bản ghi: ${users.length}`);
 
         // Gửi file về client
         res.status(200).send(buffer);

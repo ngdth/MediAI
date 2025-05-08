@@ -130,7 +130,7 @@ const DoctorManagement = () => {
                     Tạo tài khoản bác sĩ
                 </button>
                 <ImportDataButton  />
-                <ExportDataButton />
+                <ExportDataButton role="doctor" />
             </div>
 
             <div className="table-responsive">
