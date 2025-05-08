@@ -27,6 +27,50 @@ export const validateExp = (exp) => {
   return exp;
 };
 
+export const validateQuantity = (quantity) => {
+  if (!quantity.trim()) {
+    return { isValid: false, message: "Không được để trống!" };
+  }
+  if (!/^\d+$/.test(quantity)) {
+    return { isValid: false, message: "Số lượng chỉ được chứa các chữ số!" };
+  }
+  const parsedQuantity = parseInt(quantity, 10);
+  if (parsedQuantity > 999) {
+    return { isValid: false, message: "Số lượng không được vượt quá 999!" };
+  }
+  return { isValid: true, message: "" };
+};
+
+export const validateMedicineName = (medicineName) => {
+  if (!medicineName.trim()) {
+    return { isValid: false, message: "Không được để trống!" };
+  }
+  if (medicineName.length > 100) {
+    return { isValid: false, message: "Tên thuốc không được vượt quá 100 ký tự!" };
+  }
+  return { isValid: true, message: "" };
+};
+
+export const validateUnit = (unit) => {
+  if (!unit.trim()) {
+    return { isValid: false, message: "Không được để trống!" };
+  }
+  if (unit.length > 50) {
+    return { isValid: false, message: "Đơn vị không được vượt quá 50 ký tự!" };
+  }
+  return { isValid: true, message: "" };
+};
+
+export const validateUsage = (usage) => {
+  if (!usage.trim()) {
+    return { isValid: false, message: "Không được để trống!" };
+  }
+  if (usage.length > 100) {
+    return { isValid: false, message: "Cách dùng không được vượt quá 100 ký tự!" };
+  }
+  return { isValid: true, message: "" };
+};
+
 export const checkAuth = (callback, navigate) => {
   const token = localStorage.getItem("token");
   if (!token) {
