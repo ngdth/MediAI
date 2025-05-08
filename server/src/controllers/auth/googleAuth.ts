@@ -25,11 +25,11 @@ passport.use(
                         imageUrl: profile.photos?.[0].value,
                         verified: true,
                         active: true,
-                        role: "user" // Default role
+                        role: "user" // Role mặc định
                     });
 
                     await user.save();
-                    console.log("✅ User created:", user);
+                    console.log("User created:", user);
                 }
 
                 // callback user
@@ -50,7 +50,6 @@ passport.use(
         }
     )
 );
-
 
 export const loginWithGoogle = passport.authenticate("google", {
     scope: ["profile", "email"]
@@ -78,11 +77,11 @@ export const loginWithGoogle = passport.authenticate("google", {
 export const googleCallback = (req: Request, res: Response, next: NextFunction) => {
     passport.authenticate("google", { session: false }, (err, user, info) => {
         if (err || !user) {
-            return res.status(401).json({ message: "Google authentication failed", err });
+            return res.status(401).json({ message: "Xác thực Google thất bại", err });
         }
 
         const token = generateJwtToken(user);
-        console.log("✅ Google login successful. Token generated:", token);
+        console.log("Google login successful. Token generated:", token);
         // Redirect về frontend kèm theo token
         res.redirect(`${process.env.REACT_APP_FE_URL}/login?token=${token}`);
     })(req, res, next);
@@ -102,5 +101,5 @@ const generateJwtToken = (user: any): string => {
 
 export const logoutGoogle = (req: Request, res: Response) => {
     res.clearCookie("token");
-    res.status(200).json({ message: "Logout successful" });
+    res.status(200).json({ message: "Đăng xuất thành công" });
 }

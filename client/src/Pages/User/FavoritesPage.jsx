@@ -43,10 +43,10 @@ const FavoritesPage = () => {
             });
 
             setFavorites(favorites.filter((doctor) => doctor._id !== doctorId));
-            toast.success("Doctor has been removed from favorites.");
+            toast.success("Đã xóa bác sĩ khỏi danh sách yêu thích.");
         } catch (error) {
             console.error("Error removing favorite doctor:", error.response?.data || error);
-            toast.error("Failed to remove doctor.");
+            toast.error("Lỗi khi xóa bác sĩ khỏi danh sách yêu thích.");
         }
     };
 

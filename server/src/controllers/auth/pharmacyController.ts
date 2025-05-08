@@ -48,17 +48,15 @@ import mongoose from 'mongoose';
 //     console.log("Completed getDoneAppointments function");
 // };
 export const getDoneAppointments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    console.log("Starting getDoneAppointments function");
-
     try {
-        const userId = req.user?.id; // Lấy ID người dùng từ token (req.user đã được xác thực)
-        const userRole = req.user?.role; // Lấy role của người dùng (pharmacy hoặc doctor)
-        console.log(`Extracted userId from token: ${userId}`);
-        console.log(`User role: ${userRole}`);
+        const userId = req.user?.id; // Trích xuất ID người dùng từ token (req.user đã được xác thực)
+        const userRole = req.user?.role; // Trích xuất vai trò của người dùng (pharmacy hoặc doctor)
+        console.log(`Lấy userId từ token: ${userId}`);
+        console.log(`Role người dùng: ${userRole}`);
 
         if (!userId) {
-            console.log("Error: User ID not found in token");
-            res.status(400).json({ message: "User ID not found in token" });
+            console.log("Lỗi: Không tìm thấy ID người dùng thông qua token");
+            res.status(400).json({ message: "Không tìm thấy ID người dùng thông qua token" });
             return;
         }
 
@@ -88,24 +86,23 @@ export const getDoneAppointments = async (req: Request, res: Response, next: Nex
 
         if (appointments.length === 0) {
             console.log("No done appointments found for this user");
-            res.status(404).json({ message: "No done appointments found for this user" });
+            res.status(404).json({ message: "Không tìm thấy lịch hẹn cho người dùng này" });
             return;
         }
 
-        console.log("Successfully retrieved done appointments");
+        console.log("Lấy danh sách lịch hẹn đã hoàn thành thành công");
 
         res.status(200).json({
-            message: "Done appointments retrieved successfully",
+            message: "Lấy danh sách lịch hẹn đã hoàn thành thành công",
             data: appointments,
         });
     } catch (error) {
-        console.error("Error fetching done appointments:", error);
-        res.status(500).json({ message: "Error fetching done appointments", error });
+        console.error("Lỗi khi lấy danh sách lịch hẹn đã hoàn thành:", error);
+        res.status(500).json({ message: "Lỗi khi lấy danh sách lịch hẹn đã hoàn thành", error });
     }
 
-    console.log("Completed getDoneAppointments function");
+    console.log("Hoàn thành hàm getDoneAppointments");
 };
-
 
 export const createBill = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -114,7 +111,7 @@ export const createBill = async (req: Request, res: Response, next: NextFunction
 
         // Kiểm tra nếu appointmentId không được cung cấp
         if (!appointmentId) {
-            res.status(400).json({ message: "Appointment ID is required" });
+            res.status(400).json({ message: "ID lịch hẹn không được trống" });
             return;
         }
 
@@ -138,7 +135,7 @@ export const createBill = async (req: Request, res: Response, next: NextFunction
 
         console.log('Appointment found:', appointment ? 'Yes' : 'No');
         if (!appointment) {
-            res.status(404).json({ message: "Appointment not found" });
+            res.status(404).json({ message: "Không tìm thấy lịch hẹn" });
             return;
         }
 
@@ -150,22 +147,22 @@ export const createBill = async (req: Request, res: Response, next: NextFunction
         const userId = user?._id;
 
         if (!userEmail || !userId) {
-            console.error("❌ Không tìm thấy thông tin bệnh nhân!");
-            res.status(500).json({ message: "Patient information not found" });
+            console.error("Không tìm thấy thông tin bệnh nhân!");
+            res.status(500).json({ message: "Không tìm thấy thông tin bệnh nhân" });
             return;
         }
-        console.log("✅ Patient info found - Email:", userEmail, "ID:", userId);
+        console.log("Patient info found - Email:", userEmail, "ID:", userId);
 
         // Kiểm tra paymentMethod hợp lệ
         const validPaymentMethods = ["MOMO", "Cash"];
         if (!validPaymentMethods.includes(paymentMethod)) {
-            res.status(400).json({ message: "Invalid payment method" });
+            res.status(400).json({ message: "Phương thức thanh toán không hợp lệ" });
             return;
         }
 
         // Tính tổng tiền
         const totalAmount = calculateTotalAmount(testFees, medicineFees, additionalFees);
-        console.log("✅ Total amount calculated:", totalAmount);
+        console.log("Total amount calculated:", totalAmount);
 
         let doctorName, doctorSpecialization, doctorId;
         // Lấy thông tin bác sĩ
@@ -182,13 +179,11 @@ export const createBill = async (req: Request, res: Response, next: NextFunction
             doctorSpecialization = doctor?.specialization;
             doctorId = doctor?._id;
         }
-        console.log("✅ Doctor info extracted:", { doctorName, doctorSpecialization, doctorId });
-
+        console.log("Doctor info extracted:", { doctorName, doctorSpecialization, doctorId });
 
         // Lấy thông tin nhà thuốc
         const pharmacy = appointment.pharmacyId as { _id?: string };
         const pharmacyId = pharmacy?._id;
-
 
         // Tạo hóa đơn mới
         const newBill = new Bill({
@@ -225,13 +220,12 @@ export const createBill = async (req: Request, res: Response, next: NextFunction
         const savedBill = await newBill.save();
         console.log("✅ Bill saved successfully with ID:", savedBill._id);
 
-        // Update Appointment Status
+        // Cập nhật trạng thái Appointment
         await Appointment.findByIdAndUpdate(appointmentId, { status: AppointmentStatus.BILL_CREATED });
-        console.log("✅ Appointment status updated to BILL_CREATED");
-
+        console.log("Appointment status updated to BILL_CREATED");
 
         res.status(201).json({
-            message: 'Bill created successfully',
+            message: "Tạo hóa đơn thành công",
             bill: savedBill,
             billId: savedBill._id
         });
@@ -239,10 +233,10 @@ export const createBill = async (req: Request, res: Response, next: NextFunction
         // Gửi email thông báo
         if (userEmail) {
             await sendEmail(userEmail, newBill, "create_bill");
-            console.log("✅ Email sent to patient:", userEmail);
+            console.log("Email sent to patient:", userEmail);
         }
     } catch (error) {
-        console.error("❌ Error creating bill:", error);
+        console.error("Lỗi khi tạo hóa đơn:", error);
         next(error);
     }
 };
@@ -252,21 +246,21 @@ export const getBills = async (req: Request, res: Response, next: NextFunction):
     try {
         let bills;
         if (req.user.role === 'doctor') {
-            console.log('Doctor ID:', req.user._id);
+            console.log('ID bác sĩ:', req.user._id);
             const appointment = await Appointment.find({ doctorId: req.user._id });
             if (!appointment.length) {
-                res.status(404).json({ message: "No appointments found for this doctor" });
+                res.status(404).json({ message: "Không tìm thấy lịch hẹn nào cho bác sĩ này" });
                 return;
             }
             const appointmentIds = appointment.map(app => app._id);
-            console.log('Appointments found:', appointmentIds);
+            console.log('Lấy danh sách lịch hẹn:', appointmentIds);
             // Lấy hóa đơn dựa trên danh sách appointmentId của bác sĩ
             bills = await Bill.find({ appointmentId: { $in: appointmentIds } });
         }
         else if (req.user.role === 'admin' || req.user.role === 'pharmacy') {
             bills = await Bill.find();
         }
-        console.log('Bills found:', bills);
+        console.log('Tìm thấy hóa đơn:', bills);
         res.status(200).json({ bills });
     } catch (err) {
         console.log(err);
@@ -278,14 +272,14 @@ export const getBillsByUser = async (req: Request, res: Response, next: NextFunc
     try {
         const userId = req.user.id;
         if (!userId) {
-            res.status(401).json({ message: "User ID not found" });
+            res.status(401).json({ message: "Không tìm thấy ID người dùng" });
             return;
         }
 
         const bills = await Bill.find({ userId });
 
         if (!bills || bills.length === 0) {
-            res.status(404).json({ message: "No bills found" });
+            res.status(404).json({ message: "Không tìm thấy hóa đơn nào" });
             return;
         }
 
@@ -295,8 +289,8 @@ export const getBillsByUser = async (req: Request, res: Response, next: NextFunc
             bills
         });
     } catch (error) {
-        console.error("Error fetching bills:", error);
-        res.status(500).json({ message: "Internal server error", error });
+        console.error("Lỗi khi lấy danh sách hóa đơn:", error);
+        res.status(500).json({ message: "Lỗi máy chủ", error });
     }
 };
 
@@ -324,35 +318,35 @@ export const getBillDetail = async (req: Request, res: Response, next: NextFunct
             });
 
         if (!bill) {
-            console.warn('Bill not found:', billId);
-            res.status(404).json({ message: 'Bill not found' });
+            console.warn('Không tìm thấy hóa đơn:', billId);
+            res.status(404).json({ message: "Không tìm thấy hóa đơn" });
             return;
         }
 
         // Kiểm tra quyền truy cập
         if (userRole === 'user' && bill.userId.toString() !== userId.toString()) {
-            console.warn('Access denied for patient:', userId);
-            res.status(403).json({ message: 'Access denied: You can only view your own bills' });
+            console.warn('Từ chối truy cập cho bệnh nhân:', userId);
+            res.status(403).json({ message: "Từ chối truy cập: Bạn chỉ có thể xem hóa đơn của chính bạn" });
             return;
         }
 
         if (userRole === 'doctor') {
             const appointment = await Appointment.findById(bill.appointmentId);
             if (!appointment || appointment.doctorId.toString() !== userId.toString()) {
-                console.warn('Access denied for doctor:', userId);
-                res.status(403).json({ message: 'Access denied: This bill is not associated with your appointments' });
+                console.warn('Từ chối truy cập cho bác sĩ:', userId);
+                res.status(403).json({ message: "Từ chối truy cập: Hóa đơn này không liên quan đến lịch hẹn của bạn" });
                 return;
             }
         }
 
         const diagnosisDetails = await DiagnosisDetails.find({ appointmentId: (bill.appointmentId as any)._id }).populate('doctorId', 'username');
-        console.log('Diagnosis details:', diagnosisDetails);
+        console.log('Thông tin chẩn đoán:', diagnosisDetails);
 
-        console.log('Bill found:', bill, diagnosisDetails);
+        console.log('Tìm thấy hóa đơn:', bill, diagnosisDetails);
         res.status(200).json({ bill, diagnosisDetails });
     } catch (error) {
-        console.error('Error fetching bill details:', error);
-        res.status(500).json({ message: 'Internal server error', error: error });
+        console.error('Lỗi khi lấy chi tiết hóa đơn:', error);
+        res.status(500).json({ message: "Lỗi máy chủ", error: error });
     }
 };
 
@@ -366,32 +360,32 @@ export const updateBill = async (req: Request, res: Response, next: NextFunction
 
         const bill = await Bill.findOne({ billId });
         if (!bill) {
-            console.log(`Bill with ID: ${billId} not found`);
-            res.status(404).json({ message: "Bill not found" });
+            console.log(`Không tìm thấy hóa đơn với ID: ${billId}`);
+            res.status(404).json({ message: "Không tìm thấy hóa đơn" });
             return;
         }
 
         // Cập nhật các trường thông tin của hóa đơn
         if (paymentStatus) {
             bill.paymentStatus = paymentStatus;
-            console.log(`Updated paymentStatus to: ${paymentStatus}`);
+            console.log(`Cập nhật paymentStatus thành: ${paymentStatus}`);
         }
         if (paymentMethod) {
             bill.paymentMethod = paymentMethod;
-            console.log(`Updated paymentMethod to: ${paymentMethod}`);
+            console.log(`Cập nhật paymentMethod thành: ${paymentMethod}`);
         }
         if (transactionId) {
             bill.transactionId = transactionId;
-            console.log(`Updated transactionId to: ${transactionId}`);
+            console.log(`Cập nhật transactionId thành: ${transactionId}`);
         }
 
         // Lưu hóa đơn đã cập nhật vào DB
         await bill.save();
         console.log(`Bill with ID: ${billId} updated successfully`);
 
-        res.status(200).json({ message: 'Bill updated successfully', bill });
+        res.status(200).json({ message: "Cập nhật hóa đơn thành công", bill });
     } catch (error) {
-        console.error('Error updating bill:', error);
+        console.error('Lỗi khi cập nhật hóa đơn:', error);
         next(error);
     }
 };
@@ -404,15 +398,15 @@ export const updateMedicinesPrice = async (req: Request, res: Response, next: Ne
 
         console.log(`Attempting to update medicine prices for bill with ID: ${billId}`);
 
-        // Find the bill by _id
+        // Tìm hóa đơn theo _id
         const bill = await Bill.findById(billId);
         if (!bill) {
             console.log(`Bill with ID: ${billId} not found`);
-            res.status(404).json({ message: "Bill not found" });
+            res.status(404).json({ message: "Không tìm thấy hóa đơn" });
             return;
         }
 
-        // Check if the bill is in process of payment or already paid
+        // Kiểm tra hóa đơn đang trong quá trình thanh toán hoặc đã thanh toán
         if (bill.paymentStatus === 'Paying' || bill.paymentStatus === 'Paid') {
             const message =
                 bill.paymentStatus === 'Paying'
@@ -425,8 +419,8 @@ export const updateMedicinesPrice = async (req: Request, res: Response, next: Ne
 
         // Validate medicineFees
         if (!Array.isArray(medicineFees) || medicineFees.length !== bill.medicineFees.length) {
-            console.log(`Invalid medicineFees array`);
-            res.status(400).json({ message: "Invalid medicineFees array" });
+            console.log(`Mảng medicineFees không hợp lệ`);
+            res.status(400).json({ message: "Mảng medicineFees không hợp lệ" });
             return;
         }
 
@@ -450,22 +444,22 @@ export const updateMedicinesPrice = async (req: Request, res: Response, next: Ne
                 med.totalPrice !== med.unitPrice * med.quantity
             ) {
                 console.log(`Invalid medicine entry at index ${i}`);
-                res.status(400).json({ message: `Invalid medicine entry at index ${i}` });
+                res.status(400).json({ message: `Thông tin thuốc không hợp lệ tại vị trí ${i}` });
                 return;
             }
         }
 
-        // Update medicineFees
+        // Cập nhật medicineFees
         bill.medicineFees = medicineFees;
 
-        // Recalculate totalAmount
+        // Tính totalAmount
         bill.totalAmount = calculateTotalAmount(bill.testFees, bill.medicineFees, bill.additionalFees);
 
-        // Save the updated bill
+        // Lưu hóa đơn đã cập nhật
         await bill.save();
         console.log(`Bill with ID: ${billId} updated successfully`);
 
-        res.status(200).json({ message: 'Medicine prices updated successfully', bill });
+        res.status(200).json({ message: "Cập nhật giá thuốc thành công", bill });
     } catch (error) {
         console.error('Error updating medicine prices:', error);
         console.log(`Error details: ${error}`);

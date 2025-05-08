@@ -10,7 +10,7 @@ export const upsertSchedule = async (req: Request, res: Response, next: NextFunc
 
         // Kiểm tra dữ liệu đầu vào
         if (!Array.isArray(availableSlots) || availableSlots.length === 0) {
-            res.status(400).json({ error: "Available slots cannot be empty" });
+            res.status(400).json({ error: "Danh sách khung giờ rảnh không được để trống" });
             return;
         }
 
@@ -59,7 +59,7 @@ export const upsertSchedule = async (req: Request, res: Response, next: NextFunc
             await existingSchedule.save();
 
             res.status(200).json({
-                message: "Schedule updated successfully. Booked slots preserved.",
+                message: "Cập nhật lịch khám thành công. Các khung giờ đã đặt được giữ nguyên.",
                 data: existingSchedule,
             });
         } else {
@@ -72,7 +72,7 @@ export const upsertSchedule = async (req: Request, res: Response, next: NextFunc
             await newSchedule.save();
 
             res.status(201).json({
-                message: "Schedule created successfully",
+                message: "Tạo lịch khám thành công",
                 data: newSchedule,
             });
         }
@@ -81,10 +81,10 @@ export const upsertSchedule = async (req: Request, res: Response, next: NextFunc
     }
 };
 
-// Create schedule
+// Tạo lịch khám
 export const createSchedule = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const doctorId = req.user?.id; // Get doctor id from authenticated user
+        const doctorId = req.user?.id; // Lấy ID bác sĩ từ người dùng đã xác thực
         const { availableSlots } = req.body;
 
         const newSchedule = new Schedule({
@@ -95,7 +95,7 @@ export const createSchedule = async (req: Request, res: Response, next: NextFunc
         await newSchedule.save();
 
         res.status(201).json({
-            message: 'Schedule created successfully',
+            message: 'Tạo lịch khám thành công',
             data: newSchedule,
         });
     } catch (error) {
@@ -103,7 +103,7 @@ export const createSchedule = async (req: Request, res: Response, next: NextFunc
     }
 };
 
-// API: View doctor schedule
+// API: Xem lịch khám của bác sĩ
 export const getAllSchedules = async (req: Request, res: Response) => {
     try {
         const schedules = await Schedule.getAllSchedules();
@@ -113,36 +113,36 @@ export const getAllSchedules = async (req: Request, res: Response) => {
     }
 };
 
-// get schedules by doctor
+// Lấy lịch khám theo bác sĩ
 export const getSchedulesByDoctor = async (req: Request, res: Response): Promise<void> => {
     try {
         const { doctorId } = req.params;
 
-        // Check doctorId is valid or not
+        // Kiểm tra doctorId có hợp lệ hay không
         if (!mongoose.Types.ObjectId.isValid(doctorId)) {
             res.status(400).json({ message: 'doctorId không hợp lệ' });
             return;
         }
 
-        // take schedules by doctorId
+        // Lấy lịch khám theo doctorId
         const schedules = await Schedule.find({ doctorId })
-            .populate('doctorId', 'name email role') // Take doctor info
-            .sort({ createdAt: -1 }); // Sort by createdAt
+            .populate('doctorId', 'name email role') // Lấy thông tin bác sĩ
+            .sort({ createdAt: -1 }); // Sắp xếp theo createdAt
 
         // if (!schedules || schedules.length === 0) {
         //     res.status(404).json({ message: 'Không tìm thấy lịch khám cho bác sĩ này' });
         //     return;
         // }
 
-        // return schedules
+        // Trả về danh sách lịch khám
         res.status(200).json(schedules);
     } catch (error) {
         console.error('Error when getting schedules:', error);
-        res.status(500).json({ error: 'Error when getting schedules' });
+        res.status(500).json({ error: 'Lỗi khi lấy danh sách lịch khám' });
     }
 };
 
-// get schedules by token
+// Lấy lịch khám theo token
 export const getSchedulesByToken = async (req: Request, res: Response): Promise<void> => {
     try {
         const doctorId = req.user?.id; // 🔥 Lấy doctorId từ token
@@ -152,32 +152,32 @@ export const getSchedulesByToken = async (req: Request, res: Response): Promise<
             return;
         }
 
-        // take schedules by doctorId
+        // Lấy lịch khám theo doctorId
         const schedules = await Schedule.find({ doctorId })
-            .populate('doctorId', 'name email role') // Take doctor info
-            .sort({ createdAt: -1 }); // Sort by createdAt
+            .populate('doctorId', 'name email role') // Lấy thông tin bác sĩ
+            .sort({ createdAt: -1 }); // Sắp xếp theo createdAt
 
         if (!schedules || schedules.length === 0) {
             res.status(404).json({ message: 'Không tìm thấy lịch khám cho bác sĩ này' });
             return;
         }
 
-        // return schedules
+        // Trả về danh sách lịch khám
         res.status(200).json(schedules);
     } catch (error) {
         console.error('Error when getting schedules:', error);
-        res.status(500).json({ error: 'Error when getting schedules' });
+        res.status(500).json({ error: 'Lỗi khi lấy danh sách lịch khám' });
     }
 };
 
-// Update schedule
+// Cập nhật lịch khám
 export const updateSchedule = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id } = req.params;
         const { availableSlots } = req.body;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            res.status(400).json({ message: 'Invalid schedule ID' });
+            res.status(400).json({ message: 'ID lịch khám không hợp lệ' });
             return;
         }
 
@@ -188,12 +188,12 @@ export const updateSchedule = async (req: Request, res: Response, next: NextFunc
         );
 
         if (!updatedSchedule) {
-            res.status(404).json({ message: 'Schedule not found' });
+            res.status(404).json({ message: 'Không tìm thấy lịch khám' });
             return;
         }
 
         res.status(200).json({
-            message: 'Schedule updated successfully',
+            message: 'Cập nhật lịch khám thành công',
             data: updatedSchedule,
         });
     } catch (error) {
@@ -201,25 +201,25 @@ export const updateSchedule = async (req: Request, res: Response, next: NextFunc
     }
 };
 
-// Delete schedule
+// Xóa lịch khám
 export const deleteSchedule = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            res.status(400).json({ message: 'Invalid schedule ID' });
+            res.status(400).json({ message: 'ID lịch khám không hợp lệ' });
             return;
         }
 
         const deletedSchedule = await Schedule.findByIdAndDelete(id);
 
         if (!deletedSchedule) {
-            res.status(404).json({ message: 'Schedule not found' });
+            res.status(404).json({ message: 'Không tìm thấy lịch khám' });
             return;
         }
 
         res.status(200).json({
-            message: 'Schedule deleted successfully',
+            message: 'Xóa lịch khám thành công',
             data: deletedSchedule,
         });
     } catch (error) {
