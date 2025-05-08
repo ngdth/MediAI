@@ -40,6 +40,9 @@ const AssignModal = ({ show, handleClose, onAssign, appointmentId }) => {
 
             toast.success("Gán nhà thuốc thành công!");
             handleClose();
+            if (onAssign) {
+                await onAssign();
+            }
         } catch (error) {
             console.error("Error assigning pharmacy:", error);
             toast.error(error.response?.data?.message || "Có lỗi xảy ra khi gán nhà thuốc!");
