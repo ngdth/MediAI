@@ -197,13 +197,13 @@ function App() {
                     <Route path="/nurse/general-health/:appointmentId" element={<GeneralHealthKetchup />} />
                     <Route path="/nurse/profile" element={<StaffProfile />} />
                 </Route>
-                <Route path="/pharmacies" element={<PharmacyLayout />}>
-                    <Route path="/pharmacies/dashboard" element={<PharmacyeDashboard />} />
-                    <Route path="/pharmacies/pending" element={<PharmacyPending />} />
-                    <Route path="/pharmacies/bills" element={<AllBills />} />
-                    <Route path="/pharmacies/prescription/:appointmentId" element={<PrescriptionDetail />} />
-                    <Route path="/pharmacies/bill/:billId" element={<BillUpdate />} />
-                    <Route path="/pharmacies/profile" element={<StaffProfile />} />
+                <Route path="/pharmacy" element={<PharmacyLayout />}>
+                    <Route path="/pharmacy/dashboard" element={<PharmacyeDashboard />} />
+                    <Route path="/pharmacy/pending" element={<PharmacyPending />} />
+                    <Route path="/pharmacy/bills" element={<AllBills />} />
+                    <Route path="/pharmacy/prescription/:appointmentId" element={<PrescriptionDetail />} />
+                    <Route path="/pharmacy/bill/:billId" element={<BillUpdate />} />
+                    <Route path="/pharmacy/profile" element={<StaffProfile />} />
                 </Route>
             </Routes>
             <ScrollUpButton />
