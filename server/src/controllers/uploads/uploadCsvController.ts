@@ -170,19 +170,23 @@ export const uploadFile = async (req: Request, res: Response): Promise<void> => 
     } catch (error: any) {
         console.error('Lỗi trong quá trình xử lý:', error);
         res.status(500).json({
-            message: error.message || 'Lỗi server',
+            message: 'Lỗi máy chủ trong quá trình xử lý file',
             details: error
         });
     }
 };
+
 export const getUsers = async (req: Request, res: Response): Promise<void> => {
     try {
         const users = await User.find();
         console.log('Danh sách users:', users);
-        res.json(users);
+        res.json({
+            message: 'Lấy danh sách người dùng thành công',
+            data: users
+        });
     } catch (error) {
         console.error('Lỗi khi lấy danh sách users:', error);
-        res.status(500).json({ message: 'Lỗi server' });
+        res.status(500).json({ message: 'Lỗi máy chủ khi lấy danh sách người dùng' });
     }
 };
 

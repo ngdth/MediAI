@@ -20,7 +20,7 @@ const StaffProfile = () => {
             const token = localStorage.getItem("token");
             if (!token) {
                 console.error("No token found. Please login first.");
-                toast.error("No token found. Please login first.");
+                toast.error("Không tìm thấy token. Vui lòng đăng nhập trước.");
                 return;
             }
 
@@ -31,9 +31,10 @@ const StaffProfile = () => {
                     },
                 });
                 setUser(response.data.user);
+                toast.success("Tải thông tin người dùng thành công!");
             } catch (err) {
                 console.error("Failed to fetch user info", err);
-                toast.error("Failed to fetch user info");
+                toast.error("Lỗi khi tải thông tin người dùng");
             }
         };
 
@@ -52,26 +53,25 @@ const StaffProfile = () => {
 
     const handlePasswordSubmit = async () => {
         if (passwordData.newPassword !== passwordData.confPassword) {
-            toast.error("New password and confirmation do not match");
+            toast.error("Mật khẩu mới và xác nhận không khớp");
             return;
         }
         const token = localStorage.getItem("token");
         if (!token) {
-            toast.error("You must be logged in to change your password");
+            toast.error("Bạn phải đăng nhập để đổi mật khẩu");
             return;
         }
         try {
             await axios.post(`${import.meta.env.VITE_BE_URL}/user/changePassword/${user?._id}`, passwordData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            toast.success("Password change successfully!");
+            toast.success("Đổi mật khẩu thành công!");
             setShowModal(false);
         } catch (error) {
             console.error("Error changing password", error);
-            toast.error("Failed to change password. Please try again.");
+            toast.error("Lỗi khi đổi mật khẩu. Vui lòng thử lại.");
         }
     };
-
 
     const handleImageChange = async (event) => {
         const file = event.target.files[0];
@@ -107,7 +107,7 @@ const StaffProfile = () => {
             setUser((prevUser) => ({ ...prevUser, imageUrl: response.data.imageUrl }));
             toast.success("Tải lên ảnh đại diện thành công!");
         } catch (error) {
-            toast.error("Failed to update avatar");
+            toast.error("Lỗi khi cập nhật ảnh đại diện");
         }
     };
 

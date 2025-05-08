@@ -14,7 +14,7 @@ export const uploadTestImages = async (req: Request, res: Response): Promise<voi
         
         const appointment = await Appointment.findById(appointmentId);
         if (!appointment) {
-            res.status(404).json({ message: "Appointment not found" });
+            res.status(404).json({ message: "Không tìm thấy lịch hẹn" });
             return;
         }
 
@@ -59,29 +59,29 @@ export const deleteTestImage = async (req: Request, res: Response): Promise<void
     try {
         const { appointmentId, imgName } = req.params;
         if (!appointmentId || !imgName) {
-            res.status(400).json({ message: "Missing required parameters." });
+            res.status(400).json({ message: "Thiếu tham số bắt buộc." });
             return;
         }
 
-        // Find the appointment
+        // Tìm lịch hẹn
         const appointment = await Appointment.findById(appointmentId);
         if (!appointment) {
-            res.status(404).json({ message: "Appointment not found" });
+            res.status(404).json({ message: "Không tìm thấy lịch hẹn" });
             return;
         }
 
         const userId = appointment.userId;
 
-        // Find the test record
+        // Tìm bản ghi xét nghiệm
         const testRecord = await Tests.findOne({ appointmentId, userId });
         if (!testRecord) {
-            res.status(404).json({ message: "Test record not found" });
+            res.status(404).json({ message: "Không tìm thấy xét nghiệm" });
             return;
         }
 
         const imagePath = `/uploads/tests/${imgName}`;
 
-        // Determine which array the image is in
+        // Xác định mảng chứa ảnh
         let found = false;
         if (testRecord.xRayImg.includes(imagePath)) {
             testRecord.xRayImg = testRecord.xRayImg.filter((img) => img !== imagePath);
@@ -98,34 +98,34 @@ export const deleteTestImage = async (req: Request, res: Response): Promise<void
         }
 
         if (!found) {
-            res.status(404).json({ message: "Image not found in test record" });
+            res.status(404).json({ message: "Không tìm thấy ảnh trong test database" });
             return;
         }
 
-        // Delete the physical file
+        // Xóa tệp tin vật lý
         const uploadsDir = path.join(__dirname, process.env.UPLOADS_DIR_TESTS || '../../../../client/public/uploads/tests');
         const filePath = path.join(uploadsDir, imgName);
         
         // Kiểm tra xem file có tồn tại không
         if (!fs.existsSync(filePath)) {
             console.error(`File not found: ${filePath}`);
-            res.status(404).json({ message: "File not found" });
+            res.status(404).json({ message: "Không tìm thấy tệp tin" });
             return;
         }
         
         fs.unlink(filePath, (err) => {
             if (err) {
                 console.error("Error deleting file:", err);
-                res.status(500).json({ message: "Error deleting file" });
+                res.status(500).json({ message: "Lỗi khi xóa tệp tin" });
                 return;
             }
         });
 
-        // Save the changes
+        // Lưu các thay đổi
         await testRecord.save();
-        res.json({ message: "Image deleted successfully" });
+        res.json({ message: "Xóa ảnh thành công" });
     } catch (error) {
-        console.error("Error deleting image:", error);
-        res.status(500).json({ message: "Internal server error" });
+        console.error("Lỗi khi xóa ảnh:", error);
+        res.status(500).json({ message: "Lỗi máy chủ" });
     }
 };

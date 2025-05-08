@@ -7,28 +7,22 @@ import BookingForm from '../../Components/Doctor/BookingForm';
 import {
   FaCertificate,
   FaEnvelope,
-  FaGlobe,
-  FaLocationDot,
   FaSuitcase,
-  FaHeart,
   FaPhone,
 } from 'react-icons/fa6';
 import Section from '../../Components/Section';
 import { toast } from "react-toastify";
-import { Button } from 'react-bootstrap';
 import { checkAuth } from '../../utils/validateUtils';
 
 const DoctorsDetailsPage = () => {
   const [doctorDetails, setDoctorDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { doctorId } = useParams(); // Lấy id bác sĩ từ URL
-  const [favoriteStatus, setFavoriteStatus] = useState(false); // Thêm khai báo trạng thái này
+  const { doctorId } = useParams();
+  const [favoriteStatus, setFavoriteStatus] = useState(false);
   const [showBookingForm, setShowBookingForm] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [bookingData, setBookingData] = useState(null);
   const navigate = useNavigate();
-
-  // Lấy token từ localStorage
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -39,7 +33,6 @@ const DoctorsDetailsPage = () => {
         });
         setDoctorDetails(response.data);
       } catch (error) {
-        // Nếu lỗi là 404 thì thử gọi API HOD
         if (error.response?.status === 404) {
           try {
             const hodResponse = await axios.get(`${import.meta.env.VITE_BE_URL}/user/hod/${doctorId}`, {
@@ -87,7 +80,7 @@ const DoctorsDetailsPage = () => {
       );
 
       console.log("Doctor added to favorites:", response.data);
-      toast.success("Doctor added to favorites!");
+      toast.success("Thêm bác sĩ vào danh sách yêu thích thành công!");
       setFavoriteStatus(true);
     } catch (error) {
       console.error(error.response?.data || error);
@@ -100,14 +93,14 @@ const DoctorsDetailsPage = () => {
           });
 
           console.log("Doctor removed from favorites.");
-          toast.info("Doctor removed from favorites!");
+          toast.info("Xóa bác sĩ khỏi danh sách yêu thích thành công!");
           setFavoriteStatus(false);
         } catch (deleteError) {
-          toast.error("Error removing doctor from favorites!");
+          toast.error("Lỗi khi xóa bác sĩ khỏi danh sách yêu thích!");
           console.error("Error removing doctor from favorites:", deleteError.response?.data || deleteError);
         }
       } else {
-        toast.error("Please login!");
+        toast.error("Vui lòng đăng nhập!");
         console.error("Error adding doctor to favorites:", error.response?.data || error);
       }
     }
@@ -116,12 +109,12 @@ const DoctorsDetailsPage = () => {
 
   const handleBookingSubmit = (bookingData) => {
     console.log("Booking Data Submitted:", bookingData);
-    toast.success("Appointment booked successfully!");
-    setShowBookingForm(false); // Đóng modal sau khi đặt lịch
+    toast.success("Đặt lịch hẹn thành công!");
+    setShowBookingForm(false);
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <p>Đang tải...</p>;
   }
 
   if (!doctorDetails) {

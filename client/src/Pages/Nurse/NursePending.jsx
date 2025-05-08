@@ -35,7 +35,6 @@ const NursePending = () => {
                 await fetchAllSchedules(combinedDoctors);
             } catch (error) {
                 console.error("Lỗi khi tải dữ liệu ban đầu:", error);
-                toast.error(error.response?.data?.message || "Có lỗi xảy ra khi tải dữ liệu ban đầu.");
             } finally {
                 setLoading(false);
             }
