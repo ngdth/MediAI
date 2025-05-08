@@ -3,6 +3,8 @@ import axios from "axios";
 import { Modal, Button, Form } from "react-bootstrap";
 import DoctorModal from "../../Components/Admin/DoctorModal";
 import { validateExp } from "../../utils/validateUtils";
+import ImportDataButton from "../../Components/UploadFile";
+import ExportDataButton from "../../Components/UploadFile/ExportFile";
 
 const HeadOfDepartmentManagement = () => {
     const [doctors, setDoctors] = useState([]);
@@ -125,9 +127,11 @@ const HeadOfDepartmentManagement = () => {
         <div className="container mt-5" style={{ minHeight: "80vh", display: "flex", flexDirection: "column" }}>
             <h2 className="text-center mb-4">Quản Lý Trưởng Khoa </h2>
             <div className="d-flex justify-content-end mb-3">
-                <button className="btn btn-primary" onClick={handleShowModal}>
+                <button className="btn btn-primary me-1" onClick={handleShowModal}>
                     Tạo tài khoản trưởng khoa
                 </button>
+                <ImportDataButton  />
+                <ExportDataButton />
             </div>
 
             <div className="table-responsive">

@@ -44,7 +44,7 @@ export const sendEmail = async (email: string, data: any, type: string) => {
                         <li><strong>Giờ:</strong> ${data.time}</li>
                         <li><strong>Triệu chứng:</strong> ${data.symptoms}</li>
                     </ul>
-                    <p>Nếu cần thay đổi lịch hẹn, vui lòng liên hệ hotline: <strong>0236 3650 676</strong></p>
+                    <p>Nếu cần thay đổi lịch hẹn, vui lòng liên hệ hotline: <strong>0967 392 294</strong></p>
                     <p>Rất mong được đón tiếp Quý khách.</p>
                     <p><strong>Phòng khám Y Khoa AMMA</strong></p>
                 `,
@@ -68,7 +68,7 @@ export const sendEmail = async (email: string, data: any, type: string) => {
                             <li><strong>Giờ:</strong> ${data.time}</li>
                             <li><strong>Địa điểm:</strong> Phòng khám Y Khoa AMMA</li>
                         </ul>
-                        <p>Nếu cần thay đổi lịch hẹn, vui lòng liên hệ hotline: <strong>0236 3650 676</strong></p>
+                        <p>Nếu cần thay đổi lịch hẹn, vui lòng liên hệ hotline: <strong>0967 392 294</strong></p>
                         <p>Rất mong được đón tiếp Quý khách.</p>
                         <p><strong>Phòng khám Y Khoa AMMA</strong></p>
                     `,
@@ -85,7 +85,7 @@ export const sendEmail = async (email: string, data: any, type: string) => {
                         <p>Xin chào ${data.patientName},</p>
                         <p>Chúng tôi rất tiếc phải thông báo rằng lịch hẹn của bạn vào ngày <strong>${new Date(data.date).toLocaleDateString('vi-VN')}</strong> lúc <strong>${data.time}</strong> đã bị từ chối.</p>
                         <p><strong>Lý do từ chối:</strong> ${data.rejectReason}</p>
-                        <p>Nếu bạn cần hỗ trợ hoặc muốn đặt lại lịch hẹn, vui lòng liên hệ chúng tôi qua hotline: <strong>0236 3650 676</strong>.</p>
+                        <p>Nếu bạn cần hỗ trợ hoặc muốn đặt lại lịch hẹn, vui lòng liên hệ chúng tôi qua hotline: <strong>0967 392 294</strong>.</p>
                         <p>Chúng tôi xin lỗi vì sự bất tiện này.</p>
                         <p><strong>Phòng khám Y Khoa AMMA</strong></p>
                     `,
@@ -101,8 +101,7 @@ export const sendEmail = async (email: string, data: any, type: string) => {
                         <h2>Hóa Đơn Khám Bệnh</h2>
                         <p>Xin chào ${data.patientName},</p>
                         <p>Bạn đã đặt lịch khám với bác sĩ <strong>${data.doctorName}</strong></p>
-                        <p><strong>Phí khám:</strong> ${data.consultationFee} VNĐ</p>
-                        <p><strong>Phí xét nghiệm:</strong> ${data.testFees.map((t: any) => `${t.name}: ${t.price} VNĐ`).join(", ")}</p>
+                        <p><strong>Phí dịch vụ:</strong> ${data.testFees.map((t: any) => `${t.name}: ${t.price} VNĐ`).join(", ")}</p>
                         <p><strong>Phí thuốc:</strong> ${data.medicineFees.map((m: any) => `${m.name}: ${m.totalPrice} VNĐ`).join(", ")}</p>
                         <p><strong>Phí bổ sung:</strong> ${data.additionalFees} VNĐ</p>
                         <p><strong>Tổng tiền:</strong> ${data.totalAmount} VNĐ</p>

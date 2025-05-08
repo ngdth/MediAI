@@ -20,7 +20,7 @@ const MedicalHistory = () => {
             const response = await axios.get(`${import.meta.env.VITE_BE_URL}/appointment/history`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
-            
+
             if (response.data.data) {
                 setAppointments(response.data.data);
             } else {
@@ -53,6 +53,29 @@ const MedicalHistory = () => {
     const filteredAppointments = appointments.filter(({ appointment }) =>
         appointment.patientName?.toLowerCase().includes(searchTerm)
     );
+
+    const getStatusDisplay = (status) => {
+        if (status === "Pending") {
+            return "Đang chờ bác sĩ";
+        } else if (status === "Assigned") {
+            return "Đang chờ xác nhận";
+        } else if (status === "Accepted") {
+            return "Đã xác nhận";
+        } else if (status === "Canceled") {
+            return "Đã hủy";
+        } else if (status === "Bill_created") {
+            return "Đã tạo hóa đơn";
+        } else if (status === "Prescription_created") {
+            return "Đã tạo đơn thuốc";
+        } else if (status === "WaitingPrescription") {
+            return "Đang chờ đơn thuốc";
+        } else if (status === "Rejected") {
+            return "Đã từ chối";
+        } else if (status === "Done") {
+            return "Đã hoàn thành";
+        }
+        return status;
+    };
 
     return (
         <div className="pending">
@@ -94,10 +117,10 @@ const MedicalHistory = () => {
                                     {appointment.date ? new Date(appointment.date).toLocaleDateString("vi-VN") : "Không rõ"}
                                 </td>
                                 <td className="text-center">{appointment.time || "Không rõ"}</td>
-                                <td className="text-center">{appointment.status || "Không rõ"}</td>
+                                <td className="text-center">{getStatusDisplay(appointment.status)}</td>
                                 <td className="text-center">
-                                    <Link 
-                                        to={ doctorRole === "doctor" ? `/doctor/medical-history-detail/${appointment._id}` :`/hod/medical-history-detail/${appointment._id}`} 
+                                    <Link
+                                        to={doctorRole === "doctor" ? `/doctor/medical-history-detail/${appointment._id}` : `/hod/medical-history-detail/${appointment._id}`}
                                         className="btn btn-primary"
                                     >
                                         Chi tiết

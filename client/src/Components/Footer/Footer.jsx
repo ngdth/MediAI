@@ -36,12 +36,8 @@ const data = {
       href: '/BookingAppointments',
       title: 'Đặt lịch ngay',
     },
-    {
-      href: '/online-consultation',
-      title: 'Tư vấn trực tuyến',
-    },
   ],
-  copyrightText: 'Copyright © 2024 AMMA, All Rights Reserved.',
+
   footerMenu: [
     { href: '/about', text: 'About Us' },
     { href: '/', text: 'Events' },
@@ -162,7 +158,7 @@ const Footer = () => {
         </div>
       </div>
 
-      <div className="cs_footer_bottom cs_primary_bg">
+      {/* <div className="cs_footer_bottom cs_primary_bg">
         <div className="container">
           <div className="cs_footer_bottom_in">
             <p className="cs_footer_copyright mb-0">
@@ -177,7 +173,7 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-      </div>
+      </div> */}
     </footer>
   );
 };
