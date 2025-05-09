@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
+import { toast } from "react-toastify";
 import ImportDataButton from "../../Components/UploadFile";
 import DoctorModal from "../../Components/Admin/DoctorModal";
 import { validateExp } from "../../utils/validateUtils";
@@ -70,15 +71,18 @@ const DoctorManagement = () => {
                 await axios.put(`${import.meta.env.VITE_BE_URL}/admin/doctors/update/${editingDoctor._id}`, formData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
+                toast.success("Cập nhật thông tin bác sĩ thành công!");
             } else {
                 await axios.post(`${import.meta.env.VITE_BE_URL}/admin/doctors/create`, submissionData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
+                toast.success("Tạo tài khoản bác sĩ thành công!");
             }
             fetchDoctors();
             handleCloseModal();
         } catch (error) {
             console.error("Error saving doctor:", error);
+            toast.error(`${editingDoctor ? "Cập nhật" : "Tạo"} bác sĩ thất bại!`);
         }
     };
 
@@ -96,8 +100,8 @@ const DoctorManagement = () => {
     };
 
     const handleDelete = (doctor) => {
-        setDoctorToDelete(doctor);  // Set the doctor to be deleted
-        setShowDeleteModal(true);   // Show the delete confirmation modal
+        setDoctorToDelete(doctor);
+        setShowDeleteModal(true);
     };
 
     const confirmDelete = async () => {
@@ -105,15 +109,17 @@ const DoctorManagement = () => {
             await axios.delete(`${import.meta.env.VITE_BE_URL}/admin/doctors/delete/${doctorToDelete._id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
+            toast.success("Xóa tài khoản bác sĩ thành công!");
             fetchDoctors();
-            setShowDeleteModal(false);  // Close the delete confirmation modal
+            setShowDeleteModal(false);
         } catch (error) {
             console.error("Error deleting doctor:", error);
+            toast.error("Lỗi khi xóa tài khoản bác sĩ!");
         }
     };
 
     const handleShowModal = () => {
-        setFormData({ username: "", email: "", password: "", specialization: "", experience: 0 });
+        setFormData({ username: "", email: "", password: "", specialization: "", experience: 0, gender: "" });
         setEditingDoctor(null);
         setShowModal(true);
     };

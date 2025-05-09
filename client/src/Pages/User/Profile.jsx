@@ -15,31 +15,29 @@ const UserProfile = () => {
     });
     const [hover, setHover] = useState(false);
 
+    const fetchUserInfo = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            console.error("No token found. Please login first.");
+            toast.error("Vui lòng đăng nhập trước.");
+            return;
+        }
+
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_BE_URL}/user/profile`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setUser(response.data.user);
+        } catch (err) {
+            console.error("Failed to fetch user info", err);
+            toast.error("Lỗi khi tải thông tin người dùng");
+        }
+    };
+
     useEffect(() => {
-        const fetchUserInfo = async () => {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                console.error("No token found. Please login first.");
-                toast.error("Vui lòng đăng nhập trước.");
-                return;
-            }
-
-            try {
-                const response = await axios.get(`${import.meta.env.VITE_BE_URL}/user/profile`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                setUser(response.data.user);
-                toast.success("Tải thông tin người dùng thành công!");
-            } catch (err) {
-                console.error("Failed to fetch user info", err);
-                toast.error("Lỗi khi tải thông tin người dùng");
-            }
-        };
-
         fetchUserInfo();
-        
     }, []);
 
     const handleChangePassClick = () => {
