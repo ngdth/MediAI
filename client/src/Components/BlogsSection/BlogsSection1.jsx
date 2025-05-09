@@ -129,8 +129,13 @@ const BlogsSection1 = ({ data }) => {
       const searchTermLower = term.toLowerCase();
       filtered = filtered.filter(blog =>
         blog.title.toLowerCase().includes(searchTermLower) ||
-        blog.subtitle.toLowerCase().includes(searchTermLower)
+        blog.subtitle.toLowerCase().includes(searchTermLower) ||
+        blog.author.toLowerCase().includes(searchTermLower) ||
+        blog.category.toLowerCase().includes(searchTermLower) ||
+        blog.date.toLowerCase().includes(searchTermLower) ||
+        blog.comments.toLowerCase().includes(searchTermLower)
       );
+      console.log("Filtered blogs by term:", filtered); // Debug kết quả lọc
     }
 
     if (specialization) {
@@ -251,40 +256,6 @@ const BlogsSection1 = ({ data }) => {
                 </div>
               </form>
 
-              <div style={{
-                flex: '1',
-                minWidth: '150px',
-                height: '100%'
-              }}>
-                <select
-                  value={selectedSpecialization}
-                  onChange={handleSpecializationChange}
-                  style={{
-                    width: '100%',
-                    height: '45px',
-                    padding: '0 15px',
-                    border: '1px solid #e0e0e0',
-                    borderRadius: '0.3rem',
-                    fontSize: '16px',
-                    outline: 'none',
-                    appearance: 'none',
-                    backgroundColor: 'white',
-                    backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23333\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'%3E%3C/polyline%3E%3C/svg%3E")',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'right 10px center',
-                    backgroundSize: '16px',
-                    cursor: 'pointer',
-                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.05)'
-                  }}
-                >
-                  <option value="">Tất cả chuyên khoa</option>
-                  {specializations.map((spec, index) => (
-                    <option key={index} value={spec.value}>
-                      {spec.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
             </div>
           </div>
         </div>
