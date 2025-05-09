@@ -5,7 +5,7 @@ const DoctorDetailsSection = ({ data, onFavoriteToggle, favoriteStatus, onBookNo
   // Kiểm tra nếu data không có hoặc có giá trị rỗng
   const image = data?.imageUrl;
   const name = data?.username || '';
-  const subtitle = data?.bio || 'No subtitle available';
+  const subtitle = data?.bio || '';
   const description = data?.description || [];
   const info = data?.info || [];
   const progressBars = data?.progressBars || [];

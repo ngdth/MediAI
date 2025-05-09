@@ -276,7 +276,12 @@ export const getBillsByUser = async (req: Request, res: Response, next: NextFunc
             return;
         }
 
-        const bills = await Bill.find({ userId });
+        const bills = await Bill.find({ userId })
+        .populate({
+            path: 'appointmentId',
+            select: 'time',
+        })
+        ;
 
         if (!bills || bills.length === 0) {
             res.status(404).json({ message: "Không tìm thấy hóa đơn nào" });
@@ -324,7 +329,7 @@ export const getBillDetail = async (req: Request, res: Response, next: NextFunct
         }
 
         // Kiểm tra quyền truy cập
-        if (userRole === 'user' && bill.userId.toString() !== userId.toString()) {
+        if (userRole === 'user' && bill.userId._id.toString() !== userId.toString()) {
             console.warn('Từ chối truy cập cho bệnh nhân:', userId);
             res.status(403).json({ message: "Từ chối truy cập: Bạn chỉ có thể xem hóa đơn của chính bạn" });
             return;

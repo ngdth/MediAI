@@ -79,26 +79,26 @@ const DoctorAppointmentList = () => {
 
   return (
     <div className="pending">
-      <h2>Appointments in your Specialization</h2>
+      <h2>Lịch sử lịch hẹn trong khoa</h2>
       {loading ? (
-        <p>Loading...</p>
+        <p>Đang tải...</p>
       ) : (
         <table className="table">
           <thead>
             <tr>
               <th onClick={() => handleSort("patientName")} style={{ cursor: "pointer" }}>
-                Patient {sortConfig.key === "patientName" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                Tên bệnh nhân {sortConfig.key === "patientName" && (sortConfig.direction === "asc" ? "↑" : "↓")}
               </th>
               <th onClick={() => handleSort("time")} style={{ cursor: "pointer" }}>
-                Time {sortConfig.key === "time" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                Thời gian khám {sortConfig.key === "time" && (sortConfig.direction === "asc" ? "↑" : "↓")}
               </th>
               <th onClick={() => handleSort("status")} style={{ cursor: "pointer" }}>
-                Status {sortConfig.key === "status" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                Trạng thía {sortConfig.key === "status" && (sortConfig.direction === "asc" ? "↑" : "↓")}
               </th>
               <th onClick={() => handleSort("doctor")} style={{ cursor: "pointer" }}>
-                Doctor {sortConfig.key === "doctor" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                Bác sĩ phụ trách {sortConfig.key === "doctor" && (sortConfig.direction === "asc" ? "↑" : "↓")}
               </th>
-              <th>Action</th>
+              <th>Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -114,14 +114,14 @@ const DoctorAppointmentList = () => {
                     <td>{doctorNames || "N/A"}</td>
                     <td>
                       <button className="btn btn-primary" onClick={() => handleViewDetail(ap._id)}>
-                        View Detail
+                        Chi tiết
                       </button>
                     </td>
                   </tr>
                 );
               })
             ) : (
-              <tr><td colSpan="5">No appointments found.</td></tr>
+              <tr><td colSpan="5">Không có lịch khám nào.</td></tr>
             )}
           </tbody>
         </table>
