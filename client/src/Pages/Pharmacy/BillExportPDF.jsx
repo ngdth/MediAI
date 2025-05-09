@@ -67,7 +67,7 @@ const BillExportPDF = ({ bill, appointment, diagnosisDetails, prescriptions, ser
                     }
                     autoTable(doc, {
                         startY: yPos,
-                        head: [["Trường", "Thông tin"]],
+                        head: [["Nội dung", "Thông tin"]],
                         body: [
                             ["Chẩn đoán bệnh", diagnosis.diseaseName || "Không có thông tin"],
                             ["Mức độ nghiêm trọng", diagnosis.severity || "Không có thông tin"],
@@ -180,6 +180,9 @@ const BillExportPDF = ({ bill, appointment, diagnosisDetails, prescriptions, ser
             yPos += 8;
             doc.text(`Tổng tiền dịch vụ: ${totalService.toLocaleString("vi-VN")} VND`, 20, yPos);
             yPos += 8;
+
+            <hr className="my-3" />
+
             doc.text(`TỔNG CỘNG: ${totalPayment.toLocaleString("vi-VN")} VND`, 20, yPos);
 
             // Lưu file PDF
