@@ -173,7 +173,7 @@ const HeadOfDepartmentManagement = () => {
                         </tr>
                     </thead>
                     <tbody>
-                    {currentDoctors.length > 0 ? (
+                        {currentDoctors.length > 0 ? (
                             currentDoctors.map((doctor) => (
                                 <tr key={doctor._id}>
                                     <td>{doctor.username}</td>

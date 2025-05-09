@@ -66,22 +66,28 @@ const UserManagement = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {users.map((user) => (
-                            <tr key={user._id}>
-                                <td>{user.username}</td>
-                                <td>{user.email}</td>
-                                <td>{user.active ? "Active" : "Banned"}</td>
-                                <td>
-                                    <Button
-                                        variant={user.active ? "danger" : "success"}
-                                        size="sm"
-                                        onClick={() => handleBanUnban(user._id, user.active)}
-                                    >
-                                        {user.active ? "Cấm " : "Bỏ Cấm "}
-                                    </Button>
-                                </td>
+                        {currentUsers.length > 0 ? (
+                            currentUsers.map((user) => (
+                                <tr key={user._id}>
+                                    <td>{user.username}</td>
+                                    <td>{user.email}</td>
+                                    <td>{user.active ? "Active" : "Banned"}</td>
+                                    <td>
+                                        <Button
+                                            variant={user.active ? "danger" : "success"}
+                                            size="sm"
+                                            onClick={() => handleBanUnban(user._id)}
+                                        >
+                                            {user.active ? "Cấm" : "Bỏ Cấm"}
+                                        </Button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="4">Không có người dùng nào.</td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>
