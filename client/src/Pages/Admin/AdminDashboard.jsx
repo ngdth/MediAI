@@ -12,15 +12,6 @@ import { CalendarDays, UserPlus, ScissorsSquare, Banknote, Pencil, Trash2 } from
 import axios from "axios";
 import { FaSearch } from "react-icons/fa";
 
-// Dữ liệu giả cho Hospital Survey (giữ nguyên)
-const hospitalSurvey = [
-  { date: "2020.1", patients2019: 120, patients2020: 150 },
-  { date: "2020.2", patients2019: 170, patients2020: 130 },
-  { date: "2020.3", patients2019: 140, patients2020: 160 },
-  { date: "2020.4", patients2019: 180, patients2020: 180 },
-  { date: "2020.5", patients2019: 160, patients2020: 200 },
-];
-
 const AdminDashboard = () => {
   const [appointments, setAppointments] = useState([]);
   const [filteredAppointments, setFilteredAppointments] = useState([]);
@@ -31,14 +22,55 @@ const AdminDashboard = () => {
   const [weeklyRevenue, setWeeklyRevenue] = useState([]); // Doanh thu theo tuần
   const [monthlyRevenue, setMonthlyRevenue] = useState([]); // Doanh thu theo tháng
   const [loadingRevenue, setLoadingRevenue] = useState(true); // Trạng thái tải doanh thu
+  const [userData, setUserData] = useState([]);
+  const [hospitalSurveyData, setHospitalSurveyData] = useState([]);
 
   const defaultAvatar = "https://randomuser.me/api/portraits/lego/1.jpg";
 
   useEffect(() => {
     fetchAppointments();
     fetchBills();
+    fetchUserData();
   }, []);
 
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BE_URL}/admin/users`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      
+      const users = response.data;
+  
+      // Filter users with role "user"
+      const filteredUsers = users.filter((user) => user.role === "user");
+  
+      // Count users by month
+      const userCountByMonth = {};
+      filteredUsers.forEach((user) => {
+        const date = new Date(user.createdAt);
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1; // getMonth() returns 0-11
+        const key = `${year}-${month}`;
+  
+        if (!userCountByMonth[key]) {
+          userCountByMonth[key] = 0;
+        }
+        userCountByMonth[key]++;
+      });
+  
+      const formattedData = Object.entries(userCountByMonth).map(([key, count]) => {
+        const [year, month] = key.split("-");
+        return { date: `${month}/${year}`, patients: count };
+      });
+  
+      setHospitalSurveyData(formattedData);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setLoading(false);
+    }
+  };
+      
   // Fetch appointments (giữ nguyên)
   const fetchAppointments = async () => {
     try {
@@ -272,30 +304,21 @@ const AdminDashboard = () => {
       </div>
 
       <div className="charts">
-        <div className="chart-box">
+      <div className="chart-box">
           <h3>Hospital Survey</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={hospitalSurvey}>
-              <Line
-                type="monotone"
-                dataKey="patients2019"
-                stroke="#f6b93b"
-                fill="#f6b93b22"
-                dot={false}
-              />
-              <Line
-                type="monotone"
-                dataKey="patients2020"
-                stroke="#407bff"
-                fill="#407bff22"
-                dot={false}
-              />
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-            </LineChart>
-          </ResponsiveContainer>
+          {loading ? (
+            <p>Loading...</p>
+          ) : (
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={hospitalSurveyData}>
+                <Line type="monotone" dataKey="patients" stroke="#407bff" fill="#407bff22" dot={false} />
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
         </div>
 
         <div className="chart-box">
