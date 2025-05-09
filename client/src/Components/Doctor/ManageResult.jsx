@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import DatePicker from "react-datepicker";
 
 const ManageResult = () => {
   const { appointmentId } = useParams();
@@ -114,7 +115,11 @@ const ManageResult = () => {
     } else if (label === "Ngày") {
       displayValue = value ? new Date(value).toLocaleDateString("vi-VN") : "Chưa có dữ liệu";
     } else if (label === "Lịch tái khám") {
-      displayValue = value ? new Date(value).toISOString().split("T")[0] : "Chưa có dữ liệu";
+      displayValue = value ? new Date(value).toLocaleDateString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      }) : "Chưa có dữ liệu";
     } else {
       displayValue = value || "Chưa có dữ liệu";
     }
@@ -126,6 +131,10 @@ const ManageResult = () => {
       </tr>
     );
   };
+
+  // Calculate minimum date (tomorrow)
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
 
   if (loading) {
     return (
@@ -339,13 +348,20 @@ const ManageResult = () => {
             <tr>
               <td>Lịch tái khám</td>
               <td>
-                <input
-                  type="date"
-                  value={diagnosisDetails.followUpSchedule}
-                  onChange={(e) =>
-                    setDiagnosisDetails({ ...diagnosisDetails, followUpSchedule: e.target.value })
+                <DatePicker
+                  selected={diagnosisDetails.followUpSchedule ? new Date(diagnosisDetails.followUpSchedule) : null}
+                  onChange={(date) =>
+                    setDiagnosisDetails({
+                      ...diagnosisDetails,
+                      followUpSchedule: date ? date.toISOString().split("T")[0] : ""
+                    })
                   }
+                  dateFormat="dd/MM/yyyy"
+                  placeholderText="Chọn ngày (dd/mm/yyyy)"
                   className="form-control"
+                  minDate={tomorrow}
+                  showYearDropdown
+                  scrollableYearDropdown
                 />
               </td>
             </tr>
