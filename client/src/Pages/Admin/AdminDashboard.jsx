@@ -13,8 +13,6 @@ import {
   UserPlus,
   ScissorsSquare,
   Banknote,
-  Pencil,
-  Trash2,
 } from "lucide-react";
 import axios from "axios";
 import { FaSearch } from "react-icons/fa";
@@ -31,6 +29,8 @@ const AdminDashboard = () => {
   const [loadingRevenue, setLoadingRevenue] = useState(true); // Trạng thái tải doanh thu
   const [userData, setUserData] = useState([]);
   const [hospitalSurveyData, setHospitalSurveyData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const defaultAvatar = "https://randomuser.me/api/portraits/lego/1.jpg";
 
@@ -49,29 +49,32 @@ const AdminDashboard = () => {
 
       const filteredUsers = users.filter((user) => user.role === "user");
 
+      console.log("Dữ liệu người dùng với role 'user':", filteredUsers);
+
       const userCountByMonth2024 = {};
       const userCountByMonth2025 = {};
+
       filteredUsers.forEach((user) => {
         const date = new Date(user.createdAt);
         const year = date.getFullYear();
         const month = date.getMonth() + 1;
-        const key = `${month}/${year}`;
+        const monthStr = month < 10 ? `0${month}` : `${month}`;
+        const key = `${monthStr}/${year}`;
 
-        if (year === 2024) {
-          if (!userCountByMonth2024[key]) {
-            userCountByMonth2024[key] = 0;
+        if ((year === 2024 || year === 2025) && month >= 1 && month <= 5) {
+          if (year === 2024) {
+            userCountByMonth2024[key] = (userCountByMonth2024[key] || 0) + 1;
+          } else if (year === 2025) {
+            userCountByMonth2025[key] = (userCountByMonth2025[key] || 0) + 1;
           }
-          userCountByMonth2024[key]++;
-        } else if (year === 2025) {
-          if (!userCountByMonth2025[key]) {
-            userCountByMonth2025[key] = 0;
-          }
-          userCountByMonth2025[key]++;
         }
       });
 
+      console.log("Số lượng người dùng theo tháng 2024:", userCountByMonth2024);
+      console.log("Số lượng người dùng theo tháng 2025:", userCountByMonth2025);
+
       const formattedData = [];
-      for (let month = 1; month <= 12; month++) {
+      for (let month = 1; month <= 5; month++) {
         const monthStr = month < 10 ? `0${month}` : `${month}`;
         formattedData.push({
           date: `${monthStr}/2024`,
@@ -79,6 +82,8 @@ const AdminDashboard = () => {
           patients2025: userCountByMonth2025[`${monthStr}/2025`] || 0,
         });
       }
+
+      console.log("Dữ liệu đã định dạng cho biểu đồ:", formattedData);
 
       setHospitalSurveyData(formattedData);
       setLoading(false);
@@ -88,7 +93,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Fetch appointments (giữ nguyên)
   const fetchAppointments = async () => {
     try {
       const response = await axios.get(
@@ -217,9 +221,9 @@ const AdminDashboard = () => {
       const emailMatch = appointment.email?.toLowerCase().includes(term);
       const dateMatch = appointment.date
         ? new Date(appointment.date)
-            .toLocaleDateString("en-US")
-            .toLowerCase()
-            .includes(term)
+          .toLocaleDateString("en-US")
+          .toLowerCase()
+          .includes(term)
         : false;
       const timeMatch = appointment.time?.toLowerCase().includes(term);
       const doctorMatch = appointment.doctorId
@@ -272,13 +276,11 @@ const AdminDashboard = () => {
 
       if (sortConfig.key === "date") {
         const aDateTime = new Date(
-          `${new Date(appointmentA.date).toISOString().split("T")[0]}T${
-            appointmentA.time
+          `${new Date(appointmentA.date).toISOString().split("T")[0]}T${appointmentA.time
           }:00`
         );
         const bDateTime = new Date(
-          `${new Date(appointmentB.date).toISOString().split("T")[0]}T${
-            appointmentB.time
+          `${new Date(appointmentB.date).toISOString().split("T")[0]}T${appointmentB.time
           }:00`
         );
         if (isNaN(aDateTime.getTime()) || isNaN(bDateTime.getTime())) {
@@ -312,6 +314,23 @@ const AdminDashboard = () => {
     return sortableAppointments;
   }, [filteredAppointments, sortConfig]);
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentAppointments = sortedAppointments.slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil(sortedAppointments.length / itemsPerPage);
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
   return (
     <div className="dashboard-page">
       <div className="stats">
@@ -336,7 +355,7 @@ const AdminDashboard = () => {
         <div className="stat-card">
           <Banknote size={28} color="#407bff" />
           <div>
-            Hospital Earnings{" "}
+            Tổng doanh thu{" "}
             <strong>
               {loadingRevenue
                 ? "Loading..."
@@ -348,19 +367,14 @@ const AdminDashboard = () => {
 
       <div className="charts">
         <div className="chart-box">
-          <h3>Hospital Survey</h3>
+          <h3>Thống kê người dùng</h3>
           {loading ? (
-            <p>Loading...</p>
+            <p>Đang Tải...</p>
           ) : (
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={300}>
               <LineChart data={hospitalSurveyData}>
-                <Line
-                  type="monotone"
-                  dataKey="patients"
-                  stroke="#407bff"
-                  fill="#407bff22"
-                  dot={false}
-                />
+                <Line type="monotone" dataKey="patients2024" stroke="#f6b93b" fill="#f6b93b22" dot={false} />
+                <Line type="monotone" dataKey="patients2025" stroke="#407bff" fill="#407bff22" dot={false} />
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
@@ -371,7 +385,7 @@ const AdminDashboard = () => {
         </div>
 
         <div className="chart-box">
-          <h3>Income in current month</h3>
+          <h3>Doanh thu theo tháng</h3>
           {loadingRevenue ? (
             <p>Đang tải...</p>
           ) : monthlyRevenue.length === 0 ? (
@@ -398,7 +412,7 @@ const AdminDashboard = () => {
         </div>
 
         <div className="chart-box">
-          <h3>Income in current week</h3>
+          <h3>Doanh thu theo tuần</h3>
           {loadingRevenue ? (
             <p>Đang tải...</p>
           ) : weeklyRevenue.length === 0 ? (
@@ -434,7 +448,7 @@ const AdminDashboard = () => {
             marginBottom: "0px",
           }}
         >
-          <h3 style={{ margin: 0 }}>Appointment Activity</h3>
+          <h3 style={{ margin: 0 }}>Thống kê lịch hẹn</h3>
           <div className="search-bar" style={{ position: "relative" }}>
             <input
               type="text"
@@ -463,117 +477,158 @@ const AdminDashboard = () => {
         {loading ? (
           <p>Đang tải...</p>
         ) : (
-          <table className="appointment-table">
-            <thead>
-              <tr>
-                <th>
-                  <span
-                    onClick={() => handleSort("name")}
-                    style={{ cursor: "pointer" }}
-                  >
-                    Name{" "}
-                    {sortConfig.key === "name" &&
-                      (sortConfig.direction === "asc" ? "↑" : "↓")}
-                  </span>
-                </th>
-                <th>
-                  <span
-                    onClick={() => handleSort("email")}
-                    style={{ cursor: "pointer" }}
-                  >
-                    Email{" "}
-                    {sortConfig.key === "email" &&
-                      (sortConfig.direction === "asc" ? "↑" : "↓")}
-                  </span>
-                </th>
-                <th>
-                  <span
-                    onClick={() => handleSort("date")}
-                    style={{ cursor: "pointer" }}
-                  >
-                    Date{" "}
-                    {sortConfig.key === "date" &&
-                      (sortConfig.direction === "asc" ? "↑" : "↓")}
-                  </span>
-                </th>
-                <th>
-                  <span
-                    onClick={() => handleSort("date")}
-                    style={{ cursor: "pointer" }}
-                  >
-                    Visit Time{" "}
-                    {sortConfig.key === "date" &&
-                      (sortConfig.direction === "asc" ? "↑" : "↓")}
-                  </span>
-                </th>
-                <th>
-                  <span
-                    onClick={() => handleSort("doctor")}
-                    style={{ cursor: "pointer" }}
-                  >
-                    Doctor{" "}
-                    {sortConfig.key === "doctor" &&
-                      (sortConfig.direction === "asc" ? "↑" : "↓")}
-                  </span>
-                </th>
-                <th>
-                  <span
-                    onClick={() => handleSort("condition")}
-                    style={{ cursor: "pointer" }}
-                  >
-                    Conditions{" "}
-                    {sortConfig.key === "condition" &&
-                      (sortConfig.direction === "asc" ? "↑" : "↓")}
-                  </span>
-                </th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedAppointments.length > 0 ? (
-                sortedAppointments.map((item, idx) => {
-                  const appointment = item.appointment;
-                  const doctorNames = appointment.doctorId
-                    .map((doctor) => doctor.username)
-                    .join(", ");
-                  const formattedDate = new Date(
-                    appointment.date
-                  ).toLocaleDateString("en-US", {
-                    month: "2-digit",
-                    day: "2-digit",
-                    year: "numeric",
-                  });
-                  const formattedTime = appointment.time;
-
-                  return (
-                    <tr key={idx}>
-                      <td>
-                        <img
-                          src={defaultAvatar}
-                          alt="avatar"
-                          className="avatar"
-                        />{" "}
-                        {appointment.patientName}
-                      </td>
-                      <td>{appointment.email}</td>
-                      <td>{formattedDate}</td>
-                      <td>{formattedTime}</td>
-                      <td>{doctorNames || "No doctor assigned"}</td>
-                      <td>{appointment.symptoms}</td>
-                      <td className="actions">
-                        <Pencil size={16} className="edit" />
-                        <Trash2 size={16} className="delete" />
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
+          <>
+            <table className="appointment-table">
+              <thead>
                 <tr>
-                  <td colSpan="7">Không có lịch hẹn nào.</td>
+                  <th>
+                    <span
+                      onClick={() => handleSort("name")}
+                      style={{ cursor: "pointer" }}
+                    >
+                      Họ tên{" "}
+                      {sortConfig.key === "name" &&
+                        (sortConfig.direction === "asc" ? "↑" : "↓")}
+                    </span>
+                  </th>
+                  <th>
+                    <span
+                      onClick={() => handleSort("email")}
+                      style={{ cursor: "pointer" }}
+                    >
+                      Email{" "}
+                      {sortConfig.key === "email" &&
+                        (sortConfig.direction === "asc" ? "↑" : "↓")}
+                    </span>
+                  </th>
+                  <th>
+                    <span
+                      onClick={() => handleSort("date")}
+                      style={{ cursor: "pointer" }}
+                    >
+                      Ngày đặt{" "}
+                      {sortConfig.key === "date" &&
+                        (sortConfig.direction === "asc" ? "↑" : "↓")}
+                    </span>
+                  </th>
+                  <th>
+                    <span
+                      onClick={() => handleSort("date")}
+                      style={{ cursor: "pointer" }}
+                    >
+                      Thời gian đặt{" "}
+                      {sortConfig.key === "date" &&
+                        (sortConfig.direction === "asc" ? "↑" : "↓")}
+                    </span>
+                  </th>
+                  <th>
+                    <span
+                      onClick={() => handleSort("doctor")}
+                      style={{ cursor: "pointer" }}
+                    >
+                      Bác sĩ{" "}
+                      {sortConfig.key === "doctor" &&
+                        (sortConfig.direction === "asc" ? "↑" : "↓")}
+                    </span>
+                  </th>
+                  <th>
+                    <span
+                      onClick={() => handleSort("condition")}
+                      style={{ cursor: "pointer" }}
+                    >
+                      Tình trạng{" "}
+                      {sortConfig.key === "condition" &&
+                        (sortConfig.direction === "asc" ? "↑" : "↓")}
+                    </span>
+                  </th>
+                  <th></th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {currentAppointments.length > 0 ? (
+                  currentAppointments.map((item, idx) => {
+                    const appointment = item.appointment;
+                    const doctorNames = appointment.doctorId
+                      .map((doctor) => doctor.username)
+                      .join(", ");
+                    const formattedDate = new Date(
+                      appointment.date
+                    ).toLocaleDateString("en-US", {
+                      month: "2-digit",
+                      day: "2-digit",
+                      year: "numeric",
+                    });
+                    const formattedTime = appointment.time;
+
+                    return (
+                      <tr key={idx}>
+                        <td>
+                          <img
+                            src={defaultAvatar}
+                            alt="avatar"
+                            className="avatar"
+                          />{" "}
+                          {appointment.patientName}
+                        </td>
+                        <td>{appointment.email}</td>
+                        <td>{formattedDate}</td>
+                        <td>{formattedTime}</td>
+                        <td>{doctorNames || "No doctor assigned"}</td>
+                        <td>{appointment.symptoms}</td>                        
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan="7">Không có lịch hẹn nào.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginTop: "20px",
+              }}
+            >
+              <div>
+                Đang hiển thị {indexOfFirstItem + 1} đến{" "}
+                {Math.min(indexOfLastItem, sortedAppointments.length)} của{" "}
+                {sortedAppointments.length} lịch hẹn
+              </div>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 1}
+                  style={{
+                    padding: "8px 16px",
+                    borderRadius: "4px",
+                    border: "1px solid #ccc",
+                    background: currentPage === 1 ? "#f0f0f0" : "#fff",
+                    cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                  }}
+                >
+                  Trang trước
+                </button>
+                <button
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                  style={{
+                    padding: "8px 16px",
+                    borderRadius: "4px",
+                    border: "1px solid #ccc",
+                    background: currentPage === totalPages ? "#f0f0f0" : "#fff",
+                    cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                  }}
+                >
+                  Trang tiếp
+                </button>
+              </div>
+            </div>
+          </>
         )}
       </div>
     </div>
