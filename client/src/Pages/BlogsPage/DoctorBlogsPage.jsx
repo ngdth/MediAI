@@ -120,7 +120,7 @@ const DoctorBlogsPage = () => {
 
     const blogsSectionData = {
         sectionSubtitle: 'BLOG CỦA CHÚNG TÔI',
-        sectionTitle: 'Bài viết mới nhất cho Bác Sĩ',
+        sectionTitle: 'Bài viết mới nhất ',
         blogsData: blogs,
         refreshBlogs: fetchBlogs,
         specializations: specializations.map(spec => ({

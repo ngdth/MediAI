@@ -329,7 +329,7 @@ const EditBlogPage = () => {
                             <div className="d-flex align-items-center">
                                 <button
                                     className="btn btn-outline-secondary me-3"
-                                    onClick={() => navigate('/doctor/blog')}
+                                    onClick={() => navigate('/doctor/blog?tag=my')}
                                 >
                                     <FaArrowLeft /> Quay lại
                                 </button>
