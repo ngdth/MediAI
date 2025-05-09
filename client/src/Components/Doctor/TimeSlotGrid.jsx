@@ -11,7 +11,7 @@ function TimeSlotGrid({ dates, selectedSlots, onToggleTimeSlot }) {
     today.setHours(0, 0, 0, 0); // Reset time
     const compareDate = new Date(date);
     compareDate.setHours(0, 0, 0, 0);
-    return compareDate < today;
+    return compareDate <= today;
   };
 
   // console.log("Received props:", { dates, selectedSlots })
