@@ -18,14 +18,6 @@ const BlogSection = ({ data }) => {
         setLoading(true);
         const token = localStorage.getItem('token');
 
-        // Kiểm tra token
-        // if (!token) {
-        //   console.error("Không có token trong localStorage");
-        //   setError("Bạn cần đăng nhập để xem danh sách blog");
-        //   setLoading(false);
-        //   return;
-        // }
-
         console.log("Gọi API với URL:", `${import.meta.env.VITE_BE_URL}/blog`);
 
         const response = await axios.get(`${import.meta.env.VITE_BE_URL}/blog`, {

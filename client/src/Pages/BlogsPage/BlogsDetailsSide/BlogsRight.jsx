@@ -116,7 +116,7 @@ const BlogsRight = ({ data, blogData }) => {
                   <li key={index}>
                     <button
                       onClick={() => {
-                        const basePath = role === 'doctor' ? '/doctor/blog' : '/blog';
+                        const basePath = '/blog';
                         navigate(`${basePath}?specialization=${encodeURIComponent(category.name)}`)
                       }}
                       className="cs_category_link"

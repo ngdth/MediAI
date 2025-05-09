@@ -1,16 +1,12 @@
 import SectionHeading from "../SectionHeading";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { FaAngleRight } from "react-icons/fa";
-import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
+import { Link, useLocation } from "react-router-dom";
+import { FaMagnifyingGlass } from "react-icons/fa6";
 import { useEffect, useState } from "react";
-import { Modal, Button } from 'react-bootstrap';
 import axios from "axios";
 import "../../sass/blog/blogsSection1.scss";
+import { FaAngleRight } from "react-icons/fa";
 
 const BlogsSection1 = ({ data }) => {
-  console.log("Component BlogsSection1 được render với data:", data);
-
-  const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const specializationParam = queryParams.get('specialization');
@@ -22,23 +18,15 @@ const BlogsSection1 = ({ data }) => {
   const [specializations, setSpecializations] = useState([]);
   const [selectedSpecialization, setSelectedSpecialization] = useState('');
   const [error, setError] = useState(null);
-  const [allBlogs, setAllBlogs] = useState([]); // Lưu trữ tất cả blog để lọc cục bộ
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [blogToDelete, setBlogToDelete] = useState(null);
-
-  // Thêm state để lưu thông tin người dùng
-  const [currentUser, setCurrentUser] = useState(null);
-  const [isDoctor, setIsDoctor] = useState(false);
-  const [activeTag, setActiveTag] = useState('all');
+  const [allBlogs, setAllBlogs] = useState([]);
 
   useEffect(() => {
-    checkUserRole();
     if (data && data.blogsData && data.blogsData.length > 0) {
       setFilteredBlogs(data.blogsData);
       setAllBlogs(data.blogsData);
       extractSpecializations(data.blogsData);
     } else {
-      fetchBlogs('', specializationParam || '', isDoctor);
+      fetchBlogs('', specializationParam || '');
     }
   }, [data, specializationParam]);
 
@@ -65,10 +53,9 @@ const BlogsSection1 = ({ data }) => {
         break;
       }
       length += nodeLength;
-      nodesToRemove.push(currentNode.parentNode); // Lưu các node cha để xóa phần thừa
+      nodesToRemove.push(currentNode.parentNode);
     }
 
-    // Xóa các node thừa sau khi đạt maxLength
     nodesToRemove.reverse().forEach(node => {
       if (node?.parentNode) {
         node.parentNode.removeChild(node);
@@ -76,24 +63,6 @@ const BlogsSection1 = ({ data }) => {
     });
 
     return doc.body?.innerHTML || html.substring(0, maxLength) + '...';
-  };
-
-  const checkUserRole = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-
-      const response = await axios.get(`${import.meta.env.VITE_BE_URL}/user/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      console.log("Role của người dùng:", response.data.role);
-
-      setCurrentUser(response.data);
-      setIsDoctor(response.data.role === 'doctor');
-    } catch (err) {
-      console.error("Error fetching user info:", err.response?.data || err.message);
-    }
   };
 
   const extractSpecializations = (blogs) => {
@@ -105,59 +74,7 @@ const BlogsSection1 = ({ data }) => {
     setSpecializations(formattedSpecializations);
   };
 
-  const fetchMyBlogs = async () => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError("Bạn cần đăng nhập để xem danh sách blog");
-        setLoading(false);
-        return;
-      }
-
-      const response = await axios.get(`${import.meta.env.VITE_BE_URL}/blog/my-blogs`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      const blogsArray = Array.isArray(response.data) ? response.data : response.data.data;
-
-      if (!blogsArray || blogsArray.length === 0) {
-        setFilteredBlogs([]);
-        setAllBlogs([]);
-        setError("Bạn chưa có bài viết nào.");
-        setLoading(false);
-        return;
-      }
-
-      const formattedBlogs = blogsArray.map(blog => ({
-        id: blog._id,
-        category: blog.specialization || 'General',
-        date: new Date(blog.createdAt).toLocaleDateString('vi-VN', {
-          day: 'numeric', month: 'numeric',
-        }),
-        author: blog.author?.username || 'Unknown',
-        comments: `${blog.comments?.length || 0} Bình luận`,
-        title: blog.title,
-        subtitle: truncateHTML(blog.content, 50),
-        image: blog.media && blog.media.length > 0
-          ? blog.media[0].url // Không cần xử lý gì thêm
-          : '/assets/img/post_1.jpeg',
-        link: isDoctor ? `/doctor/blog/${blog._id}` : `/blog/${blog._id}`,
-        linkText: 'Đọc thêm',
-      }));
-
-      setFilteredBlogs(formattedBlogs);
-      setAllBlogs(formattedBlogs);
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching my blogs:", err);
-      setError("Không thể tải bài viết của bạn. Vui lòng thử lại sau.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchBlogs = async (term = '', specialization = '', isDoc = isDoctor) => {
+  const fetchBlogs = async (term = '', specialization = '') => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
@@ -187,12 +104,12 @@ const BlogsSection1 = ({ data }) => {
         title: blog.title,
         subtitle: truncateHTML(blog.content, 50),
         image: blog.media && blog.media.length > 0
-          ? blog.media[0].url // Không cần xử lý gì thêm
+          ? blog.media[0].url
           : '/assets/img/post_1.jpeg',
-        link: isDoc ? `doctor/blog/${blog._id}` : `/blog/${blog._id}`,
+        link: `/blog/${blog._id}`,
         linkText: 'Đọc thêm',
       }));
-      // console.log("Blog link:", blog.link);
+
       setAllBlogs(formattedBlogs);
       setFilteredBlogs(formattedBlogs);
       extractSpecializations(formattedBlogs);
@@ -228,12 +145,10 @@ const BlogsSection1 = ({ data }) => {
     setSearchTerm(value);
 
     if (value === '') {
-      // Reset lại danh sách blog khi xóa hết nội dung tìm kiếm
       setFilteredBlogs(allBlogs);
       setHasSearched(false);
-      setSelectedSpecialization(''); // Reset chuyên khoa đã chọn
+      setSelectedSpecialization('');
     } else {
-      // Thực hiện tìm kiếm ngay khi người dùng nhập
       filterBlogsLocally(value, selectedSpecialization);
       setHasSearched(true);
     }
@@ -259,60 +174,13 @@ const BlogsSection1 = ({ data }) => {
     }
   };
 
-  const handleCreatePost = () => {
-    navigate('/blog/create');
-  };
-
-  const handleTagChange = (tag) => {
-    setActiveTag(tag);
-    if (tag === 'my') {
-      fetchMyBlogs();
-    } else {
-      fetchBlogs();
-    }
-  };
-
-  // Hàm xử lý chỉnh sửa bài viết
-  const handleEditBlog = (blogId) => {
-    navigate(`/blog/edit/${blogId}`);
-  };
-
-  // Hàm xử lý xóa bài viết
-  const handleDeleteBlog = async (blogId) => {
-    setBlogToDelete(blogId);
-    setShowDeleteModal(true);
-  };
-
-  const confirmDeleteBlog = async () => {
-    if (!blogToDelete) return;
-    try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`${import.meta.env.VITE_BE_URL}/blog/${blogToDelete}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setShowDeleteModal(false);
-      setBlogToDelete(null);
-
-      // Làm mới danh sách blog sau khi xóa
-      if (activeTag === 'my') {
-        fetchMyBlogs();
-      } else {
-        fetchBlogs();
-      }
-    } catch (error) {
-      setError('Không thể xóa bài viết. Vui lòng thử lại.');
-      setShowDeleteModal(false);
-      setBlogToDelete(null);
-    }
-  };
-
   return (
     <>
       <div className="container">
         <div className="text-center">
           <SectionHeading
-            SectionSubtitle={activeTag === 'my' ? "Bài viết của tôi" : data.sectionSubtitle}
-            SectionTitle={activeTag === 'my' ? "QUẢN LÝ BÀI VIẾT" : data.sectionTitle}
+            SectionSubtitle={data.sectionSubtitle}
+            SectionTitle={data.sectionTitle}
             variant="text-center"
           />
           <div style={{
@@ -417,46 +285,9 @@ const BlogsSection1 = ({ data }) => {
                   ))}
                 </select>
               </div>
-
-              {isDoctor && (
-                <button
-                  onClick={handleCreatePost}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: '45px',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: '0 20px',
-                    fontWeight: '500',
-                    backgroundColor: '#007bff',
-                    color: 'white',
-                    borderRadius: '0.3rem',
-                    whiteSpace: 'nowrap',
-                    minWidth: '140px',
-                    transition: 'all 0.3s ease',
-                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)'
-                  }}
-                >
-                  <FaPlus style={{ marginRight: '0.5rem' }} />
-                  Tạo bài viết
-                </button>
-              )}
             </div>
           </div>
         </div>
-        {/* Thêm tag buttons cho bác sĩ */}
-        {isDoctor && (
-          <div className="cs_blog_tags ">
-            <button
-              className="cs_tag_btn"
-              onClick={() => handleTagChange(activeTag === 'all' ? 'my' : 'all')}
-            >
-              {activeTag === 'all' ? 'Xem bài viết của tôi' : 'Xem tất cả bài viết'}
-            </button>
-          </div>
-        )}
         <div className="cs_height_50 cs_height_lg_50" />
 
         {loading ? (
@@ -485,7 +316,7 @@ const BlogsSection1 = ({ data }) => {
                         onError={(e) => {
                           e.target.onerror = null;
                           e.target.src = '/assets/img/post_1.jpeg';
-                        }}                        
+                        }}
                       />
                       <div className="cs_post_category position-absolute">{blog.category}</div>
                     </Link>
@@ -504,38 +335,10 @@ const BlogsSection1 = ({ data }) => {
                       <h3 className="cs_post_title">
                         <Link to={blog.link}>{blog.title}</Link>
                       </h3>
-                      {/* <p
-                        className="cs_post_subtitle"
-                        dangerouslySetInnerHTML={{ __html: blog.subtitle }}
-                      /> */}
                       <Link to={blog.link} className="cs_post_btn">
                         <span>{blog.linkText}</span>
                         <span><FaAngleRight /></span>
                       </Link>
-                      {console.log("Blog Link:", blog.link)}
-                      {/* Hiển thị nút chỉnh sửa và xóa khi đang xem "Bài viết của tôi" */}
-                      {isDoctor && activeTag === 'my' && (
-                        <div className="cs_blog_actions mt-3">
-                          <button
-                            className="cs_btn cs_btn_secondary me-2"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleEditBlog(blog.id);
-                            }}
-                          >
-                            Chỉnh sửa
-                          </button>
-                          <button
-                            className="cs_btn cs_btn_danger"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleDeleteBlog(blog.id);
-                            }}
-                          >
-                            Xóa
-                          </button>
-                        </div>
-                      )}
                       <div className="cs_post_shape position-absolute" />
                     </div>
                   </article>
@@ -545,8 +348,7 @@ const BlogsSection1 = ({ data }) => {
               <div className="text-center">
                 <p>
                   {hasSearched
-                    ? `Không tìm thấy bài viết nào phù hợp với từ khóa "${searchTerm}"${selectedSpecialization ? ` và chuyên khoa "${selectedSpecialization}"` : ""
-                    }`
+                    ? `Không tìm thấy bài viết nào phù hợp với từ khóa "${searchTerm}"${selectedSpecialization ? ` và chuyên khoa "${selectedSpecialization}"` : ""}`
                     : "Không có bài viết nào để hiển thị."}
                 </p>
               </div>
@@ -554,24 +356,6 @@ const BlogsSection1 = ({ data }) => {
           </>
         )}
       </div>
-      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Xác nhận xóa</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="alert alert-danger mb-0">
-            Bạn có muốn xóa bài viết này không?
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
-            Hủy
-          </Button>
-          <Button variant="danger" onClick={confirmDeleteBlog}>
-            Xóa
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </>
   );
 };

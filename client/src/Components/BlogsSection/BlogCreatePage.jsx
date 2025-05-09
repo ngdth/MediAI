@@ -551,7 +551,7 @@ const BlogCreatePage = () => {
                             <div className="d-flex align-items-center">
                                 <button
                                     className="btn btn-outline-secondary me-3"
-                                    onClick={() => navigate('/blog')}
+                                    onClick={() => navigate('/doctor/blog')}
                                 >
                                     <FaArrowLeft /> Quay lại
                                 </button>

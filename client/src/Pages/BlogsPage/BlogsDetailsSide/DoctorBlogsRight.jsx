@@ -6,7 +6,6 @@ import axios from 'axios';
 import '../../../sass/blog/blogsSection1.scss';
 
 const DoctorBlogsRight = ({ data, blogData }) => {
-    const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
     const [localBlogData, setLocalBlogData] = useState(blogData);
 
@@ -22,6 +21,10 @@ const DoctorBlogsRight = ({ data, blogData }) => {
             </div>
         </aside>;
     }
+
+    const handleCategoryClick = (categoryName) => {
+        navigate(`/doctor/blog?specialization=${encodeURIComponent(categoryName)}`);
+    };
 
     return (
         <>
@@ -113,7 +116,7 @@ const DoctorBlogsRight = ({ data, blogData }) => {
                                 {data.categories.map((category, index) => (
                                     <li key={index}>
                                         <button
-                                            onClick={() => navigate(`/blog?specialization=${encodeURIComponent(category.name)}`)}
+                                            onClick={() => handleCategoryClick(category.name)}
                                             className="cs_category_link"
                                             style={{
                                                 background: "none",

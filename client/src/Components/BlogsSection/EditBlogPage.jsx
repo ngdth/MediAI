@@ -11,7 +11,6 @@ const EditBlogPage = () => {
     const navigate = useNavigate();
     const editorRef = useRef(null);
     const [loading, setLoading] = useState(false);
-    const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
     const [previewMode, setPreviewMode] = useState(false);
     const [doctorInfo, setDoctorInfo] = useState(null);
@@ -23,7 +22,6 @@ const EditBlogPage = () => {
     const [deletedMediaUrls, setDeletedMediaUrls] = useState([]);
     const MAX_MEDIA_PER_BLOG = 1;
     const [mediaLimitReached, setMediaLimitReached] = useState(false);
-    // Form data state
     const [formData, setFormData] = useState({
         title: '',
         content: '',
@@ -41,8 +39,6 @@ const EditBlogPage = () => {
             e.preventDefault();
             document.execCommand('insertLineBreak');
         }
-
-        // Xử lý riêng cho phím Space
         if (e.key === ' ') {
             e.stopPropagation();
             e.preventDefault();
@@ -50,7 +46,6 @@ const EditBlogPage = () => {
         }
     };
 
-    // Fetch doctor info and blog data
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -59,13 +54,11 @@ const EditBlogPage = () => {
                     navigate('/login');
                     return;
                 }
-                // Fetch doctor info
                 const doctorRes = await axios.get(`${import.meta.env.VITE_BE_URL}/user/profile`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setDoctorInfo(doctorRes.data.user);
 
-                // Fetch blog data
                 const blogRes = await axios.get(`${import.meta.env.VITE_BE_URL}/blog/${blogId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
@@ -82,7 +75,6 @@ const EditBlogPage = () => {
                     visibility: blog.visibility || 'public'
                 });
                 setLastSaved(new Date(blog.updatedAt || blog.createdAt));
-                // Set editor content
                 if (editorRef.current) editorRef.current.innerHTML = blog.content || '';
             } catch (err) {
                 setError('Không thể tải thông tin bài viết hoặc bác sĩ.');
@@ -91,14 +83,12 @@ const EditBlogPage = () => {
         fetchData();
     }, [blogId, navigate]);
 
-    // Đồng bộ editor content với state khi content thay đổi
     useEffect(() => {
         if (editorRef.current && !showHTML && !previewMode) {
             editorRef.current.innerHTML = formData.content || '';
         }
     }, [formData.content, showHTML, previewMode]);
 
-    // Toolbar và định dạng
     const execCommand = (command, value = null) => {
         const selection = window.getSelection();
         const range = selection.getRangeAt(0);
@@ -111,7 +101,6 @@ const EditBlogPage = () => {
         } catch (e) { }
     };
 
-    // Xử lý nội dung editor
     const handleContentChange = useCallback(() => {
         if (!editorRef.current || isComposing.current) return;
         setFormData(prev => ({
@@ -173,7 +162,6 @@ const EditBlogPage = () => {
         }
     };
 
-    // Xử lý file upload
     const handleFileUpload = (e) => {
         if (mediaLimitReached) {
             setError("Bạn cần xóa media hiện tại trước khi thêm mới.");
@@ -223,20 +211,17 @@ const EditBlogPage = () => {
         }
     };
 
-    // Xóa media
     const removeMedia = (index) => {
         const mediaItem = formData.media[index];
         setFormData(prev => ({
             ...prev,
             media: prev.media.filter((_, i) => i !== index)
         }));
-        // Nếu media cũ (có url), thêm vào danh sách xóa
         if (mediaItem.url) {
             setDeletedMediaUrls(prev => [...prev, mediaItem.url]);
         }
     };
 
-    // Xử lý input
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -245,7 +230,6 @@ const EditBlogPage = () => {
         }));
     };
 
-    // Modal link/video
     const handleInsertLink = (url) => {
         if (url) document.execCommand('createLink', false, url);
     };
@@ -256,7 +240,6 @@ const EditBlogPage = () => {
         }
     };
 
-    // Preview
     const togglePreview = () => {
         if (!previewMode && editorRef.current) {
             setFormData(prev => ({
@@ -267,7 +250,6 @@ const EditBlogPage = () => {
         setPreviewMode(!previewMode);
     };
 
-    // Submit cập nhật
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.title.trim()) {
@@ -289,7 +271,7 @@ const EditBlogPage = () => {
             const cleanContent = DOMPurify.sanitize(editorRef.current.innerHTML, {
                 ALLOWED_TAGS: ['p', 'br', 'ul', 'ol', 'li', 'strong', 'em', 'u', 'a', 'img', 'iframe'],
                 ALLOWED_ATTR: ['src', 'alt', 'href', 'class', 'style', 'frameborder', 'width', 'height']
-            }).replace(/&nbsp;/g, ' ');
+            }).replace(/ /g, ' ');
 
             const keptMediaUrls = formData.media
                 .filter(media => media.url && !deletedMediaUrls.includes(media.url))
@@ -302,12 +284,13 @@ const EditBlogPage = () => {
                     formDataToSend.append('newFiles[]', media.file);
                 }
             });
-            formDataToSend.append('deletedMedia', JSON.stringify(deletedMediaUrls));;
+            formDataToSend.append('deletedMedia', JSON.stringify(deletedMediaUrls));
             formDataToSend.append('title', formData.title);
             formDataToSend.append('content', cleanContent);
             formDataToSend.append('specialization', formData.specialization);
             formDataToSend.append('visibility', formData.visibility);
-            await axios.put(
+
+            const response = await axios.put(
                 `${import.meta.env.VITE_BE_URL}/blog/${blogId}`,
                 formDataToSend,
                 {
@@ -317,18 +300,23 @@ const EditBlogPage = () => {
                     }
                 }
             );
-            navigate(`/blog/${blogId}`);
+
+            // Cập nhật thời gian lưu gần nhất
+            setLastSaved(new Date(response.data.updatedAt || Date.now()));
+
+            // Điều hướng về trang danh sách bài viết
+            navigate(`/doctor/blog/${blogId}`);
         } catch (err) {
-            setError(err.response?.data?.message || 'Có lỗi xảy ra khi cập nhật bài viết.');
+            console.error("Error updating blog:", err);
+            setError(err.response?.data?.message || 'Có lỗi xảy ra khi cập nhật bài viết. Vui lòng kiểm tra kết nối hoặc dữ liệu gửi đi.');
         } finally {
             setLoading(false);
         }
     };
 
-    // Hủy
     const handleCancel = () => {
         if (window.confirm("Bạn có chắc muốn hủy chỉnh sửa?")) {
-            navigate('/blog');
+            navigate('/doctor/blog');
         }
     };
 
@@ -341,7 +329,7 @@ const EditBlogPage = () => {
                             <div className="d-flex align-items-center">
                                 <button
                                     className="btn btn-outline-secondary me-3"
-                                    onClick={() => navigate('/blog')}
+                                    onClick={() => navigate('/doctor/blog?tag=my')}
                                 >
                                     <FaArrowLeft /> Quay lại
                                 </button>
@@ -396,7 +384,7 @@ const EditBlogPage = () => {
                                             <textarea
                                                 className="form-control html-view"
                                                 value={formData.content}
-                                                onChange={handleHTMLContentChange}
+                                                onChange={handleChange}
                                                 rows="8"
                                             />
                                         ) : (
@@ -410,16 +398,15 @@ const EditBlogPage = () => {
                                                         <button type="button" onClick={() => document.execCommand('formatBlock', false, 'h2')}>H2</button>
                                                         <button type="button" onClick={() => document.execCommand('formatBlock', false, 'h3')}>H3</button>
                                                     </div>
-                                                    <button onClick={() => document.execCommand('justifyLeft')}><i className="align-left-icon" /><FaAlignLeft /></button>
-                                                    <button onClick={() => document.execCommand('justifyRight')}><i className="align-right-icon" /><FaAlignRight /></button>
-                                                    <button onClick={() => document.execCommand('justifyCenter')}><i className="align-center-icon" /><FaAlignCenter /></button>
+                                                    <button onClick={() => document.execCommand('justifyLeft')}><FaAlignLeft /></button>
+                                                    <button onClick={() => document.execCommand('justifyRight')}><FaAlignRight /></button>
+                                                    <button onClick={() => document.execCommand('justifyCenter')}><FaAlignCenter /></button>
                                                     <button onClick={() => document.execCommand('insertOrderedList')}>1.</button>
                                                     <button onClick={() => document.execCommand('insertUnorderedList')}>•</button>
                                                     <button onClick={() => setLinkModalOpen(true)}><FaLink /></button>
                                                     <button onClick={() => setVideoModalOpen(true)}><FaPhotoVideo /></button>
                                                     <button onClick={() => document.execCommand('undo')}><FaRedo /></button>
                                                     <button onClick={() => document.execCommand('redo')}><FaUndo /></button>
-                                                    {/* <button type="button" onClick={toggleHTMLView} title="Xem mã HTML">HTML</button> */}
                                                 </div>
 
                                                 <UrlInputModal

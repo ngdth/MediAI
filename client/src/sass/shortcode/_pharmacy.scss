@@ -123,3 +123,46 @@ body.modal-open {
         background: #29293d;
     }
 }
+
+.service-select {
+    &__menu {
+        z-index: 1000; /* Ensure dropdown appears above other elements */
+    }
+
+    &__menu-list {
+        max-height: 150px; /* Show ~5 options (assuming ~30px per option) */
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile */
+    }
+
+    &__menu-list::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    &__menu-list::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    &__menu-list::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+
+    &__menu-list::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    /* Firefox scrollbar */
+    &__menu-list {
+        scrollbar-width: thin;
+        scrollbar-color: #888 #f1f1f1;
+    }
+
+    /* Error state styling */
+    &--is-invalid {
+        .service-select__control {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+    }
+}

@@ -102,12 +102,12 @@ export default function Payment() {
                     <FilterBar activeFilter={filter} onFilterChange={handleFilterChange} />
 
                     {loading ? (
-                        <p>Loading bills...</p>
+                        <p>Đang tải...</p>
                     ) : error ? (
                         <p className="error-message">Error: {error}</p>
                     ) : filteredBills.length === 0 ? (
                         <div className="no-bills">
-                            <p>No bills found matching your filter.</p>
+                            <p>Chưa có hóa đơn nào</p>
                         </div>
                     ) : (
                         <div className="bills-list">
