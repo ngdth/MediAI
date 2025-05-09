@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.use(authenticateToken);
 
-router.post('/', authorizeRole(['doctor', 'nurse']), createNotification);
+router.post('/', authorizeRole(['doctor', 'nurse', 'user']), createNotification);
 router.get('/:userId', getUserNotifications);
 router.put('/:id/read', markAsRead);
 
