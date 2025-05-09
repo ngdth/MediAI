@@ -799,3 +799,8 @@
   box-sizing: border-box;
   align-self: center; /* quan trọng khi cha là flex */
 }
+
+.cs_username {
+  max-width: 150px;
+  width: 150px;
+}

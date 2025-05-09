@@ -149,14 +149,15 @@ const ProfileForm = ({ user, setUser }) => {
             if (response.status === 200) {
                 toast.success("Cập nhật hồ sơ thành công!");
                 localStorage.setItem("username", submissionData.username);
+                window.dispatchEvent(new Event("usernameChange"));
                 const updatedUserResponse = await axios.get(`${import.meta.env.VITE_BE_URL}/user/profile`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setUser(updatedUserResponse.data.user);
                 setIsFormChanged(false);
-                setTimeout(() => {
-                    window.location.reload();
-                }, 6000);
+                // setTimeout(() => {
+                //     window.location.reload();
+                // }, 6000);
             }
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Không thể cập nhật hồ sơ. Vui lòng thử lại.";
