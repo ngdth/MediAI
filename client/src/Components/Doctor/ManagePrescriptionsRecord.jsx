@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Form, Button } from 'react-bootstrap';
+import Select from 'react-select';
 import { validateQuantity, validateMedicineName, validateUnit, validateUsage } from '../../utils/validateUtils';
 
 const ManagePrescriptionsRecord = () => {
@@ -167,7 +168,8 @@ const ManagePrescriptionsRecord = () => {
         setServiceErrors([...serviceErrors, { service: "" }]);
     };
 
-    const handleServiceChange = (index, serviceId) => {
+    const handleServiceChange = (index, option) => {
+        const serviceId = option ? option.value : "";
         const updatedSelectedServices = [...selectedServices];
         updatedSelectedServices[index] = serviceId;
         setSelectedServices(updatedSelectedServices);
@@ -296,10 +298,18 @@ const ManagePrescriptionsRecord = () => {
     const currentDoctorIndex = appointmentData.appointment.doctorId?.findIndex((doctor) => doctor._id === doctorId) || -1;
     const previousDoctors = currentDoctorIndex > 0 ? appointmentData.appointment.doctorId.slice(0, currentDoctorIndex) : [];
 
+    // Options for react-select
+    const serviceOptions = [
+        { value: "", label: "Chọn dịch vụ" },
+        ...services.map(s => ({
+            value: s._id,
+            label: s.name
+        }))
+    ];
+
     return (
         <div className="container">
             <h2 className="text-center mt-4">Tạo đơn thuốc</h2>
-
             <div className="patient-info">
                 <p><strong>Họ và tên:</strong> {appointmentData.appointment.patientName || "Không có thông tin"}</p>
                 <p><strong>Ngày khám:</strong> {formatDate(appointmentData.appointment.date)}</p>
@@ -494,21 +504,19 @@ const ManagePrescriptionsRecord = () => {
                                     <td className="text-center">{index + 1}</td>
                                     <td>
                                         <Form.Group controlId={`service-${index}`}>
-                                            <Form.Select
-                                                value={serviceId}
-                                                onChange={(e) => handleServiceChange(index, e.target.value)}
+                                            <Select
+                                                classNamePrefix="service-select"
+                                                value={serviceOptions.find(option => option.value === serviceId) || null}
+                                                onChange={(option) => handleServiceChange(index, option)}
+                                                options={serviceOptions}
+                                                placeholder="Chọn dịch vụ"
                                                 isInvalid={!!serviceErrors[index]?.service}
-                                            >
-                                                <option value="">Chọn dịch vụ</option>
-                                                {services.map((s) => (
-                                                    <option key={s._id} value={s._id}>
-                                                        {s.name}
-                                                    </option>
-                                                ))}
-                                            </Form.Select>
-                                            <Form.Control.Feedback type="invalid">
-                                                {serviceErrors[index]?.service}
-                                            </Form.Control.Feedback>
+                                            />
+                                            {serviceErrors[index]?.service && (
+                                                <div className="invalid-feedback" style={{ display: 'block' }}>
+                                                    {serviceErrors[index]?.service}
+                                                </div>
+                                            )}
                                         </Form.Group>
                                     </td>
                                     <td className="text-center">{selectedService.department || "Không có thông tin"}</td>
