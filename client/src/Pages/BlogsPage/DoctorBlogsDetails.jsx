@@ -35,7 +35,7 @@ const DoctorBlogsDetails = () => {
             const headers = { Authorization: `Bearer ${token}` };
 
             const blogResponse = await axios.get(`${import.meta.env.VITE_BE_URL}/blog/${blogId}`, { headers });
-            console.log("Blog content from server:", blogResponse.data.content);
+            console.log("Blog content from server:", blogResponse.data);
             const blogData = blogResponse.data;
 
             const authorResponse = await axios.get(
@@ -44,8 +44,22 @@ const DoctorBlogsDetails = () => {
             );
             const authorData = authorResponse.data.user;
 
+            let imageUrl = '/assets/img/post_details_1.jpeg'; // Ảnh mặc định
+            if (blogData.media && Array.isArray(blogData.media) && blogData.media[0]?.url) {
+                const mediaUrl = blogData.media[0].url;
+                console.log(`Blog ${blogId} raw media URL:`, mediaUrl);
+                if (mediaUrl && (mediaUrl.startsWith('http://') || mediaUrl.startsWith('https://'))) {
+                    imageUrl = mediaUrl;
+                } else if (mediaUrl) {
+                    imageUrl = `${import.meta.env.VITE_BE_URL}/${mediaUrl}`;
+                }
+            } else {
+                console.log(`Blog ${blogId} không có media hoặc media[0].url`);
+            }
+
             setBlog({
                 ...blogData,
+                image: imageUrl,
                 media: blogData.media.map((mediaItem) => ({
                     ...mediaItem,
                     url: processImagePath(mediaItem.url),
@@ -71,24 +85,39 @@ const DoctorBlogsDetails = () => {
             const formattedRecentPosts = recentPostsResponse.data
                 .filter(post => post._id !== blogId)
                 .slice(0, 3)
-                .map(post => ({
-                    imgSrc: processImagePath(post.media?.[0]?.url) || '/assets/img/post_details_1.jpeg',
-                    date: new Date(post.createdAt).toLocaleDateString('en-US', {
-                        day: 'numeric', month: 'numeric', year: 'numeric'
-                    }),
-                    title: post.title,
-                    link: `/doctor/blog/${post._id}`, // Đổi thành đường dẫn bác sĩ
-                    commentsCount: post.comments?.length || 0,
-                    likesCount: post.likes?.length || 0,
-                    unlikesCount: post.unlikes?.length || 0,
-                }));
+                .map(post => {
+                    let postImageUrl = '/assets/img/post_details_1.jpeg'; // Ảnh mặc định
+                    if (post.media && Array.isArray(post.media) && post.media[0]?.url) {
+                        const mediaUrl = post.media[0].url;
+                        console.log(`Post ${post._id} raw media URL:`, mediaUrl);
+                        if (mediaUrl && (mediaUrl.startsWith('http://') || mediaUrl.startsWith('https://'))) {
+                            postImageUrl = mediaUrl;
+                        } else if (mediaUrl) {
+                            postImageUrl = `${import.meta.env.VITE_BE_URL}/${mediaUrl}`;
+                        }
+                    } else {
+                        console.log(`Post ${post._id} không có media hoặc media[0].url`);
+                    }
+
+                    return {
+                        imgSrc: postImageUrl,
+                        date: new Date(post.createdAt).toLocaleDateString('en-US', {
+                            day: 'numeric', month: 'numeric', year: 'numeric'
+                        }),
+                        title: post.title,
+                        link: `/doctor/blog/${post._id}`,
+                        commentsCount: post.comments?.length || 0,
+                        likesCount: post.likes?.length || 0,
+                        unlikesCount: post.unlikes?.length || 0,
+                    };
+                });
 
             setRecentPosts(formattedRecentPosts);
 
             setSpecializations([
                 {
                     name: blogResponse.data.specialization,
-                    link: `/doctor/blogs?specialization=${blogResponse.data.specialization}` // Đổi thành đường dẫn bác sĩ
+                    link: `/doctor/blogs?specialization=${blogResponse.data.specialization}`
                 },
             ]);
 
@@ -265,7 +294,7 @@ const DoctorBlogsDetails = () => {
         const totalInteractions = (blog.likes?.length || 0) + (blog.unlikes?.length || 0);
 
         return {
-            imageSrc: processImagePath(blog.media?.[0]?.url) || '/assets/img/post_details_1.jpeg',
+            imageSrc: blog.image,
             imageAlt: blog.title,
             text: blog.specialization || 'GENERAL',
             secText: new Date(blog.createdAt).toLocaleDateString('en-US', {

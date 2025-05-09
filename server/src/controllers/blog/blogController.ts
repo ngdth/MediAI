@@ -54,7 +54,24 @@ const uploadFileToFirebase = async (file: Express.Multer.File): Promise<{ url: s
         console.error("🔥 Lỗi ngoài uploadFileToFirebase:", err);
         throw err;
     }
-};   
+};
+
+// Hàm xóa file trên Firebase
+const deleteFileFromFirebase = async (url: string) => {
+    try {
+        // Lấy tên file từ URL Firebase
+        const fileName = url.split(`${bucket.name}/`)[1];
+        if (!fileName) {
+            console.error(`Không thể lấy tên file từ URL: ${url}`);
+            return;
+        }
+        const file = bucket.file(fileName);
+        await file.delete();
+        console.log(`Đã xóa file trên Firebase: ${url}`);
+    } catch (err) {
+        console.error(`Lỗi khi xóa file trên Firebase ${url}:`, err);
+    }
+};
 
 export const createBlog = async (req: Request, res: Response): Promise<void> => {
     const user = req.user as JwtPayload; // lấy từ req.user sau khi authenticate
@@ -87,7 +104,7 @@ export const createBlog = async (req: Request, res: Response): Promise<void> => 
 
         const uploadedMedia = await Promise.all(
             files.map(file => uploadFileToFirebase(file))
-        );     
+        );
 
         // Xử lý thêm media từ req.body.media nếu có (URLs)
         let additionalMedia: { url: string; type: 'image' | 'video' }[] = [];
@@ -392,24 +409,13 @@ export const deleteBlog = async (req: Request, res: Response): Promise<void> => 
         res.status(500).json({ message: 'Lỗi khi xóa blog', error });
     }
 };
+
 export const updateBlog = async (req: Request, res: Response): Promise<void> => {
     const user = req.user as JwtPayload;
-    const { title, content, visibility, keepMedia } = req.body;
+    const { title, content, visibility } = req.body;
     const files = req.files as Express.Multer.File[] || [];
     const blogId = req.params.blogId;
     const MAX_MEDIA_PER_BLOG = 1;
-    // Thêm ngay sau khi khai báo MAX_MEDIA_PER_BLOG = 1
-    const deleteMediaFile = (mediaItem: any) => {
-        try {
-            const filePath = getAbsoluteMediaPath(mediaItem.url);
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
-                console.log(`Đã xóa file: ${filePath}`);
-            }
-        } catch (err) {
-            console.error(`Lỗi xóa file ${mediaItem.url}:`, err);
-        }
-    };
 
     try {
         const blog = await Blog.findById(blogId);
@@ -424,45 +430,35 @@ export const updateBlog = async (req: Request, res: Response): Promise<void> => 
             return;
         }
 
-        // Xử lý media mới
-        const newMediaFiles = files.map(file => ({
-            url: getMediaPath(file.filename),
-            type: file.mimetype.startsWith('image/') ? 'image' : 'video'
-        }));
+        // Xử lý media mới: Upload lên Firebase
+        const newMediaFiles = await Promise.all(
+            files.map(file => uploadFileToFirebase(file))
+        );
 
-        // Nhận danh sách ID media cần xóa từ client
-        const deletedMediaIds: string[] = req.body.deletedMedia ? JSON.parse(req.body.deletedMedia) : [];
+        // Nhận danh sách URL media cần xóa từ client
+        const deletedMediaUrls: string[] = req.body.deletedMedia ? JSON.parse(req.body.deletedMedia) : [];
 
-        // Xóa media được đánh dấu
-        deletedMediaIds.forEach(url => { // Giả sử client gửi URL để xóa
+        // Xóa media được đánh dấu trên Firebase
+        for (const url of deletedMediaUrls) {
             const mediaToDelete = blog.media.find(m => m.url === url);
-            if (mediaToDelete) deleteMediaFile(mediaToDelete);
-        });
-
-        // Xử lý keepMedia
-        let keepMediaIds: number[] = [];
-        if (keepMedia) {
-            try {
-                keepMediaIds = JSON.parse(keepMedia);
-            } catch (e) {
-                console.error('Lỗi khi parse keepMedia:', e);
-                keepMediaIds = Array.isArray(keepMedia) ? keepMedia.map(Number) : [];
+            if (mediaToDelete) {
+                await deleteFileFromFirebase(mediaToDelete.url);
             }
         }
-        const keptMediaUrls: string[] = req.body.keptMedia
-            ? JSON.parse(req.body.keptMedia)
-            : [];
+
+        // Xử lý keptMedia
+        const keptMediaUrls: string[] = req.body.keptMedia ? JSON.parse(req.body.keptMedia) : [];
 
         // Giữ lại media cũ được chỉ định
         const keptMedia = blog.media.filter(mediaItem =>
             keptMediaUrls.includes(mediaItem.url) &&
-            !deletedMediaIds.includes(mediaItem.url)
+            !deletedMediaUrls.includes(mediaItem.url)
         );
 
-        // Xóa các file media không được giữ lại
+        // Xóa các file media không được giữ lại trên Firebase
         blog.media.forEach(mediaItem => {
-            if (!keptMediaUrls.includes(mediaItem.url) || deletedMediaIds.includes(mediaItem.url)) {
-                deleteMediaFile(mediaItem);
+            if (!keptMediaUrls.includes(mediaItem.url) || deletedMediaUrls.includes(mediaItem.url)) {
+                deleteFileFromFirebase(mediaItem.url);
             }
         });
 
@@ -491,13 +487,16 @@ export const updateBlog = async (req: Request, res: Response): Promise<void> => 
                 console.error('Lỗi khi parse media:', e);
             }
         }
+
         // Validation media
         const currentMediaCount = keptMedia.length;
         const newFilesCount = newMediaFiles.length;
 
         if (currentMediaCount + newFilesCount > MAX_MEDIA_PER_BLOG) {
-            // Xóa các file mới đã upload
-            newMediaFiles.forEach(deleteMediaFile);
+            // Xóa các file mới đã upload trên Firebase
+            for (const media of newMediaFiles) {
+                await deleteFileFromFirebase(media.url);
+            }
             res.status(400).json({
                 message: `Mỗi blog chỉ được phép có tối đa ${MAX_MEDIA_PER_BLOG} ảnh/video`
             });
@@ -508,11 +507,14 @@ export const updateBlog = async (req: Request, res: Response): Promise<void> => 
         let updatedMedia = [
             ...keptMedia,
             ...newMediaFiles,
+            ...additionalMedia
         ];
 
         if (updatedMedia.length > MAX_MEDIA_PER_BLOG) {
             const mediaToDelete = updatedMedia.slice(MAX_MEDIA_PER_BLOG);
-            mediaToDelete.forEach(deleteMediaFile);
+            for (const media of mediaToDelete) {
+                await deleteFileFromFirebase(media.url);
+            }
             updatedMedia = updatedMedia.slice(0, MAX_MEDIA_PER_BLOG);
         }
 
