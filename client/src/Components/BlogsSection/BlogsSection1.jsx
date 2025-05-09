@@ -1,16 +1,14 @@
 import SectionHeading from "../SectionHeading";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FaAngleRight } from "react-icons/fa";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { useEffect, useState } from "react";
-import { Modal, Button } from 'react-bootstrap';
 import axios from "axios";
 import "../../sass/blog/blogsSection1.scss";
 
 const BlogsSection1 = ({ data }) => {
   console.log("Component BlogsSection1 được render với data:", data);
 
-  const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const specializationParam = queryParams.get('specialization');
@@ -23,14 +21,8 @@ const BlogsSection1 = ({ data }) => {
   const [selectedSpecialization, setSelectedSpecialization] = useState('');
   const [error, setError] = useState(null);
   const [allBlogs, setAllBlogs] = useState([]);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [blogToDelete, setBlogToDelete] = useState(null);
-
-  const [currentUser, setCurrentUser] = useState(null);
-  const [isDoctor, setIsDoctor] = useState(false);
 
   useEffect(() => {
-    checkUserRole();
     fetchBlogs('', specializationParam || '');
   }, [specializationParam]);
 
@@ -67,24 +59,6 @@ const BlogsSection1 = ({ data }) => {
     });
 
     return doc.body?.innerHTML || html.substring(0, maxLength) + '...';
-  };
-
-  const checkUserRole = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-
-      const response = await axios.get(`${import.meta.env.VITE_BE_URL}/user/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      console.log("Role của người dùng:", response.data.role);
-
-      setCurrentUser(response.data);
-      setIsDoctor(response.data.role === 'doctor');
-    } catch (err) {
-      console.error("Error fetching user info:", err.response?.data || err.message);
-    }
   };
 
   const extractSpecializations = (blogs) => {
@@ -144,7 +118,7 @@ const BlogsSection1 = ({ data }) => {
           title: blog.title,
           subtitle: truncateHTML(blog.content, 50),
           image: imageUrl,
-          link: `/blog/${blog._id}`, // Đường dẫn đã được thay đổi thành /blog/${blog.id}
+          link: `/blog/${blog._id}`,
           linkText: 'Đọc thêm',
         };
       });
@@ -215,32 +189,6 @@ const BlogsSection1 = ({ data }) => {
       filterBlogsLocally(searchTerm, value);
     } else {
       fetchBlogs(searchTerm, value);
-    }
-  };
-
-  const handleEditBlog = (blogId) => {
-    navigate(`edit/${blogId}`);
-  };
-
-  const handleDeleteBlog = async (blogId) => {
-    setBlogToDelete(blogId);
-    setShowDeleteModal(true);
-  };
-
-  const confirmDeleteBlog = async () => {
-    if (!blogToDelete) return;
-    try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`${import.meta.env.VITE_BE_URL}/blog/${blogToDelete}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setShowDeleteModal(false);
-      setBlogToDelete(null);
-      fetchBlogs();
-    } catch (error) {
-      setError('Không thể xóa bài viết. Vui lòng thử lại.');
-      setShowDeleteModal(false);
-      setBlogToDelete(null);
     }
   };
 
@@ -374,28 +322,6 @@ const BlogsSection1 = ({ data }) => {
                         <span>{blog.linkText}</span>
                         <span><FaAngleRight /></span>
                       </Link>
-                      {isDoctor && (
-                        <div className="cs_blog_actions mt-3">
-                          <button
-                            className="cs_btn cs_btn_secondary me-2"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleEditBlog(blog.id);
-                            }}
-                          >
-                            Chỉnh sửa
-                          </button>
-                          <button
-                            className="cs_btn cs_btn_danger"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleDeleteBlog(blog.id);
-                            }}
-                          >
-                            Xóa
-                          </button>
-                        </div>
-                      )}
                       <div className="cs_post_shape position-absolute" />
                     </div>
                   </article>
