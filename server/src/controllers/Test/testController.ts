@@ -108,7 +108,7 @@ export const deleteTestImage = async (req: Request, res: Response): Promise<void
             return;
         }
 
-        const imagePath = `/uploads/tests/${imgName}`;
+        const imagePath = `https://storage.googleapis.com/${bucket.name}/tests/${imgName}`;
 
         let found = false;
         if (testRecord.xRayImg.includes(imagePath)) {
@@ -130,7 +130,8 @@ export const deleteTestImage = async (req: Request, res: Response): Promise<void
             return;
         }
 
-        const fileName = imgName.split("/").pop();
+        const fileName = imgName.split('/').pop();
+
         const firebaseFile = bucket.file(`tests/${fileName}`);
 
         await firebaseFile.delete();
