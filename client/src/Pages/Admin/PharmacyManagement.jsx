@@ -14,6 +14,26 @@ const PharmacyManagement = () => {
     });
     const [editingPharmacy, setEditingPharmacy] = useState(null);
     const token = localStorage.getItem("token");
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentServices = services.slice(indexOfFirstItem, indexOfLastItem);
+
+    const totalPages = Math.ceil(services.length / itemsPerPage);
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
 
     useEffect(() => {
         fetchPharmacy();
@@ -124,6 +144,49 @@ const PharmacyManagement = () => {
                 </table>
             </div>
 
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginTop: "20px",
+                }}
+            >
+                <div>
+                    Đang hiển thị {indexOfFirstItem + 1} đến{" "}
+                    {Math.min(indexOfLastItem, pharmacy.length)} của{" "}
+                    {pharmacy.length} nhà thuốc
+                </div>
+                <div style={{ display: "flex", gap: "10px" }}>
+                    <button
+                        onClick={handlePreviousPage}
+                        disabled={currentPage === 1}
+                        style={{
+                            padding: "8px 16px",
+                            borderRadius: "4px",
+                            border: "1px solid #ccc",
+                            background: currentPage === 1 ? "#f0f0f0" : "#fff",
+                            cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                        }}
+                    >
+                        Trang trước
+                    </button>
+                    <button
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages}
+                        style={{
+                            padding: "8px 16px",
+                            borderRadius: "4px",
+                            border: "1px solid #ccc",
+                            background: currentPage === totalPages ? "#f0f0f0" : "#fff",
+                            cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                        }}
+                    >
+                        Trang tiếp
+                    </button>
+                </div>
+            </div>
+            
             {/* Modal thêm/sửa Pharmacy */}
             <Modal show={showModal} onHide={handleCloseModal} centered>
                 <Modal.Header closeButton>
@@ -151,7 +214,7 @@ const PharmacyManagement = () => {
                             <label htmlFor="location" className="form-label" style={{ fontWeight: 'bold', textAlign: 'left', display: 'block' }}>Địa chỉ </label>
                             <input type="text" name="location" placeholder="Địa chỉ" value={formData.location} onChange={handleChange} required className="form-control mb-2" />
                         </div>
-                    
+
                         <div className="text-end">
                             <Button variant="secondary" onClick={handleCloseModal} className="me-2">Hủy</Button>
                             <Button type="submit" variant="primary">{editingPharmacy ? "Cập nhật" : "Thêm"}</Button>
