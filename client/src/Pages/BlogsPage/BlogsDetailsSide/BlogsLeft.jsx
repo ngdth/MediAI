@@ -206,86 +206,6 @@ const BlogsLeft = ({ data, blogId, setBlog, onUnlikeReply, onLikeReply, onAddCom
 
           <div className="cs_height_27 cs_height_lg_10" />
 
-          {/* Testimonial and Card Section */}
-          <div className="row cs_row_gap_30 cs_gap_y_30">
-            <div className="col-md-7">
-              <div className="cs_testimonial cs_style_12 cs_type_12">
-                <div className="cs_testimonial_info">
-                  <div className="cs_avatar cs_style_1 p-3">
-                    <div className="cs_avatar_thumbnail cs_center">
-                      <img
-                        src={data.testimonial.avatarSrc}
-                        alt={data.testimonial.avatarAlt}
-                      />
-                    </div>
-                    <div className="cs_avatar_info">
-                      <h3 className="cs_avatar_title">
-                        {data.testimonial.avatarName}
-                      </h3>
-                      <p className="cs_avatar_subtitle mb-0">
-                        {data.testimonial.avatarTitle}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="cs_rating_container">
-                    <button
-                      className="cs_btn cs_style_1 cs_color_1 cs_size_sm me-2"
-                      onClick={handleLikeBlog}
-                      disabled={liking}
-                    >
-                      <FaThumbsUp className="me-1" />
-                      Thích
-                      ({localLikes})
-                    </button>
-                    <button
-                      className="cs_btn cs_style_1 cs_color_2 cs_size_sm"
-                      onClick={handleUnlikeBlog}
-                      disabled={liking}
-                    >
-                      <FaThumbsDown className="me-1" />
-                      Không thích
-                      ({localUnlikes})
-                    </button>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            {/* Blog Info Card */}
-            <div className="col-md-5">
-              <div className="cs_card cs_style_8">
-                <h3 className="cs_card_title">{data.card.title}</h3>
-                <p className="cs_card_subtitle">{data.card.subtitle}</p>
-                <div className="cs_progress_bar_wrapper">
-                  <div className="cs_progress_item">
-                    <div className="cs_progress_head">
-                      <span>{data.card.progress.likes.label}</span>
-                      <span>{likePercentage}%</span>
-                    </div>
-                    <div className="cs_progress">
-                      <div
-                        className="cs_progress_in"
-                        style={{ width: `${likePercentage}%` }}
-                      />
-                    </div>
-                  </div>
-                  <div className="cs_progress_item">
-                    <div className="cs_progress_head">
-                      <span>{data.card.progress.unlikes.label}</span>
-                      <span>{unlikePercentage}%</span>
-                    </div>
-                    <div className="cs_progress">
-                      <div
-                        className="cs_progress_in"
-                        style={{ width: `${unlikePercentage}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
           {/* Post Content */}
           <div
@@ -297,6 +217,86 @@ const BlogsLeft = ({ data, blogId, setBlog, onUnlikeReply, onLikeReply, onAddCom
             }}
           />
 
+            {/* Testimonial and Card Section */}
+            <div className="row cs_row_gap_30 cs_gap_y_30">
+              <div className="col-md-7">
+                <div className="cs_testimonial cs_style_12 cs_type_12">
+                  <div className="cs_testimonial_info">
+                    <div className="cs_avatar cs_style_1 p-3">
+                      <div className="cs_avatar_thumbnail cs_center">
+                        <img
+                          src={data.testimonial.avatarSrc}
+                          alt={data.testimonial.avatarAlt}
+                        />
+                      </div>
+                      <div className="cs_avatar_info">
+                        <h3 className="cs_avatar_title">
+                          {data.testimonial.avatarName}
+                        </h3>
+                        <p className="cs_avatar_subtitle mb-0">
+                          {data.testimonial.avatarTitle}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="cs_rating_container">
+                      <button
+                        className="cs_btn cs_style_1 cs_color_1 cs_size_sm me-2"
+                        onClick={handleLikeBlog}
+                        disabled={liking}
+                      >
+                        <FaThumbsUp className="me-1" />
+                        Thích
+                        ({localLikes})
+                      </button>
+                      <button
+                        className="cs_btn cs_style_1 cs_color_2 cs_size_sm"
+                        onClick={handleUnlikeBlog}
+                        disabled={liking}
+                      >
+                        <FaThumbsDown className="me-1" />
+                        Không thích
+                        ({localUnlikes})
+                      </button>
+                    </div>
+                  </div>
+  
+                </div>
+              </div>
+  
+              {/* Blog Info Card */}
+              <div className="col-md-5">
+                <div className="cs_card cs_style_8">
+                  <h3 className="cs_card_title">{data.card.title}</h3>
+                  <p className="cs_card_subtitle">{data.card.subtitle}</p>
+                  <div className="cs_progress_bar_wrapper">
+                    <div className="cs_progress_item">
+                      <div className="cs_progress_head">
+                        <span>{data.card.progress.likes.label}</span>
+                        <span>{likePercentage}%</span>
+                      </div>
+                      <div className="cs_progress">
+                        <div
+                          className="cs_progress_in"
+                          style={{ width: `${likePercentage}%` }}
+                        />
+                      </div>
+                    </div>
+                    <div className="cs_progress_item">
+                      <div className="cs_progress_head">
+                        <span>{data.card.progress.unlikes.label}</span>
+                        <span>{unlikePercentage}%</span>
+                      </div>
+                      <div className="cs_progress">
+                        <div
+                          className="cs_progress_in"
+                          style={{ width: `${unlikePercentage}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           <div className="cs_height_30 cs_height_lg_30" />
 
           {/* Comments Section */}
