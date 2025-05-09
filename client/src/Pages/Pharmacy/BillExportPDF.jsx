@@ -5,7 +5,7 @@ import { FaFilePdf } from "react-icons/fa";
 import { Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
-import { DejaVuSansBase64 } from "../../fonts"; // Giữ đường dẫn bạn cung cấp
+import { DejaVuSansBase64 } from "../../fonts";
 
 const BillExportPDF = ({ bill, appointment, diagnosisDetails, prescriptions, services, totalMedicine, totalService, totalPayment }) => {
     const exportToPDF = () => {
@@ -29,128 +29,48 @@ const BillExportPDF = ({ bill, appointment, diagnosisDetails, prescriptions, ser
             doc.setFont("DejaVuSans");
 
             // Tiêu đề
-            doc.setFontSize(20);
-            doc.text("HÓA ĐƠN Y TẾ", 20, 20);
-            doc.setFontSize(12);
-            doc.text(`Mã hóa đơn: ${bill._id || "N/A"}`, 20, 30);
-            doc.text(`Ngày phát hành: ${bill.dateIssued ? new Date(bill.dateIssued).toLocaleDateString("vi-VN") : "N/A"}`, 20, 38);
-
-            // Trạng thái với biểu tượng dấu kiểm xanh
-            doc.setTextColor(0, 128, 0); // Màu xanh
-            doc.text(`Trạng thái: Đã thanh toán`, 20, 46);
-            doc.setFillColor(0, 128, 0);
-            // doc.circle(50, 44.5, 1, "F"); // Vẽ dấu kiểm (hình tròn xanh nhỏ)
-            doc.setTextColor(0, 0, 0); // Đặt lại màu đen
+            doc.setFontSize(16);
+            doc.text("HÓA ĐƠN BỆNH VIỆN", 105, 20, { align: "center" });
+            doc.setFontSize(10);
+            doc.text(`Mã số quản lý hóa đơn: ${bill._id || "N/A"}`, 20, 40);
+            doc.text(`Ngày phát hành: ${bill.dateIssued ? new Date(bill.dateIssued).toLocaleDateString("vi-VN") : "N/A"}`, 20, 46);
+            doc.setTextColor(0, 128, 0); // Màu xanh lá
+            const statusText = `Trạng thái thanh toán: ${bill.paymentStatus === "Paid" ? "Đã thanh toán" : bill.paymentStatus || "N/A"}`;
+            doc.text(statusText, 20, 52, { maxWidth: 170 }); // Giới hạn chiều rộng nếu cần
+            doc.setTextColor(0, 0, 0); // Trở lại màu đen
 
             // Thông tin khám bệnh
-            doc.setFontSize(14);
-            doc.text("Thông tin khám bệnh", 20, 58);
+            doc.setFontSize(12);
+            doc.text("I. Thông tin khám bệnh", 20, 58);
             doc.setFontSize(10);
-            doc.text(`Họ và tên người bệnh: ${bill.patientName || "N/A"}`, 20, 68);
-            doc.text(`Ngày khám: ${appointment.date ? new Date(appointment.date).toLocaleDateString("vi-VN") : "N/A"}`, 20, 76);
-            doc.text(`Triệu chứng: ${appointment.symptoms || "N/A"}`, 20, 84);
-            doc.text(`Tuổi: ${appointment.age || "N/A"}`, 20, 92);
-            doc.text(`Giới tính: ${appointment.gender || "N/A"}`, 20, 100);
-            doc.text(`Địa chỉ: ${appointment.address || "N/A"}`, 20, 108);
+            let yPos = 64;
+            doc.text(`(1) Họ và tên người bệnh: ${bill.patientName || "N/A"}`, 20, yPos);
+            yPos += 6;
+            doc.text(`(2) Ngày khám: ${appointment.date ? new Date(appointment.date).toLocaleDateString("vi-VN") : "N/A"}`, 20, yPos);
+            yPos += 6;
+            doc.text(`(3) Triệu chứng: ${appointment.symptoms || "N/A"}`, 20, yPos);
+            yPos += 6;
+            doc.text(`(4) Tuổi: ${appointment.age || "N/A"}`, 20, yPos);
+            yPos += 6;
+            doc.text(`(5) Giới tính: ${appointment.gender || "N/A"}`, 20, yPos);
+            yPos += 6;
+            doc.text(`(6) Địa chỉ: ${appointment.address || "N/A"}`, 20, yPos);
+            yPos += 10;
 
             // Kết quả khám bệnh
-            doc.setFontSize(14);
-            let yPos = 122;
-            doc.text("Kết quả khám bệnh", 20, yPos);
+            doc.setFontSize(12);
+            doc.text("II. Kết quả khám bệnh", 20, yPos);
             doc.setFontSize(10);
             yPos += 8;
             if (Array.isArray(diagnosisDetails) && diagnosisDetails.length > 0) {
-                diagnosisDetails.forEach((diagnosis, index) => {
-                    if (diagnosisDetails.length > 1) {
-                        doc.text(`Kết quả khám bệnh ${index + 1}`, 20, yPos);
-                        yPos += 8;
-                    }
-                    autoTable(doc, {
-                        startY: yPos,
-                        head: [["Nội dung", "Thông tin"]],
-                        body: [
-                            ["Chẩn đoán bệnh", diagnosis.diseaseName || "Không có thông tin"],
-                            ["Mức độ nghiêm trọng", diagnosis.severity || "Không có thông tin"],
-                            ["Phương án điều trị", diagnosis.treatmentPlan || "Không có thông tin"],
-                            ["Bác sĩ đưa kết quả", diagnosis.doctorId?.username || "Không có thông tin"],
-                        ],
-                        styles: { font: "DejaVuSans", fontSize: 10, cellPadding: 2 },
-                        headStyles: {
-                            font: "DejaVuSans",
-                            fontStyle: "normal",
-                            fillColor: [0, 123, 255],
-                            textColor: [255, 255, 255],
-                        },
-                        bodyStyles: { font: "DejaVuSans", fontStyle: "normal" },
-                        alternateRowStyles: { fillColor: [240, 240, 240] },
-                        didParseCell: (data) => {
-                            data.cell.styles.font = "DejaVuSans"; // Ép font cho mọi ô
-                            console.log("Cell font:", data.cell.styles.font);
-                        },
-                    });
-                    yPos = doc.lastAutoTable.finalY + 10;
-                });
-            } else {
-                doc.text("Không có thông tin chẩn đoán", 20, yPos);
-                yPos += 8;
-            }
-
-            // Thông tin đơn thuốc
-            doc.setFontSize(14);
-            doc.text("Thông tin đơn thuốc", 20, yPos);
-            doc.setFontSize(10);
-            yPos += 8;
-            if (prescriptions && prescriptions.length > 0) {
                 autoTable(doc, {
                     startY: yPos,
-                    head: [["STT", "Tên thuốc", "Đơn vị tính", "Số lượng", "Giá (VND)", "Thành tiền (VND)", "Cách dùng"]],
-                    body: prescriptions.map((prescription, index) => {
-                        const price = parseInt(prescription.unitPrice) || 0;
-                        const quantity = parseInt(prescription.quantity) || 0;
-                        const total = price * quantity;
-                        return [
-                            index + 1,
-                            prescription.name || "N/A",
-                            prescription.unit || "N/A",
-                            prescription.quantity?.toString() || "0",
-                            price.toLocaleString("vi-VN"),
-                            total.toLocaleString("vi-VN"),
-                            prescription.usage || "N/A",
-                        ];
-                    }),
-                    styles: { font: "DejaVuSans", fontSize: 10, cellPadding: 2 },
-                    headStyles: {
-                        font: "DejaVuSans",
-                        fontStyle: "normal",
-                        fillColor: [0, 123, 255],
-                        textColor: [255, 255, 255],
-                    },
-                    bodyStyles: { font: "DejaVuSans", fontStyle: "normal" },
-                    alternateRowStyles: { fillColor: [240, 240, 240] },
-                    didParseCell: (data) => {
-                        data.cell.styles.font = "DejaVuSans"; // Ép font cho mọi ô
-                    },
-                });
-                yPos = doc.lastAutoTable.finalY + 10;
-            } else {
-                doc.text("Khách hàng không lấy thuốc", 20, yPos);
-                yPos += 8;
-            }
-
-            // Thông tin dịch vụ khám
-            doc.setFontSize(14);
-            doc.text("Thông tin dịch vụ khám", 20, yPos);
-            doc.setFontSize(10);
-            yPos += 8;
-            if (services && services.length > 0) {
-                autoTable(doc, {
-                    startY: yPos,
-                    head: [["STT", "Tên dịch vụ", "Khoa", "Giá tiền (VND)"]],
-                    body: services.map((service, index) => [
-                        index + 1,
-                        service.name || "N/A",
-                        service.department || "N/A",
-                        service.price?.toLocaleString("vi-VN") || "0",
+                    head: [["Nội dung", "Thông tin"]],
+                    body: diagnosisDetails.flatMap((diagnosis) => [
+                        ["Chẩn đoán bệnh", diagnosis.diseaseName || "Không có thông tin"],
+                        ["Mức độ nghiêm trọng", diagnosis.severity || "Không có thông tin"],
+                        ["Phương án điều trị", diagnosis.treatmentPlan || "Không có thông tin"],
+                        ["Bác sĩ đưa kết quả", diagnosis.doctorId?.username || "Không có thông tin"],
                     ]),
                     styles: { font: "DejaVuSans", fontSize: 10, cellPadding: 2 },
                     headStyles: {
@@ -162,28 +82,95 @@ const BillExportPDF = ({ bill, appointment, diagnosisDetails, prescriptions, ser
                     bodyStyles: { font: "DejaVuSans", fontStyle: "normal" },
                     alternateRowStyles: { fillColor: [240, 240, 240] },
                     didParseCell: (data) => {
-                        data.cell.styles.font = "DejaVuSans"; // Ép font cho mọi ô
+                        data.cell.styles.font = "DejaVuSans";
                     },
                 });
                 yPos = doc.lastAutoTable.finalY + 10;
             } else {
-                doc.text("Không có dịch vụ khám", 20, yPos);
+                doc.text("Không có thông tin chẩn đoán", 20, yPos);
+                yPos += 8;
+            }
+
+            // Thông tin đơn thuốc và dịch vụ khám (gộp thành một bảng)
+            doc.setFontSize(12);
+            doc.text("III. Chi phí khám chữa bệnh", 20, yPos);
+            doc.setFontSize(10);
+            yPos += 8;
+            const tableData = [
+                ...(prescriptions.map((prescription, index) => {
+                    const price = parseInt(prescription.unitPrice) || 0;
+                    const quantity = parseInt(prescription.quantity) || 0;
+                    const total = price * quantity;
+                    return [
+                        `Thuốc ${index + 1}: ${prescription.name || "N/A"}`,
+                        prescription.unit || "N/A",
+                        quantity.toString(),
+                        price.toLocaleString("vi-VN"),
+                        total.toLocaleString("vi-VN"),
+                        "Khác",
+                    ];
+                }) || []),
+                ...(services.map((service, index) => {
+                    const price = parseInt(service.price) || 0;
+                    return [
+                        `Dịch vụ ${index + 1}: ${service.name || "N/A"}`,
+                        "Lần",
+                        "1",
+                        price.toLocaleString("vi-VN"),
+                        price.toLocaleString("vi-VN"),
+                        "Khác",
+                    ];
+                }) || []),
+            ];
+
+            if (tableData.length > 0) {
+                autoTable(doc, {
+                    startY: yPos,
+                    head: [["Nội dung", "DVT", "Số lượng", "Đơn giá", "Thành tiền", "Nguồn thanh toán"]],
+                    body: tableData,
+                    styles: { font: "DejaVuSans", fontSize: 10, cellPadding: 2 },
+                    headStyles: {
+                        font: "DejaVuSans",
+                        fontStyle: "normal",
+                        fillColor: [0, 123, 255],
+                        textColor: [255, 255, 255],
+                    },
+                    bodyStyles: { font: "DejaVuSans", fontStyle: "normal" },
+                    alternateRowStyles: { fillColor: [240, 240, 240] },
+                    didParseCell: (data) => {
+                        data.cell.styles.font = "DejaVuSans";
+                    },
+                });
+                yPos = doc.lastAutoTable.finalY + 10;
+            } else {
+                doc.text("Không có đơn thuốc hoặc dịch vụ", 20, yPos);
                 yPos += 8;
             }
 
             // Tổng tiền
-            doc.setFontSize(14);
-            doc.text("Tổng tiền", 20, yPos);
+            doc.setFontSize(12);
+            doc.text("IV. Tổng tiền", 20, yPos);
             doc.setFontSize(10);
             yPos += 8;
-            doc.text(`Tổng tiền thuốc: ${totalMedicine.toLocaleString("vi-VN")} VND`, 20, yPos);
-            yPos += 8;
-            doc.text(`Tổng tiền dịch vụ: ${totalService.toLocaleString("vi-VN")} VND`, 20, yPos);
-            yPos += 8;
+            doc.text(`Số tiền bằng chữ: Tổng cộng: ${totalPayment.toLocaleString("vi-VN")} đồng`, 20, yPos);
+            yPos += 6;
+            doc.text(`Tổng tiền thuốc: ${totalMedicine.toLocaleString("vi-VN")} đồng`, 20, yPos);
+            yPos += 6;
+            doc.text(`Tổng tiền dịch vụ: ${totalService.toLocaleString("vi-VN")} đồng`, 20, yPos);
+            yPos += 6;
+            doc.text(`Tổng cộng: ${totalPayment.toLocaleString("vi-VN")} đồng`, 20, yPos);
+            yPos += 10;
 
-            <hr className="my-3" />
-
-            doc.text(`TỔNG CỘNG: ${totalPayment.toLocaleString("vi-VN")} VND`, 20, yPos);
+            // Chữ ký
+            doc.setFontSize(12);
+            doc.text("NGƯỜI LẬP BẢNG KÊ", 20, yPos);
+            doc.text("XÁC NHẬN CỦA NGƯỜI BỆNH", 120, yPos);
+            yPos += 20;
+            doc.line(20, yPos, 50, yPos); // Dòng chữ ký người lập
+            doc.line(120, yPos, 150, yPos); // Dòng chữ ký người bệnh
+            yPos += 6;
+            doc.text("(Ký, ghi rõ họ tên)", 20, yPos);
+            doc.text("(Ký, ghi rõ họ tên)", 120, yPos);
 
             // Lưu file PDF
             doc.save(`hoa_don_${bill._id || "khong_xac_dinh"}.pdf`);
@@ -240,7 +227,6 @@ BillExportPDF.propTypes = {
             unit: PropTypes.string,
             quantity: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
             unitPrice: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-            totalPrice: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
             usage: PropTypes.string,
         })
     ).isRequired,

@@ -461,7 +461,7 @@ const BlogCreatePage = () => {
             const cleanContent = DOMPurify.sanitize(editorRef.current.innerHTML, {
                 ALLOWED_TAGS: ['p', 'br', 'ul', 'ol', 'li', 'strong', 'em', 'u', 'a', 'img'],
                 ALLOWED_ATTR: ['src', 'alt', 'href', 'class', 'style']
-            }).replace(/&nbsp;/g, ' ');
+            }).replace(/ /g, ' ');
 
             // Create FormData object for file uploads
             const formDataToSend = new FormData();
@@ -510,8 +510,8 @@ const BlogCreatePage = () => {
             // Clear draft after successful submission
             localStorage.removeItem('blogDraft');
 
-            // Redirect to the newly created blog
-            navigate(`/blog/${response.data._id}`);
+            // Redirect to the newly created blog with correct path
+            navigate(`/doctor/blog/${response.data._id}`);
         } catch (err) {
             console.error('Error creating blog:', err);
             setError(err.response?.data?.message || 'Có lỗi xảy ra khi tạo bài viết. Vui lòng thử lại sau.');
@@ -636,7 +636,6 @@ const BlogCreatePage = () => {
                                                     <button onClick={() => setVideoModalOpen(true)}><FaPhotoVideo /></button>
                                                     <button onClick={() => document.execCommand('undo')}><FaRedo /></button>
                                                     <button onClick={() => document.execCommand('redo')}><FaUndo /></button>
-                                                    {/* <button type="button" onClick={toggleHTMLView} title="Xem mã HTML">HTML</button> */}
                                                 </div>
 
                                                 <UrlInputModal
@@ -746,7 +745,6 @@ const BlogCreatePage = () => {
                                             onChange={handleChange}
                                         >
                                             <option value="public">Công khai - Tất cả mọi người</option>
-                                            {/* <option value="private">Riêng tư - Chỉ bạn</option> */}
                                             <option value="doctors">Bác sĩ - Chỉ bác sĩ</option>
                                         </select>
                                     </div>
@@ -818,8 +816,7 @@ const BlogCreatePage = () => {
                                         <small>
                                             <strong>Quyền xem:</strong> {
                                                 formData.visibility === 'public' ? 'Công khai - Tất cả mọi người' :
-                                                    formData.visibility === 'private' ? 'Riêng tư - Chỉ bạn' :
-                                                        'Nhân viên y tế - Chỉ bác sĩ và nhân viên y tế'
+                                                    'Nhân viên y tế - Chỉ bác sĩ và nhân viên y tế'
                                             }
                                         </small>
                                     </div>
@@ -848,7 +845,7 @@ const BlogCreatePage = () => {
                     </div>
                 </div>
             </div>
-        </div >
+        </div>
     );
 };
 

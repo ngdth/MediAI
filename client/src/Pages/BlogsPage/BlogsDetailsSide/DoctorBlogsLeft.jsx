@@ -206,6 +206,16 @@ const DoctorBlogsLeft = ({ data, blogId, setBlog, onUnlikeReply, onLikeReply, on
 
                     <div className="cs_height_27 cs_height_lg_10" />
 
+                    {/* Post Content */}
+                    <div
+                        className="blog-content"
+                        dangerouslySetInnerHTML={{ __html: data.content }}
+                        style={{
+                            whiteSpace: 'pre-wrap',
+                            wordBreak: 'break-word',
+                        }}
+                    />
+
                     {/* Testimonial and Card Section */}
                     <div className="row cs_row_gap_30 cs_gap_y_30">
                         <div className="col-md-7">
@@ -286,16 +296,6 @@ const DoctorBlogsLeft = ({ data, blogId, setBlog, onUnlikeReply, onLikeReply, on
                             </div>
                         </div>
                     </div>
-
-                    {/* Post Content */}
-                    <div
-                        className="blog-content"
-                        dangerouslySetInnerHTML={{ __html: data.content }}
-                        style={{
-                            whiteSpace: 'pre-wrap',
-                            wordBreak: 'break-word',
-                        }}
-                    />
 
                     <div className="cs_height_30 cs_height_lg_30" />
 
