@@ -11,15 +11,13 @@ import { HiMiniMagnifyingGlass } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
-
-
 const Header = ({ isTopBar, variant }) => {
   const [isShowMobileMenu, setIsShowMobileMenu] = useState(false);
   const [openMobileSubmenuIndex, setOpenMobileSubmenuIndex] = useState([]);
-  const [isSearchActive, setIsSearchActive] = useState(false);
   const [prevScrollPos, setPrevScrollPos] = useState(0);
   const [isSticky, setIsSticky] = useState();
-  const [searchTerm, setSearchTerm] = useState("");
+  // const [isSearchActive, setIsSearchActive] = useState(false);
+  // const [searchTerm, setSearchTerm] = useState("");
   const [username, setUsername] = useState(localStorage.getItem("username"));
   const navigate = useNavigate();
 
@@ -44,17 +42,24 @@ const Header = ({ isTopBar, variant }) => {
 
     window.addEventListener("loginSuccess", handleLogin);
 
+    const handleProfile = () => {
+      setUsername(localStorage.getItem("username"));
+    };
+  
+    window.addEventListener("usernameChange", handleProfile);
+
     return () => {
       window.removeEventListener("scroll", handleScroll); // Cleanup the event listener
       window.removeEventListener("loginSuccess", handleLogin);
+      window.removeEventListener("usernameChange", handleProfile);
     };
   }, [prevScrollPos]);
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Xóa token
-    localStorage.removeItem("username"); // Xóa username
-    setUsername(null); // Cập nhật state username về null
-    navigate("/"); // Chuyển hướng về trang đăng nhập
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    setUsername(null);
+    navigate("/");
   };
 
   const menu = {
@@ -113,13 +118,13 @@ const Header = ({ isTopBar, variant }) => {
     }
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault(); // Ngăn trang reload
+  // const handleSearch = (e) => {
+  //   e.preventDefault();
 
-    if (searchTerm.trim()) {
-      navigate(`/search?keyword=${encodeURIComponent(searchTerm)}`); // Chuyển hướng đến trang DoctorsResultPage
-    }
-  };
+  //   if (searchTerm.trim()) {
+  //     navigate(`/search?keyword=${encodeURIComponent(searchTerm)}`);
+  //   }
+  // };
 
   return (
     <>
@@ -243,7 +248,13 @@ const Header = ({ isTopBar, variant }) => {
                     ))}
                     {/* Hiển thị username nếu đã đăng nhập */}
                     <li className="menu-item-has-children">
-                      <Link className={username ? "text-primary" : ""} to="/">{username || "Tài khoản"}</Link>
+                      <Link className={username ? "text-primary cs_username" : ""} to="/">
+                        {username
+                          ? username.length > 14
+                            ? username.slice(0, 12) + "..."
+                            : username
+                          : "Tài khoản"}
+                      </Link>
                       <ul>
                         {accountMenu.map((subItem, subIndex) => (
                           <li key={subIndex}>
@@ -274,7 +285,7 @@ const Header = ({ isTopBar, variant }) => {
                     <span></span>
                   </span>
                 </div>
-                <div className="cs_search_wrap">
+                {/* <div className="cs_search_wrap">
                   <div
                     className="cs_search_toggle cs_center"
                     onClick={() => setIsSearchActive(!isSearchActive)}
@@ -305,7 +316,7 @@ const Header = ({ isTopBar, variant }) => {
                       </button>
                     </div>
                   </form>
-                </div>
+                </div> */}
                 <Link to={menu.btnUrl} className="cs_btn cs_style_1 cs_color_1">
                   <span>{menu.btnText}</span>
                   <i>
