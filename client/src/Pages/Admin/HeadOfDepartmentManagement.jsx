@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Modal, Button, Form } from "react-bootstrap";
+import { toast } from "react-toastify";
 import DoctorModal from "../../Components/Admin/DoctorModal";
 import { validateExp } from "../../utils/validateUtils";
 import ImportDataButton from "../../Components/UploadFile";
@@ -70,15 +71,18 @@ const HeadOfDepartmentManagement = () => {
                 await axios.put(`${import.meta.env.VITE_BE_URL}/admin/hod/update/${editingDoctor._id}`, formData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
+                toast.success("Cập nhật thông tin trưởng khoa thành công!");
             } else {
                 await axios.post(`${import.meta.env.VITE_BE_URL}/admin/hod/create`, submissionData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
+                toast.success("Tạo tài khoản trưởng khoa thành công!");
             }
             fetchHODs();
             handleCloseModal();
         } catch (error) {
             console.error("Error saving doctor:", error);
+            toast.error(`Lỗi: ${editingDoctor ? "Cập nhật" : "Tạo"} trưởng khoa thất bại!`);
         }
     };
 
@@ -106,15 +110,17 @@ const HeadOfDepartmentManagement = () => {
             await axios.delete(`${import.meta.env.VITE_BE_URL}/admin/hod/delete/${doctorToDelete._id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
+            toast.success("Xóa tài khoản trưởng khoa thành công!");
             fetchHODs();
             setShowDeleteModal(false);  // Close the delete confirmation modal
         } catch (error) {
             console.error("Error deleting doctor:", error);
+            toast.error("Lỗi khi xóa tài khoản trưởng khoa!");
         }
     };
 
     const handleShowModal = () => {
-        setFormData({ username: "", email: "", password: "", specialization: "", experience: 0 });
+        setFormData({ username: "", email: "", password: "", specialization: "", experience: 0, gender: "" });
         setEditingDoctor(null);
         setShowModal(true);
     };
