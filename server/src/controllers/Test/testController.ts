@@ -3,6 +3,35 @@ import fs from "fs";
 import path from "path";
 import Tests from "../../models/Tests";
 import Appointment from "../../models/Appointment";
+import { v4 as uuidv4 } from "uuid";
+import streamifier from "streamifier";
+import bucket from "../../config/firebase";
+
+const uploadFileToFirebase = (file: Express.Multer.File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const fileName = `tests/${uuidv4()}-${file.originalname}`;
+        const firebaseFile = bucket.file(fileName);
+
+        const stream = firebaseFile.createWriteStream({
+            metadata: {
+                contentType: file.mimetype,
+            },
+        });
+
+        stream.on("error", (err) => {
+            console.error("🔥 Lỗi khi upload ảnh lên Firebase:", err);
+            reject(err);
+        });
+
+        stream.on("finish", async () => {
+            await firebaseFile.makePublic();
+            const publicUrl = `https://storage.googleapis.com/${bucket.name}/${firebaseFile.name}`;
+            resolve(publicUrl);
+        });
+
+        streamifier.createReadStream(file.buffer).pipe(stream);
+    });
+};
 
 export const uploadTestImages = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -11,14 +40,14 @@ export const uploadTestImages = async (req: Request, res: Response): Promise<voi
             res.status(400).json({ message: "Không có file nào được tải lên." });
             return;
         }
-        
+
         const appointment = await Appointment.findById(appointmentId);
         if (!appointment) {
             res.status(404).json({ message: "Không tìm thấy lịch hẹn" });
             return;
         }
 
-        const userId =appointment.userId;
+        const userId = appointment.userId;
 
         let testRecord = await Tests.findOne({ appointmentId, userId });
 
@@ -26,7 +55,9 @@ export const uploadTestImages = async (req: Request, res: Response): Promise<voi
             testRecord = new Tests({ appointmentId, userId });
         }
 
-        const imagePaths = req.files.map((file: Express.Multer.File) => `/uploads/tests/${file.filename}`);
+        const imagePaths = await Promise.all(
+            (req.files as Express.Multer.File[]).map((file: Express.Multer.File) => uploadFileToFirebase(file))
+        );
 
         switch (testType) {
             case "xRay":
@@ -105,14 +136,14 @@ export const deleteTestImage = async (req: Request, res: Response): Promise<void
         // Xóa tệp tin vật lý
         const uploadsDir = path.join(__dirname, process.env.UPLOADS_DIR_TESTS || '../../../../client/public/uploads/tests');
         const filePath = path.join(uploadsDir, imgName);
-        
+
         // Kiểm tra xem file có tồn tại không
         if (!fs.existsSync(filePath)) {
             console.error(`File not found: ${filePath}`);
             res.status(404).json({ message: "Không tìm thấy tệp tin" });
             return;
         }
-        
+
         fs.unlink(filePath, (err) => {
             if (err) {
                 console.error("Error deleting file:", err);

@@ -144,11 +144,11 @@ const GeneralHealthKetchup = () => {
         }
       );
       console.log("Upload ảnh thành công:", response.data);
-      toast.success("Upload ảnh " + subField + " thành công");
+      toast.success("Upload ảnh thành công");
       e.target.value = null;
       fetchAppointmentData();
     } catch (error) {
-      toast.error(`Upload ảnh ${subField} thất bại`);
+      toast.error("Upload ảnh thất bại");
       console.error("Upload thất bại:", error);
     }
   };
