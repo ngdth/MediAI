@@ -58,7 +58,7 @@ const AppointmentsHistory = () => {
 
       try {
         console.log(`Fetching appointments for userId: ${userId}`);
-        const response = await axios.get(`${import.meta.env.VITE_BE_URL}/appointment?userId=${userId}`, {
+        const response = await axios.get(`${import.meta.env.VITE_BE_URL}/appointment/history`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
