@@ -159,19 +159,25 @@ const NurseManagement = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {nurses.map((nurse) => (
-                            <tr key={nurse._id}>
-                                <td>{nurse.username}</td>
-                                <td>{nurse.email}</td>
-                                <td>{nurse.specialization}</td>
-                                <td>{nurse.gender}</td>
-                                <td>{nurse.experience} năm </td>
-                                <td>
-                                    <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(nurse)}>Chỉnh sửa</button>
-                                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(nurse._id)}>Xóa</button>
-                                </td>
+                        {currentNurses.length > 0 ? (
+                            currentNurses.map((nurse) => (
+                                <tr key={nurse._id}>
+                                    <td>{nurse.username}</td>
+                                    <td>{nurse.email}</td>
+                                    <td>{nurse.specialization}</td>
+                                    <td>{nurse.gender}</td>
+                                    <td>{nurse.experience} năm</td>
+                                    <td>
+                                        <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(nurse)}>Chỉnh sửa</button>
+                                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(nurse._id)}>Xóa</button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="6">Không có y tá nào.</td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>

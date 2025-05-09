@@ -173,19 +173,25 @@ const HeadOfDepartmentManagement = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {doctors.map((doctor) => (
-                            <tr key={doctor._id}>
-                                <td>{doctor.username}</td>
-                                <td>{doctor.email}</td>
-                                <td>{doctor.specialization}</td>
-                                <td>{doctor.gender}</td>
-                                <td>{doctor.experience} năm</td>
-                                <td>
-                                    <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(doctor)}>Chỉnh sửa </button>
-                                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(doctor)}>Xóa</button>
-                                </td>
+                    {currentDoctors.length > 0 ? (
+                            currentDoctors.map((doctor) => (
+                                <tr key={doctor._id}>
+                                    <td>{doctor.username}</td>
+                                    <td>{doctor.email}</td>
+                                    <td>{doctor.specialization}</td>
+                                    <td>{doctor.gender}</td>
+                                    <td>{doctor.experience} năm</td>
+                                    <td>
+                                        <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(doctor)}>Chỉnh sửa</button>
+                                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(doctor)}>Xóa</button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="6">Không có bác sĩ nào.</td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>

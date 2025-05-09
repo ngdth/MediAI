@@ -151,29 +151,35 @@ const ServiceManagement = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {services.map((service) => (
-                            <tr key={service._id}>
-                                <td>{service.name}</td>
-                                <td>{service.description}</td>
-                                <td>{service.department}</td>
-                                <td>{service.price} VND</td>
-                                <td>{service.status}</td>
-                                <td>
-                                    <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(service)}>
-                                        Chỉnh sửa
-                                    </button>
-                                    <button
-                                        className="btn btn-danger btn-sm"
-                                        onClick={() => {
-                                            setDeleteServiceId(service._id);
-                                            setConfirmDelete(true);
-                                        }}
-                                    >
-                                        Xóa
-                                    </button>
-                                </td>
+                    {currentServices.length > 0 ? (
+                            currentServices.map((service) => (
+                                <tr key={service._id}>
+                                    <td>{service.name}</td>
+                                    <td>{service.description}</td>
+                                    <td>{service.department}</td>
+                                    <td>{service.price} VND</td>
+                                    <td>{service.status}</td>
+                                    <td>
+                                        <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(service)}>
+                                            Chỉnh sửa
+                                        </button>
+                                        <button
+                                            className="btn btn-danger btn-sm"
+                                            onClick={() => {
+                                                setDeleteServiceId(service._id);
+                                                setConfirmDelete(true);
+                                            }}
+                                        >
+                                            Xóa
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="6">Không có dịch vụ nào.</td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>
