@@ -19,9 +19,9 @@ const PharmacyManagement = () => {
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentServices = services.slice(indexOfFirstItem, indexOfLastItem);
+    const currentPharmacy = pharmacy.slice(indexOfFirstItem, indexOfLastItem);
 
-    const totalPages = Math.ceil(services.length / itemsPerPage);
+    const totalPages = Math.ceil(pharmacy.length / itemsPerPage);
 
     const handlePreviousPage = () => {
         if (currentPage > 1) {
