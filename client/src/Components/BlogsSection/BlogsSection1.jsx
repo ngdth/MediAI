@@ -1,34 +1,38 @@
 import SectionHeading from "../SectionHeading";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { FaAngleRight } from "react-icons/fa";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { useEffect, useState } from "react";
+import { Modal, Button } from 'react-bootstrap';
 import axios from "axios";
 import "../../sass/blog/blogsSection1.scss";
-import { FaAngleRight } from "react-icons/fa";
 
 const BlogsSection1 = ({ data }) => {
+  console.log("Component BlogsSection1 được render với data:", data);
+
+  const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const specializationParam = queryParams.get('specialization');
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredBlogs, setFilteredBlogs] = useState(data.blogsData || []);
+  const [filteredBlogs, setFilteredBlogs] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [specializations, setSpecializations] = useState([]);
   const [selectedSpecialization, setSelectedSpecialization] = useState('');
   const [error, setError] = useState(null);
   const [allBlogs, setAllBlogs] = useState([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [blogToDelete, setBlogToDelete] = useState(null);
+
+  const [currentUser, setCurrentUser] = useState(null);
+  const [isDoctor, setIsDoctor] = useState(false);
 
   useEffect(() => {
-    if (data && data.blogsData && data.blogsData.length > 0) {
-      setFilteredBlogs(data.blogsData);
-      setAllBlogs(data.blogsData);
-      extractSpecializations(data.blogsData);
-    } else {
-      fetchBlogs('', specializationParam || '');
-    }
-  }, [data, specializationParam]);
+    checkUserRole();
+    fetchBlogs('', specializationParam || '');
+  }, [specializationParam]);
 
   const truncateHTML = (html, maxLength) => {
     if (!html || typeof html !== 'string') return '';
@@ -65,6 +69,24 @@ const BlogsSection1 = ({ data }) => {
     return doc.body?.innerHTML || html.substring(0, maxLength) + '...';
   };
 
+  const checkUserRole = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await axios.get(`${import.meta.env.VITE_BE_URL}/user/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log("Role của người dùng:", response.data.role);
+
+      setCurrentUser(response.data);
+      setIsDoctor(response.data.role === 'doctor');
+    } catch (err) {
+      console.error("Error fetching user info:", err.response?.data || err.message);
+    }
+  };
+
   const extractSpecializations = (blogs) => {
     const specializationSet = new Set(blogs.map(blog => blog.category).filter(Boolean));
     const formattedSpecializations = Array.from(specializationSet).map(spec => ({
@@ -93,22 +115,39 @@ const BlogsSection1 = ({ data }) => {
         return;
       }
 
-      const formattedBlogs = blogsArray.map(blog => ({
-        id: blog._id,
-        category: blog.specialization || 'General',
-        date: new Date(blog.createdAt).toLocaleDateString('vi-VN', {
-          day: 'numeric', month: 'numeric',
-        }),
-        author: blog.author?.username || 'Unknown',
-        comments: `${blog.comments?.length || 0} Bình luận`,
-        title: blog.title,
-        subtitle: truncateHTML(blog.content, 50),
-        image: blog.media && blog.media.length > 0
-          ? blog.media[0].url
-          : '/assets/img/post_1.jpeg',
-        link: `/blog/${blog._id}`,
-        linkText: 'Đọc thêm',
-      }));
+      console.log("Dữ liệu từ /blog:", blogsArray);
+
+      const formattedBlogs = blogsArray.map(blog => {
+        let imageUrl = '/assets/img/post_1.jpeg'; // Ảnh mặc định
+        if (blog.media && Array.isArray(blog.media) && blog.media[0]?.url) {
+          const mediaUrl = blog.media[0].url;
+          console.log(`Blog ${blog._id} raw media URL (all-blogs):`, mediaUrl);
+          if (mediaUrl && (mediaUrl.startsWith('http://') || mediaUrl.startsWith('https://'))) {
+            imageUrl = mediaUrl;
+          } else if (mediaUrl) {
+            imageUrl = `${import.meta.env.VITE_BE_URL}/${mediaUrl}`;
+          }
+        } else {
+          console.log(`Blog ${blog._id} không có media hoặc media[0].url (all-blogs)`);
+        }
+
+        console.log(`Blog ${blog._id} final image URL (all-blogs):`, imageUrl);
+
+        return {
+          id: blog._id,
+          category: blog.specialization || 'General',
+          date: new Date(blog.createdAt).toLocaleDateString('vi-VN', {
+            day: 'numeric', month: 'numeric',
+          }),
+          author: blog.author?.username || 'Unknown',
+          comments: `${blog.comments?.length || 0} Bình luận`,
+          title: blog.title,
+          subtitle: truncateHTML(blog.content, 50),
+          image: imageUrl,
+          link: `/blog/${blog._id}`, // Đường dẫn đã được thay đổi thành /blog/${blog.id}
+          linkText: 'Đọc thêm',
+        };
+      });
 
       setAllBlogs(formattedBlogs);
       setFilteredBlogs(formattedBlogs);
@@ -135,7 +174,7 @@ const BlogsSection1 = ({ data }) => {
         blog.date.toLowerCase().includes(searchTermLower) ||
         blog.comments.toLowerCase().includes(searchTermLower)
       );
-      console.log("Filtered blogs by term:", filtered); // Debug kết quả lọc
+      console.log("Filtered blogs by term:", filtered);
     }
 
     if (specialization) {
@@ -176,6 +215,32 @@ const BlogsSection1 = ({ data }) => {
       filterBlogsLocally(searchTerm, value);
     } else {
       fetchBlogs(searchTerm, value);
+    }
+  };
+
+  const handleEditBlog = (blogId) => {
+    navigate(`edit/${blogId}`);
+  };
+
+  const handleDeleteBlog = async (blogId) => {
+    setBlogToDelete(blogId);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteBlog = async () => {
+    if (!blogToDelete) return;
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`${import.meta.env.VITE_BE_URL}/blog/${blogToDelete}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setShowDeleteModal(false);
+      setBlogToDelete(null);
+      fetchBlogs();
+    } catch (error) {
+      setError('Không thể xóa bài viết. Vui lòng thử lại.');
+      setShowDeleteModal(false);
+      setBlogToDelete(null);
     }
   };
 
@@ -255,7 +320,6 @@ const BlogsSection1 = ({ data }) => {
                   </button>
                 </div>
               </form>
-
             </div>
           </div>
         </div>
@@ -280,7 +344,7 @@ const BlogsSection1 = ({ data }) => {
               <div className="cs_posts_grid cs_style_1 p-3">
                 {filteredBlogs.map((blog) => (
                   <article key={blog.id} className="cs_post cs_style_12">
-                    <Link to={blog.link} className="cs_post_thumbnail position-relative">
+                    <Link to={`/blog/${blog.id}`} className="cs_post_thumbnail position-relative">
                       <img
                         src={blog.image}
                         alt={blog.title || "Post Thumbnail"}
@@ -304,12 +368,34 @@ const BlogsSection1 = ({ data }) => {
                         </div>
                       </div>
                       <h3 className="cs_post_title">
-                        <Link to={blog.link}>{blog.title}</Link>
+                        <Link to={`/blog/${blog.id}`}>{blog.title}</Link>
                       </h3>
-                      <Link to={blog.link} className="cs_post_btn">
+                      <Link to={`/blog/${blog.id}`} className="cs_post_btn">
                         <span>{blog.linkText}</span>
                         <span><FaAngleRight /></span>
                       </Link>
+                      {isDoctor && (
+                        <div className="cs_blog_actions mt-3">
+                          <button
+                            className="cs_btn cs_btn_secondary me-2"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleEditBlog(blog.id);
+                            }}
+                          >
+                            Chỉnh sửa
+                          </button>
+                          <button
+                            className="cs_btn cs_btn_danger"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleDeleteBlog(blog.id);
+                            }}
+                          >
+                            Xóa
+                          </button>
+                        </div>
+                      )}
                       <div className="cs_post_shape position-absolute" />
                     </div>
                   </article>
@@ -319,7 +405,8 @@ const BlogsSection1 = ({ data }) => {
               <div className="text-center">
                 <p>
                   {hasSearched
-                    ? `Không tìm thấy bài viết nào phù hợp với từ khóa "${searchTerm}"${selectedSpecialization ? ` và chuyên khoa "${selectedSpecialization}"` : ""}`
+                    ? `Không tìm thấy bài viết nào phù hợp với từ khóa "${searchTerm}"${selectedSpecialization ? ` và chuyên khoa "${selectedSpecialization}"` : ""
+                    }`
                     : "Không có bài viết nào để hiển thị."}
                 </p>
               </div>
