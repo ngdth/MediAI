@@ -134,22 +134,44 @@ const BlogsSection2 = ({ data }) => {
                 return;
             }
 
-            const formattedBlogs = blogsArray.map(blog => ({
-                id: blog._id,
-                category: blog.specialization || 'General',
-                date: new Date(blog.createdAt).toLocaleDateString('vi-VN', {
-                    day: 'numeric', month: 'numeric',
-                }),
-                author: blog.author?.username || 'Unknown',
-                comments: `${blog.comments?.length || 0} Bình luận`,
-                title: blog.title,
-                subtitle: truncateHTML(blog.content, 50),
-                image: blog.media && blog.media.length > 0
-                    ? blog.media[0].url
-                    : '/assets/img/post_1.jpeg',
-                link: `/doctor/blog/${blog._id}`, // Cố định link cho DoctorBlogsPage
-                linkText: 'Đọc thêm',
-            }));
+            console.log("Dữ liệu từ /blog/my-blogs:", blogsArray);
+
+            const formattedBlogs = blogsArray.map(blog => {
+                // Xử lý URL ảnh
+                let imageUrl = '/assets/img/post_1.jpeg'; // Ảnh mặc định
+                if (blog.media && blog.media.length > 0 && blog.media[0].url) {
+                    const mediaUrl = blog.media[0].url;
+                    console.log(`Blog ${blog._id} raw media URL:`, mediaUrl); // Debug URL gốc
+
+                    // Nếu URL không bắt đầu bằng http, thêm base URL
+                    if (!mediaUrl.startsWith('http')) {
+                        // Đảm bảo không có ký tự thừa như /src nếu không cần thiết
+                        const cleanedUrl = mediaUrl.startsWith('/')
+                            ? mediaUrl
+                            : `/${mediaUrl}`;
+                        imageUrl = `${import.meta.env.VITE_BE_URL}${cleanedUrl}`;
+                    } else {
+                        imageUrl = mediaUrl;
+                    }
+                }
+
+                console.log(`Blog ${blog._id} final image URL:`, imageUrl); // Debug URL cuối
+
+                return {
+                    id: blog._id,
+                    category: blog.specialization || 'General',
+                    date: new Date(blog.createdAt).toLocaleDateString('vi-VN', {
+                        day: 'numeric', month: 'numeric',
+                    }),
+                    author: blog.author?.username || 'Unknown',
+                    comments: `${blog.comments?.length || 0} Bình luận`,
+                    title: blog.title,
+                    subtitle: truncateHTML(blog.content, 50),
+                    image: imageUrl,
+                    link: `/doctor/blog/${blog._id}`,
+                    linkText: 'Đọc thêm',
+                };
+            });
 
             setFilteredBlogs(formattedBlogs);
             setAllBlogs(formattedBlogs);
@@ -181,22 +203,42 @@ const BlogsSection2 = ({ data }) => {
                 return;
             }
 
-            const formattedBlogs = blogsArray.map(blog => ({
-                id: blog._id,
-                category: blog.specialization || 'General',
-                date: new Date(blog.createdAt).toLocaleDateString('vi-VN', {
-                    day: 'numeric', month: 'numeric',
-                }),
-                author: blog.author?.username || 'Unknown',
-                comments: `${blog.comments?.length || 0} Bình luận`,
-                title: blog.title,
-                subtitle: truncateHTML(blog.content, 50),
-                image: blog.media && blog.media.length > 0
-                    ? blog.media[0].url
-                    : '/assets/img/post_1.jpeg',
-                link: `/doctor/blog/${blog._id}`, // Cố định link cho DoctorBlogsPage
-                linkText: 'Đọc thêm',
-            }));
+            const formattedBlogs = blogsArray.map(blog => {
+                // Xử lý URL ảnh
+                let imageUrl = '/assets/img/post_1.jpeg'; // Ảnh mặc định
+                if (blog.media && blog.media.length > 0 && blog.media[0].url) {
+                    const mediaUrl = blog.media[0].url;
+                    console.log(`Blog ${blog._id} raw media URL:`, mediaUrl); // Debug URL gốc
+
+                    // Nếu URL không bắt đầu bằng http, thêm base URL
+                    if (!mediaUrl.startsWith('http')) {
+                        // Đảm bảo không có ký tự thừa như /src nếu không cần thiết
+                        const cleanedUrl = mediaUrl.startsWith('/')
+                            ? mediaUrl
+                            : `/${mediaUrl}`;
+                        imageUrl = `${import.meta.env.VITE_BE_URL}${cleanedUrl}`;
+                    } else {
+                        imageUrl = mediaUrl;
+                    }
+                }
+
+                console.log(`Blog ${blog._id} final image URL:`, imageUrl); // Debug URL cuối
+
+                return {
+                    id: blog._id,
+                    category: blog.specialization || 'General',
+                    date: new Date(blog.createdAt).toLocaleDateString('vi-VN', {
+                        day: 'numeric', month: 'numeric',
+                    }),
+                    author: blog.author?.username || 'Unknown',
+                    comments: `${blog.comments?.length || 0} Bình luận`,
+                    title: blog.title,
+                    subtitle: truncateHTML(blog.content, 50),
+                    image: imageUrl,
+                    link: `/doctor/blog/${blog._id}`,
+                    linkText: 'Đọc thêm',
+                };
+            });
 
             setAllBlogs(formattedBlogs);
             setFilteredBlogs(formattedBlogs);
