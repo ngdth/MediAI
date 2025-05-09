@@ -329,7 +329,7 @@ export const getBillDetail = async (req: Request, res: Response, next: NextFunct
         }
 
         // Kiểm tra quyền truy cập
-        if (userRole === 'user' && bill.userId._id.toString() !== userId.toString()) {
+        if (userRole === 'user' && (bill.userId as any)._id.toString() !== userId.toString()) {
             console.warn('Từ chối truy cập cho bệnh nhân:', userId);
             res.status(403).json({ message: "Từ chối truy cập: Bạn chỉ có thể xem hóa đơn của chính bạn" });
             return;
