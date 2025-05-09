@@ -8,7 +8,14 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { CalendarDays, UserPlus, ScissorsSquare, Banknote, Pencil, Trash2 } from "lucide-react";
+import {
+  CalendarDays,
+  UserPlus,
+  ScissorsSquare,
+  Banknote,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import axios from "axios";
 import { FaSearch } from "react-icons/fa";
 
@@ -38,31 +45,41 @@ const AdminDashboard = () => {
       const response = await axios.get(`${import.meta.env.VITE_BE_URL}/admin/users`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      
       const users = response.data;
-  
-      // Filter users with role "user"
+
       const filteredUsers = users.filter((user) => user.role === "user");
-  
-      // Count users by month
-      const userCountByMonth = {};
+
+      const userCountByMonth2024 = {};
+      const userCountByMonth2025 = {};
       filteredUsers.forEach((user) => {
         const date = new Date(user.createdAt);
         const year = date.getFullYear();
-        const month = date.getMonth() + 1; // getMonth() returns 0-11
-        const key = `${year}-${month}`;
-  
-        if (!userCountByMonth[key]) {
-          userCountByMonth[key] = 0;
+        const month = date.getMonth() + 1;
+        const key = `${month}/${year}`;
+
+        if (year === 2024) {
+          if (!userCountByMonth2024[key]) {
+            userCountByMonth2024[key] = 0;
+          }
+          userCountByMonth2024[key]++;
+        } else if (year === 2025) {
+          if (!userCountByMonth2025[key]) {
+            userCountByMonth2025[key] = 0;
+          }
+          userCountByMonth2025[key]++;
         }
-        userCountByMonth[key]++;
       });
-  
-      const formattedData = Object.entries(userCountByMonth).map(([key, count]) => {
-        const [year, month] = key.split("-");
-        return { date: `${month}/${year}`, patients: count };
-      });
-  
+
+      const formattedData = [];
+      for (let month = 1; month <= 12; month++) {
+        const monthStr = month < 10 ? `0${month}` : `${month}`;
+        formattedData.push({
+          date: `${monthStr}/2024`,
+          patients2024: userCountByMonth2024[`${monthStr}/2024`] || 0,
+          patients2025: userCountByMonth2025[`${monthStr}/2025`] || 0,
+        });
+      }
+
       setHospitalSurveyData(formattedData);
       setLoading(false);
     } catch (error) {
@@ -70,13 +87,16 @@ const AdminDashboard = () => {
       setLoading(false);
     }
   };
-      
+
   // Fetch appointments (giữ nguyên)
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BE_URL}/appointment/`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      const response = await axios.get(
+        `${import.meta.env.VITE_BE_URL}/appointment/`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
       console.log("Appointments data:", response.data);
       setAppointments(response.data.data);
       setFilteredAppointments(response.data.data);
@@ -90,9 +110,12 @@ const AdminDashboard = () => {
   // Fetch bills và xử lý thống kê
   const fetchBills = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BE_URL}/pharmacy/bills`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      const response = await axios.get(
+        `${import.meta.env.VITE_BE_URL}/pharmacy/bills`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
       console.log("Bills data:", response.data);
 
       const bills = response.data.bills || [];
@@ -168,7 +191,9 @@ const AdminDashboard = () => {
 
   // Hàm tính số tuần trong năm (dựa trên ISO week)
   const getWeekNumber = (date) => {
-    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const d = new Date(
+      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+    );
     const dayNum = d.getUTCDay() || 7;
     d.setUTCDate(d.getUTCDate() + 4 - dayNum);
     const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
@@ -191,7 +216,10 @@ const AdminDashboard = () => {
       const nameMatch = appointment.patientName?.toLowerCase().includes(term);
       const emailMatch = appointment.email?.toLowerCase().includes(term);
       const dateMatch = appointment.date
-        ? new Date(appointment.date).toLocaleDateString("en-US").toLowerCase().includes(term)
+        ? new Date(appointment.date)
+            .toLocaleDateString("en-US")
+            .toLowerCase()
+            .includes(term)
         : false;
       const timeMatch = appointment.time?.toLowerCase().includes(term);
       const doctorMatch = appointment.doctorId
@@ -200,7 +228,14 @@ const AdminDashboard = () => {
         .includes(term);
       const conditionMatch = appointment.symptoms?.toLowerCase().includes(term);
 
-      return nameMatch || emailMatch || dateMatch || timeMatch || doctorMatch || conditionMatch;
+      return (
+        nameMatch ||
+        emailMatch ||
+        dateMatch ||
+        timeMatch ||
+        doctorMatch ||
+        conditionMatch
+      );
     });
 
     setFilteredAppointments(filtered);
@@ -237,10 +272,14 @@ const AdminDashboard = () => {
 
       if (sortConfig.key === "date") {
         const aDateTime = new Date(
-          `${new Date(appointmentA.date).toISOString().split("T")[0]}T${appointmentA.time}:00`
+          `${new Date(appointmentA.date).toISOString().split("T")[0]}T${
+            appointmentA.time
+          }:00`
         );
         const bDateTime = new Date(
-          `${new Date(appointmentB.date).toISOString().split("T")[0]}T${appointmentB.time}:00`
+          `${new Date(appointmentB.date).toISOString().split("T")[0]}T${
+            appointmentB.time
+          }:00`
         );
         if (isNaN(aDateTime.getTime()) || isNaN(bDateTime.getTime())) {
           return 0;
@@ -298,20 +337,30 @@ const AdminDashboard = () => {
           <Banknote size={28} color="#407bff" />
           <div>
             Hospital Earnings{" "}
-            <strong>{loadingRevenue ? "Loading..." : `${totalRevenue.toLocaleString()} VND`}</strong>
+            <strong>
+              {loadingRevenue
+                ? "Loading..."
+                : `${totalRevenue.toLocaleString()} VND`}
+            </strong>
           </div>
         </div>
       </div>
 
       <div className="charts">
-      <div className="chart-box">
+        <div className="chart-box">
           <h3>Hospital Survey</h3>
           {loading ? (
             <p>Loading...</p>
           ) : (
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={hospitalSurveyData}>
-                <Line type="monotone" dataKey="patients" stroke="#407bff" fill="#407bff22" dot={false} />
+                <Line
+                  type="monotone"
+                  dataKey="patients"
+                  stroke="#407bff"
+                  fill="#407bff22"
+                  dot={false}
+                />
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
@@ -340,7 +389,9 @@ const AdminDashboard = () => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
-                <Tooltip formatter={(value) => `${value.toLocaleString()} VND`} />
+                <Tooltip
+                  formatter={(value) => `${value.toLocaleString()} VND`}
+                />
               </LineChart>
             </ResponsiveContainer>
           )}
@@ -365,7 +416,9 @@ const AdminDashboard = () => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
-                <Tooltip formatter={(value) => `${value.toLocaleString()} VND`} />
+                <Tooltip
+                  formatter={(value) => `${value.toLocaleString()} VND`}
+                />
               </LineChart>
             </ResponsiveContainer>
           )}
@@ -373,7 +426,14 @@ const AdminDashboard = () => {
       </div>
 
       <div className="table-section">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "0px",
+          }}
+        >
           <h3 style={{ margin: 0 }}>Appointment Activity</h3>
           <div className="search-bar" style={{ position: "relative" }}>
             <input
@@ -407,33 +467,63 @@ const AdminDashboard = () => {
             <thead>
               <tr>
                 <th>
-                  <span onClick={() => handleSort("name")} style={{ cursor: "pointer" }}>
-                    Name {sortConfig.key === "name" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                  <span
+                    onClick={() => handleSort("name")}
+                    style={{ cursor: "pointer" }}
+                  >
+                    Name{" "}
+                    {sortConfig.key === "name" &&
+                      (sortConfig.direction === "asc" ? "↑" : "↓")}
                   </span>
                 </th>
                 <th>
-                  <span onClick={() => handleSort("email")} style={{ cursor: "pointer" }}>
-                    Email {sortConfig.key === "email" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                  <span
+                    onClick={() => handleSort("email")}
+                    style={{ cursor: "pointer" }}
+                  >
+                    Email{" "}
+                    {sortConfig.key === "email" &&
+                      (sortConfig.direction === "asc" ? "↑" : "↓")}
                   </span>
                 </th>
                 <th>
-                  <span onClick={() => handleSort("date")} style={{ cursor: "pointer" }}>
-                    Date {sortConfig.key === "date" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                  <span
+                    onClick={() => handleSort("date")}
+                    style={{ cursor: "pointer" }}
+                  >
+                    Date{" "}
+                    {sortConfig.key === "date" &&
+                      (sortConfig.direction === "asc" ? "↑" : "↓")}
                   </span>
                 </th>
                 <th>
-                  <span onClick={() => handleSort("date")} style={{ cursor: "pointer" }}>
-                    Visit Time {sortConfig.key === "date" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                  <span
+                    onClick={() => handleSort("date")}
+                    style={{ cursor: "pointer" }}
+                  >
+                    Visit Time{" "}
+                    {sortConfig.key === "date" &&
+                      (sortConfig.direction === "asc" ? "↑" : "↓")}
                   </span>
                 </th>
                 <th>
-                  <span onClick={() => handleSort("doctor")} style={{ cursor: "pointer" }}>
-                    Doctor {sortConfig.key === "doctor" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                  <span
+                    onClick={() => handleSort("doctor")}
+                    style={{ cursor: "pointer" }}
+                  >
+                    Doctor{" "}
+                    {sortConfig.key === "doctor" &&
+                      (sortConfig.direction === "asc" ? "↑" : "↓")}
                   </span>
                 </th>
                 <th>
-                  <span onClick={() => handleSort("condition")} style={{ cursor: "pointer" }}>
-                    Conditions {sortConfig.key === "condition" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                  <span
+                    onClick={() => handleSort("condition")}
+                    style={{ cursor: "pointer" }}
+                  >
+                    Conditions{" "}
+                    {sortConfig.key === "condition" &&
+                      (sortConfig.direction === "asc" ? "↑" : "↓")}
                   </span>
                 </th>
                 <th></th>
@@ -446,7 +536,9 @@ const AdminDashboard = () => {
                   const doctorNames = appointment.doctorId
                     .map((doctor) => doctor.username)
                     .join(", ");
-                  const formattedDate = new Date(appointment.date).toLocaleDateString("en-US", {
+                  const formattedDate = new Date(
+                    appointment.date
+                  ).toLocaleDateString("en-US", {
                     month: "2-digit",
                     day: "2-digit",
                     year: "numeric",
@@ -456,7 +548,12 @@ const AdminDashboard = () => {
                   return (
                     <tr key={idx}>
                       <td>
-                        <img src={defaultAvatar} alt="avatar" className="avatar" /> {appointment.patientName}
+                        <img
+                          src={defaultAvatar}
+                          alt="avatar"
+                          className="avatar"
+                        />{" "}
+                        {appointment.patientName}
                       </td>
                       <td>{appointment.email}</td>
                       <td>{formattedDate}</td>
