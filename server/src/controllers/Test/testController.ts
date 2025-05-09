@@ -94,7 +94,6 @@ export const deleteTestImage = async (req: Request, res: Response): Promise<void
             return;
         }
 
-        // Tìm lịch hẹn
         const appointment = await Appointment.findById(appointmentId);
         if (!appointment) {
             res.status(404).json({ message: "Không tìm thấy lịch hẹn" });
@@ -103,7 +102,6 @@ export const deleteTestImage = async (req: Request, res: Response): Promise<void
 
         const userId = appointment.userId;
 
-        // Tìm bản ghi xét nghiệm
         const testRecord = await Tests.findOne({ appointmentId, userId });
         if (!testRecord) {
             res.status(404).json({ message: "Không tìm thấy xét nghiệm" });
@@ -112,7 +110,6 @@ export const deleteTestImage = async (req: Request, res: Response): Promise<void
 
         const imagePath = `/uploads/tests/${imgName}`;
 
-        // Xác định mảng chứa ảnh
         let found = false;
         if (testRecord.xRayImg.includes(imagePath)) {
             testRecord.xRayImg = testRecord.xRayImg.filter((img) => img !== imagePath);
@@ -133,30 +130,16 @@ export const deleteTestImage = async (req: Request, res: Response): Promise<void
             return;
         }
 
-        // Xóa tệp tin vật lý
-        const uploadsDir = path.join(__dirname, process.env.UPLOADS_DIR_TESTS || '../../../../client/public/uploads/tests');
-        const filePath = path.join(uploadsDir, imgName);
+        const fileName = imgName.split("/").pop();
+        const firebaseFile = bucket.file(`tests/${fileName}`);
 
-        // Kiểm tra xem file có tồn tại không
-        if (!fs.existsSync(filePath)) {
-            console.error(`File not found: ${filePath}`);
-            res.status(404).json({ message: "Không tìm thấy tệp tin" });
-            return;
-        }
+        await firebaseFile.delete();
+        console.log(`Đã xóa ảnh từ Firebase: ${fileName}`);
 
-        fs.unlink(filePath, (err) => {
-            if (err) {
-                console.error("Error deleting file:", err);
-                res.status(500).json({ message: "Lỗi khi xóa tệp tin" });
-                return;
-            }
-        });
-
-        // Lưu các thay đổi
         await testRecord.save();
-        res.json({ message: "Xóa ảnh thành công" });
+        res.json({ message: "Xóa ảnh thành công từ Firebase" });
     } catch (error) {
-        console.error("Lỗi khi xóa ảnh:", error);
-        res.status(500).json({ message: "Lỗi máy chủ" });
+        console.error("Lỗi khi xóa ảnh từ Firebase:", error);
+        res.status(500).json({ message: "Lỗi khi xóa ảnh từ Firebase", error });
     }
 };
