@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaImage, FaFilePdf, FaEye, FaSave, FaArrowLeft, FaRedo, FaUndo, FaAlignLeft, FaAlignCenter, FaAlignRight, FaLink, FaPhotoVideo } from 'react-icons/fa';
 import DOMPurify from 'dompurify';
-import "../../sass/blog/editorStyles.scss"; // Import your CSS file here
+import "../../sass/blog/editorStyles.scss";
 import UrlInputModal from './UrlInputModal';
 
 const BlogCreatePage = () => {
@@ -21,7 +21,6 @@ const BlogCreatePage = () => {
     const [linkModalOpen, setLinkModalOpen] = React.useState(false);
     const [videoModalOpen, setVideoModalOpen] = React.useState(false);
 
-    // Form data state
     const [formData, setFormData] = useState({
         title: '',
         content: '',
@@ -43,14 +42,11 @@ const BlogCreatePage = () => {
         }
     };
 
-    // Xử lý xuống dòng và định dạng
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
             document.execCommand('insertLineBreak');
         }
-
-        // Xử lý riêng cho phím Space
         if (e.key === ' ') {
             e.stopPropagation();
             e.preventDefault();
@@ -60,7 +56,6 @@ const BlogCreatePage = () => {
 
     const handleContentChange = useCallback(() => {
         if (!editorRef.current || isComposing.current) return;
-        // Lưu vị trí con trỏ hiện tại
         const selection = window.getSelection();
         if (!selection.rangeCount) return;
 
@@ -70,26 +65,23 @@ const BlogCreatePage = () => {
         preCaretRange.setEnd(range.endContainer, range.endOffset);
         const caretOffset = preCaretRange.toString().length;
 
-        // Cập nhật state
         setFormData(prev => ({
             ...prev,
             content: editorRef.current.innerHTML,
             caretPosition: {
                 node: range.startContainer,
                 offset: range.startOffset
-            } // Thêm trường mới vào state
+            }
         }));
     }, []);
 
-    // Xử lý khi bắt đầu nhập kí tự có dấu tiếng Việt
     const handleCompositionStart = useCallback(() => {
-        isComposing.current = true; // Đánh dấu đang nhập kí tự IME
+        isComposing.current = true;
     }, []);
 
-    // Xử lý khi hoàn thành việc nhập kí tự có dấu
     const handleCompositionEnd = useCallback(() => {
-        isComposing.current = false; // Đã nhập xong
-        handleContentChange(); // Cập nhật nội dung an toàn
+        isComposing.current = false;
+        handleContentChange();
     }, [handleContentChange]);
 
     useEffect(() => {
@@ -97,22 +89,13 @@ const BlogCreatePage = () => {
             editorRef.current.innerHTML = formData.content || '';
         }
     }, [formData.content, showHTML, previewMode]);
-    // Hàm thực thi lệnh định dạng
+
     const execCommand = (command, value = null) => {
-        // Lưu vị trí selection hiện tại
         const selection = window.getSelection();
         const range = selection.getRangeAt(0);
-
-        // Thực hiện lệnh
         document.execCommand(command, value);
-
-        // Đồng bộ nội dung
         handleContentChange();
-
-        // Focus lại vào editor
         editorRef.current.focus();
-
-        // Khôi phục selection nếu cần
         try {
             selection.removeAllRanges();
             selection.addRange(range);
@@ -120,9 +103,8 @@ const BlogCreatePage = () => {
             console.log("Không thể khôi phục selection");
         }
     };
-    // Toggle HTML view
+
     const toggleHTMLView = () => {
-        // Luôn đồng bộ nội dung hiện tại vào state trước khi chuyển đổi
         if (editorRef.current) {
             const currentContent = editorRef.current.innerHTML;
             setFormData(prev => ({
@@ -130,11 +112,9 @@ const BlogCreatePage = () => {
                 content: currentContent
             }));
         }
-
         setShowHTML(!showHTML);
     };
 
-    // Hàm xử lý
     const handlePaste = (e) => {
         e.preventDefault();
         const items = e.clipboardData.items;
@@ -144,24 +124,20 @@ const BlogCreatePage = () => {
             if (item.type.startsWith('image/')) {
                 const blob = item.getAsFile();
                 const reader = new FileReader();
-
                 reader.onload = (ev) => {
                     const img = document.createElement('img');
                     img.src = ev.target.result;
                     img.style.maxWidth = '100%';
-
                     const selection = window.getSelection();
                     if (!selection.rangeCount) return;
                     const range = selection.getRangeAt(0);
                     range.deleteContents();
                     range.insertNode(img);
-                    // Di chuyển con trỏ sau ảnh
                     range.setStartAfter(img);
                     range.collapse(true);
                     selection.removeAllRanges();
                     selection.addRange(range);
                 };
-
                 reader.readAsDataURL(blob);
                 break;
             }
@@ -174,13 +150,10 @@ const BlogCreatePage = () => {
             if (!selection.rangeCount) return;
             const range = selection.getRangeAt(0);
             range.deleteContents();
-
             if (html) {
-                // Nếu có HTML (copy từ web, Word...), dán HTML
                 const fragment = range.createContextualFragment(html);
                 range.insertNode(fragment);
             } else if (text) {
-                // Nếu chỉ có plain text, dán text (giữ xuống dòng)
                 const lines = text.split('\n');
                 lines.forEach((line, idx) => {
                     if (idx > 0) {
@@ -189,14 +162,12 @@ const BlogCreatePage = () => {
                     range.insertNode(document.createTextNode(line));
                 });
             }
-            // Đưa con trỏ về cuối sau khi dán
             range.collapse(false);
             selection.removeAllRanges();
             selection.addRange(range);
         }
     };
 
-    // Fetch doctor info when component mounts
     useEffect(() => {
         const fetchDoctorInfo = async () => {
             try {
@@ -211,14 +182,8 @@ const BlogCreatePage = () => {
                 });
                 console.log("✅ User data received:", response.data);
                 const userData = response.data.user;
-                if (userData.role !== "doctor") {
-                    navigate('/blog');
-                    return;
-                }
-
                 setDoctorInfo(userData);
                 console.log("👨‍⚕️ Doctor info set:", userData);
-                // Auto-fill specialization from doctor's profile
                 setFormData(prev => {
                     console.log("🔄 Updating formData with doctor's specialization:", userData.specialization || '');
                     return {
@@ -227,7 +192,6 @@ const BlogCreatePage = () => {
                     }
                 });
 
-                // Load draft if exists
                 const savedDraft = localStorage.getItem('blogDraft');
                 if (savedDraft) {
                     console.log("Saved draft from localStorage:", JSON.parse(savedDraft));
@@ -247,12 +211,10 @@ const BlogCreatePage = () => {
 
         fetchDoctorInfo();
 
-        // Setup auto-save interval
         const interval = setInterval(() => {
             autoSaveDraft();
-        }, 2000); // Auto-save every 30 seconds
+        }, 2000);
 
-        // Cleanup on unmount
         return () => {
             if (interval) {
                 clearInterval(interval);
@@ -261,20 +223,17 @@ const BlogCreatePage = () => {
     }, [navigate]);
 
     useEffect(() => {
-        // Đảm bảo editor luôn có focus khi cần thiết
         const handleFocus = () => {
             if (editorRef.current) {
                 editorRef.current.focus();
             }
         };
 
-        // Thêm event listener cho các nút trong toolbar
         const buttons = document.querySelectorAll('.editor-toolbar button');
         buttons.forEach(button => {
             button.addEventListener('click', handleFocus);
         });
 
-        // Cleanup khi component unmount
         return () => {
             buttons.forEach(button => {
                 button.removeEventListener('click', handleFocus);
@@ -282,7 +241,6 @@ const BlogCreatePage = () => {
         };
     }, []);
 
-    // Auto-save draft function
     const autoSaveDraft = useCallback(() => {
         if (editorRef.current && formData.title) {
             const currentContent = editorRef.current.innerHTML;
@@ -294,20 +252,18 @@ const BlogCreatePage = () => {
             localStorage.setItem('blogDraft', JSON.stringify(draftData));
         }
     }, [formData]);
+
     useEffect(() => {
         if (error) {
             const timer = setTimeout(() => {
                 setError(null);
-            }, 5000); // Tự động xóa lỗi sau 5 giây
-
+            }, 5000);
             return () => clearTimeout(timer);
         }
     }, [error]);
 
-    // Manual save draft
     const saveDraft = () => {
         setSaving(true);
-
         if (editorRef.current) {
             const currentContent = editorRef.current.innerHTML;
             const draftData = {
@@ -315,17 +271,14 @@ const BlogCreatePage = () => {
                 content: currentContent,
                 lastSaved: Date.now()
             };
-
             localStorage.setItem('blogDraft', JSON.stringify(draftData));
             setLastSaved(new Date());
         }
-
         setTimeout(() => {
             setSaving(false);
         }, 1000);
     };
 
-    // Handle form input changes
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -345,9 +298,7 @@ const BlogCreatePage = () => {
 
     const handleHTMLContentChange = (e) => {
         const newContent = e.target.value;
-
         const cleanHTML = sanitizeHTML(newContent);
-
         setFormData(prevState => ({
             ...prevState,
             content: cleanHTML
@@ -355,22 +306,18 @@ const BlogCreatePage = () => {
     };
 
     const sanitizeHTML = (html) => {
-        // Sử dụng thư viện như DOMPurify hoặc tự xử lý
-        // Ví dụ đơn giản:
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = html;
         return tempDiv.innerHTML;
     };
 
-    // Handle file uploads
     const handleFileUpload = (e) => {
         const files = Array.from(e.target.files);
-        console.log("Files selected:", files)
+        console.log("Files selected:", files);
         const maxFileSize = 10 * 1024 * 1024;
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/mpeg', 'video/quicktime', 'video/webm'];
         files.forEach(file => {
             console.log("Processing file:", file.name);
-            // Check file size
             if (file.size > maxFileSize) {
                 console.error(`File "${file.name}" quá lớn. Kích thước tối đa là 10MB.`);
                 setError(`File "${file.name}" quá lớn. Kích thước tối đa là 10MB.`);
@@ -383,7 +330,6 @@ const BlogCreatePage = () => {
                 return;
             }
 
-            // Create preview for images
             if (file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -404,7 +350,6 @@ const BlogCreatePage = () => {
                 reader.readAsDataURL(file);
             } else {
                 console.log("Non-image file added:", file.name);
-                // For non-image files
                 setFormData(prev => ({
                     ...prev,
                     media: [
@@ -420,7 +365,6 @@ const BlogCreatePage = () => {
         });
     };
 
-    // Remove media item
     const removeMedia = (index) => {
         setFormData(prev => ({
             ...prev,
@@ -428,7 +372,6 @@ const BlogCreatePage = () => {
         }));
     };
 
-    // Submit form
     const handleSubmit = async (e) => {
         e.preventDefault();
         syncContentToState();
@@ -457,44 +400,27 @@ const BlogCreatePage = () => {
                 return;
             }
 
-            // Làm sạch HTML trước khi gửi
             const cleanContent = DOMPurify.sanitize(editorRef.current.innerHTML, {
                 ALLOWED_TAGS: ['p', 'br', 'ul', 'ol', 'li', 'strong', 'em', 'u', 'a', 'img'],
                 ALLOWED_ATTR: ['src', 'alt', 'href', 'class', 'style']
-            }).replace(/&nbsp;/g, ' ');
+            }).replace(/ /g, ' ');
 
-            // Create FormData object for file uploads
             const formDataToSend = new FormData();
             formDataToSend.append('title', formData.title);
             formDataToSend.append('content', cleanContent);
+            formDataToSend.append('specialization', formData.specialization);
             formDataToSend.append('visibility', formData.visibility);
 
             console.log("Files to be uploaded:", formData.media);
-            // Add media files - sử dụng tên field 'files' để phù hợp với multer middleware
-            formData.media.forEach((media) => {
+            formData.media.forEach((media, index) => {
                 if (media.file && media.file instanceof File) {
-                    console.log(`Appending file :`, media.file.name);
+                    console.log(`Appending file ${index}:`, media.file.name);
                     formDataToSend.append('newFiles[]', media.file);
                 } else if (media.file) {
-                    console.warn(`Invalid file object at index :`, media.file);
+                    console.warn(`Invalid file object at index ${index}:`, media.file);
                 }
             });
 
-            // Add any external media URLs
-            const externalMedia = formData.media
-                .filter(media => !media.file && media.url)
-                .map(media => ({
-                    url: media.url,
-                    type: media.type === 'image' ? 'image' : 'video' // Đảm bảo chỉ có 'image' hoặc 'video'
-                }));
-
-            if (externalMedia.length > 0) {
-                console.log("External media to be sent:", externalMedia);
-                formDataToSend.append('media', JSON.stringify(externalMedia));
-            }
-            console.log("FormData to be sent:", formDataToSend);
-
-            // Send request to create blog
             const response = await axios.post(
                 `${import.meta.env.VITE_BE_URL}/blog`,
                 formDataToSend,
@@ -507,11 +433,8 @@ const BlogCreatePage = () => {
             );
             console.log("Response from server:", response.data);
 
-            // Clear draft after successful submission
             localStorage.removeItem('blogDraft');
-
-            // Redirect to the newly created blog
-            navigate(`/blog/${response.data._id}`);
+            navigate(`/doctor/blog/${response.data._id}`);
         } catch (err) {
             console.error('Error creating blog:', err);
             setError(err.response?.data?.message || 'Có lỗi xảy ra khi tạo bài viết. Vui lòng thử lại sau.');
@@ -520,10 +443,8 @@ const BlogCreatePage = () => {
         }
     };
 
-    // Toggle preview mode
     const togglePreview = () => {
         if (!previewMode && editorRef.current) {
-            // Update content before showing preview
             setFormData(prev => ({
                 ...prev,
                 content: editorRef.current.innerHTML
@@ -535,10 +456,10 @@ const BlogCreatePage = () => {
     const handleCancel = () => {
         if (formData.title || formData.content || formData.media.length > 0) {
             if (window.confirm("Bạn có chắc muốn hủy bỏ bài viết này? Tất cả nội dung chưa lưu sẽ bị mất.")) {
-                navigate('/blog');
+                navigate('/doctor/blog');
             }
         } else {
-            navigate('/blog');
+            navigate('/doctor/blog');
         }
     };
 
@@ -627,16 +548,15 @@ const BlogCreatePage = () => {
                                                         <button type="button" onClick={() => document.execCommand('formatBlock', false, 'h2')}>H2</button>
                                                         <button type="button" onClick={() => document.execCommand('formatBlock', false, 'h3')}>H3</button>
                                                     </div>
-                                                    <button onClick={() => document.execCommand('justifyLeft')}><i className="align-left-icon" /><FaAlignLeft /></button>
-                                                    <button onClick={() => document.execCommand('justifyRight')}><i className="align-right-icon" /><FaAlignRight /></button>
-                                                    <button onClick={() => document.execCommand('justifyCenter')}><i className="align-center-icon" /><FaAlignCenter /></button>
+                                                    <button onClick={() => document.execCommand('justifyLeft')}><FaAlignLeft /></button>
+                                                    <button onClick={() => document.execCommand('justifyRight')}><FaAlignRight /></button>
+                                                    <button onClick={() => document.execCommand('justifyCenter')}><FaAlignCenter /></button>
                                                     <button onClick={() => document.execCommand('insertOrderedList')}>1.</button>
                                                     <button onClick={() => document.execCommand('insertUnorderedList')}>•</button>
                                                     <button onClick={() => setLinkModalOpen(true)}><FaLink /></button>
                                                     <button onClick={() => setVideoModalOpen(true)}><FaPhotoVideo /></button>
                                                     <button onClick={() => document.execCommand('undo')}><FaRedo /></button>
                                                     <button onClick={() => document.execCommand('redo')}><FaUndo /></button>
-                                                    {/* <button type="button" onClick={toggleHTMLView} title="Xem mã HTML">HTML</button> */}
                                                 </div>
 
                                                 <UrlInputModal
@@ -746,13 +666,11 @@ const BlogCreatePage = () => {
                                             onChange={handleChange}
                                         >
                                             <option value="public">Công khai - Tất cả mọi người</option>
-                                            {/* <option value="private">Riêng tư - Chỉ bạn</option> */}
                                             <option value="doctors">Bác sĩ - Chỉ bác sĩ</option>
                                         </select>
                                     </div>
                                 </>
                             ) : (
-                                // Preview mode
                                 <div className="blog-preview">
                                     <h1 className="mb-4">{formData.title}</h1>
                                     <div className="d-flex align-items-center mb-4">
@@ -771,7 +689,6 @@ const BlogCreatePage = () => {
                                         </div>
                                     )}
                                     <div className="blog-content mb-4">
-                                        {/* Hiển thị xuống dòng đúng, không hiện <br> */}
                                         <div
                                             style={{ whiteSpace: 'pre-line', wordBreak: 'break-word' }}
                                             dangerouslySetInnerHTML={{
@@ -818,8 +735,7 @@ const BlogCreatePage = () => {
                                         <small>
                                             <strong>Quyền xem:</strong> {
                                                 formData.visibility === 'public' ? 'Công khai - Tất cả mọi người' :
-                                                    formData.visibility === 'private' ? 'Riêng tư - Chỉ bạn' :
-                                                        'Nhân viên y tế - Chỉ bác sĩ và nhân viên y tế'
+                                                    'Nhân viên y tế - Chỉ bác sĩ và nhân viên y tế'
                                             }
                                         </small>
                                     </div>
@@ -848,7 +764,7 @@ const BlogCreatePage = () => {
                     </div>
                 </div>
             </div>
-        </div >
+        </div>
     );
 };
 

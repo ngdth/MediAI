@@ -17,7 +17,7 @@ const BlogsSection2 = ({ data }) => {
     const specializationParam = queryParams.get('specialization');
 
     const [searchTerm, setSearchTerm] = useState('');
-    const [filteredBlogs, setFilteredBlogs] = useState(data.blogsData || []);
+    const [filteredBlogs, setFilteredBlogs] = useState([]);
     const [hasSearched, setHasSearched] = useState(false);
     const [loading, setLoading] = useState(false);
     const [specializations, setSpecializations] = useState([]);
@@ -38,15 +38,9 @@ const BlogsSection2 = ({ data }) => {
             fetchMyBlogs();
         } else {
             setActiveTag('all');
-            if (data && data.blogsData && data.blogsData.length > 0) {
-                setFilteredBlogs(data.blogsData);
-                setAllBlogs(data.blogsData);
-                extractSpecializations(data.blogsData);
-            } else {
-                fetchBlogs('', specializationParam || '', isDoctor);
-            }
+            fetchBlogs('', specializationParam || '', isDoctor);
         }
-    }, [data, tagParam, specializationParam]);
+    }, [tagParam, specializationParam]);
 
     const truncateHTML = (html, maxLength) => {
         if (!html || typeof html !== 'string') return '';
@@ -137,25 +131,20 @@ const BlogsSection2 = ({ data }) => {
             console.log("Dữ liệu từ /blog/my-blogs:", blogsArray);
 
             const formattedBlogs = blogsArray.map(blog => {
-                // Xử lý URL ảnh
                 let imageUrl = '/assets/img/post_1.jpeg'; // Ảnh mặc định
-                if (blog.media && blog.media.length > 0 && blog.media[0].url) {
+                if (blog.media && Array.isArray(blog.media) && blog.media[0]?.url) {
                     const mediaUrl = blog.media[0].url;
-                    console.log(`Blog ${blog._id} raw media URL:`, mediaUrl); // Debug URL gốc
-
-                    // Nếu URL không bắt đầu bằng http, thêm base URL
-                    if (!mediaUrl.startsWith('http')) {
-                        // Đảm bảo không có ký tự thừa như /src nếu không cần thiết
-                        const cleanedUrl = mediaUrl.startsWith('/')
-                            ? mediaUrl
-                            : `/${mediaUrl}`;
-                        imageUrl = `${import.meta.env.VITE_BE_URL}${cleanedUrl}`;
-                    } else {
+                    console.log(`Blog ${blog._id} raw media URL (my-blogs):`, mediaUrl);
+                    if (mediaUrl && (mediaUrl.startsWith('http://') || mediaUrl.startsWith('https://'))) {
                         imageUrl = mediaUrl;
+                    } else if (mediaUrl) {
+                        imageUrl = `${import.meta.env.VITE_BE_URL}/${mediaUrl}`;
                     }
+                } else {
+                    console.log(`Blog ${blog._id} không có media hoặc media[0].url (my-blogs)`);
                 }
 
-                console.log(`Blog ${blog._id} final image URL:`, imageUrl); // Debug URL cuối
+                console.log(`Blog ${blog._id} final image URL (my-blogs):`, imageUrl);
 
                 return {
                     id: blog._id,
@@ -203,26 +192,23 @@ const BlogsSection2 = ({ data }) => {
                 return;
             }
 
-            const formattedBlogs = blogsArray.map(blog => {
-                // Xử lý URL ảnh
-                let imageUrl = '/assets/img/post_1.jpeg'; // Ảnh mặc định
-                if (blog.media && blog.media.length > 0 && blog.media[0].url) {
-                    const mediaUrl = blog.media[0].url;
-                    console.log(`Blog ${blog._id} raw media URL:`, mediaUrl); // Debug URL gốc
+            console.log("Dữ liệu từ /blog:", blogsArray);
 
-                    // Nếu URL không bắt đầu bằng http, thêm base URL
-                    if (!mediaUrl.startsWith('http')) {
-                        // Đảm bảo không có ký tự thừa như /src nếu không cần thiết
-                        const cleanedUrl = mediaUrl.startsWith('/')
-                            ? mediaUrl
-                            : `/${mediaUrl}`;
-                        imageUrl = `${import.meta.env.VITE_BE_URL}${cleanedUrl}`;
-                    } else {
+            const formattedBlogs = blogsArray.map(blog => {
+                let imageUrl = '/assets/img/post_1.jpeg'; // Ảnh mặc định
+                if (blog.media && Array.isArray(blog.media) && blog.media[0]?.url) {
+                    const mediaUrl = blog.media[0].url;
+                    console.log(`Blog ${blog._id} raw media URL (all-blogs):`, mediaUrl);
+                    if (mediaUrl && (mediaUrl.startsWith('http://') || mediaUrl.startsWith('https://'))) {
                         imageUrl = mediaUrl;
+                    } else if (mediaUrl) {
+                        imageUrl = `${import.meta.env.VITE_BE_URL}/${mediaUrl}`;
                     }
+                } else {
+                    console.log(`Blog ${blog._id} không có media hoặc media[0].url (all-blogs)`);
                 }
 
-                console.log(`Blog ${blog._id} final image URL:`, imageUrl); // Debug URL cuối
+                console.log(`Blog ${blog._id} final image URL (all-blogs):`, imageUrl);
 
                 return {
                     id: blog._id,
@@ -259,8 +245,13 @@ const BlogsSection2 = ({ data }) => {
             const searchTermLower = term.toLowerCase();
             filtered = filtered.filter(blog =>
                 blog.title.toLowerCase().includes(searchTermLower) ||
-                blog.subtitle.toLowerCase().includes(searchTermLower)
+                blog.subtitle.toLowerCase().includes(searchTermLower) ||
+                blog.author.toLowerCase().includes(searchTermLower) ||
+                blog.category.toLowerCase().includes(searchTermLower) ||
+                blog.date.toLowerCase().includes(searchTermLower) ||
+                blog.comments.toLowerCase().includes(searchTermLower)
             );
+            console.log("Filtered blogs by term:", filtered);
         }
 
         if (specialization) {
@@ -426,41 +417,6 @@ const BlogsSection2 = ({ data }) => {
                                     </button>
                                 </div>
                             </form>
-
-                            <div style={{
-                                flex: '1',
-                                minWidth: '150px',
-                                height: '100%'
-                            }}>
-                                <select
-                                    value={selectedSpecialization}
-                                    onChange={handleSpecializationChange}
-                                    style={{
-                                        width: '100%',
-                                        height: '45px',
-                                        padding: '0 15px',
-                                        border: '1px solid #e0e0e0',
-                                        borderRadius: '0.3rem',
-                                        fontSize: '16px',
-                                        outline: 'none',
-                                        appearance: 'none',
-                                        backgroundColor: 'white',
-                                        backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23333\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'%3E%3C/polyline%3E%3C/svg%3E")',
-                                        backgroundRepeat: 'no-repeat',
-                                        backgroundPosition: 'right 10px center',
-                                        backgroundSize: '16px',
-                                        cursor: 'pointer',
-                                        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.05)'
-                                    }}
-                                >
-                                    <option value="">Tất cả chuyên khoa</option>
-                                    {specializations.map((spec, index) => (
-                                        <option key={index} value={spec.value}>
-                                            {spec.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
 
                             {isDoctor && (
                                 <button

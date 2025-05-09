@@ -188,7 +188,7 @@ const Header = ({ isTopBar, variant }) => {
                   <img
                     src="/assets/img/logo.png"
                     alt="Logo"
-                    style={{ height: "120px", objectFit: "contain" }}
+                    style={{ height: "70px", objectFit: "contain" }}
                   />
                 </Link>
               </div>
