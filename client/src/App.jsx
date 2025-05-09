@@ -97,8 +97,6 @@ function App() {
 
     const shouldShowFloatingMenu = !/^\/(admin|doctor(\/|$)|nurse|pharmacy|meeting|login|register|verify|forgotpass|resetpass)/.test(pathname);
 
-    const role = localStorage.getItem('role');
-
     return (
         <>
             <Routes>
@@ -162,9 +160,9 @@ function App() {
                 </Route>
                 <Route path="/doctor" element={<DoctorLayout />}>
                     <Route path="blog" element={<DoctorBlogsPage />} />
-                    <Route path="blog/:blogId" element={<DoctorBlogsDetails />} />
                     <Route path="blog/create" element={<BlogCreatePage />} />
                     <Route path="blog/edit/:blogId" element={<EditBlogPage />} />
+                    <Route path="blog/:blogId" element={<DoctorBlogsDetails />} />
                     <Route path="/doctor" element={<ManageAppointments />} />
                     <Route path="appointments/manage-result/:appointmentId" element={<ManageResult />} />
                     <Route path="/doctor/medical-result" element={<MedicalResult />} />
