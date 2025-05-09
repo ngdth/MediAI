@@ -128,18 +128,24 @@ const PharmacyManagement = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {pharmacy.map((pharmacy) => (
-                            <tr key={pharmacy._id}>
-                                <td>{pharmacy.username}</td>
-                                <td>{pharmacy.email}</td>
-                                <td>{pharmacy.pharmacyName}</td>
-                                <td>{pharmacy.location}</td>
-                                <td>
-                                    <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(pharmacy)}>Sửa</button>
-                                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(pharmacy._id)}>Xóa</button>
-                                </td>
+                        {currentPharmacy.length > 0 ? (
+                            currentPharmacy.map((pharmacy) => (
+                                <tr key={pharmacy._id}>
+                                    <td>{pharmacy.username}</td>
+                                    <td>{pharmacy.email}</td>
+                                    <td>{pharmacy.pharmacyName}</td>
+                                    <td>{pharmacy.location}</td>
+                                    <td>
+                                        <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(pharmacy)}>Sửa</button>
+                                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(pharmacy._id)}>Xóa</button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="5">Không có nhà thuốc nào.</td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>
