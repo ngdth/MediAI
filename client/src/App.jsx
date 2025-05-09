@@ -80,6 +80,8 @@ import AdminDashboard from "./Pages/Admin/AdminDashboard";
 import Meeting from "./Pages/Meeting/Meeting";
 import { ToastContainer } from "react-toastify";
 import BlogsSection1 from "./Components/BlogsSection/BlogsSection1";
+import DoctorBlogsPage from "./Pages/BlogsPage/DoctorBlogsPage";
+import DoctorBlogsDetails from "./Pages/BlogsPage/DoctorBlogsDetails";
 
 function App() {
     Aos.init({
@@ -113,9 +115,7 @@ function App() {
                     <Route path="/service" element={<ServicePage />} />
                     <Route path="/service/:serviceId" element={<ServiceDetails />} />
                     <Route path="/blog" element={<BlogsPage />} />
-                    <Route path="/blog/create" element={<BlogCreatePage />} />
                     <Route path="/blog/:blogId" element={<BlogsDetails />} />
-                    <Route path="/blog/edit/:blogId" element={<EditBlogPage />} />
                     <Route path="/appointments" element={<Appointments />} />
                     <Route path="/BookingAppointments" element={<BookingAppointments />} />
                     <Route path="/appointmentshistory" element={<AppointmentsHistory />} />
@@ -161,10 +161,8 @@ function App() {
                     <Route path="profile" element={<StaffProfile />} />
                 </Route>
                 <Route path="/doctor" element={<DoctorLayout />}>
-                    <Route path="blog" element={<BlogsPage />} />
-                    <Route path="blog/:blogId" element={<BlogsDetails />} />
-                    <Route path="blog/create" element={<BlogCreatePage />} />
-                    <Route path="blog/edit/:blogId" element={<EditBlogPage />} />
+                    <Route path="blog" element={<DoctorBlogsPage />} />
+                    <Route path="blog/:blogId" element={<DoctorBlogsDetails />} />
                     <Route path="/doctor" element={<ManageAppointments />} />
                     <Route path="appointments/manage-result/:appointmentId" element={<ManageResult />} />
                     <Route path="/doctor/medical-result" element={<MedicalResult />} />

@@ -94,7 +94,7 @@ const BlogsPage = () => {
           image: blog.media && blog.media.length > 0
             ? `${import.meta.env.VITE_BE_URL}${blog.media[0].url.replace('/src', '')}`
             : '/assets/img/post_1.jpeg',
-          link: isDoctorRole ? `/doctor/blog/${blog._id}` : `/blog/${blog._id}`,
+          link: `/blog/${blog._id}`,
           linkText: 'Đọc thêm',
           createdAt: blog.createdAt,
           updatedAt: blog.updatedAt,
@@ -145,14 +145,12 @@ const BlogsPage = () => {
   return (
     <>
       <Section topSpaceMd="100" ></Section>
-      {role !== 'doctor' && (
-        <Section
-          className={'cs_page_heading cs_bg_filed cs_center'}
-          backgroundImage="/assets/img/banner-doctors.png"
-        >
-          <PageHeading data={headingData} />
-        </Section>
-      )}
+      <Section
+        className={'cs_page_heading cs_bg_filed cs_center'}
+        backgroundImage="/assets/img/banner-doctors.png"
+      >
+        <PageHeading data={headingData} />
+      </Section>
       {/* Start Blog Section */}
       <Section>
         {loading ? (
