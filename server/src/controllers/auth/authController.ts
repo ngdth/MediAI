@@ -219,7 +219,7 @@ export const verifyAccount: RequestHandler = async (req: Request, res: Response)
         const token = jwt.sign(
             { id: user._id, role: user.role },
             process.env.JWT_SECRET!,
-            { expiresIn: "1h" }
+            { expiresIn: "4h" }
         );
         res.status(200).json({ message: "Xác thực thành công", token });
     } catch (error) {

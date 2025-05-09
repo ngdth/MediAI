@@ -189,6 +189,30 @@ const AppointmentsHistory = () => {
     return status === "Pending" || status === "Assigned";
   };
 
+  const handleRequestMeeting = async (appointment) => {
+    try {
+      const doctorIds = appointment.doctorId?.map((doc) => doc._id) || [];
+      const latestDoctorId = doctorIds[doctorIds.length - 1];
+      axios.post(`${import.meta.env.VITE_BE_URL}/notification`, {
+        userId: latestDoctorId,
+        message: `Bệnh nhân yêu cầu meeting online vào ${new Date(appointment.date).toLocaleDateString("vi-VN")} lúc ${appointment.time}`,
+        type: "appointment",
+        relatedId: appointment._id,
+      },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      navigate(`/meeting/${appointment._id}`, { state: { autoAnswer: true } });
+    } catch (error) {
+      console.error("Lỗi khi gửi thông báo meeting:", error.response?.data || error.message);
+      Swal.fire("Lỗi!", "Không thể gửi yêu cầu meeting. Vui lòng thử lại sau.", "error");
+    }
+  };
+
   return (
     <>
       <Section
@@ -262,13 +286,12 @@ const AppointmentsHistory = () => {
                                 </button>
                               )}
                               {appointment.status === "Accepted" && (
-                                <Link
-                                  to={`/meeting/${appointment._id}`}
-                                  state={{ autoAnswer: true }}
+                                <button
                                   className="btn btn-success btn-sm"
+                                  onClick={() => handleRequestMeeting(appointment)}
                                 >
                                   Yêu cầu cuộc gọi
-                                </Link>
+                                </button>
                               )}
                             </td>
                           </tr>
