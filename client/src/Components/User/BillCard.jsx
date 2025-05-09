@@ -1,68 +1,79 @@
-"use client"
+"use client";
+
+import { Link } from "react-router-dom";
 
 export default function BillCard({ bill, onPayBill }) {
-  const { doctorName, doctorSpecialization, date, time, totalAmount, paymentStatus, dueDate } = bill
+    const { dateIssued, totalAmount, paymentStatus, createdAt, patientName, userId} = bill;
+    const { time } = bill.appointmentId;
 
-  const formattedDate = new Date(date).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
+    console.log("BillCard props:", bill);
+    console.log("userId:", userId);
 
-  const formattedDueDate = new Date(dueDate).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
+    // Hàm định dạng thời gian từ createdAt
+    const formatTime = (dateString) => {
+        return new Date(dateString).toLocaleTimeString("vi-VN", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false, // Sử dụng định dạng 24h
+        });
+    };
 
-  const isPastDue = new Date(dueDate) < new Date() && paymentStatus === "Unpaid"
+    // Lấy thời gian từ createdAt
+    const formattedCreatedAt = formatTime(createdAt);
 
-  return (
-    <div className={`bill-card ${paymentStatus} ${isPastDue ? "past-due" : ""}`}>
-      <div className="bill-header">
-        <h2>{doctorName}</h2>
-        <span className={`status-badge ${paymentStatus}`}>{paymentStatus === "Paid" ? "Paid" : "Unpaid"}</span>
-      </div>
+    const formattedDate = new Date(dateIssued).toLocaleDateString("vi-VN", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    });
 
-      <div className="bill-details">
-        <div className="detail-item">
-          <span className="label">Specialty:</span>
-          <span>{doctorSpecialization}</span>
+    return (
+        <div className={`bill-card ${paymentStatus} `}>
+            <div className="bill-header">
+                <h2>{formattedDate}</h2>
+                <span className={`status-badge ${paymentStatus}`}>
+                    {paymentStatus === "Paid" ? "Đã thanh toán" : "Chưa thanh toán"}
+                </span>
+            </div>
+
+            <div className="bill-details">
+                <div className="detail-item">
+                    <span className="label">Bệnh nhân:</span>
+                    <span className="totalAmount">{patientName}</span>
+                </div>
+                <div className="detail-item">
+                    <span className="label">Giờ khám:</span>
+                    <span>{time}</span>
+                </div>
+                <div className="detail-item">
+                    <span className="label">Giờ tạo:</span>
+                    <span>{formattedCreatedAt}</span>
+                </div>
+                <div className="detail-item">
+                    <span className="label">Giá tiền:</span>
+                    <span className="totalAmount">{totalAmount} VND</span>
+                </div>
+            </div>
+
+            {paymentStatus === "Unpaid" && (
+                <div className="bill-actions">
+                    <button className="pay-button" onClick={() => onPayBill(bill)}>
+                        Thanh Toán
+                    </button>
+                    <Link to={`/payment-detail/${bill._id}`} className="details-button text-center">
+                        Xem chi tiết
+                    </Link>
+                </div>
+            )}
+
+            {paymentStatus === "Paid" && (
+                <div className="bill-actions">
+                    <Link to={`/payment-detail/${bill._id}`} className="details-button text-center">
+                        Xem chi tiết
+                    </Link>
+                </div>
+            )}
         </div>
-        <div className="detail-item">
-          <span className="label">Appointment:</span>
-          <span>
-            {formattedDate} at {time}
-          </span>
-        </div>
-        <div className="detail-item">
-          <span className="label">Amount:</span>
-          <span className="totalAmount">${totalAmount.toFixed(2)}</span>
-        </div>
-        <div className="detail-item">
-          <span className="label">Due Date:</span>
-          <span className={isPastDue ? "past-due-text" : ""}>
-            {formattedDueDate}
-            {isPastDue && " (Past Due)"}
-          </span>
-        </div>
-      </div>
-
-      {paymentStatus === "Unpaid" && (
-        <div className="bill-actions">
-          <button className="pay-button" onClick={() => onPayBill(bill)}>
-            Pay Now
-          </button>
-          <button className="details-button">View Details</button>
-        </div>
-      )}
-
-      {paymentStatus === "Paid" && (
-        <div className="bill-actions">
-          <button className="details-button">View Receipt</button>
-        </div>
-      )}
-    </div>
-  )
+    );
 }
-

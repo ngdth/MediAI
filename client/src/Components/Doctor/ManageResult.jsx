@@ -171,9 +171,9 @@ const ManageResult = () => {
       <h2 className="text-center mb-4">Kết quả khám bệnh</h2>
 
       <div>
-        <strong>Patient:</strong> {appointment.patientName}
+        <strong>Tên bệnh nhân:</strong> {appointment.patientName}
         <p>
-          <strong>Symptoms:</strong> {appointment.symptoms}
+          <strong>Triệu chứng:</strong> {appointment.symptoms}
         </p>
       </div>
 

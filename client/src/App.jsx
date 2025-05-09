@@ -41,6 +41,7 @@ import BookingAppointments from "./Pages/Pages/Booking/BookingAppointments";
 import ScrollUpButton from "./Components/ScrollUpButton";
 import UserProfile from "./Pages/User/Profile";
 import Payment from "./Pages/User/Payment";
+import PaymentDetail from "./Pages/User/PaymentDetail";
 import FavoritesPage from "./Pages/User/FavoritesPage";
 import UserManagement from "./Pages/Admin/UserManagement";
 import DoctorManagement from "./Pages/Admin/DoctorManagement";
@@ -95,7 +96,7 @@ function App() {
         window.scrollTo(0, 0);
     }, [pathname]);
 
-    const shouldShowFloatingMenu = !/^\/(admin|doctor(\/|$)|nurse|pharmacy|meeting|login|register|verify|forgotpass|resetpass)/.test(pathname);
+    const shouldShowFloatingMenu = !/^\/(admin|doctor(\/|$)|nurse|pharmacy|hod|payment-detail|meeting|login|register|verify|forgotpass|resetpass)/.test(pathname);
 
     return (
         <>
@@ -139,6 +140,7 @@ function App() {
                     <Route path="/favorites" element={<FavoritesPage />} />
                     <Route path="/profile" element={<UserProfile />} />
                     <Route path="/payment" element={<Payment />} />
+                    <Route path="/payment-detail/:billId" element={<PaymentDetail />} />
 
                 </Route>
                 <Route path="/" element={<LayoutWithoutHeader />}>
