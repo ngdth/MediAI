@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { validateOTP } from "../../../utils/validateUtils"; 
 
 const VerifyForm = ({ showToast }) => {
     const navigate = useNavigate();
@@ -34,8 +35,9 @@ const VerifyForm = ({ showToast }) => {
         setLoading(true);
         setShowValidationError(true); // Show validation error after clicking "Xác thực email"
 
-        if (!/^\d{6}$/.test(otp)) {
-            showToast("Sửa tất cả lỗi trước khi xác thực. OTP phải là 6 chữ số", "error");
+        const otpValidation = validateOTP(otp);
+        if (!otpValidation.isValid) {
+            showToast(otpValidation.message, "error");
             setLoading(false);
             return;
         }
@@ -100,7 +102,7 @@ const VerifyForm = ({ showToast }) => {
                         className="text-center flex-grow-1"
                         maxLength="6"
                         pattern="[0-9]*"
-                        isInvalid={showValidationError && !/^\d{6}$/.test(otp)}
+                        isInvalid={showValidationError && !validateOTP(otp).isValid}
                     />
                     <Button variant="link" className="ms-2" onClick={handleResendOTP} disabled={resendTimer > 0}>
                         {resendTimer > 0 ? `Gửi lại sau ${resendTimer}s` : "Gửi lại mã OTP"}

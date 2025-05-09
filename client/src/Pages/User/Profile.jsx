@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from "react";
 import ProfileForm from "../../Components/Form/ProfileForm/ProfileForm";
-import {toast } from "react-toastify";
-import {Container,Col, Row, Button, Modal, Form } from "react-bootstrap";
+import { toast } from "react-toastify";
+import { Container, Col, Row, Button, Modal, Form } from "react-bootstrap";
 import { FaRegEdit } from "react-icons/fa";
 import axios from "axios";
+import { validatePassword, validateConfirmedPassword } from "../../utils/validateUtils";
 
 const UserProfile = () => {
     const [user, setUser] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [passwordData, setPasswordData] = useState({
+        oldPassword: "",
+        newPassword: "",
+        confPassword: "",
+    });
+    const [fieldErrors, setFieldErrors] = useState({
         oldPassword: "",
         newPassword: "",
         confPassword: "",
@@ -42,18 +48,68 @@ const UserProfile = () => {
 
     const handleChangePassClick = () => {
         setShowModal(true);
+        setPasswordData({ oldPassword: "", newPassword: "", confPassword: "" });
+        setFieldErrors({ oldPassword: "", newPassword: "", confPassword: "" });
     };
 
     const handlePasswordChange = (e) => {
         const { name, value } = e.target;
         setPasswordData(prev => ({ ...prev, [name]: value }));
+        setFieldErrors(prev => ({ ...prev, [name]: "" }));
+
+        // Real-time validation
+        if (name === "newPassword" && value) {
+            const validation = validatePassword(value);
+            if (!validation.isValid) {
+                setFieldErrors(prev => ({ ...prev, newPassword: validation.message }));
+            }
+        }
+        if (name === "confPassword" && value) {
+            const validation = validateConfirmedPassword(passwordData.newPassword, value);
+            if (!validation.isValid) {
+                setFieldErrors(prev => ({ ...prev, confPassword: validation.message }));
+            }
+        }
     };
 
     const handlePasswordSubmit = async () => {
-        if (passwordData.newPassword !== passwordData.confPassword) {
-            toast.error("Mật khẩu mới và xác nhận không khớp");
+        setFieldErrors({
+            oldPassword: "",
+            newPassword: "",
+            confPassword: "",
+        });
+
+        // Check for empty required fields
+        const newFieldErrors = {
+            oldPassword: !passwordData.oldPassword ? "Không được để trống!" : "",
+            newPassword: !passwordData.newPassword ? "Không được để trống!" : "",
+            confPassword: !passwordData.confPassword ? "Không được để trống!" : "",
+        };
+        const hasEmptyFields = Object.values(newFieldErrors).some(error => error);
+        if (hasEmptyFields) {
+            toast.error("Hãy sửa tất cả các lỗi trước khi đổi mật khẩu");
+            setFieldErrors(newFieldErrors);
             return;
         }
+
+        // Validate fields
+        const passwordValidation = validatePassword(passwordData.newPassword);
+        const confPasswordValidation = validateConfirmedPassword(passwordData.newPassword, passwordData.confPassword);
+
+        if (!passwordValidation.isValid) {
+            newFieldErrors.newPassword = passwordValidation.message;
+        }
+        if (!confPasswordValidation.isValid) {
+            newFieldErrors.confPassword = confPasswordValidation.message;
+        }
+
+        const hasValidationErrors = Object.values(newFieldErrors).some(error => error);
+        if (hasValidationErrors) {
+            toast.error("Hãy sửa tất cả các lỗi trước khi đổi mật khẩu");
+            setFieldErrors(newFieldErrors);
+            return;
+        }
+
         const token = localStorage.getItem("token");
         if (!token) {
             toast.error("Bạn phải đăng nhập để đổi mật khẩu");
@@ -65,6 +121,7 @@ const UserProfile = () => {
             });
             toast.success("Đổi mật khẩu thành công!");
             setShowModal(false);
+            setPasswordData({ oldPassword: "", newPassword: "", confPassword: "" });
         } catch (error) {
             console.error("Error changing password", error);
             toast.error("Lỗi khi đổi mật khẩu. Vui lòng thử lại.");
@@ -200,18 +257,42 @@ const UserProfile = () => {
                     <Modal.Title>Đổi mật khẩu</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form>
-                        <Form.Group>
+                    <Form noValidate>
+                        <Form.Group controlId="oldPassword" className="mb-3">
                             <Form.Label className="d-block text-start">Mật khẩu cũ</Form.Label>
-                            <Form.Control type="password" name="oldPassword" value={passwordData.oldPassword} onChange={handlePasswordChange} />
+                            <Form.Control
+                                type="password"
+                                name="oldPassword"
+                                value={passwordData.oldPassword}
+                                onChange={handlePasswordChange}
+                                isInvalid={!!fieldErrors.oldPassword}
+                                required
+                            />
+                            <Form.Control.Feedback type="invalid">{fieldErrors.oldPassword}</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group>
+                        <Form.Group controlId="newPassword" className="mb-3">
                             <Form.Label className="d-block text-start">Mật khẩu mới</Form.Label>
-                            <Form.Control type="password" name="newPassword" value={passwordData.newPassword} onChange={handlePasswordChange} />
+                            <Form.Control
+                                type="password"
+                                name="newPassword"
+                                value={passwordData.newPassword}
+                                onChange={handlePasswordChange}
+                                isInvalid={!!fieldErrors.newPassword}
+                                required
+                            />
+                            <Form.Control.Feedback type="invalid">{fieldErrors.newPassword}</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group>
+                        <Form.Group controlId="confPassword" className="mb-3">
                             <Form.Label className="d-block text-start">Xác nhận mật khẩu mới</Form.Label>
-                            <Form.Control type="password" name="confPassword" value={passwordData.confPassword} onChange={handlePasswordChange}/>
+                            <Form.Control
+                                type="password"
+                                name="confPassword"
+                                value={passwordData.confPassword}
+                                onChange={handlePasswordChange}
+                                isInvalid={!!fieldErrors.confPassword}
+                                required
+                            />
+                            <Form.Control.Feedback type="invalid">{fieldErrors.confPassword}</Form.Control.Feedback>
                         </Form.Group>
                     </Form>
                 </Modal.Body>
