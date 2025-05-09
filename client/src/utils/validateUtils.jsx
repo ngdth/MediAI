@@ -144,3 +144,13 @@ export const validateConfirmedPassword = (password, confirmedPassword) => {
   }
   return { isValid: true, message: "" };
 };
+
+export const validateOTP = (otp) => {
+  if (!otp.trim()) {
+    return { isValid: false, message: "OTP không được để trống!" };
+  }
+  if (!/^\d{6}$/.test(otp)) {
+    return { isValid: false, message: "OTP phải là 6 chữ số!" };
+  }
+  return { isValid: true, message: "" };
+};

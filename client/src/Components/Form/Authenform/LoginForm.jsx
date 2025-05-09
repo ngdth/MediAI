@@ -156,7 +156,7 @@ const LoginForm = ({ onLogin }) => {
             {error && <Alert variant="danger">{error}</Alert>}
 
             <div className="d-flex justify-content-end">
-                <Link className="text-decoration-underline small" to="/forgotPass">
+                <Link className="text-decoration-underline small" to="/forgotpass">
                     Quên mật khẩu?
                 </Link>
             </div>
