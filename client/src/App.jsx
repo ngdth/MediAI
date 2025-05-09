@@ -163,6 +163,8 @@ function App() {
                 <Route path="/doctor" element={<DoctorLayout />}>
                     <Route path="blog" element={<DoctorBlogsPage />} />
                     <Route path="blog/:blogId" element={<DoctorBlogsDetails />} />
+                    <Route path="blog/create" element={<BlogCreatePage />} />
+                    <Route path="blog/edit/:blogId" element={<EditBlogPage />} />
                     <Route path="/doctor" element={<ManageAppointments />} />
                     <Route path="appointments/manage-result/:appointmentId" element={<ManageResult />} />
                     <Route path="/doctor/medical-result" element={<MedicalResult />} />

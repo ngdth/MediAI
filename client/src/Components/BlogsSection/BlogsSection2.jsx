@@ -256,7 +256,7 @@ const BlogsSection2 = ({ data }) => {
     };
 
     const handleCreatePost = () => {
-        navigate('blog/create');
+        navigate('create');
     };
 
     const handleTagChange = (tag) => {
@@ -269,7 +269,7 @@ const BlogsSection2 = ({ data }) => {
     };
 
     const handleEditBlog = (blogId) => {
-        navigate(`/blog/edit/${blogId}`);
+        navigate(`edit/${blogId}`);
     };
 
     const handleDeleteBlog = async (blogId) => {
