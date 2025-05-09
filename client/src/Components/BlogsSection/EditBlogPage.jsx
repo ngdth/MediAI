@@ -63,15 +63,24 @@ const EditBlogPage = () => {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 const blog = blogRes.data;
+                const mediaItems = (blog.media || []).map(m => {
+                    let preview = '/assets/img/post_1.jpeg'; // Ảnh mặc định
+                    if (m.url) {
+                        // URL từ Firebase sẽ bắt đầu bằng https://storage.googleapis.com/
+                        preview = m.url;
+                    }
+                    return {
+                        ...m,
+                        preview: preview,
+                        type: m.type || (m.url.includes('video') ? 'video' : 'image')
+                    };
+                });
+
                 setFormData({
                     title: blog.title || '',
                     content: blog.content || '',
                     specialization: blog.specialization || doctorRes.data.user.specialization || '',
-                    media: (blog.media || []).map(m => ({
-                        ...m,
-                        preview: `${import.meta.env.VITE_BE_URL}${m.url.replace('/src', '')}`,
-                        type: m.type
-                    })),
+                    media: mediaItems,
                     visibility: blog.visibility || 'public'
                 });
                 setLastSaved(new Date(blog.updatedAt || blog.createdAt));
@@ -167,48 +176,78 @@ const EditBlogPage = () => {
             setError("Bạn cần xóa media hiện tại trước khi thêm mới.");
             return;
         }
-        const file = e.target.files[0];
-        if (!file) return;
-
+        const files = Array.from(e.target.files);
+        console.log("Files selected:", files);
         const maxFileSize = 10 * 1024 * 1024;
         const allowedTypes = [
             'image/jpeg', 'image/png', 'image/gif', 'image/webp',
             'video/mp4', 'video/mpeg', 'video/quicktime', 'video/webm'
         ];
 
-        if (file.size > maxFileSize) {
-            setError(`File "${file.name}" quá lớn. Kích thước tối đa là 10MB.`);
-            return;
-        }
-        if (!allowedTypes.includes(file.type)) {
-            setError(`File "${file.name}" không được hỗ trợ.`);
-            return;
-        }
+        // Thêm tất cả URL của media cũ vào deletedMediaUrls trước khi thêm mới
+        const oldMediaUrls = formData.media
+            .filter(media => media.url)
+            .map(media => media.url);
+        setDeletedMediaUrls(prev => [...new Set([...prev, ...oldMediaUrls])]);
 
-        if (file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                setFormData(prev => ({
-                    ...prev,
-                    media: [{
-                        file,
-                        preview: ev.target.result,
-                        type: 'image',
-                        name: file.name
-                    }]
-                }));
-            };
-            reader.readAsDataURL(file);
-        } else {
-            setFormData(prev => ({
-                ...prev,
-                media: [{
-                    file,
-                    type: 'video',
-                    name: file.name
-                }]
-            }));
-        }
+        // Xóa media cũ trong formData.media
+        setFormData(prev => ({
+            ...prev,
+            media: []
+        }));
+
+        files.forEach(file => {
+            console.log("Processing file:", file.name);
+            if (file.size > maxFileSize) {
+                console.error(`File "${file.name}" quá lớn. Kích thước tối đa là 10MB.`);
+                setError(`File "${file.name}" quá lớn. Kích thước tối đa là 10MB.`);
+                return;
+            }
+
+            if (!allowedTypes.includes(file.type)) {
+                console.error(`File "${file.name}" không được hỗ trợ.`);
+                setError(`File "${file.name}" không được hỗ trợ.`);
+                return;
+            }
+
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    console.log("Image file loaded:", file.name);
+                    setFormData(prev => ({
+                        ...prev,
+                        media: [
+                            ...prev.media,
+                            {
+                                file,
+                                preview: ev.target.result,
+                                type: 'image',
+                                name: file.name
+                            }
+                        ]
+                    }));
+                };
+                reader.readAsDataURL(file);
+            } else {
+                console.log("Video file added:", file.name);
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    setFormData(prev => ({
+                        ...prev,
+                        media: [
+                            ...prev.media,
+                            {
+                                file,
+                                preview: ev.target.result,
+                                type: 'video',
+                                name: file.name
+                            }
+                        ]
+                    }));
+                };
+                reader.readAsDataURL(file);
+            }
+        });
     };
 
     const removeMedia = (index) => {
@@ -218,7 +257,7 @@ const EditBlogPage = () => {
             media: prev.media.filter((_, i) => i !== index)
         }));
         if (mediaItem.url) {
-            setDeletedMediaUrls(prev => [...prev, mediaItem.url]);
+            setDeletedMediaUrls(prev => [...new Set([...prev, mediaItem.url])]);
         }
     };
 
@@ -279,9 +318,12 @@ const EditBlogPage = () => {
 
             const formDataToSend = new FormData();
             formDataToSend.append('keptMedia', JSON.stringify(keptMediaUrls));
-            formData.media.forEach(media => {
-                if (media.file) {
+            formData.media.forEach((media, index) => {
+                if (media.file && media.file instanceof File) {
+                    console.log(`Appending file ${index}:`, media.file.name);
                     formDataToSend.append('newFiles[]', media.file);
+                } else if (media.file) {
+                    console.warn(`Invalid file object at index ${index}:`, media.file);
                 }
             });
             formDataToSend.append('deletedMedia', JSON.stringify(deletedMediaUrls));
@@ -301,10 +343,8 @@ const EditBlogPage = () => {
                 }
             );
 
-            // Cập nhật thời gian lưu gần nhất
             setLastSaved(new Date(response.data.updatedAt || Date.now()));
-
-            // Điều hướng về trang danh sách bài viết
+            setDeletedMediaUrls([]); // Reset danh sách media đã xóa sau khi cập nhật thành công
             navigate(`/doctor/blog/${blogId}`);
         } catch (err) {
             console.error("Error updating blog:", err);
@@ -316,7 +356,7 @@ const EditBlogPage = () => {
 
     const handleCancel = () => {
         if (window.confirm("Bạn có chắc muốn hủy chỉnh sửa?")) {
-            navigate('/doctor/blog');
+            navigate('/doctor/blog?tag=my');
         }
     };
 
@@ -384,7 +424,7 @@ const EditBlogPage = () => {
                                             <textarea
                                                 className="form-control html-view"
                                                 value={formData.content}
-                                                onChange={handleChange}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
                                                 rows="8"
                                             />
                                         ) : (
@@ -481,12 +521,16 @@ const EditBlogPage = () => {
                                                                         }}
                                                                     />
                                                                 )}
-                                                                {item.type !== 'image' && (
+                                                                {item.type === 'video' && (item.preview || item.url) && (
                                                                     <video
                                                                         src={item.preview || item.url}
                                                                         className="card-img-top"
                                                                         controls
                                                                         style={{ height: '120px', objectFit: 'cover' }}
+                                                                        onError={(e) => {
+                                                                            e.target.onerror = null;
+                                                                            e.target.src = '/assets/img/post_1.jpeg';
+                                                                        }}
                                                                     />
                                                                 )}
                                                                 <div className="card-body p-2">
@@ -532,7 +576,7 @@ const EditBlogPage = () => {
                                     {formData.media.length > 0 && formData.media.some(m => m.type === 'image') && (
                                         <div className="featured-image mb-4">
                                             <img
-                                                src={formData.media.find(m => m.type === 'image').preview}
+                                                src={formData.media.find(m => m.type === 'image')?.preview || formData.media.find(m => m.type === 'image')?.url}
                                                 className="img-fluid rounded"
                                                 alt="Featured"
                                                 onError={(e) => {
@@ -560,21 +604,29 @@ const EditBlogPage = () => {
                                                 {formData.media.map((item, index) => (
                                                     <div className="col-md-2 col-sm-3 col-4" key={index}>
                                                         <div className="card h-100">
-                                                            {item.type === 'image' && item.preview && (
+                                                            {item.type === 'image' && (item.preview || item.url) && (
                                                                 <img
-                                                                    src={item.preview}
+                                                                    src={item.preview || item.url}
                                                                     className="card-img-top"
                                                                     alt={item.name}
                                                                     style={{ height: '80px', objectFit: 'cover' }}
+                                                                    onError={(e) => {
+                                                                        e.target.onerror = null;
+                                                                        e.target.src = '/assets/img/post_1.jpeg';
+                                                                    }}
                                                                 />
                                                             )}
-                                                            {item.type !== 'image' && (
-                                                                <div
-                                                                    className="card-img-top bg-light d-flex align-items-center justify-content-center"
-                                                                    style={{ height: '80px' }}
-                                                                >
-                                                                    <FaFilePdf size={30} className="text-danger" />
-                                                                </div>
+                                                            {item.type === 'video' && (item.preview || item.url) && (
+                                                                <video
+                                                                    src={item.preview || item.url}
+                                                                    className="card-img-top"
+                                                                    controls
+                                                                    style={{ height: '80px', objectFit: 'cover' }}
+                                                                    onError={(e) => {
+                                                                        e.target.onerror = null;
+                                                                        e.target.src = '/assets/img/post_1.jpeg';
+                                                                    }}
+                                                                />
                                                             )}
                                                             <div className="card-body p-2">
                                                                 <p className="card-text small text-truncate">{item.name}</p>
