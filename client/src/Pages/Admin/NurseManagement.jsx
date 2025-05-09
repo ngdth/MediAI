@@ -21,6 +21,26 @@ const NurseManagement = () => {
     const [editingNurse, setEditingNurse] = useState(null);
     const token = localStorage.getItem("token");
     const specialties = ["Chẩn đoán hình ảnh", "Chấn thương chỉnh hình", "Da liễu", "Hô hấp", "Nhãn khoa", "Nhi khoa", "Nội tiết", "Nội tổng quát", "Sản phụ", "Sơ sinh", "Tai Mũi Họng (hay ENT)", "Thận", "Thần kinh", "Tiết niệu", "Tim mạch", "Ung thư", "Cơ xương khớp", "Hậu môn trực tràng"];
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentNurses = nurses.slice(indexOfFirstItem, indexOfLastItem);
+
+    const totalPages = Math.ceil(nurses.length / itemsPerPage);
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
 
     useEffect(() => {
         fetchNurses();
@@ -122,7 +142,7 @@ const NurseManagement = () => {
                 <button className="btn btn-primary me-1" onClick={handleShowModal}>
                     Tạo tài khoản y tá
                 </button>
-                <ImportDataButton  />
+                <ImportDataButton />
                 <ExportDataButton role="nurse" />
             </div>
 
@@ -156,6 +176,49 @@ const NurseManagement = () => {
                 </table>
             </div>
 
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginTop: "20px",
+                }}
+            >
+                <div>
+                    Đang hiển thị {indexOfFirstItem + 1} đến{" "}
+                    {Math.min(indexOfLastItem, nurses.length)} của{" "}
+                    {nurses.length} y tá
+                </div>
+                <div style={{ display: "flex", gap: "10px" }}>
+                    <button
+                        onClick={handlePreviousPage}
+                        disabled={currentPage === 1}
+                        style={{
+                            padding: "8px 16px",
+                            borderRadius: "4px",
+                            border: "1px solid #ccc",
+                            background: currentPage === 1 ? "#f0f0f0" : "#fff",
+                            cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                        }}
+                    >
+                        Trang trước
+                    </button>
+                    <button
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages}
+                        style={{
+                            padding: "8px 16px",
+                            borderRadius: "4px",
+                            border: "1px solid #ccc",
+                            background: currentPage === totalPages ? "#f0f0f0" : "#fff",
+                            cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                        }}
+                    >
+                        Trang tiếp
+                    </button>
+                </div>
+            </div>
+            
             <DoctorModal
                 show={showModal}
                 handleClose={handleCloseModal}

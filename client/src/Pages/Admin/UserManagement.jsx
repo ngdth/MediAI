@@ -5,6 +5,26 @@ import { Button } from "react-bootstrap";
 const UserManagement = () => {
     const [users, setUsers] = useState([]);
     const token = localStorage.getItem("token");
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentUsers = users.slice(indexOfFirstItem, indexOfLastItem);
+
+    const totalPages = Math.ceil(users.length / itemsPerPage);
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
 
     useEffect(() => {
         fetchUsers();
@@ -64,6 +84,49 @@ const UserManagement = () => {
                         ))}
                     </tbody>
                 </table>
+            </div>
+
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginTop: "20px",
+                }}
+            >
+                <div>
+                    Đang hiển thị {indexOfFirstItem + 1} đến{" "}
+                    {Math.min(indexOfLastItem, users.length)} của{" "}
+                    {users.length} người dùng
+                </div>
+                <div style={{ display: "flex", gap: "10px" }}>
+                    <button
+                        onClick={handlePreviousPage}
+                        disabled={currentPage === 1}
+                        style={{
+                            padding: "8px 16px",
+                            borderRadius: "4px",
+                            border: "1px solid #ccc",
+                            background: currentPage === 1 ? "#f0f0f0" : "#fff",
+                            cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                        }}
+                    >
+                        Trang trước
+                    </button>
+                    <button
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages}
+                        style={{
+                            padding: "8px 16px",
+                            borderRadius: "4px",
+                            border: "1px solid #ccc",
+                            background: currentPage === totalPages ? "#f0f0f0" : "#fff",
+                            cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                        }}
+                    >
+                        Trang tiếp
+                    </button>
+                </div>
             </div>
         </div>
     );

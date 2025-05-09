@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Modal, Button, Form  } from "react-bootstrap";
+import { Modal, Button, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 
 const ServiceManagement = () => {
@@ -8,8 +8,28 @@ const ServiceManagement = () => {
     const [showModal, setShowModal] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [deleteServiceId, setDeleteServiceId] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     const specialties = ["Chẩn đoán hình ảnh", "Chấn thương chỉnh hình", "Da liễu", "Hô hấp", "Nhãn khoa", "Nhi khoa", "Nội tiết", "Nội tổng quát", "Sản phụ", "Sơ sinh", "Tai Mũi Họng (hay ENT)", "Thận", "Thần kinh", "Tiết niệu", "Tim mạch", "Ung thư", "Cơ xương khớp", "Hậu môn trực tràng"];
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentServices = services.slice(indexOfFirstItem, indexOfLastItem);
+
+    const totalPages = Math.ceil(services.length / itemsPerPage);
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
 
     const initialFormData = {
         name: "",
@@ -157,6 +177,50 @@ const ServiceManagement = () => {
                     </tbody>
                 </table>
             </div>
+
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginTop: "20px",
+                }}
+            >
+                <div>
+                    Đang hiển thị {indexOfFirstItem + 1} đến{" "}
+                    {Math.min(indexOfLastItem, services.length)} của{" "}
+                    {services.length} dịch vụ
+                </div>
+                <div style={{ display: "flex", gap: "10px" }}>
+                    <button
+                        onClick={handlePreviousPage}
+                        disabled={currentPage === 1}
+                        style={{
+                            padding: "8px 16px",
+                            borderRadius: "4px",
+                            border: "1px solid #ccc",
+                            background: currentPage === 1 ? "#f0f0f0" : "#fff",
+                            cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                        }}
+                    >
+                        Trang trước
+                    </button>
+                    <button
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages}
+                        style={{
+                            padding: "8px 16px",
+                            borderRadius: "4px",
+                            border: "1px solid #ccc",
+                            background: currentPage === totalPages ? "#f0f0f0" : "#fff",
+                            cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                        }}
+                    >
+                        Trang tiếp
+                    </button>
+                </div>
+            </div>
+            
             {showModal && <div className="modal-overlay"></div>}
 
             {/* Modal xác nhận xóa */}
