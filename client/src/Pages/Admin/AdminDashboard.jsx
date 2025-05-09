@@ -31,6 +31,7 @@ const AdminDashboard = () => {
   const [hospitalSurveyData, setHospitalSurveyData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const [userImageMap, setUserImageMap] = useState({});
 
   const defaultAvatar = "https://randomuser.me/api/portraits/lego/1.jpg";
 
@@ -49,7 +50,12 @@ const AdminDashboard = () => {
 
       const filteredUsers = users.filter((user) => user.role === "user");
 
-      console.log("Dữ liệu người dùng với role 'user':", filteredUsers);
+      const imageMap = {};
+      filteredUsers.forEach((user) => {
+        imageMap[user.username] = user.imageUrl || "https://i.pinimg.com/736x/16/b2/e2/16b2e2579118bf6fba3b56523583117f.jpg";
+      });
+      setUserImageMap(imageMap);
+      setUserData(filteredUsers);
 
       const userCountByMonth2024 = {};
       const userCountByMonth2025 = {};
@@ -70,9 +76,6 @@ const AdminDashboard = () => {
         }
       });
 
-      console.log("Số lượng người dùng theo tháng 2024:", userCountByMonth2024);
-      console.log("Số lượng người dùng theo tháng 2025:", userCountByMonth2025);
-
       const formattedData = [];
       for (let month = 1; month <= 5; month++) {
         const monthStr = month < 10 ? `0${month}` : `${month}`;
@@ -82,8 +85,6 @@ const AdminDashboard = () => {
           patients2025: userCountByMonth2025[`${monthStr}/2025`] || 0,
         });
       }
-
-      console.log("Dữ liệu đã định dạng cho biểu đồ:", formattedData);
 
       setHospitalSurveyData(formattedData);
       setLoading(false);
@@ -337,19 +338,13 @@ const AdminDashboard = () => {
         <div className="stat-card">
           <CalendarDays size={28} color="#407bff" />
           <div>
-            Appointments <strong>213</strong>
+            Tổng số lịch hẹn <strong>{appointments.length}</strong>
           </div>
         </div>
         <div className="stat-card">
           <UserPlus size={28} color="#407bff" />
           <div>
-            New Patients <strong>104</strong>
-          </div>
-        </div>
-        <div className="stat-card">
-          <ScissorsSquare size={28} color="#407bff" />
-          <div>
-            Operations <strong>24</strong>
+            Tổng số người dùng <strong>{userData.length}</strong>
           </div>
         </div>
         <div className="stat-card">
@@ -560,11 +555,13 @@ const AdminDashboard = () => {
                     });
                     const formattedTime = appointment.time;
 
+                    const avatarUrl = userImageMap[appointment.patientName] || "https://i.pinimg.com/736x/16/b2/e2/16b2e2579118bf6fba3b56523583117f.jpg";
+
                     return (
                       <tr key={idx}>
                         <td>
                           <img
-                            src={defaultAvatar}
+                            src={avatarUrl}
                             alt="avatar"
                             className="avatar"
                           />{" "}
@@ -574,7 +571,7 @@ const AdminDashboard = () => {
                         <td>{formattedDate}</td>
                         <td>{formattedTime}</td>
                         <td>{doctorNames || "No doctor assigned"}</td>
-                        <td>{appointment.symptoms}</td>                        
+                        <td>{appointment.symptoms}</td>
                       </tr>
                     );
                   })
