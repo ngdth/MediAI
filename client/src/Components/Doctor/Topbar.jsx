@@ -230,7 +230,7 @@ const TopBar = ({ isSidebarOpen }) => {
                         )}
                       </li>
                       <li>
-                        <Link to={"/doctor/blog"} className="custom-blog-btn">
+                        <Link to="/doctor/blog" className="custom-blog-btn">
                           Xem Blog
                         </Link>
                       </li>
