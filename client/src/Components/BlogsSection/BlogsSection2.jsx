@@ -13,6 +13,7 @@ const BlogsSection2 = ({ data }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
+    const tagParam = queryParams.get('tag');
     const specializationParam = queryParams.get('specialization');
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -32,14 +33,20 @@ const BlogsSection2 = ({ data }) => {
 
     useEffect(() => {
         checkUserRole();
-        if (data && data.blogsData && data.blogsData.length > 0) {
-            setFilteredBlogs(data.blogsData);
-            setAllBlogs(data.blogsData);
-            extractSpecializations(data.blogsData);
+        if (tagParam === 'my') {
+            setActiveTag('my');
+            fetchMyBlogs();
         } else {
-            fetchBlogs('', specializationParam || '', isDoctor);
+            setActiveTag('all');
+            if (data && data.blogsData && data.blogsData.length > 0) {
+                setFilteredBlogs(data.blogsData);
+                setAllBlogs(data.blogsData);
+                extractSpecializations(data.blogsData);
+            } else {
+                fetchBlogs('', specializationParam || '', isDoctor);
+            }
         }
-    }, [data, specializationParam]);
+    }, [data, tagParam, specializationParam]);
 
     const truncateHTML = (html, maxLength) => {
         if (!html || typeof html !== 'string') return '';
@@ -262,8 +269,10 @@ const BlogsSection2 = ({ data }) => {
     const handleTagChange = (tag) => {
         setActiveTag(tag);
         if (tag === 'my') {
+            navigate('/doctor/blog?tag=my');
             fetchMyBlogs();
         } else {
+            navigate('/doctor/blog');
             fetchBlogs();
         }
     };
@@ -304,8 +313,8 @@ const BlogsSection2 = ({ data }) => {
             <div className="container">
                 <div className="text-center">
                     <SectionHeading
-                        SectionSubtitle={activeTag === 'my' ? "Bài viết của tôi" : data.sectionSubtitle}
-                        SectionTitle={activeTag === 'my' ? "QUẢN LÝ BÀI VIẾT" : data.sectionTitle}
+                        SectionSubtitle={activeTag === 'my' ? "QUẢN LÝ BÀI VIẾT" : data.sectionSubtitle}
+                        SectionTitle={activeTag === 'my' ? "Bài viết của tôi" : data.sectionTitle}
                         variant="text-center"
                     />
                     <div style={{
