@@ -3,9 +3,10 @@
 ----------------------------------------------------------------*/
 .cs_team.cs_style_1 {
   width: 100%;
-  max-width: 320px;
+  max-width: 301.5px;
+  flex-shrink: 0;
   height: 415px;
-  margin: 0 auto;
+  margin: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -144,22 +145,88 @@
   }
 }
 
+// .cs_doctors_grid.cs_style_1 {
+//   display: grid;
+//   grid-template-columns: repeat(4, 1fr);
+//   gap: 30px;
+
+//   @media (max-width: 1199px) {
+//     grid-template-columns: repeat(3, 1fr);
+//   }
+
+//   @media (max-width: 991px) {
+//     grid-template-columns: repeat(2, 1fr);
+//   }
+
+//   @media (max-width: 767px) {
+//     grid-template-columns: repeat(1, 1fr);
+//   }
+// }
+
 .cs_doctors_grid.cs_style_1 {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
+  flex-wrap: nowrap;
   gap: 30px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
 
-  @media (max-width: 1199px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
+.slick-prev, .slick-next {
+  z-index: 10;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
 
-  @media (max-width: 991px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.slick-prev:before, .slick-next:before {
+  color: rgb(0, 0, 0); /* Màu mũi tên */
+  font-size: 50px;
+}
 
-  @media (max-width: 767px) {
-    grid-template-columns: repeat(1, 1fr);
-  }
+.slick-prev.slick-disabled, .slick-next.slick-disabled {
+  opacity: 0;
+  pointer-events: none; /* Ngăn click */
+}
+
+.slick-prev {
+  left: -50px;
+}
+
+.slick-next {
+  right: -50px;
+}
+
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 24px;
+  z-index: 10;
+  position: relative;
+}
+
+.pagination-button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #e0e0e0;
+  color: #000;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  position: relative;
+  z-index: 1;
+}
+
+.pagination-button:hover {
+  background-color: #cce4ff;
+  transform: translateY(-1px);
+}
+
+.pagination-button.active {
+  background-color: #007bff;
+  color: white;
 }
 
 /*-------------------------------------------
