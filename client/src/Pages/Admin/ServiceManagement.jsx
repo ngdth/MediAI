@@ -18,7 +18,12 @@ const ServiceManagement = () => {
     const currentServices = services.slice(indexOfFirstItem, indexOfLastItem);
 
     const totalPages = Math.ceil(services.length / itemsPerPage);
-
+    
+    const statusMap = {
+        active: "Hoạt động",
+        inactive: "Ngừng hoạt động",
+    };
+    
     const handlePreviousPage = () => {
         if (currentPage > 1) {
             setCurrentPage(currentPage - 1);
@@ -151,14 +156,14 @@ const ServiceManagement = () => {
                         </tr>
                     </thead>
                     <tbody>
-                    {currentServices.length > 0 ? (
+                        {currentServices.length > 0 ? (
                             currentServices.map((service) => (
                                 <tr key={service._id}>
                                     <td>{service.name}</td>
                                     <td>{service.description}</td>
                                     <td>{service.department}</td>
                                     <td>{service.price} VND</td>
-                                    <td>{service.status}</td>
+                                    <td>{statusMap[service.status]}</td> {/* Display Vietnamese status */}
                                     <td>
                                         <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(service)}>
                                             Chỉnh sửa
