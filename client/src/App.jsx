@@ -93,7 +93,7 @@ function App() {
         window.scrollTo(0, 0);
     }, [pathname]);
 
-    const shouldShowFloatingMenu = !/^\/(admin|doctor(\/|$)|nurse|pharmacy|meeting|login|register|verify|forgotPass|resetPass)/.test(pathname);
+    const shouldShowFloatingMenu = !/^\/(admin|doctor(\/|$)|nurse|pharmacy|meeting|login|register|verify|forgotpass|resetpass)/.test(pathname);
 
     const role = localStorage.getItem('role');
 
@@ -147,8 +147,8 @@ function App() {
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/verify" element={<VerifyPage />} />
-                    <Route path="/forgotPass" element={<ForgotPass />} />
-                    <Route path="/resetPass" element={<ResetPass />} />
+                    <Route path="/forgotpass" element={<ForgotPass />} />
+                    <Route path="/resetpass" element={<ResetPass />} />
                 </Route>
                 <Route path="/admin" element={<AdminLayout />}>
                     <Route path="/admin" element={<AdminDashboard />} />
